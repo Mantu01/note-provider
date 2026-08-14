@@ -31,8 +31,6 @@ const priceRupeesSchema = z
 export const noteBaseSchema = z.object({
   title: z.string().trim().min(3, "Title must be at least 3 characters").max(160),
   description: z.string().trim().min(10, "Description must be at least 10 characters").max(5000),
-  subject: z.string().trim().min(1, "Subject is required").max(120),
-  subjectSlug: z.string().trim().min(1, "Subject is required").max(120),
   categoryId: objectIdSchema,
   level: z.enum(NOTE_LEVELS, { message: "Select a level" }),
   visibility: z.enum(NOTE_VISIBILITIES).default("public"),

@@ -8,7 +8,7 @@ import type { PublicGroup } from "@/lib/types";
 
 export function GroupCard({ group }: { group: PublicGroup }) {
   return (
-    <Card className="group overflow-hidden rounded-2xl border shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-primary/30">
+    <Card className="group overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm">
       <Link
         href={`/groups/${group.slug}`}
         className="relative block aspect-[16/9] overflow-hidden brand-gradient-soft"
@@ -20,12 +20,12 @@ export function GroupCard({ group }: { group: PublicGroup }) {
             alt={`Cover for ${group.name}`}
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover"
           />
         ) : (
           <Layers3
             aria-hidden="true"
-            className="absolute inset-0 m-auto size-12 text-primary/60 transition-transform duration-300 group-hover:scale-110"
+            className="absolute inset-0 m-auto size-12 text-primary/60"
           />
         )}
       </Link>
@@ -40,7 +40,7 @@ export function GroupCard({ group }: { group: PublicGroup }) {
 
         <Link
           href={`/groups/${group.slug}`}
-          className="line-clamp-2 font-heading text-lg font-semibold hover:text-primary transition-colors"
+          className="line-clamp-2 font-heading text-lg font-semibold text-foreground"
         >
           {group.name}
         </Link>

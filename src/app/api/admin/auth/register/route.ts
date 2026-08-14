@@ -37,8 +37,7 @@ export const POST = handler(async (ctx) => {
   const existing = await Admin.findOne({ email: parsed.data.email.toLowerCase() }).lean().exec();
   if (existing) throw AppError.conflict("An account with this email already exists");
 
-  const count = await Admin.countDocuments();
-  const isHead = parsed.data.isHead ?? (count === 0);
+  const isHead = parsed.data.isHead ?? false;
 
   const passwordHash = await hashPassword(parsed.data.password);
   const admin = await Admin.create({

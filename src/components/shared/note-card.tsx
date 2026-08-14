@@ -20,7 +20,7 @@ export function NoteCard({
   return (
     <Card
       className={cn(
-        "group overflow-hidden rounded-2xl border shadow-sm transition-all duration-200 ease-out hover:-translate-y-1 hover:shadow-lg hover:border-primary/30",
+        "group overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm",
         isCompact && "flex-row py-0",
       )}
     >
@@ -42,12 +42,12 @@ export function NoteCard({
                 ? "144px"
                 : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
             }
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover"
           />
         ) : (
           <FileText
             aria-hidden="true"
-            className="absolute inset-0 m-auto size-12 text-primary/60 transition-transform duration-300 group-hover:scale-110"
+            className="absolute inset-0 m-auto size-12 text-primary/60"
           />
         )}
         {note.isLocked && (
@@ -65,7 +65,7 @@ export function NoteCard({
 
         <Link
           href={`/notes/${note.slug}`}
-          className="line-clamp-2 font-heading text-lg font-semibold leading-snug transition-colors hover:text-primary"
+          className="line-clamp-2 font-heading text-lg font-semibold leading-snug transition-colors"
         >
           {note.title}
         </Link>

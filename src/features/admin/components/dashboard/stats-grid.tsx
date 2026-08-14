@@ -29,7 +29,7 @@ export function StatsGrid({ stats }: StatsGridProps) {
       value: stats.catalog.totalNotes,
       subtext: `${stats.catalog.paidNotes} paid, ${stats.catalog.freeNotes} free`,
       icon: FileText,
-      color: "text-purple-500 bg-purple-500/10",
+      color: "text-orange-500 bg-orange-500/10",
     },
     {
       title: "Total Leads",

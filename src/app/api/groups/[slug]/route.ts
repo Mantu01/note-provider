@@ -19,7 +19,7 @@ export const GET = handler(async (ctx) => {
       .populate("category")
       .lean()
       .exec(),
-    Group.find({ _id: { $ne: group._id.toString() as any }, category: group.category.toString(), visibility: "public" })
+    Group.find({ _id: { $ne: group._id.toString() as any }, category: ((group.category as any)._id || group.category).toString(), visibility: "public" })
       .sort({ createdAt: -1 })
       .limit(3)
       .lean()

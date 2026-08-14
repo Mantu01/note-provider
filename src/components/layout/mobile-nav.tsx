@@ -38,8 +38,8 @@ export function MobileNav() {
                 <Link
                   href={link.href}
                   className={cn(
-                    "rounded-lg px-4 py-3 text-base font-medium transition-colors hover:bg-muted",
-                    pathname === link.href && "bg-secondary text-primary"
+                    "rounded-lg px-4 py-3 text-base font-medium",
+                    pathname === link.href && "bg-primary/10 text-primary"
                   )}
                 />
               }

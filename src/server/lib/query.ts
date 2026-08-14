@@ -39,7 +39,9 @@ export function parseBooleanParam(searchParams: URLSearchParams, key: string): b
 }
 
 export function parseNumberParam(searchParams: URLSearchParams, key: string): number | undefined {
-  const value = Number(searchParams.get(key));
+  const raw = searchParams.get(key);
+  if (raw === null || raw.trim() === "") return undefined;
+  const value = Number(raw);
   return Number.isFinite(value) ? value : undefined;
 }
 
@@ -89,7 +91,6 @@ export function buildNoteFilter(
   }
 
   if (query.level.length > 0) filter.level = { $in: query.level };
-  if (query.subject.length > 0) filter.subject = { $in: query.subject };
   if (query.tags.length > 0) filter.tags = { $in: query.tags.map((tag) => tag.toLowerCase()) };
   if (query.pricing) filter.pricingType = query.pricing;
   if (query.featured !== undefined) filter.isFeatured = query.featured;
@@ -103,7 +104,6 @@ export function buildNoteFilter(
     const pattern = new RegExp(escapeRegex(query.q), "i");
     filter.$or = [
       { title: pattern },
-      { subject: pattern },
       { tags: pattern },
     ];
   }

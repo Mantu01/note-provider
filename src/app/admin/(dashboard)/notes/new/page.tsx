@@ -1,5 +1,5 @@
 "use client";
-export const dynamic = "force-dynamic";
+
 
 import { default as dynamicImport } from "next/dynamic";
 import { Suspense } from "react";

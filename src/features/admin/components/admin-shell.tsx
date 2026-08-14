@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { Activity, BookOpen, LayoutDashboard, Layers3, LogOut, ReceiptText, Tags, Users, ShieldCheck, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { Logo } from "@/components/brand/logo";
+import { ThemeToggle } from "@/components/brand/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useAdminLogout, useAdminProfile } from "@/features/admin/api/use-admin";
@@ -81,14 +82,20 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           })}
         </nav>
 
-        <Button
-          variant="ghost"
-          className="mt-auto justify-start text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-          onClick={handleLogout}
-        >
-          <LogOut className="mr-2 h-4 w-4" />
-          Sign out
-        </Button>
+        <div className="mt-auto flex flex-col gap-2">
+          <div className="px-3 pb-2 flex items-center justify-between text-sm text-muted-foreground">
+            <span className="font-medium">Theme</span>
+            <ThemeToggle />
+          </div>
+          <Button
+            variant="ghost"
+            className="justify-start text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+            onClick={handleLogout}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            Sign out
+          </Button>
+        </div>
       </aside>
 
       <main className="min-h-screen lg:pl-64">

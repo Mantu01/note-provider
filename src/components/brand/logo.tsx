@@ -17,9 +17,35 @@ const sizes = {
 } as const;
 
 export function Logo({ variant = "full", size = "md", href = "/", className }: LogoProps) {
-  const content = <span className={cn("inline-flex items-center gap-2.5", className)}>
-    {variant !== "wordmark" && <span className={cn("brand-gradient-bg inline-flex items-center justify-center text-primary-foreground shadow-sm", sizes[size].mark)}><BookOpen aria-hidden="true" className={sizes[size].icon} /></span>}
-    {variant !== "icon" && <span className={cn("font-heading font-bold tracking-tight", sizes[size].wordmark)}>{BRAND.name}</span>}
-  </span>;
-  return href ? <Link href={href} aria-label={`${BRAND.name} home`}>{content}</Link> : content;
+  const content = (
+    <span className={cn("group flex items-center gap-2.5", className)}>
+      {variant !== "wordmark" && (
+        <span
+          className={cn(
+            "relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary via-primary to-accent text-primary-foreground shadow-sm",
+            sizes[size].mark
+          )}
+        >
+          <BookOpen aria-hidden="true" className={cn("relative z-10", sizes[size].icon)} />
+        </span>
+      )}
+      {variant !== "icon" && (
+        <span
+          className={cn(
+            "font-heading font-black tracking-tighter bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent transition-colors duration-300 group-hover:to-foreground/90",
+            sizes[size].wordmark
+          )}
+        >
+          {BRAND.name}
+        </span>
+      )}
+    </span>
+  );
+  return href ? (
+    <Link href={href} aria-label={`${BRAND.name} home`} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md">
+      {content}
+    </Link>
+  ) : (
+    content
+  );
 }

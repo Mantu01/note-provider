@@ -51,20 +51,9 @@ export const PATCH = adminHandler(async (ctx) => {
       const oldSubDoc = oldSub as { _id?: unknown; name: string; slug: string; isActive?: boolean };
       const matchedNew = newSubjects.find((ns) => ns.id === String(oldSubDoc._id ?? "") || ns.slug === oldSubDoc.slug);
       if (!matchedNew || matchedNew.isActive === false) {
-        if (oldSubDoc.isActive !== false) {
-          const noteCount = await Note.countDocuments({ category: id, subjectSlug: oldSub.slug }).exec();
-          if (noteCount > 0) {
-            throw AppError.validation(
-              {},
-              `Cannot remove or deactivate subject "${oldSub.name}" because ${noteCount} note(s) still use it. Reassign them first.`,
-            );
-          }
-        }
+        // skip — subject is no longer tracked on notes
       } else if (matchedNew.name !== oldSub.name || matchedNew.slug !== oldSub.slug) {
-        await Note.updateMany(
-          { category: id, subjectSlug: oldSub.slug },
-          { subject: matchedNew.name, subjectSlug: matchedNew.slug },
-        ).exec();
+        // skip — subject is no longer tracked on notes
       }
     }
 

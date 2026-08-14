@@ -1,5 +1,5 @@
 "use client";
-export const dynamic = "force-dynamic";
+
 
 import { Suspense } from "react";
 import { ActivitiesTable } from "@/features/admin/components/activities/activities-table";

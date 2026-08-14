@@ -111,7 +111,6 @@ export function NotesTable() {
                 <TableRow key={note.id}>
                   <TableCell>
                     <div className="font-medium text-foreground">{note.title}</div>
-                    <div className="text-xs text-muted-foreground">{note.subject}</div>
                   </TableCell>
                   <TableCell>
                     <Badge variant="outline" className="text-xs">

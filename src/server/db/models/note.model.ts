@@ -6,8 +6,6 @@ const noteSchema = new Schema(
     title: { type: String, required: true, trim: true, minlength: 3, maxlength: 160 },
     slug: { type: String, required: true, unique: true, index: true },
     description: { type: String, required: true, minlength: 10, maxlength: 5000 },
-    subject: { type: String, required: true, trim: true, index: true },
-    subjectSlug: { type: String, required: true, index: true },
     category: { type: Schema.Types.ObjectId, ref: "Category", required: true, index: true },
     level: { type: String, enum: NOTE_LEVELS, required: true, index: true },
     visibility: { type: String, enum: NOTE_VISIBILITIES, default: "public", index: true },
@@ -36,12 +34,11 @@ const noteSchema = new Schema(
 
 noteSchema.index({ visibility: 1, createdAt: -1 });
 noteSchema.index({ category: 1, level: 1, pricingType: 1 });
-noteSchema.index({ category: 1, subjectSlug: 1 });
 noteSchema.index({ price: 1 });
 noteSchema.index({ isFeatured: -1, createdAt: -1 });
 noteSchema.index(
-  { title: "text", description: "text", subject: "text", tags: "text" },
-  { weights: { title: 3, subject: 2, tags: 2, description: 1 }, name: "note_search_index" },
+  { title: "text", description: "text", tags: "text" },
+  { weights: { title: 3, tags: 2, description: 1 }, name: "note_search_index" },
 );
 
 export type NoteDoc = InferSchemaType<typeof noteSchema> & {

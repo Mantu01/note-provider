@@ -1,6 +1,7 @@
 import Link from "next/link";
-import { Camera, MessageCircle, Send } from "lucide-react";
+import { Mail } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
+import { XIcon, YouTubeIcon } from "@/components/shared/social-icons";
 import { BRAND } from "@/lib/constants";
 
 const FOOTER_COLUMNS = [
@@ -31,58 +32,31 @@ const FOOTER_COLUMNS = [
 
 export function Footer() {
   return (
-    <footer className="border-t bg-card/40">
+    <footer className="border-t border-border/80 bg-card/40">
       <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 md:grid-cols-2 lg:grid-cols-4 lg:px-8">
-        <div className="space-y-4">
+        <div className="space-y-5">
           <Logo />
-          <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
-            {BRAND.tagline}
-          </p>
-          <div className="flex items-center gap-3 text-muted-foreground">
-            <a
-              aria-label="Instagram"
-              href="https://instagram.com"
-              target="_blank"
-              rel="noreferrer"
-              className="p-2 rounded-lg border bg-card transition-colors hover:text-primary hover:border-primary/40"
-            >
-              <Camera aria-hidden="true" className="size-4" />
+          <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">{BRAND.tagline}</p>
+          <div className="flex items-center gap-3">
+            <a aria-label="X" href="https://x.com" target="_blank" rel="noreferrer" className="inline-flex size-10 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground">
+              <XIcon aria-hidden="true" className="size-4" />
             </a>
-            <a
-              aria-label="WhatsApp"
-              href="https://wa.me"
-              target="_blank"
-              rel="noreferrer"
-              className="p-2 rounded-lg border bg-card transition-colors hover:text-primary hover:border-primary/40"
-            >
-              <MessageCircle aria-hidden="true" className="size-4" />
+            <a aria-label="YouTube" href="https://youtube.com" target="_blank" rel="noreferrer" className="inline-flex size-10 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground">
+              <YouTubeIcon aria-hidden="true" className="size-4" />
             </a>
-            <a
-              aria-label="Telegram"
-              href="https://t.me"
-              target="_blank"
-              rel="noreferrer"
-              className="p-2 rounded-lg border bg-card transition-colors hover:text-primary hover:border-primary/40"
-            >
-              <Send aria-hidden="true" className="size-4" />
+            <a aria-label="Email" href="mailto:support@notesprovider.com" className="inline-flex size-10 items-center justify-center rounded-xl border border-border bg-card text-muted-foreground">
+              <Mail aria-hidden="true" className="size-4" />
             </a>
           </div>
         </div>
 
         {FOOTER_COLUMNS.map((column) => (
           <div key={column.title}>
-            <h2 className="mb-3 text-sm font-semibold uppercase tracking-wider text-foreground">
-              {column.title}
-            </h2>
+            <h2 className="mb-4 text-sm font-semibold uppercase tracking-[0.16em] text-foreground">{column.title}</h2>
             <ul className="space-y-2.5">
               {column.links.map((link) => (
                 <li key={link.href}>
-                  <Link
-                    className="text-sm text-muted-foreground transition-colors hover:text-primary"
-                    href={link.href}
-                  >
-                    {link.label}
-                  </Link>
+                  <Link className="text-sm text-muted-foreground" href={link.href}>{link.label}</Link>
                 </li>
               ))}
             </ul>
@@ -90,7 +64,7 @@ export function Footer() {
         ))}
       </div>
 
-      <div className="border-t py-6">
+      <div className="border-t border-border/80 py-6">
         <div className="mx-auto max-w-7xl px-4 text-center text-sm text-muted-foreground sm:px-6 lg:px-8">
           © {new Date().getFullYear()} {BRAND.name}. All rights reserved.
         </div>

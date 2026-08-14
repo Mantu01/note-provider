@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import { AdminDashboard } from "@/features/admin/components/admin-dashboard";
-export const dynamic = "force-dynamic";
+
 
 export const metadata = { robots: { index: false, follow: false } };
 

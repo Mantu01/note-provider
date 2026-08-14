@@ -40,8 +40,7 @@ export function NoteForm({ initialData }: NoteFormProps) {
   const form = useForm<CreateNoteInput>({
     resolver: zodResolver(createNoteSchema),
     defaultValues: {
-      subject: initialData?.subject ?? "",
-      subjectSlug: initialData?.subjectSlug ?? "",
+
       categoryId: initialData?.category?.id ?? "",
       level: initialData?.level ?? "basics",
       visibility: initialData?.visibility ?? "public",
@@ -70,7 +69,6 @@ export function NoteForm({ initialData }: NoteFormProps) {
 
   const selectedCategoryId = form.watch("categoryId");
   const selectedCategory = categories.find((c) => c.id === selectedCategoryId);
-  const availableSubjects = selectedCategory?.subjects?.filter((s) => s.isActive !== false) ?? [];
 
   const pricingType = form.watch("pricingType");
 
@@ -213,8 +211,7 @@ export function NoteForm({ initialData }: NoteFormProps) {
                     value={selectedCategoryId}
                     onValueChange={(val) => {
                       form.setValue("categoryId", val ?? "");
-                      form.setValue("subjectSlug", "");
-                      form.setValue("subject", "");
+
                     }}
                   >
                     <SelectTrigger>
@@ -235,41 +232,6 @@ export function NoteForm({ initialData }: NoteFormProps) {
                   )}
                 </div>
 
-                <div>
-                  <label className="text-sm font-medium mb-1 block">Subject</label>
-                  <Select
-                    disabled={!selectedCategoryId || availableSubjects.length === 0}
-                    value={form.watch("subjectSlug")}
-                    onValueChange={(val) => {
-                      const sub = availableSubjects.find((s) => s.slug === val);
-                      if (sub) {
-                        form.setValue("subjectSlug", sub.slug);
-                        form.setValue("subject", sub.name);
-                      } else {
-                        form.setValue("subjectSlug", "");
-                        form.setValue("subject", "");
-                      }
-                    }}
-                  >
-                    <SelectTrigger>
-                      <SelectValue placeholder={!selectedCategoryId ? "Select Category first" : availableSubjects.length === 0 ? "No subjects found" : "Select Subject"}>
-                        {availableSubjects.find((s) => s.slug === form.watch("subjectSlug"))?.name || initialData?.subject || "Select Subject"}
-                      </SelectValue>
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableSubjects.map((sub) => (
-                        <SelectItem key={sub.id || sub.slug} value={sub.slug}>
-                          {sub.name}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                  {(form.formState.errors.subjectSlug || form.formState.errors.subject) && (
-                    <p className="mt-1 text-xs text-destructive">
-                      {form.formState.errors.subjectSlug?.message || form.formState.errors.subject?.message}
-                    </p>
-                  )}
-                </div>
               </div>
 
               <div className="pt-2">

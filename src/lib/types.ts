@@ -78,6 +78,8 @@ export type CategoryRef = { id: string; name: string; slug: string; icon: string
 
 export type SubjectItem = { id: string; name: string; slug: string; order: number; isActive: boolean };
 
+
+
 export type AdminRef = { id: string; name: string };
 
 export type Pagination = {
@@ -105,8 +107,6 @@ export type PublicNote = {
   slug: string;
   title: string;
   description: string;
-  subject: string;
-  subjectSlug: string;
   level: NoteLevel;
   category: CategoryRef;
   pricingType: NotePricingType;

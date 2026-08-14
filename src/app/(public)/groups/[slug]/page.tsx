@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { GroupDetailPage } from "@/features/groups/components/group-pages";
+import { GroupDetailPage } from "@/features/groups/components/group-detail";
 
 export default function GroupRoute() {
   const params = useParams<{ slug: string }>();

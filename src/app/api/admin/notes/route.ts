@@ -56,19 +56,12 @@ export const POST = adminHandler(async (ctx) => {
   const categoryDoc = await Category.findById(input.categoryId).lean().exec();
   if (!categoryDoc) throw AppError.notFound("Category");
 
-  const matchingSubject = (categoryDoc.subjects || []).find((s) => s.slug === input.subjectSlug);
-  if (!matchingSubject) {
-    throw AppError.validation({ subjectSlug: "Selected subject does not belong to the chosen category" });
-  }
-
   const baseSlug = uniqueSlug(Note, input.title);
   const slug = await baseSlug;
 
   const createdDoc = await Note.create({
     title: input.title,
     description: input.description,
-    subject: matchingSubject.name,
-    subjectSlug: matchingSubject.slug,
     category: input.categoryId,
     level: input.level,
     visibility: input.visibility,

@@ -130,6 +130,7 @@ export function CheckoutPage({
 
   const form = useForm<CheckoutValues>({
     resolver: zodResolver(checkoutSchema),
+    mode: "onChange",
     defaultValues: {
       fullName: "",
       socialPlatform: "instagram",
@@ -165,6 +166,10 @@ export function CheckoutPage({
             prefill: order.buyer,
             notes: order.orderNumber,
             theme: { color: themeColor },
+            handler: () => {
+              toast.success("Payment successful!");
+              router.push(`/order/${order.orderId}`);
+            },
             modal: {
               ondismiss: () => {
                 router.push(`/order/${order.orderId}`);
@@ -318,7 +323,7 @@ export function CheckoutPage({
                 type="submit"
                 size="lg"
                 className="w-full"
-                disabled={submitting}
+                disabled={submitting || !form.formState.isValid}
               >
                 {submitting ? (
                   <>

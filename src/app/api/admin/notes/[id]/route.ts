@@ -42,19 +42,11 @@ export const PATCH = adminHandler(async (ctx) => {
   if (input.title !== undefined) updates.title = input.title;
   if (input.description !== undefined) updates.description = input.description;
 
-  if (input.categoryId !== undefined || input.subjectSlug !== undefined) {
-    const targetCategory = input.categoryId ?? existing.category.toString();
-    const targetSubjectSlug = input.subjectSlug ?? existing.subjectSlug;
+  if (input.categoryId !== undefined) {
+    const targetCategory = input.categoryId;
     const categoryDoc = await Category.findById(targetCategory).lean().exec();
     if (!categoryDoc) throw AppError.notFound("Category");
-
-    const matchingSubject = (categoryDoc.subjects || []).find((s) => s.slug === targetSubjectSlug);
-    if (!matchingSubject) {
-      throw AppError.validation({ subjectSlug: "Selected subject does not belong to the chosen category" });
-    }
     updates.category = targetCategory;
-    updates.subject = matchingSubject.name;
-    updates.subjectSlug = matchingSubject.slug;
   }
   if (input.level !== undefined) updates.level = input.level;
   if (input.visibility !== undefined) updates.visibility = input.visibility;

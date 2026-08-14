@@ -13,8 +13,6 @@ export function toPublicNote(raw: unknown): PublicNote {
     slug: str(doc.slug),
     title: str(doc.title),
     description: str(doc.description),
-    subject: str(doc.subject),
-    subjectSlug: str(doc.subjectSlug),
     level: str(doc.level) as PublicNote["level"],
     category: toCategoryRef(doc.category),
     pricingType,

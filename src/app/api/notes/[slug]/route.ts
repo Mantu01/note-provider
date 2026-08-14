@@ -16,7 +16,7 @@ export const GET = handler(async (ctx) => {
   if (!note) throw AppError.notFound("Note");
 
   const [relatedNotes, groups] = await Promise.all([
-    Note.find({ _id: { $ne: note._id.toString() as any }, category: note.category.toString() as any, visibility: "public" })
+    Note.find({ _id: { $ne: note._id.toString() as any }, category: (note.category as any)._id.toString() as any, visibility: "public" })
       .populate("category")
       .sort({ createdAt: -1 })
       .limit(4)

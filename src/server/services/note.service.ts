@@ -78,7 +78,6 @@ export async function updateNote(
   const updates: Record<string, unknown> = { updatedBy: new Types.ObjectId(String(ctx.admin._id)) };
   if (input.title !== undefined) updates.title = input.title;
   if (input.description !== undefined) updates.description = input.description;
-  if (input.subject !== undefined) updates.subject = input.subject;
   if (input.categoryId !== undefined) updates.category = input.categoryId;
   if (input.level !== undefined) updates.level = input.level;
   if (input.visibility !== undefined) updates.visibility = input.visibility;

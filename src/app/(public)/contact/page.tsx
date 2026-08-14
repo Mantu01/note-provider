@@ -1,8 +1,32 @@
 import Link from "next/link";
-import { Camera, Mail, MessageCircle, HelpCircle, Clock } from "lucide-react";
+import { ArrowUpRight, Clock3, HelpCircle, Mail, MessageSquareText, PlayCircle } from "lucide-react";
 import { StaticPage } from "@/components/layout/static-page";
-import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+
+const CONTACT_ITEMS = [
+  {
+    title: "X",
+    description: "Quick updates, support replies, and announcements.",
+    href: "https://x.com",
+    icon: MessageSquareText,
+    label: "Follow on X",
+  },
+  {
+    title: "YouTube",
+    description: "Video summaries and revision guidance for learners.",
+    href: "https://youtube.com",
+    icon: PlayCircle,
+    label: "Watch on YouTube",
+  },
+  {
+    title: "Email",
+    description: "For order help, delivery questions, and support requests.",
+    href: "mailto:support@notesprovider.com",
+    icon: Mail,
+    label: "Send an email",
+  },
+] as const;
 
 export const metadata = {
   title: "Contact Support",
@@ -11,78 +35,48 @@ export const metadata = {
 
 export default function ContactPage() {
   return (
-    <StaticPage
-      title="Contact Support"
-      description="Need help with a note, preview, or delivery? We're here for you."
-    >
-      <div className="not-prose grid gap-6 sm:grid-cols-3 mb-10">
-        <Card className="rounded-2xl border shadow-sm">
-          <CardContent className="p-6 space-y-3">
-            <div className="inline-flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <Camera className="size-5" />
-            </div>
-            <h3 className="font-semibold text-lg">Instagram DM</h3>
-            <p className="text-sm text-muted-foreground">
-              Direct message us with your order number for fast resolution.
-            </p>
-            <Button render={<a href="https://instagram.com" target="_blank" rel="noreferrer" />} variant="outline" size="sm" className="w-full">
-              Message on Instagram
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-2xl border shadow-sm">
-          <CardContent className="p-6 space-y-3">
-            <div className="inline-flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <MessageCircle className="size-5" />
-            </div>
-            <h3 className="font-semibold text-lg">WhatsApp</h3>
-            <p className="text-sm text-muted-foreground">
-              Reach our support agent directly on WhatsApp for delivery status.
-            </p>
-            <Button render={<a href="https://wa.me" target="_blank" rel="noreferrer" />} variant="outline" size="sm" className="w-full">
-              Chat on WhatsApp
-            </Button>
-          </CardContent>
-        </Card>
-
-        <Card className="rounded-2xl border shadow-sm">
-          <CardContent className="p-6 space-y-3">
-            <div className="inline-flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
-              <Mail className="size-5" />
-            </div>
-            <h3 className="font-semibold text-lg">Email</h3>
-            <p className="text-sm text-muted-foreground">
-              For complex queries or billing inquiries, drop us an email.
-            </p>
-            <Button render={<a href="mailto:support@notesprovider.com" />} variant="outline" size="sm" className="w-full">
-              Send Email
-            </Button>
-          </CardContent>
-        </Card>
+    <StaticPage title="Contact Support" description="Need help with a note, preview, or delivery? We are here to assist.">
+      <div className="not-prose grid gap-4 md:grid-cols-3">
+        {CONTACT_ITEMS.map(({ title, description, href, icon: Icon, label }) => (
+          <Card key={title} className="rounded-2xl border border-border/80 bg-card">
+            <CardContent className="space-y-4 p-5">
+              <span className="inline-flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                <Icon aria-hidden="true" className="size-5" />
+              </span>
+              <div>
+                <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{description}</p>
+              </div>
+              <Button render={<a href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined} />} variant="outline" className="w-full justify-center gap-2">
+                {label}
+                <ArrowUpRight aria-hidden="true" className="size-4" />
+              </Button>
+            </CardContent>
+          </Card>
+        ))}
       </div>
 
-      <div className="space-y-6">
-        <div className="flex items-start gap-4 p-5 rounded-2xl bg-muted/50 border">
-          <Clock className="size-6 text-primary shrink-0 mt-1" />
+      <div className="space-y-4 pt-2">
+        <div className="flex items-start gap-4 rounded-2xl border border-border/80 bg-muted/30 p-5">
+          <Clock3 aria-hidden="true" className="mt-0.5 size-5 text-primary" />
           <div>
-            <h3 className="font-semibold text-base m-0">Expected Response Times</h3>
-            <p className="text-sm text-muted-foreground m-0 mt-1">
-              Paid note orders are fulfilled manually within 4–6 hours of payment. Support inquiries are typically answered within 2 hours during active working hours (9 AM – 10 PM IST).
+            <h3 className="m-0 text-base font-semibold text-foreground">Expected response time</h3>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+              Paid note orders are usually fulfilled within 4–6 hours. Support replies are typically answered within a few hours during active working hours.
             </p>
           </div>
         </div>
 
-        <div className="flex items-start gap-4 p-5 rounded-2xl bg-muted/50 border">
-          <HelpCircle className="size-6 text-primary shrink-0 mt-1" />
+        <div className="flex items-start gap-4 rounded-2xl border border-border/80 bg-muted/30 p-5">
+          <HelpCircle aria-hidden="true" className="mt-0.5 size-5 text-primary" />
           <div>
-            <h3 className="font-semibold text-base m-0">Have a general question?</h3>
-            <p className="text-sm text-muted-foreground m-0 mt-1">
-              Check out our frequently asked questions on the home page or browse through note previews directly on any note details page.
+            <h3 className="m-0 text-base font-semibold text-foreground">Have a general question?</h3>
+            <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+              Browse the FAQ on the home page or open any note preview before buying to confirm the format and quality.
             </p>
             <div className="mt-3">
-              <Button render={<Link href="/" />} variant="link" className="p-0 h-auto font-medium">
-                View FAQ on Home Page →
+              <Button render={<Link href="/" />} variant="link" className="h-auto p-0 text-sm font-medium">
+                View home page →
               </Button>
             </div>
           </div>

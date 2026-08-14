@@ -9,7 +9,7 @@ export function CategoryCard({ category }: { category: PublicCategory }) {
       href={`/notes?category=${encodeURIComponent(category.slug)}`}
       className="min-w-48 block"
     >
-      <Card className="rounded-2xl border shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-lg hover:border-primary/30">
+      <Card className="rounded-2xl border border-border/80 bg-card shadow-sm">
         <CardContent className="flex items-center gap-3.5 p-4">
           <span className="inline-flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary shrink-0">
             <BookOpen aria-hidden="true" className="size-5" />

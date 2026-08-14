@@ -5,7 +5,7 @@ import { Note } from "@/server/db/models/note.model";
 import { toPublicCategory } from "@/server/mappers/category.mapper";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+
 export const revalidate = 60;
 
 export const GET = handler(async () => {

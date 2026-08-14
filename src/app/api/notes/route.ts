@@ -1,6 +1,7 @@
 import { handler } from "@/server/lib/api-handler";
 import { ok } from "@/server/lib/api-response";
 import { Note } from "@/server/db/models/note.model";
+import { Category } from "@/server/db/models/category.model";
 import { toPublicNote } from "@/server/mappers/note.mapper";
 import {
   parsePagination,
@@ -10,6 +11,7 @@ import {
   parseArrayParam,
   parseBooleanParam,
   parseNumberParam,
+  resolveCategoryIds,
 } from "@/server/lib/query";
 import type { NoteSort } from "@/lib/types";
 
@@ -24,7 +26,6 @@ export const GET = handler(async (ctx) => {
     q: ctx.searchParams.get("q") || undefined,
     category: parseArrayParam(ctx.searchParams, "category"),
     level: parseArrayParam(ctx.searchParams, "level") as ("basics" | "intermediate" | "advance")[],
-    subject: parseArrayParam(ctx.searchParams, "subject"),
     tags: parseArrayParam(ctx.searchParams, "tags"),
     pricing: (ctx.searchParams.get("pricing") as "free" | "paid") || undefined,
     minPrice: parseNumberParam(ctx.searchParams, "minPrice"),
@@ -33,7 +34,11 @@ export const GET = handler(async (ctx) => {
     featured: parseBooleanParam(ctx.searchParams, "featured"),
   };
 
-  const filter = buildNoteFilter(query, { publicOnly: true });
+  const categoryIds = query.category.length > 0 
+    ? await resolveCategoryIds(Category, query.category) 
+    : undefined;
+
+  const filter = buildNoteFilter(query, { publicOnly: true, categoryIds });
   const sortSpec = buildNoteSort(sort);
 
   const [items, total] = await Promise.all([

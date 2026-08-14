@@ -133,49 +133,55 @@ function HeroSection({
   };
 }) {
   return (
-    <section className="relative overflow-hidden py-16 md:py-24 lg:py-32">
-      <div className="pointer-events-none absolute inset-0 brand-gradient-soft opacity-40 blur-3xl" />
-      <div className="relative mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl space-y-7">
-          <p className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-card/80 px-3 py-1 text-sm font-medium text-primary">
-            <Sparkles aria-hidden="true" className="size-4" />
-            Premium study resources
-          </p>
-          <h1 className="font-heading text-4xl font-bold tracking-tight md:text-6xl lg:text-7xl">
+    <section className="relative overflow-hidden py-24 md:py-32 lg:py-40">
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background z-0" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-orange-500/20 via-orange-500/20 to-transparent blur-3xl z-0" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-orange-500/20 via-rose-500/20 to-transparent blur-3xl z-0" />
+      
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="max-w-4xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary shadow-sm backdrop-blur-md">
+            <Sparkles aria-hidden="true" className="size-4 text-primary" />
+            <span className="font-bold text-primary">Premium study resources</span>
+          </div>
+          <h1 className="font-heading text-5xl font-extrabold tracking-tighter md:text-7xl lg:text-8xl">
             Study smarter with{" "}
-            <span className="brand-gradient-text">notes that click.</span>
+            <span className="brand-gradient-text">
+              notes that click.
+            </span>
           </h1>
-          <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl">
+          <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl lg:text-2xl font-medium">
             {BRAND.description}
           </p>
-          <div className="flex flex-col gap-3 sm:flex-row">
-            <Button render={<Link href="/notes" />} size="lg">
-              Browse notes
-              <ArrowRight aria-hidden="true" />
+          <div className="flex flex-col gap-4 sm:flex-row pt-4">
+            <Button render={<Link href="/notes" />} size="lg" className="h-14 rounded-2xl bg-primary px-8 text-base text-primary-foreground">
+              Browse the catalogue
+              <ArrowRight aria-hidden="true" className="ml-2" />
             </Button>
             <Button
               render={<Link href="/notes?pricing=free" />}
               variant="outline"
               size="lg"
+              className="h-14 rounded-2xl border-2 px-8 text-base"
             >
               Explore free notes
             </Button>
           </div>
         </div>
 
-        <div className="mt-12 grid grid-cols-2 gap-3 md:mt-16 md:grid-cols-4">
+        <div className="mt-16 grid grid-cols-2 gap-4 md:mt-24 md:grid-cols-4 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200 fill-mode-both">
           {HERO_STATS.map((stat) => (
             <Card
               key={stat.label}
-              className="rounded-2xl border bg-card/75 py-0 shadow-sm backdrop-blur"
+              className="rounded-3xl border border-border/80 bg-card/80 py-2 shadow-sm"
             >
-              <CardContent className="p-4">
-                <p className="text-2xl font-bold tracking-tight">
+              <CardContent className="p-6 text-center">
+                <p className="text-4xl font-black tracking-tighter bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent mb-2">
                   {stats?.[stat.key] === undefined
                     ? "—"
                     : formatCompactNumber(stats[stat.key])}
                 </p>
-                <p className="text-sm text-muted-foreground">{stat.label}</p>
+                <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
               </CardContent>
             </Card>
           ))}
@@ -416,18 +422,24 @@ function FaqSection() {
 function CtaBanner() {
   return (
     <Section>
-      <div className="brand-gradient-bg rounded-3xl p-8 text-primary-foreground md:p-12">
-        <div className="max-w-2xl space-y-5">
-          <p className="text-sm font-semibold tracking-wide uppercase">
+      <div className="relative overflow-hidden rounded-[3rem] border border-border/80 bg-gradient-to-br from-primary/16 via-card to-accent/10 p-10 text-foreground shadow-sm md:p-16 lg:p-24">
+        <div className="absolute inset-0 bg-gradient-to-t from-background/75 to-transparent" />
+        <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-primary/10 blur-[100px]" />
+        <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-accent/10 blur-[100px]" />
+
+        <div className="relative z-10 mx-auto max-w-3xl text-center space-y-8">
+          <p className="text-sm font-bold tracking-widest uppercase text-primary">
             Ready when you are
           </p>
-          <h2 className="font-heading text-3xl font-bold tracking-tight md:text-4xl">
+          <h2 className="font-heading text-4xl font-black tracking-tight md:text-5xl lg:text-6xl drop-shadow-md">
             Find the notes that make studying feel lighter.
           </h2>
-          <Button render={<Link href="/notes" />} variant="secondary" size="lg">
-            Browse the catalogue
-            <ArrowRight aria-hidden="true" />
-          </Button>
+          <div className="pt-4 flex justify-center">
+            <Button render={<Link href="/notes" />} size="lg" className="h-14 rounded-full bg-primary px-10 text-lg font-bold text-primary-foreground">
+              Browse the catalogue
+              <ArrowRight aria-hidden="true" className="ml-2" />
+            </Button>
+          </div>
         </div>
       </div>
     </Section>

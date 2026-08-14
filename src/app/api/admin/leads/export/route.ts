@@ -4,7 +4,7 @@ import { toCsv } from "@/server/lib/csv";
 import { buildOrderFilter, buildOrderSort } from "@/server/lib/query";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+
 
 export const GET = adminHandler(async (ctx) => {
   const query = {

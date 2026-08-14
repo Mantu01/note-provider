@@ -7,7 +7,7 @@ import { Group } from "@/server/db/models/group.model";
 import { notifyAdminsOnPurchase } from "@/server/lib/mailer";
 
 export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
+
 
 export async function POST(req: Request) {
   const rawBody = await req.text();

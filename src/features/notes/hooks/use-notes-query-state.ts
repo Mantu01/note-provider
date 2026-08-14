@@ -15,8 +15,6 @@ const parsers = {
   limit: parseAsInteger.withDefault(DEFAULT_PAGE_LIMIT),
   category: parseAsArrayOf(parseAsString).withDefault([]),
   level: parseAsArrayOf(parseAsString).withDefault([]),
-  subject: parseAsArrayOf(parseAsString).withDefault([]),
-  tags: parseAsArrayOf(parseAsString).withDefault([]),
   pricing: parseAsString.withDefault(""),
   minPrice: parseAsInteger,
   maxPrice: parseAsInteger,
@@ -30,8 +28,6 @@ type NotesUrlState = {
   limit: number;
   category: string[];
   level: string[];
-  subject: string[];
-  tags: string[];
   pricing: string;
   minPrice: number | null;
   maxPrice: number | null;
@@ -54,8 +50,6 @@ export function useNotesQueryState() {
       q: "",
       category: [],
       level: [],
-      subject: [],
-      tags: [],
       pricing: "",
       minPrice: null,
       maxPrice: null,
@@ -67,8 +61,6 @@ export function useNotesQueryState() {
     state.q,
     ...state.category,
     ...state.level,
-    ...state.subject,
-    ...state.tags,
     state.pricing,
     state.minPrice,
     state.maxPrice,

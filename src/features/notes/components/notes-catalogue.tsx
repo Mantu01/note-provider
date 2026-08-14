@@ -24,194 +24,13 @@ import { ErrorState } from "@/components/shared/error-state";
 import { NoteCard } from "@/components/shared/note-card";
 import { NoteCardSkeleton } from "@/components/shared/note-card-skeleton";
 import { PaginationBar } from "@/components/shared/pagination-bar";
-import { PageHeader } from "@/components/layout/page-header";
 import { useFilters } from "@/features/notes/api/use-filters";
 import { useNotes } from "@/features/notes/api/use-notes";
 import { useNotesQueryState } from "@/features/notes/hooks/use-notes-query-state";
 import { cn } from "@/lib/utils";
 
-function FilterPanel({ className }: { className?: string }) {
-  const filters = useFilters();
-  const { state, setFilter, clearFilters, activeFilterCount } =
-    useNotesQueryState();
-
-  const toggle = (
-    key: "category" | "level" | "subject" | "tags",
-    value: string,
-  ) =>
-    setFilter({
-      [key]: state[key].includes(value)
-        ? state[key].filter((item) => item !== value)
-        : [...state[key], value],
-    });
-
-  if (filters.isError) {
-    return (
-      <ErrorState
-        message="Filter options could not be loaded."
-        onRetry={() => filters.refetch()}
-      />
-    );
-  }
-
-  const data = filters.data;
-
-  return (
-    <aside className={cn("space-y-6", className)}>
-      <div className="flex items-center justify-between">
-        <h2 className="font-semibold">Filters</h2>
-        {activeFilterCount ? (
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={clearFilters}
-          >
-            Clear all
-          </Button>
-        ) : null}
-      </div>
-
-      <div className="space-y-3 border-t pt-5">
-        <h3 className="text-sm font-semibold">Categories</h3>
-        {data?.categories.map((category) => (
-          <Label
-            key={category.slug}
-            className="flex cursor-pointer items-center justify-between gap-2"
-          >
-            <span className="flex items-center gap-2">
-              <Checkbox
-                checked={state.category.includes(category.slug)}
-                onCheckedChange={() => toggle("category", category.slug)}
-              />
-              {category.name}
-            </span>
-            <span className="text-xs text-muted-foreground">
-              {category.count}
-            </span>
-          </Label>
-        ))}
-      </div>
-
-      <div className="space-y-3 border-t pt-5">
-        <h3 className="text-sm font-semibold">Level</h3>
-        {data?.levels.map((level) => (
-          <Label
-            key={level.value}
-            className="flex cursor-pointer items-center justify-between gap-2"
-          >
-            <span className="flex items-center gap-2">
-              <Checkbox
-                checked={state.level.includes(level.value)}
-                onCheckedChange={() => toggle("level", level.value)}
-              />
-              {level.label}
-            </span>
-            <span className="text-xs text-muted-foreground">{level.count}</span>
-          </Label>
-        ))}
-      </div>
-
-      <div className="space-y-3 border-t pt-5">
-        <h3 className="text-sm font-semibold">Pricing</h3>
-        <Select
-          value={state.pricing || "all"}
-          onValueChange={(value) =>
-            setFilter({ pricing: value === "all" || !value ? "" : value })
-          }
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All notes</SelectItem>
-            <SelectItem value="free">Free</SelectItem>
-            <SelectItem value="paid">Paid</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-3 border-t pt-5">
-        <h3 className="text-sm font-semibold">Subjects</h3>
-        <div className="max-h-60 overflow-y-auto space-y-2 pr-1">
-          {data?.subjects.map((subject) => (
-            <Label
-              key={subject.value}
-              className="flex cursor-pointer items-center justify-between gap-2 text-xs"
-            >
-              <span className="flex items-center gap-2">
-                <Checkbox
-                  checked={state.subject.includes(subject.value)}
-                  onCheckedChange={() => toggle("subject", subject.value)}
-                />
-                {subject.value}
-              </span>
-              <span className="text-xs text-muted-foreground">
-                {subject.count}
-              </span>
-            </Label>
-          ))}
-        </div>
-      </div>
-
-      <div className="space-y-2 border-t pt-5">
-        <h3 className="text-sm font-semibold">Tags</h3>
-        <div className="flex flex-wrap gap-2">
-          {data?.tags.slice(0, 12).map((tag) => (
-            <Button
-              key={tag.value}
-              type="button"
-              size="xs"
-              variant={state.tags.includes(tag.value) ? "default" : "outline"}
-              onClick={() => toggle("tags", tag.value)}
-            >
-              {tag.value}
-            </Button>
-          ))}
-        </div>
-      </div>
-    </aside>
-  );
-}
-
-function ActiveFilterChips({
-  state,
-  setFilter,
-}: {
-  state: ReturnType<typeof useNotesQueryState>["state"];
-  setFilter: ReturnType<typeof useNotesQueryState>["setFilter"];
-}) {
-  const chips = [
-    ...state.category,
-    ...state.level,
-    ...state.subject,
-    ...state.tags,
-  ];
-  if (!chips.length) return null;
-
-  return (
-    <div className="mt-4 flex flex-wrap gap-2">
-      {chips.map((value) => (
-        <Button
-          key={value}
-          type="button"
-          variant="secondary"
-          size="xs"
-          onClick={() => {
-            const key = (
-              ["category", "level", "subject", "tags"] as const
-            ).find((name) => state[name].includes(value));
-            if (key)
-              setFilter({ [key]: state[key].filter((item) => item !== value) });
-          }}
-        >
-          {value}
-          <X aria-hidden="true" />
-        </Button>
-      ))}
-    </div>
-  );
-}
+import { FilterPanel } from "./filter-panel";
+import { ActiveFilterChips } from "./active-filter-chips";
 
 export function NotesCatalogue() {
   const { state, setFilter, clearFilters, activeFilterCount } =
@@ -223,8 +42,6 @@ export function NotesCatalogue() {
     q: state.q,
     category: state.category,
     level: state.level,
-    subject: state.subject,
-    tags: state.tags,
     pricing: state.pricing,
     minPrice: state.minPrice,
     maxPrice: state.maxPrice,
@@ -232,12 +49,12 @@ export function NotesCatalogue() {
   });
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <PageHeader
-        eyebrow="Catalogue"
-        title="Find notes that fit your study plan"
-        description="Search a growing library of clear, focused resources."
-      />
+    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mb-8 rounded-[2rem] border border-border/80 bg-gradient-to-r from-primary/8 via-card to-accent/8 p-8 text-left shadow-sm sm:p-10">
+        <p className="mb-3 text-xs font-semibold uppercase tracking-[0.2em] text-primary">Catalogue</p>
+        <h1 className="mb-3 max-w-2xl text-3xl font-bold tracking-tight md:text-5xl">Find notes that fit your study plan</h1>
+        <p className="max-w-xl text-base leading-relaxed text-muted-foreground">Search a growing library of clear, focused resources designed for smarter revision.</p>
+      </div>
 
       <div className="mt-8 grid gap-8 lg:grid-cols-[18rem_minmax(0,1fr)]">
         <div className="hidden lg:block">
@@ -254,7 +71,7 @@ export function NotesCatalogue() {
               <Input
                 value={state.q}
                 onChange={(event) => setFilter({ q: event.target.value })}
-                placeholder="Search notes, subjects, or tags"
+                placeholder="Search notes or tags"
                 className="h-10 pl-9"
               />
               <Button
@@ -378,7 +195,7 @@ export function NotesCatalogue() {
                 <EmptyState
                   icon={Search}
                   title="No notes match these filters"
-                  description="Try clearing a filter or searching for another subject."
+                  description="Try clearing a filter or searching with different keywords."
                   action={
                     <Button onClick={clearFilters}>Clear filters</Button>
                   }

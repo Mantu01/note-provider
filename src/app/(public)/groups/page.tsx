@@ -1,4 +1,4 @@
-import { GroupsPage } from "@/features/groups/components/group-pages";
+import { GroupsPage } from "@/features/groups/components/groups-catalogue";
 
 export default function GroupsRoute() {
   return <GroupsPage />;

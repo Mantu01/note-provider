@@ -100,7 +100,7 @@ export function NoteMultiSelect({ selectedIds, onChange }: NoteMultiSelectProps)
                   <div>
                     <p className="text-sm font-medium text-foreground">{note.title}</p>
                     <p className="text-xs text-muted-foreground">
-                      {note.subject} • {note.category?.name || "Uncategorized"} • {note.priceLabel}
+                      {note.category?.name || "Uncategorized"} • {note.priceLabel}
                     </p>
                   </div>
                 </div>

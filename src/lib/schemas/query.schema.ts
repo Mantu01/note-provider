@@ -30,7 +30,6 @@ export const noteQuerySchema = z.object({
   q: z.string().trim().min(1).max(120).optional(),
   category: stringArray,
   level: z.array(z.enum(NOTE_LEVELS)).default([]),
-  subject: stringArray,
   pricing: z.enum(NOTE_PRICING_TYPES).optional(),
   minPrice: z.coerce.number().min(0).optional(),
   maxPrice: z.coerce.number().min(0).optional(),

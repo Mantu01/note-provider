@@ -2,53 +2,15 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowRight, FileText, Layers3 } from "lucide-react";
+import { ArrowRight, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { GroupCard } from "@/components/shared/group-card";
 import { NoteCard } from "@/components/shared/note-card";
 import { PriceTag } from "@/components/shared/price-tag";
 import { useGroup } from "@/features/groups/api/use-group";
-import { useGroups } from "@/features/groups/api/use-groups";
 import { formatPrice } from "@/lib/format";
-
-export function GroupsPage() {
-  const query = useGroups({ limit: 12 });
-
-  return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mb-8 rounded-3xl border bg-muted/30 p-8 sm:p-10 text-center shadow-sm">
-        <p className="text-sm font-bold tracking-widest text-primary uppercase mb-3">Bundles</p>
-        <h1 className="text-3xl font-bold tracking-tight md:text-4xl mb-4">More notes, better value</h1>
-        <p className="text-base text-muted-foreground max-w-2xl mx-auto">Focused collections to make planning your revision easier.</p>
-      </div>
-
-      {query.isError ? (
-        <div className="mt-8">
-          <ErrorState onRetry={() => query.refetch()} />
-        </div>
-      ) : (
-        <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {query.data?.items.length ? (
-            query.data.items.map((group) => (
-              <GroupCard key={group.id} group={group} />
-            ))
-          ) : (
-            <div className="md:col-span-2 lg:col-span-3">
-              <EmptyState
-                icon={Layers3}
-                title="Bundles are coming soon"
-                description="We are assembling our first value-packed note collections."
-              />
-            </div>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
 
 export function GroupDetailPage({ slug }: { slug: string }) {
   const query = useGroup(slug);
