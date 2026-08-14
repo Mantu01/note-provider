@@ -58,7 +58,7 @@ export default function RefundPolicyPage() {
           </AccordionTrigger>
           <AccordionContent className="text-muted-foreground leading-relaxed text-base pt-2">
             <p className="mb-3">If you experience any issues with order delivery or payment status, reach out to our support team with your order number and transaction proof:</p>
-            <Link href="/contact" className="text-primary underline font-medium hover:text-primary/80 transition-colors">
+            <Link href="/contact" className="text-primary underline font-medium">
               Contact Support Team →
             </Link>
           </AccordionContent>

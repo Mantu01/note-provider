@@ -69,10 +69,10 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
                 key={href}
                 href={href}
                 className={cn(
-                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
+                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium",
                   isActive
                     ? "bg-primary text-primary-foreground shadow-sm"
-                    : "text-sidebar-foreground hover:bg-sidebar-accent"
+                    : "text-sidebar-foreground"
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -89,7 +89,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           </div>
           <Button
             variant="ghost"
-            className="justify-start text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+            className="justify-start text-muted-foreground"
             onClick={handleLogout}
           >
             <LogOut className="mr-2 h-4 w-4" />

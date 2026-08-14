@@ -106,7 +106,7 @@ export function FileUploadField({
             size="icon"
             onClick={handleRemove}
             disabled={disabled || deleteMutation.isPending}
-            className="text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+            className="text-muted-foreground"
           >
             <X className="h-4 w-4" />
           </Button>
@@ -119,7 +119,7 @@ export function FileUploadField({
             const file = e.dataTransfer.files?.[0];
             if (file) handleFileSelect(file);
           }}
-          className={`relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border/80 p-6 text-center transition-all duration-200 hover:border-primary/50 hover:bg-muted/30 ${
+          className={`relative flex flex-col items-center justify-center rounded-xl border-2 border-dashed border-border/80 p-6 text-center ${
             disabled ? "opacity-60 cursor-not-allowed" : "cursor-pointer"
           }`}
         >

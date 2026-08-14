@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Plus, FilePlus2, FolderPlus } from "lucide-react";
+import { FilePlus2, FolderPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ErrorState } from "@/components/shared/error-state";
 import { StatsGrid } from "@/features/admin/components/dashboard/stats-grid";

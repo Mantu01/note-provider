@@ -2,7 +2,7 @@
 
 import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 import Link from "next/link";
-import { Plus, Search, Edit3, Trash2, ShieldAlert, Eye, Lock, FilePlus2 } from "lucide-react";
+import { Search, Edit3, Trash2, ShieldAlert, FilePlus2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -149,7 +149,7 @@ export function NotesTable() {
                         size="icon"
                         onClick={() => setDeletingNote(note)}
                         disabled={!canDeleteNote(note)}
-                        className={canDeleteNote(note) ? "text-muted-foreground hover:text-destructive hover:bg-destructive/10" : "opacity-40 cursor-not-allowed"}
+                        className={canDeleteNote(note) ? "text-muted-foreground" : "opacity-40 cursor-not-allowed"}
                         title={canDeleteNote(note) ? "Delete note" : "Only Head Admin or Note Creator can delete"}
                       >
                         <Trash2 className="h-4 w-4" />

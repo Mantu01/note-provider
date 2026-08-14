@@ -8,6 +8,8 @@ export const runtime = "nodejs";
 
 export const revalidate = 60;
 
+export const dynamic = "force-dynamic";
+
 export const GET = handler(async () => {
   const categories = await Category.find({ isActive: true }).sort({ order: 1, name: 1 }).lean().exec();
 

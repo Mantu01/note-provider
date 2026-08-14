@@ -1,7 +1,7 @@
 "use client";
 
 import { parseAsBoolean, parseAsString, useQueryStates } from "nuqs";
-import { Plus, Edit3, Trash2, ShieldAlert, FolderTree } from "lucide-react";
+import { Plus, Edit3, Trash2, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -122,7 +122,7 @@ export function CategoriesTable() {
                         size="icon"
                         onClick={() => setDeletingCategory(cat)}
                         disabled={!isHeadAdmin}
-                        className={isHeadAdmin ? "text-muted-foreground hover:text-destructive hover:bg-destructive/10" : "opacity-40 cursor-not-allowed"}
+                        className={isHeadAdmin ? "text-muted-foreground" : "opacity-40 cursor-not-allowed"}
                         title={isHeadAdmin ? "Delete category" : "Only Head Admin can delete"}
                       >
                         <Trash2 className="h-4 w-4" />

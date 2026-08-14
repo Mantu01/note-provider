@@ -43,11 +43,11 @@ export function GroupDetailPage({ slug }: { slug: string }) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <nav aria-label="Breadcrumb" className="mb-6 text-sm text-muted-foreground">
-        <Link href="/" className="hover:text-foreground">
+        <Link href="/" className="text-muted-foreground">
           Home
         </Link>
         <span className="px-2">/</span>
-        <Link href="/groups" className="hover:text-foreground">
+        <Link href="/groups" className="text-muted-foreground">
           Bundles
         </Link>
         <span className="px-2">/</span>

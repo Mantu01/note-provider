@@ -120,7 +120,7 @@ export function FilterPanel({ className }: { className?: string }) {
             variant="ghost"
             size="sm"
             onClick={clearFilters}
-            className="text-muted-foreground hover:text-foreground"
+            className="text-muted-foreground"
           >
             Clear all
           </Button>
@@ -132,7 +132,7 @@ export function FilterPanel({ className }: { className?: string }) {
         {data?.categories.map((category) => (
           <Label
             key={category.slug}
-            className="flex cursor-pointer items-center justify-between gap-2 p-1 hover:bg-muted/50 rounded-md transition-colors"
+            className="flex cursor-pointer items-center justify-between gap-2 p-1 rounded-md"
           >
             <span className="flex items-center gap-2">
               <Checkbox
@@ -153,7 +153,7 @@ export function FilterPanel({ className }: { className?: string }) {
         {data?.levels.map((level) => (
           <Label
             key={level.value}
-            className="flex cursor-pointer items-center justify-between gap-2 p-1 hover:bg-muted/50 rounded-md transition-colors"
+            className="flex cursor-pointer items-center justify-between gap-2 p-1 rounded-md"
           >
             <span className="flex items-center gap-2">
               <Checkbox

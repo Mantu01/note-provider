@@ -4,7 +4,6 @@ import { Search, X, Filter } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ADMIN_ACTIVITY_ACTIONS } from "@/lib/constants";
 
 type ActivityFilterBarProps = {
   filters: {
@@ -32,7 +31,7 @@ export function ActivityFilterBar({ filters, onChange }: ActivityFilterBarProps)
           Filter Activity Logs
         </div>
         {hasActiveFilters && (
-          <Button variant="ghost" size="sm" onClick={resetFilters} className="h-8 text-xs text-muted-foreground hover:text-foreground">
+          <Button variant="ghost" size="sm" onClick={resetFilters} className="h-8 text-xs text-muted-foreground">
             <X className="mr-1 h-3.5 w-3.5" /> Reset Filters
           </Button>
         )}

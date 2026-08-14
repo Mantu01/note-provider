@@ -4,7 +4,6 @@ import { Inter, Outfit } from "next/font/google";
 import "./globals.css";
 import { BRAND } from "@/lib/constants";
 import { AppProviders } from "@/providers/app-providers";
-import { BodyCleanup } from "@/components/layout/body-cleanup";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const outfit = Outfit({ subsets: ["latin"], variable: "--font-outfit", display: "swap" });
@@ -23,7 +22,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en" suppressHydrationWarning className={`${inter.variable} ${outfit.variable}`} data-scroll-behavior="smooth">
       <body suppressHydrationWarning className="font-sans antialiased">
-        <BodyCleanup />
         <script dangerouslySetInnerHTML={{ __html: "document.body?.removeAttribute('cz-shortcut-listen');" }} />
         <AppProviders>{children}</AppProviders>
         {measurementId ? (

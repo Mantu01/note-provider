@@ -1,18 +1,16 @@
 "use client";
 
-import { useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
   Loader2,
   BookOpen, Code2, FlaskConical, Calculator, Briefcase, Palette, Scale,
-  Globe, Trophy, Cpu, Stethoscope, FileText, Check, Plus, X,
-  Activity, ArrowRight, Battery, Bell, Bookmark, Calendar, Camera,
-  Cloud, Compass, CreditCard, Database, Feather, Flag, Folder,
-  Gift, Headphones, Heart, Key, Link, Map, MessageCircle, Monitor,
-  Music, Paperclip, PenTool, Play, Printer, Settings, Shield,
-  ShoppingCart, Star, Sun, Terminal, Truck, Tv, Umbrella, Video,
-  Watch, Wifi, Zap
+  Globe, Trophy, Cpu, Stethoscope, FileText, Activity,
+  Battery, Bell, Bookmark, Calendar, Camera,
+  Cloud, Compass, CreditCard, Database, Feather, Flag,
+  Gift, Headphones, Heart, Key, Map, MessageCircle, Monitor,
+  Music, PenTool, Printer, Settings,
+  Star, Terminal, Zap
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -22,7 +20,6 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { useCreateCategory, useUpdateCategory } from "@/features/admin/api/use-admin-categories";
 import { createCategorySchema, type CreateCategoryInput } from "@/lib/schemas/category.schema";
 import type { AdminCategory } from "@/lib/types";
-import { cn } from "@/lib/utils";
 
 type CategoryDialogProps = {
   open: boolean;
@@ -55,7 +52,6 @@ const CATEGORY_ICON_PRESETS = [
   { name: "Database", label: "Data", icon: Database },
   { name: "Feather", label: "Design", icon: Feather },
   { name: "Flag", label: "Milestones", icon: Flag },
-  { name: "Folder", label: "Files", icon: Folder },
   { name: "Gift", label: "Rewards", icon: Gift },
   { name: "Headphones", label: "Audio", icon: Headphones },
   { name: "Heart", label: "Health", icon: Heart },
@@ -66,7 +62,6 @@ const CATEGORY_ICON_PRESETS = [
   { name: "Music", label: "Music", icon: Music },
   { name: "PenTool", label: "Writing", icon: PenTool },
   { name: "Settings", label: "Configuration", icon: Settings },
-  { name: "Shield", label: "Protection", icon: Shield },
   { name: "Star", label: "Favorites", icon: Star },
   { name: "Terminal", label: "Console", icon: Terminal },
   { name: "Zap", label: "Quick", icon: Zap },
@@ -76,7 +71,6 @@ export function CategoryDialog({ open, onOpenChange, category }: CategoryDialogP
   const isEditing = Boolean(category?.id);
   const createMutation = useCreateCategory();
   const updateMutation = useUpdateCategory(category?.id ?? "");
-  const subjectInputRef = useRef<HTMLInputElement>(null);
 
   const form = useForm<CreateCategoryInput>({
     resolver: zodResolver(createCategorySchema),

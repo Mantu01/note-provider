@@ -208,7 +208,7 @@ export function CheckoutPage({
     <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
       <Link
         href={itemType === "group" ? `/groups/${slug}` : `/notes/${slug}`}
-        className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary"
+        className="inline-flex items-center gap-2 text-sm text-muted-foreground"
       >
         <ArrowLeft aria-hidden="true" className="size-4" />
         Back to item

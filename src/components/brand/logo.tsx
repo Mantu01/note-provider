@@ -32,7 +32,7 @@ export function Logo({ variant = "full", size = "md", href = "/", className }: L
       {variant !== "icon" && (
         <span
           className={cn(
-            "font-heading font-black tracking-tighter bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent transition-colors duration-300 group-hover:to-foreground/90",
+            "font-heading font-black tracking-tighter bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent",
             sizes[size].wordmark
           )}
         >

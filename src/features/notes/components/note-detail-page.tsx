@@ -43,11 +43,11 @@ export function NoteDetailPage({ slug }: { slug: string }) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
       <nav aria-label="Breadcrumb" className="mb-6 text-sm text-muted-foreground">
-        <Link href="/" className="hover:text-foreground">
+        <Link href="/" className="text-muted-foreground">
           Home
         </Link>
         <span className="px-2">/</span>
-        <Link href="/notes" className="hover:text-foreground">
+        <Link href="/notes" className="text-muted-foreground">
           Notes
         </Link>
         <span className="px-2">/</span>

@@ -2,7 +2,7 @@
 
 import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 import Link from "next/link";
-import { Plus, Search, Edit3, Trash2, ShieldAlert, FolderPlus, Layers } from "lucide-react";
+import { Search, Edit3, Trash2, ShieldAlert, FolderPlus, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -146,7 +146,7 @@ export function GroupsTable() {
                         size="icon"
                         onClick={() => setDeletingGroup(group)}
                         disabled={!canDeleteGroup(group)}
-                        className={canDeleteGroup(group) ? "text-muted-foreground hover:text-destructive hover:bg-destructive/10" : "opacity-40 cursor-not-allowed"}
+                        className={canDeleteGroup(group) ? "text-muted-foreground" : "opacity-40 cursor-not-allowed"}
                         title={canDeleteGroup(group) ? "Delete bundle" : "Only Head Admin or Bundle Creator can delete"}
                       >
                         <Trash2 className="h-4 w-4" />

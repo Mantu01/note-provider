@@ -1,10 +1,7 @@
 "use client";
 
-import { Grid2X2, List, Search, SlidersHorizontal, X } from "lucide-react";
+import { Search, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -24,7 +21,6 @@ import { ErrorState } from "@/components/shared/error-state";
 import { NoteCard } from "@/components/shared/note-card";
 import { NoteCardSkeleton } from "@/components/shared/note-card-skeleton";
 import { PaginationBar } from "@/components/shared/pagination-bar";
-import { useFilters } from "@/features/notes/api/use-filters";
 import { useNotes } from "@/features/notes/api/use-notes";
 import { useNotesQueryState } from "@/features/notes/hooks/use-notes-query-state";
 import { cn } from "@/lib/utils";

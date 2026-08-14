@@ -1,24 +1,20 @@
 "use client";
 
 import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
-import { Search, Edit3, CheckCircle2, Clock, XCircle, Copy } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Search, Copy } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PaginationBar } from "@/components/shared/pagination-bar";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { EmptyState } from "@/components/shared/empty-state";
-import { FulfillmentDialog } from "@/features/admin/components/orders/fulfillment-dialog";
 import { useAdminOrders } from "@/features/admin/api/use-admin-orders";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 export function OrdersTable() {
-  const [{ page, search, editId }, setParams] = useQueryStates({
+  const [{ page, search }, setParams] = useQueryStates({
     page: parseAsInteger.withDefault(1),
     search: parseAsString.withDefault(""),
-    editId: parseAsString,
   });
 
   const { data, isLoading } = useAdminOrders({ page, limit: 15, q: search });
@@ -86,7 +82,7 @@ export function OrdersTable() {
               orders.map((order) => (
                 <TableRow 
                   key={order.id}
-                  className="cursor-pointer hover:bg-muted/50 transition-colors"
+                  className="cursor-pointer"
                   onClick={() => router.push(`/admin/orders/${order.id}`)}
                 >
                   <TableCell className="font-mono text-sm font-semibold">
@@ -100,7 +96,7 @@ export function OrdersTable() {
                       <button
                         type="button"
                         onClick={(e) => { e.stopPropagation(); copyToClipboard(order.buyerFull?.socialHandle || ""); }}
-                        className="hover:text-foreground p-0.5"
+                        className="p-0.5"
                         title="Copy handle"
                       >
                         <Copy className="h-3 w-3" />

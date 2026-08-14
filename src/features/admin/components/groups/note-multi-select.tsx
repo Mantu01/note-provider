@@ -51,7 +51,7 @@ export function NoteMultiSelect({ selectedIds, onChange }: NoteMultiSelectProps)
                 <button
                   type="button"
                   onClick={() => removeId(id)}
-                  className="rounded-full hover:bg-muted-foreground/20 p-0.5"
+                  className="rounded-full p-0.5"
                 >
                   <X className="h-3 w-3" />
                 </button>
@@ -83,13 +83,13 @@ export function NoteMultiSelect({ selectedIds, onChange }: NoteMultiSelectProps)
               <div
                 key={note.id}
                 onClick={() => toggleSelect(note.id)}
-                className={`flex items-center justify-between p-3 cursor-pointer transition-colors ${
-                  isSelected ? "bg-primary/10" : "hover:bg-muted/40"
+                className={`flex items-center justify-between p-3 cursor-pointer ${
+                  isSelected ? "bg-primary/10" : ""
                 }`}
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className={`flex h-5 w-5 items-center justify-center rounded border transition-colors ${
+                    className={`flex h-5 w-5 items-center justify-center rounded border ${
                       isSelected
                         ? "border-primary bg-primary text-primary-foreground"
                         : "border-border bg-background"

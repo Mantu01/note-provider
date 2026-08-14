@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FileText, Lock } from "lucide-react";
+import { FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { PriceTag } from "@/components/shared/price-tag";
@@ -27,7 +27,7 @@ export function NoteCard({
       <Link
         href={`/notes/${note.slug}`}
         className={cn(
-          "relative block overflow-hidden brand-gradient-soft shrink-0 aspect-video",
+          "relative block overflow-hidden brand-gradient-soft shrink-0 aspect-[16/9]",
           isCompact ? "w-36" : "w-full",
         )}
         aria-label={`View ${note.title}`}
@@ -50,9 +50,9 @@ export function NoteCard({
             className="absolute inset-0 m-auto size-12 text-primary/60"
           />
         )}
-        {note.isLocked && (
+        {note.pricingType === "paid" && (
           <Badge className="absolute top-3 right-3 bg-card/90 backdrop-blur text-card-foreground border shadow-sm flex items-center gap-1">
-            <Lock aria-hidden="true" className="size-3" /> Paid
+            Paid
           </Badge>
         )}
       </Link>
@@ -60,12 +60,12 @@ export function NoteCard({
       <CardContent className={cn("flex min-w-0 flex-1 flex-col gap-3 p-5", isCompact && "py-4 p-4")}>
         <div className="flex flex-wrap items-center gap-2">
           <Badge variant="secondary">{note.category.name}</Badge>
-          <StatusBadge type="level" value={note.level} />
+          <StatusBadge status={note.level} type="level" />
         </div>
 
         <Link
           href={`/notes/${note.slug}`}
-          className="line-clamp-2 font-heading text-lg font-semibold leading-snug transition-colors"
+          className="line-clamp-2 font-heading text-lg font-semibold leading-snug"
         >
           {note.title}
         </Link>
