@@ -1,3 +1,4 @@
+import { Order } from "@/server/db/models/order.model";
 import { adminHandler } from "@/server/lib/api-handler";
 import { fail, ok } from "@/server/lib/api-response";
 import { AppError } from "@/server/lib/errors";
@@ -6,6 +7,15 @@ import { fulfillOrder, deleteOrder } from "@/server/services/order.service";
 import { updateOrderSchema } from "@/lib/schemas/admin.schema";
 
 export const runtime = "nodejs";
+
+export const GET = adminHandler(async (ctx) => {
+  const { id } = await ctx.params;
+  const order = await Order.findById(id).lean().exec();
+  if (!order) {
+    throw AppError.notFound("Order not found");
+  }
+  return ok(toAdminOrder(order as any));
+});
 
 export const PATCH = adminHandler(async (ctx) => {
   const { id } = await ctx.params;

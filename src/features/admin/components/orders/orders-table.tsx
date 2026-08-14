@@ -11,9 +11,8 @@ import { StatusBadge } from "@/components/shared/status-badge";
 import { EmptyState } from "@/components/shared/empty-state";
 import { FulfillmentDialog } from "@/features/admin/components/orders/fulfillment-dialog";
 import { useAdminOrders } from "@/features/admin/api/use-admin-orders";
-import { formatDateTime } from "@/lib/format";
-import type { AdminOrder } from "@/lib/types";
 import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export function OrdersTable() {
   const [{ page, search, editId }, setParams] = useQueryStates({
@@ -23,14 +22,13 @@ export function OrdersTable() {
   });
 
   const { data, isLoading } = useAdminOrders({ page, limit: 15, q: search });
+  const router=useRouter();
 
   const orders = data?.items ?? [];
   const pagination = data?.pagination;
-  const editingOrder = orders.find((o) => o.id === editId) ?? null;
 
   const setPage = (p: number) => setParams({ page: p });
   const setSearch = (q: string) => setParams({ search: q, page: 1 });
-  const setEditingOrder = (o: AdminOrder | null) => setParams({ editId: o?.id ?? null });
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -64,21 +62,20 @@ export function OrdersTable() {
               <TableHead>Amount</TableHead>
               <TableHead>Payment</TableHead>
               <TableHead>Fulfillment</TableHead>
-              <TableHead className="text-right">Action</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               Array.from({ length: 5 }, (_, i) => (
                 <TableRow key={i}>
-                  <TableCell colSpan={7}>
+                  <TableCell colSpan={6}>
                     <div className="h-10 animate-pulse rounded bg-muted/50" />
                   </TableCell>
                 </TableRow>
               ))
             ) : orders.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7}>
+                <TableCell colSpan={6}>
                   <EmptyState
                     title="No orders found"
                     description="Submitted buyer checkout orders will appear here."
@@ -87,7 +84,11 @@ export function OrdersTable() {
               </TableRow>
             ) : (
               orders.map((order) => (
-                <TableRow key={order.id}>
+                <TableRow 
+                  key={order.id}
+                  className="cursor-pointer hover:bg-muted/50 transition-colors"
+                  onClick={() => router.push(`/admin/orders/${order.id}`)}
+                >
                   <TableCell className="font-mono text-sm font-semibold">
                     {order.orderNumber}
                   </TableCell>
@@ -98,7 +99,7 @@ export function OrdersTable() {
                       <code className="bg-muted px-1 rounded">{order.buyerFull?.socialHandle}</code>
                       <button
                         type="button"
-                        onClick={() => copyToClipboard(order.buyerFull?.socialHandle || "")}
+                        onClick={(e) => { e.stopPropagation(); copyToClipboard(order.buyerFull?.socialHandle || ""); }}
                         className="hover:text-foreground p-0.5"
                         title="Copy handle"
                       >
@@ -118,11 +119,6 @@ export function OrdersTable() {
                   <TableCell>
                     <StatusBadge status={order.fulfillmentStatus} type="fulfillment" />
                   </TableCell>
-                  <TableCell className="text-right">
-                    <Button variant="outline" size="sm" onClick={() => setEditingOrder(order)}>
-                      <Edit3 className="mr-1.5 h-3.5 w-3.5" /> Fulfil
-                    </Button>
-                  </TableCell>
                 </TableRow>
               ))
             )}
@@ -137,12 +133,6 @@ export function OrdersTable() {
           onPageChange={setPage}
         />
       )}
-
-      <FulfillmentDialog
-        open={Boolean(editingOrder)}
-        onOpenChange={() => setEditingOrder(null)}
-        order={editingOrder}
-      />
     </div>
   );
 }

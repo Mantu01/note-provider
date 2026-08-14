@@ -75,12 +75,12 @@ export async function POST(req: Request) {
 
         await notifyAdminsOnPurchase(updatedOrder);
       }
-    } else if (event === "payment.failed" && razorpayOrderId) {
+    } else if ((event === "payment.failed" || event === "payment.canceled" || event === "order.canceled") && razorpayOrderId) {
       await Order.findOneAndUpdate(
         { razorpayOrderId, paymentStatus: "created" },
         {
           paymentStatus: "failed",
-          failureReason: payment.error_description ?? "Payment failed",
+          failureReason: payment.error_description ?? "Payment failed or canceled",
         },
       ).exec();
     }

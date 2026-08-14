@@ -66,7 +66,7 @@ export function toObjectIds(ids: string[]): Types.ObjectId[] {
 }
 
 export async function resolveCategoryIds(
-  categoryModel: Model<{ slug: string }>,
+  categoryModel: Model<any>,
   slugs: string[],
 ): Promise<Types.ObjectId[]> {
   if (slugs.length === 0) return [];

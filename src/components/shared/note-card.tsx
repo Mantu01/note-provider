@@ -27,8 +27,8 @@ export function NoteCard({
       <Link
         href={`/notes/${note.slug}`}
         className={cn(
-          "relative block overflow-hidden brand-gradient-soft",
-          isCompact ? "aspect-[16/9] w-36 shrink-0" : "aspect-[16/9] w-full",
+          "relative block overflow-hidden brand-gradient-soft shrink-0 aspect-video",
+          isCompact ? "w-36" : "w-full",
         )}
         aria-label={`View ${note.title}`}
       >

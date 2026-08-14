@@ -57,7 +57,7 @@ export function AdminDashboard() {
 
       <div className="grid gap-6 lg:grid-cols-2">
         <RecentOrders orders={data.recentOrders} />
-        <ActivityFeed key={Math.random()} activities={data.recentActivities} />
+        <ActivityFeed activities={data.recentActivities} />
       </div>
     </div>
   );

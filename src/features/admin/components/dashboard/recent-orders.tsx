@@ -20,8 +20,8 @@ export function RecentOrders({ orders }: { orders: AdminOrder[] }) {
           {orders.length === 0 ? (
             <p className="py-4 text-center text-xs text-muted-foreground">No recent orders yet.</p>
           ) : (
-            orders.slice(0, 5).map((order) => (
-              <div key={order.id} className="flex items-center justify-between border-b border-border/40 pb-3 last:border-0 last:pb-0">
+            orders.slice(0, 5).map((order, index) => (
+              <div key={order.id || order.orderNumber || index} className="flex items-center justify-between border-b border-border/40 pb-3 last:border-0 last:pb-0">
                 <div>
                   <p className="text-sm font-semibold text-foreground">#{order.orderNumber}</p>
                   <p className="text-xs text-muted-foreground">{order.buyer?.fullName} ({order.itemTitle})</p>
