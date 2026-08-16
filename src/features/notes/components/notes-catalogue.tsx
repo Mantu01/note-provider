@@ -19,7 +19,7 @@ import {
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { NoteCard } from "@/components/shared/note-card";
-import { NoteCardSkeleton } from "@/components/shared/note-card-skeleton";
+import { ShimmerLoader, ShimmerNoteCard } from "@/components/shared/shimmer-loader";
 import { PaginationBar } from "@/components/shared/pagination-bar";
 import { useNotes } from "@/features/notes/api/use-notes";
 import { useNotesQueryState } from "@/features/notes/hooks/use-notes-query-state";
@@ -45,47 +45,50 @@ export function NotesCatalogue() {
   });
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      <div className="mt-8 grid gap-8 lg:grid-cols-[18rem_minmax(0,1fr)]">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mt-6 flex items-center justify-between gap-3">
+        <div>
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+            All Notes
+          </h1>
+          <p className="mt-0.5 text-sm text-muted-foreground">
+            {notes.data
+              ? `${notes.data.pagination.total} note${notes.data.pagination.total !== 1 ? "s" : ""}`
+              : "Loading…"}
+          </p>
+        </div>
+
+        <Sheet>
+          <SheetTrigger render={<Button
+            variant="outline"
+            size="sm"
+            className="shrink-0 rounded-full h-9 lg:hidden"
+          >
+            <SlidersHorizontal aria-hidden="true" className="mr-1.5 size-3.5" />
+            Filters{activeFilterCount ? ` · ${activeFilterCount}` : ""}
+          </Button>} />
+          <SheetContent side="left" className="w-[85vw] max-w-sm overflow-y-auto">
+            <SheetHeader>
+              <SheetTitle>Filters</SheetTitle>
+            </SheetHeader>
+            <div className="py-6">
+              <FilterPanel />
+            </div>
+          </SheetContent>
+        </Sheet>
+      </div>
+
+      <div className="mt-6 grid gap-8 lg:grid-cols-[20rem_minmax(0,1fr)]">
         <div className="hidden lg:block">
-          <FilterPanel className="sticky top-24 rounded-2xl border bg-card p-5" />
+          <FilterPanel className="sticky top-20 rounded-2xl border bg-card p-4" />
         </div>
 
         <div id="results" className="min-w-0">
-          <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <Sheet>
-              <SheetTrigger
-                render={
-                  <Button variant="outline" className="w-full sm:w-auto lg:hidden" />
-                }
-              >
-                <SlidersHorizontal aria-hidden="true" className="mr-2 size-4" />
-                Filters & Search{activeFilterCount ? ` (${activeFilterCount})` : ""}
-              </SheetTrigger>
-              <SheetContent side="left" className="w-[85vw] max-w-sm overflow-y-auto">
-                <SheetHeader>
-                  <SheetTitle>Filters</SheetTitle>
-                </SheetHeader>
-                <div className="py-6">
-                  <FilterPanel />
-                </div>
-              </SheetContent>
-            </Sheet>
-
-            <div className="flex items-center justify-between text-sm text-muted-foreground">
-              <span>
-                {notes.data
-                  ? `Showing ${notes.data.items.length} of ${notes.data.pagination.total} notes`
-                  : "Loading notes…"}
-              </span>
-            </div>
-          </div>
-
           <ActiveFilterChips state={state} setFilter={setFilter} />
 
           <div
             className={cn(
-              "mt-6 grid gap-5",
+              "mt-5 grid gap-3",
               state.view === "grid"
                 ? "sm:grid-cols-2 xl:grid-cols-3"
                 : "grid-cols-1",
@@ -93,7 +96,7 @@ export function NotesCatalogue() {
           >
             {notes.isPending ? (
               Array.from({ length: 12 }, (_, index) => (
-                <NoteCardSkeleton key={index} />
+                <ShimmerNoteCard key={index} />
               ))
             ) : notes.isError ? (
               <div className="sm:col-span-2 xl:col-span-3">
@@ -114,7 +117,9 @@ export function NotesCatalogue() {
                   title="No notes match these filters"
                   description="Try clearing a filter or searching with different keywords."
                   action={
-                    <Button onClick={clearFilters}>Clear filters</Button>
+                    <Button onClick={clearFilters} size="sm">
+                      Clear filters
+                    </Button>
                   }
                 />
               </div>
@@ -122,7 +127,7 @@ export function NotesCatalogue() {
           </div>
 
           {notes.data ? (
-            <div className="mt-8">
+            <div className="mt-6">
               <PaginationBar
                 pagination={notes.data.pagination}
                 onPageChange={(page) => setFilter({ page })}

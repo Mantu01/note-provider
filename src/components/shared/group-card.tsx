@@ -2,61 +2,61 @@ import Image from "next/image";
 import Link from "next/link";
 import { Layers3 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
 import { PriceTag } from "@/components/shared/price-tag";
 import type { PublicGroup } from "@/lib/types";
 
-export function GroupCard({ group }: { group: PublicGroup }) {
+type GroupCardProps = {
+  group: PublicGroup;
+};
+
+export function GroupCard({ group }: GroupCardProps) {
   return (
-    <Card className="group overflow-hidden rounded-2xl border border-border/80 bg-card shadow-sm">
+    <div className="overflow-hidden rounded-2xl border border-border/60 bg-card">
       <Link
         href={`/groups/${group.slug}`}
-        className="relative block aspect-[16/9] overflow-hidden brand-gradient-soft"
+        className="relative block aspect-[16/9] overflow-hidden bg-muted/40"
         aria-label={`View ${group.name}`}
       >
         {group.coverImageUrl ? (
           <Image
             src={group.coverImageUrl}
-            alt={`Cover for ${group.name}`}
+            alt=""
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
             className="object-cover"
           />
         ) : (
-          <Layers3
-            aria-hidden="true"
-            className="absolute inset-0 m-auto size-12 text-primary/60"
-          />
+          <div className="flex size-full items-center justify-center text-primary/30">
+            <Layers3 aria-hidden="true" className="size-10" />
+          </div>
         )}
       </Link>
 
-      <CardContent className="space-y-3 p-5">
-        <div className="flex items-center justify-between gap-3">
-          <Badge variant="secondary">{group.category.name}</Badge>
-          <span className="text-xs text-muted-foreground bg-muted px-2 py-0.5 rounded-full font-medium">
+      <div className="space-y-2 p-3">
+        <div className="flex items-center justify-between gap-2">
+          <Badge variant="secondary" className="h-5 rounded-full px-2 text-[10px] font-medium">
+            {group.category.name}
+          </Badge>
+          <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
             {group.noteCount} notes
           </span>
         </div>
 
         <Link
           href={`/groups/${group.slug}`}
-          className="line-clamp-2 font-heading text-lg font-semibold text-foreground"
+          className="block font-heading text-sm font-semibold leading-snug text-foreground"
         >
           {group.name}
         </Link>
 
-        <p className="line-clamp-2 text-sm text-muted-foreground leading-relaxed">
+        <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground">
           {group.description}
         </p>
 
-        <div className="pt-2">
-          <PriceTag
-            price={group.price}
-            priceLabel={group.priceLabel}
-            compareAtPrice={group.compareAtPrice}
-          />
+        <div className="pt-1">
+          <PriceTag price={group.price} priceLabel={group.priceLabel} compareAtPrice={group.compareAtPrice} />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

@@ -23,10 +23,6 @@ vi.mock("@/components/shared/note-card", () => ({
   ),
 }));
 
-vi.mock("@/components/shared/note-card-skeleton", () => ({
-  NoteCardSkeleton: () => <div data-testid="note-card-skeleton" />,
-}));
-
 vi.mock("@/lib/constants", () => ({
   BRAND: { name: "Notes Provider", description: "Developer notes that scale." },
 }));
@@ -54,7 +50,8 @@ describe("HomePage", () => {
 
     render(<HomePage />);
     expect(screen.getByText("Developer notes that scale.")).toBeInTheDocument();
-    expect(screen.getByText("Explore free notes")).toBeInTheDocument();
+    expect(screen.getByText("Browse catalogue")).toBeInTheDocument();
+    expect(screen.getByText("Free notes")).toBeInTheDocument();
   });
 
   it("displays hero stats when available", () => {
@@ -88,7 +85,7 @@ describe("HomePage", () => {
 
     render(<HomePage />);
     const textContent = document.body.textContent || "";
-    expect(textContent).toContain("Find your stack");
+    expect(textContent).toContain("Learn the stack");
   });
 
   it("renders category strip with categories", () => {
@@ -135,7 +132,7 @@ describe("HomePage", () => {
     } as any);
 
     render(<HomePage />);
-    expect(screen.getByText("Categories are coming soon")).toBeInTheDocument();
+    expect(screen.getByText("Categories coming soon")).toBeInTheDocument();
   });
 
   it("renders featured notes section", () => {
@@ -157,8 +154,7 @@ describe("HomePage", () => {
     } as any);
 
     render(<HomePage />);
-    expect(screen.getByText("Notes worth keeping")).toBeInTheDocument();
-    expect(screen.getByText("View all")).toBeInTheDocument();
+    expect(screen.getByText("Hand-picked notes")).toBeInTheDocument();
   });
 
   it("renders free notes section", () => {
@@ -175,8 +171,8 @@ describe("HomePage", () => {
     } as any);
 
     render(<HomePage />);
-    expect(screen.getByText("Build momentum with free developer notes")).toBeInTheDocument();
-    expect(screen.getByText("See free notes")).toBeInTheDocument();
+    expect(screen.getByText("Build momentum at zero cost")).toBeInTheDocument();
+    expect(screen.getByText("Free notes")).toBeInTheDocument();
   });
 
   it("renders bundles section with groups", () => {
@@ -195,8 +191,7 @@ describe("HomePage", () => {
     } as any);
 
     render(<HomePage />);
-    expect(screen.getByText("One topic, one complete pack")).toBeInTheDocument();
-    expect(screen.getByText("View bundles")).toBeInTheDocument();
+    expect(screen.getByText("Save with complete packs")).toBeInTheDocument();
   });
 
   it("renders how it works section", () => {
@@ -208,10 +203,11 @@ describe("HomePage", () => {
     } as any);
 
     render(<HomePage />);
-    expect(screen.getByText("From topic discovery to delivery")).toBeInTheDocument();
-    expect(screen.getByText("Choose your topic")).toBeInTheDocument();
-    expect(screen.getByText("Pay securely")).toBeInTheDocument();
-    expect(screen.getByText("Receive on your handle")).toBeInTheDocument();
+    expect(screen.getByText("Four simple steps")).toBeInTheDocument();
+    expect(screen.getByText("Browse")).toBeInTheDocument();
+    expect(screen.getByText("Preview")).toBeInTheDocument();
+    expect(screen.getByText("Pay")).toBeInTheDocument();
+    expect(screen.getByText("Receive")).toBeInTheDocument();
   });
 
   it("renders trust section", () => {
@@ -223,10 +219,10 @@ describe("HomePage", () => {
     } as any);
 
     render(<HomePage />);
-    expect(screen.getByText("Why learners trust us")).toBeInTheDocument();
-    expect(screen.getByText("Secure Razorpay payments")).toBeInTheDocument();
-    expect(screen.getByText("Instant free downloads")).toBeInTheDocument();
-    expect(screen.getByText("Curated original notes")).toBeInTheDocument();
+    expect(screen.getByText("Built for serious learners")).toBeInTheDocument();
+    expect(screen.getByText("Secure payments")).toBeInTheDocument();
+    expect(screen.getByText("Instant downloads")).toBeInTheDocument();
+    expect(screen.getByText("Curated notes")).toBeInTheDocument();
     expect(screen.getByText("Human support")).toBeInTheDocument();
   });
 
@@ -239,7 +235,7 @@ describe("HomePage", () => {
     } as any);
 
     render(<HomePage />);
-    expect(screen.getByText("Frequently asked questions")).toBeInTheDocument();
+    expect(screen.getByText("Common questions")).toBeInTheDocument();
     expect(screen.getByText("When will I receive paid notes?")).toBeInTheDocument();
     expect(screen.getByText("How do free notes work?")).toBeInTheDocument();
   });
@@ -253,8 +249,9 @@ describe("HomePage", () => {
     } as any);
 
     render(<HomePage />);
-    expect(screen.getByText("Ready when you are")).toBeInTheDocument();
-    expect(screen.getByText("Find the notes that make building feel easier.")).toBeInTheDocument();
+    expect(screen.getByText("Start learning smarter today.")).toBeInTheDocument();
+    expect(screen.getByText("Browse notes")).toBeInTheDocument();
+    expect(screen.getByText("Contact support")).toBeInTheDocument();
   });
 
   it("renders error state when home query fails", () => {
@@ -266,7 +263,7 @@ describe("HomePage", () => {
     } as any);
 
     render(<HomePage />);
-    expect(screen.getByText("We could not load the latest catalogue.")).toBeInTheDocument();
+    expect(screen.getByText("Unable to load the homepage. Please try again.")).toBeInTheDocument();
   });
 
   it("calls refetch on retry in error state", async () => {

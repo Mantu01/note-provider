@@ -1,193 +1,244 @@
 "use client";
 
 import Link from "next/link";
-import {
-  ArrowRight,
-  BadgeCheck,
-  BookOpen,
-  CreditCard,
-  Download,
-  Headphones,
-  Send,
-  ShieldCheck,
-  Sparkles,
-} from "lucide-react";
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion";
+import { ArrowRight, BookOpen, Download, ShieldCheck, Sparkles } from "lucide-react";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { CategoryCard } from "@/components/shared/category-card";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { GroupCard } from "@/components/shared/group-card";
 import { NoteCard } from "@/components/shared/note-card";
-import { NoteCardSkeleton } from "@/components/shared/note-card-skeleton";
-import { Section } from "@/components/layout/section";
+import { ShimmerLoader, ShimmerNoteCard, ShimmerStatCard } from "@/components/shared/shimmer-loader";
+import { useHome } from "@/features/home/api/use-home";
 import { BRAND } from "@/lib/constants";
 import { formatCompactNumber } from "@/lib/format";
-import { useHome } from "@/features/home/api/use-home";
-
-const FAQS = [
-  [
-    "When will I receive paid notes?",
-    "Paid notes are delivered to your selected Instagram, WhatsApp, or email handle within 4–6 hours of a successful payment.",
-  ],
-  [
-    "How do free notes work?",
-    "Free notes are available for immediate PDF download. No sign-up is required.",
-  ],
-  [
-    "Which topics do you cover?",
-    "We focus on web development, frontend, backend, DSA, DBMS, system design, and interview-prep topics.",
-  ],
-  [
-    "Which payment methods can I use?",
-    "Payments are securely processed by Razorpay and support its available Indian payment methods.",
-  ],
-  [
-    "Can I get a refund?",
-    "Digital notes are non-refundable after delivery. Please review the preview and description before paying.",
-  ],
-  [
-    "Will you send promotional messages?",
-    "No. Your delivery handle is used only to fulfil your purchase and provide support.",
-  ],
-];
-
-const HERO_STATS = [
-  { label: "Notes", key: "totalNotes" },
-  { label: "Categories", key: "totalCategories" },
-  { label: "Downloads", key: "totalDownloads" },
-  { label: "Happy learners", key: "happyLearners" },
-] as const;
-
-const HOW_IT_WORKS = [
-  {
-    icon: BookOpen,
-    title: "Choose your topic",
-    description:
-      "Browse structured resources for frontend, backend, DSA, DBMS, and system design.",
-  },
-  {
-    icon: CreditCard,
-    title: "Pay securely",
-    description:
-      "Share one delivery handle and complete payment through Razorpay.",
-  },
-  {
-    icon: Send,
-    title: "Receive on your handle",
-    description:
-      "We deliver paid notes within 4–6 hours. Free notes download instantly.",
-  },
-];
+import type { PublicNote, PublicGroup, PublicCategory } from "@/lib/types";
 
 const TRUST_ITEMS = [
-  { icon: ShieldCheck, label: "Secure Razorpay payments" },
-  { icon: Download, label: "Instant free downloads" },
-  { icon: BadgeCheck, label: "Curated original notes" },
-  { icon: Headphones, label: "Human support" },
-];
+  { icon: ShieldCheck, label: "Secure payments" },
+  { icon: Download, label: "Instant downloads" },
+  { icon: Sparkles, label: "Curated notes" },
+  { icon: BookOpen, label: "Human support" },
+] satisfies Array<{ icon: React.ComponentType<{ className?: string }>; label: string }>;
 
-function SectionHeading({
+const FAQS = [
+  ["When will I receive paid notes?", "Paid notes are delivered to your selected Instagram, WhatsApp, or email handle within 4–6 hours of a successful payment."],
+  ["How do free notes work?", "Free notes are available for immediate PDF download. No sign-up is required."],
+  ["Which topics do you cover?", "We focus on web development, frontend, backend, DSA, DBMS, system design, and interview-prep topics."],
+  ["Which payment methods can I use?", "Payments are securely processed by Razorpay and support its available Indian payment methods."],
+  ["Can I get a refund?", "Digital notes are non-refundable after delivery. Please review the preview and description before paying."],
+] as const;
+
+const STEPS = [
+  { num: "01", title: "Browse", desc: "Explore our curated catalogue by topic or level." },
+  { num: "02", title: "Preview", desc: "Review any note with a free sample before you decide." },
+  { num: "03", title: "Pay", desc: "Complete checkout securely via Razorpay — UPI, cards, or net banking." },
+  { num: "04", title: "Receive", desc: "Get your notes on Instagram, WhatsApp, or email within 4–6 hours." },
+] satisfies Array<{ num: string; title: string; desc: string }>;
+
+export function HomePage() {
+  const home = useHome();
+
+  if (home.isError) {
+    return (
+      <div className="mx-auto max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
+        <ErrorState message="Unable to load the homepage. Please try again." onRetry={() => home.refetch()} />
+      </div>
+    );
+  }
+
+  return (
+    <div className="overflow-hidden">
+      <Hero stats={home.data?.stats} isLoading={home.isPending} />
+
+      <Section className="border-y border-border/40">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader eyebrow="Categories" title="Browse by topic" />
+          <CategoryStrip categories={home.data?.categories} isLoading={home.isPending} />
+        </div>
+      </Section>
+
+      <Section>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            eyebrow="Featured"
+            title="Hand-picked notes"
+            action={<SeeAll href="/notes" />}
+          />
+          <NoteGrid
+            items={home.data?.featuredNotes ?? []}
+            isLoading={home.isPending}
+            emptyTitle="Featured notes coming soon"
+            emptyDesc="Our editor picks are being prepared."
+          />
+        </div>
+      </Section>
+
+      <Section className="bg-muted/30">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            eyebrow="Start free"
+            title="Build momentum at zero cost"
+            action={<SeeAll href="/notes?pricing=free" />}
+          />
+          <NoteGrid
+            items={home.data?.freeNotes ?? []}
+            isLoading={home.isPending}
+            emptyTitle="Free notes coming soon"
+            emptyDesc="Check back for resources you can download immediately."
+          />
+        </div>
+      </Section>
+
+      <Section>
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader
+            eyebrow="Bundles"
+            title="Save with complete packs"
+            action={<SeeAll href="/groups" />}
+          />
+          <GroupGrid groups={home.data?.featuredGroups ?? []} isLoading={home.isPending} />
+        </div>
+      </Section>
+
+      <Section className="border-t border-border/40">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader eyebrow="How it works" title="Four simple steps" />
+          <StepsGrid steps={STEPS} />
+        </div>
+      </Section>
+
+      <Section className="bg-muted/30">
+        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader eyebrow="Trust" title="Built for serious learners" />
+          <TrustGrid items={TRUST_ITEMS} />
+        </div>
+      </Section>
+
+      <Section className="border-t border-border/40">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+          <SectionHeader eyebrow="FAQ" title="Common questions" center />
+          <FAQAccordion />
+        </div>
+      </Section>
+
+      <CTABanner />
+    </div>
+  );
+}
+
+function Hero({
+  stats,
+  isLoading,
+}: {
+  stats?: { totalNotes: number; totalCategories: number; totalDownloads: number; happyLearners: number };
+  isLoading: boolean;
+}) {
+  const STATS_CONFIG = [
+    { label: "Notes", key: "totalNotes" as const },
+    { label: "Topics", key: "totalCategories" as const },
+    { label: "Downloads", key: "totalDownloads" as const },
+    { label: "Learners", key: "happyLearners" as const },
+  ] as const;
+
+  return (
+    <section className="relative overflow-hidden pt-14 pb-12 md:pt-20 md:pb-16 lg:pt-28 lg:pb-20">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,var(--brand-green-soft),transparent_55%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,var(--brand-orange-soft),transparent_55%)]" />
+
+      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="max-w-2xl space-y-5">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold tracking-wide text-primary uppercase backdrop-blur-md">
+            <Sparkles aria-hidden="true" className="size-3" />
+            Developer notes that scale
+          </div>
+
+          <h1 className="font-heading text-4xl font-extrabold tracking-tighter leading-[1.05] text-foreground md:text-5xl lg:text-6xl">
+            Learn the stack{" "}
+            <span className="brand-gradient-text">with notes that ship.</span>
+          </h1>
+
+          <p className="max-w-sm text-base leading-relaxed text-muted-foreground md:text-lg">
+            {BRAND.description}
+          </p>
+
+          <div className="flex flex-wrap gap-3 pt-1">
+            <Button
+              render={<Link href="/notes" />}
+              size="lg"
+              className="h-11 rounded-full bg-primary px-7 text-sm font-semibold text-primary-foreground"
+            >
+              Browse catalogue
+              <ArrowRight aria-hidden="true" className="ml-2 size-4" />
+            </Button>
+            <Button
+              render={<Link href="/notes?pricing=free" />}
+              variant="outline"
+              size="lg"
+              className="h-11 rounded-full border-2 px-7 text-sm font-semibold"
+            >
+              Free notes
+            </Button>
+          </div>
+        </div>
+
+        <div className="mt-10 grid grid-cols-2 gap-3 md:mt-14 md:grid-cols-4">
+          {isLoading
+            ? Array.from({ length: 4 }, (_, i) => <ShimmerStatCard key={i} />)
+            : STATS_CONFIG.map((s) => (
+                <div key={s.key} className="rounded-xl border border-border/60 bg-card/60 px-4 py-3 text-center backdrop-blur-sm">
+                  <p className="text-xl font-black tracking-tight text-foreground md:text-2xl">
+                    {stats ? formatCompactNumber(stats[s.key]) : "—"}
+                  </p>
+                  <p className="mt-0.5 text-[10px] font-medium text-muted-foreground uppercase tracking-wide">
+                    {s.label}
+                  </p>
+                </div>
+              ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Section({ className, children }: { className?: string; children: React.ReactNode }) {
+  return <section className={`py-12 md:py-16 ${className ?? ""}`}>{children}</section>;
+}
+
+function SectionHeader({
   eyebrow,
   title,
-  description,
   action,
+  center,
 }: {
   eyebrow: string;
   title: string;
-  description?: string;
   action?: React.ReactNode;
+  center?: boolean;
 }) {
   return (
-    <div className="mb-8 flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
-      <div className="max-w-2xl space-y-2">
-        <p className="text-sm font-semibold tracking-wide text-primary uppercase">
-          {eyebrow}
-        </p>
-        <h2 className="font-heading text-3xl font-bold tracking-tight md:text-4xl">
-          {title}
-        </h2>
-        {description ? (
-          <p className="text-muted-foreground">{description}</p>
-        ) : null}
+    <div className={center ? "mb-6 text-center" : "mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between"}>
+      <div className={center ? "mx-auto max-w-xl space-y-1" : "max-w-xl space-y-1"}>
+        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">{eyebrow}</p>
+        <h2 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">{title}</h2>
       </div>
       {action}
     </div>
   );
 }
 
-function HeroSection({
-  stats,
-}: {
-  stats?: {
-    totalNotes: number;
-    totalCategories: number;
-    totalDownloads: number;
-    happyLearners: number;
-  };
-}) {
+function SeeAll({ href, label = "View all" }: { href: string; label?: string }) {
   return (
-    <section className="relative overflow-hidden py-24 md:py-32 lg:py-40">
-      <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background z-0" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-orange-500/20 via-orange-500/20 to-transparent blur-3xl z-0" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,_var(--tw-gradient-stops))] from-orange-500/20 via-rose-500/20 to-transparent blur-3xl z-0" />
-      
-      <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-4xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary shadow-sm backdrop-blur-md">
-            <Sparkles aria-hidden="true" className="size-4 text-primary" />
-            <span className="font-bold text-primary">Developer notes that scale</span>
-          </div>
-          <h1 className="font-heading text-5xl font-extrabold tracking-tighter md:text-7xl lg:text-8xl">
-            Learn the stack with{" "}
-            <span className="brand-gradient-text">
-              notes that ship.
-            </span>
-          </h1>
-          <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl lg:text-2xl font-medium">
-            {BRAND.description}
-          </p>
-          <div className="flex flex-col gap-4 sm:flex-row pt-4">
-            <Button render={<Link href="/notes" />} size="lg" className="h-14 rounded-2xl bg-primary px-8 text-base text-primary-foreground">
-              Browse the catalogue
-              <ArrowRight aria-hidden="true" className="ml-2" />
-            </Button>
-            <Button
-              render={<Link href="/notes?pricing=free" />}
-              variant="outline"
-              size="lg"
-              className="h-14 rounded-2xl border-2 px-8 text-base"
-            >
-              Explore free notes
-            </Button>
-          </div>
-        </div>
-
-        <div className="mt-16 grid grid-cols-2 gap-4 md:mt-24 md:grid-cols-4 animate-in fade-in slide-in-from-bottom-8 duration-1000 delay-200 fill-mode-both">
-          {HERO_STATS.map((stat) => (
-            <Card
-              key={stat.label}
-              className="rounded-3xl border border-border/80 bg-card/80 py-2 shadow-sm"
-            >
-              <CardContent className="p-6 text-center">
-                <p className="text-4xl font-black tracking-tighter bg-gradient-to-br from-foreground to-foreground/60 bg-clip-text text-transparent mb-2">
-                  {stats?.[stat.key] === undefined
-                    ? "—"
-                    : formatCompactNumber(stats[stat.key])}
-                </p>
-                <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </div>
-    </section>
+    <Button
+      render={<Link href={href} />}
+      variant="outline"
+      size="sm"
+      className="h-8 rounded-full text-xs"
+    >
+      {label}
+      <ArrowRight aria-hidden="true" className="ml-1 size-3" />
+    </Button>
   );
 }
 
@@ -195,290 +246,158 @@ function CategoryStrip({
   categories,
   isLoading,
 }: {
-  categories?: { id: string; name: string; slug: string; noteCount: number; description: string | null; icon: string | null; subjects: { id: string; name: string; slug: string; order: number; isActive: boolean }[] }[];
+  categories?: PublicCategory[];
   isLoading: boolean;
 }) {
   return (
-    <Section className="pt-6">
-      <SectionHeading
-        eyebrow="Explore"
-        title="Find your stack"
-        description="Focused resources for frontend, backend, DSA, DBMS, and system design."
-      />
-      <div className="flex gap-4 overflow-x-auto pb-3">
-        {categories?.length ? (
-          categories.map((category) => (
-            <CategoryCard key={category.id} category={category} />
-          ))
-        ) : isLoading ? (
-          Array.from({ length: 5 }, (_, index) => (
-            <Card key={index} className="min-w-48 rounded-2xl">
-              <CardContent className="h-20" />
-            </Card>
-          ))
-        ) : (
-          <EmptyState
-            icon={BookOpen}
-            title="Categories are coming soon"
-            description="The catalogue is being prepared. Check back shortly for focused study resources."
-          />
-        )}
-      </div>
-    </Section>
+    <div className="flex gap-2 overflow-x-auto pb-1">
+      {isLoading ? (
+        Array.from({ length: 5 }, (_, i) => (
+          <ShimmerLoader key={i} className="min-w-44 h-12 rounded-xl shrink-0" />
+        ))
+      ) : categories?.length ? (
+        categories.map((c) => <CategoryCard key={c.id} category={c} />)
+      ) : (
+        <EmptyState
+          icon={BookOpen}
+          title="Categories coming soon"
+          description="Focused study resources are on their way."
+        />
+      )}
+    </div>
   );
 }
 
-function FeaturedNotesSection({
-  notes,
+function NoteGrid({
+  items,
+  isLoading,
+  emptyTitle,
+  emptyDesc,
+}: {
+  items: PublicNote[];
+  isLoading: boolean;
+  emptyTitle: string;
+  emptyDesc: string;
+}) {
+  return (
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      {isLoading
+        ? Array.from({ length: 4 }, (_, i) => <ShimmerNoteCard key={i} />)
+        : items.length
+          ? items.slice(0, 4).map((n) => <NoteCard key={n.id} note={n} />)
+          : (
+            <div className="col-span-full">
+              <EmptyState icon={BookOpen} title={emptyTitle} description={emptyDesc} />
+            </div>
+          )}
+    </div>
+  );
+}
+
+function GroupGrid({
+  groups,
   isLoading,
 }: {
-  notes?: { id: string; slug: string; [key: string]: unknown }[];
+  groups: PublicGroup[];
   isLoading: boolean;
 }) {
   return (
-    <Section>
-      <SectionHeading
-        eyebrow="Featured"
-        title="Notes worth keeping"
-        action={
-          <Button render={<Link href="/notes" />} variant="outline">
-            View all
-            <ArrowRight aria-hidden="true" />
-          </Button>
-        }
-      />
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {isLoading ? (
-          Array.from({ length: 3 }, (_, index) => (
-            <NoteCardSkeleton key={index} />
-          ))
-        ) : notes?.length ? (
-          notes
-            .slice(0, 3)
-            .map((note) => (
-              <NoteCard
-                key={note.id}
-                note={note as never}
-                variant="featured"
-              />
-            ))
-        ) : (
-          <div className="sm:col-span-2 lg:col-span-3">
-            <EmptyState
-              icon={BookOpen}
-              title="Featured notes will appear here"
-              description="Our hand-picked study resources are on their way."
-            />
-          </div>
-        )}
-      </div>
-    </Section>
+    <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
+      {isLoading
+        ? Array.from({ length: 3 }, (_, i) => <ShimmerNoteCard key={i} />)
+        : groups.length
+          ? groups.slice(0, 3).map((g) => <GroupCard key={g.id} group={g} />)
+          : (
+            <div className="col-span-full">
+              <EmptyState icon={BookOpen} title="Bundles coming soon" description="Value-packed collections are being assembled." />
+            </div>
+          )}
+    </div>
   );
 }
 
-function FreeNotesSection({
-  notes,
-}: {
-  notes?: { id: string; slug: string; [key: string]: unknown }[];
-}) {
+function StepsGrid({ steps }: { steps: { num: string; title: string; desc: string }[] }) {
   return (
-    <Section className="bg-brand-green-soft/30">
-      <SectionHeading
-        eyebrow="Start free"
-        title="Build momentum with free developer notes"
-        description="Download selected resources instantly, no account required."
-        action={
-          <Button render={<Link href="/notes?pricing=free" />} variant="outline">
-            See free notes
-            <ArrowRight aria-hidden="true" />
-          </Button>
-        }
-      />
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {notes?.length ? (
-          notes
-            .slice(0, 3)
-            .map((note) => (
-              <NoteCard key={note.id} note={note as never} />
-            ))
-        ) : (
-          <div className="sm:col-span-2 lg:col-span-3">
-            <EmptyState
-              icon={Download}
-              title="Free resources are on their way"
-              description="Check back soon for notes you can download immediately."
-            />
-          </div>
-        )}
-      </div>
-    </Section>
+    <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      {steps.map(({ num, title, desc }) => (
+        <div key={num} className="rounded-xl border border-border/60 bg-card p-4">
+          <span className="mb-2 block font-heading text-3xl font-black tracking-tighter text-primary/15">
+            {num}
+          </span>
+          <h3 className="mb-1 text-sm font-semibold">{title}</h3>
+          <p className="text-xs leading-relaxed text-muted-foreground">{desc}</p>
+        </div>
+      ))}
+    </div>
   );
 }
 
-function BundlesSection({
-  groups,
-}: {
-  groups?: { id: string; slug: string; [key: string]: unknown }[];
-}) {
+function TrustGrid({ items }: { items: { icon: React.ComponentType<{ className?: string }>; label: string }[] }) {
   return (
-    <Section>
-      <SectionHeading
-        eyebrow="Save with bundles"
-        title="One topic, one complete pack"
-        action={
-          <Button render={<Link href="/groups" />} variant="outline">
-            View bundles
-            <ArrowRight aria-hidden="true" />
-          </Button>
-        }
-      />
-      <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {groups?.length ? (
-          groups
-            .slice(0, 3)
-            .map((group) => (
-              <GroupCard key={group.id} group={group as never} />
-            ))
-        ) : (
-          <div className="md:col-span-2 lg:col-span-3">
-            <EmptyState
-              icon={BookOpen}
-              title="Bundles will appear here"
-              description="We are putting together focused collections to simplify your revision."
-            />
-          </div>
-        )}
-      </div>
-    </Section>
+    <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+      {items.map(({ icon: Icon, label }) => (
+        <div key={label} className="flex items-center gap-3 rounded-xl border border-border/60 bg-card px-4 py-3">
+          <Icon aria-hidden="true" className="size-4 shrink-0 text-primary" />
+          <span className="text-sm font-medium">{label}</span>
+        </div>
+      ))}
+    </div>
   );
 }
 
-function HowItWorksSection() {
+function CTABanner() {
   return (
-    <Section className="bg-muted/50">
-      <SectionHeading eyebrow="Simple by design" title="From topic discovery to delivery" />
-      <div className="grid gap-5 md:grid-cols-3">
-        {HOW_IT_WORKS.map(({ icon: Icon, title, description }, index) => (
-          <Card key={title} className="rounded-2xl border">
-            <CardContent className="space-y-4">
-              <span className="inline-flex size-10 items-center justify-center rounded-xl bg-primary/10 font-bold text-primary">
-                {index + 1}
-              </span>
-              <Icon aria-hidden="true" className="size-6 text-primary" />
-              <h3 className="text-lg font-semibold">{title}</h3>
-              <p className="text-sm leading-relaxed text-muted-foreground">
-                {description}
-              </p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-function TrustSection() {
-  return (
-    <Section>
-      <SectionHeading
-        eyebrow="Why learners trust us"
-        title="Prepared with care, delivered securely"
-      />
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {TRUST_ITEMS.map(({ icon: Icon, label }) => (
-          <Card key={label} className="rounded-2xl">
-            <CardContent className="flex items-center gap-3">
-              <Icon aria-hidden="true" className="size-5 text-primary" />
-              <span className="font-medium">{label}</span>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </Section>
-  );
-}
-
-function FaqSection() {
-  return (
-    <Section className="bg-muted/50">
-      <div className="mx-auto max-w-3xl">
-        <SectionHeading eyebrow="Questions" title="Frequently asked questions" />
-        <Accordion
-          className="rounded-2xl border bg-card px-5"
-          defaultValue={["faq-0"]}
-        >
-          {FAQS.map(([question, answer], index) => (
-            <AccordionItem key={question} value={`faq-${index}`}>
-              <AccordionTrigger>{question}</AccordionTrigger>
-              <AccordionContent>{answer}</AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </div>
-    </Section>
-  );
-}
-
-function CtaBanner() {
-  return (
-    <Section>
-      <div className="relative overflow-hidden rounded-[3rem] border border-border/80 bg-gradient-to-br from-primary/16 via-card to-accent/10 p-10 text-foreground shadow-sm md:p-16 lg:p-24">
-        <div className="absolute inset-0 bg-gradient-to-t from-background/75 to-transparent" />
-        <div className="absolute -top-24 -right-24 h-96 w-96 rounded-full bg-primary/10 blur-[100px]" />
-        <div className="absolute -bottom-24 -left-24 h-96 w-96 rounded-full bg-accent/10 blur-[100px]" />
-
-        <div className="relative z-10 mx-auto max-w-3xl text-center space-y-8">
-          <p className="text-sm font-bold tracking-widest uppercase text-primary">
-            Ready when you are
-          </p>
-          <h2 className="font-heading text-4xl font-black tracking-tight md:text-5xl lg:text-6xl drop-shadow-md">
-            Find the notes that make building feel easier.
-          </h2>
-          <div className="pt-4 flex justify-center">
-            <Button render={<Link href="/notes" />} size="lg" className="h-14 rounded-full bg-primary px-10 text-lg font-bold text-primary-foreground">
-              Browse the catalogue
-              <ArrowRight aria-hidden="true" className="ml-2" />
-            </Button>
+    <section className="py-12 md:py-16">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="relative overflow-hidden rounded-3xl border border-border/60 bg-gradient-to-br from-primary/10 via-card to-accent/8 px-6 py-12 text-center shadow-sm md:px-10 md:py-16">
+          <div className="absolute -top-24 -right-24 size-64 rounded-full bg-primary/6 blur-[100px]" />
+          <div className="absolute -bottom-24 -left-24 size-64 rounded-full bg-accent/6 blur-[100px]" />
+          <div className="relative z-10 max-w-xl mx-auto space-y-4">
+            <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">Ready?</p>
+            <h2 className="font-heading text-2xl font-black tracking-tight md:text-3xl lg:text-4xl">
+              Start learning smarter today.
+            </h2>
+            <p className="text-sm leading-relaxed text-muted-foreground md:text-base">
+              Join thousands of developers who accelerated their growth with curated notes.
+            </p>
+            <div className="flex justify-center gap-3 pt-1">
+              <Button
+                render={<Link href="/notes" />}
+                size="lg"
+                className="h-11 rounded-full bg-primary px-7 text-sm font-semibold text-primary-foreground"
+              >
+                Browse notes
+                <ArrowRight aria-hidden="true" className="ml-2 size-4" />
+              </Button>
+              <Button
+                render={<Link href="/contact" />}
+                variant="outline"
+                size="lg"
+                className="h-11 rounded-full px-7 text-sm font-semibold"
+              >
+                Contact support
+              </Button>
+            </div>
           </div>
         </div>
       </div>
-    </Section>
+    </section>
   );
 }
 
-export function HomePage() {
-  const home = useHome();
-
-  if (home.isError) {
-    return (
-      <Section>
-        <ErrorState
-          message="We could not load the latest catalogue."
-          onRetry={() => home.refetch()}
-        />
-      </Section>
-    );
-  }
-
-  const data = home.data;
-
+function FAQAccordion() {
   return (
-    <>
-      <HeroSection stats={data?.stats} />
-      <CategoryStrip
-        categories={data?.categories}
-        isLoading={home.isPending}
-      />
-      <FeaturedNotesSection
-        notes={data?.featuredNotes}
-        isLoading={home.isPending}
-      />
-      <FreeNotesSection notes={data?.freeNotes} />
-      <BundlesSection groups={data?.featuredGroups} />
-      <HowItWorksSection />
-      <TrustSection />
-      <FaqSection />
-      <CtaBanner />
-    </>
+    <Accordion defaultValue={["faq-0"]} className="rounded-2xl border bg-card">
+      {FAQS.map(([q, a], i) => (
+        <AccordionItem key={i} value={`faq-${i}`} className="border-b-0 px-5">
+          <AccordionTrigger className="text-sm font-medium py-3">
+            {q}
+          </AccordionTrigger>
+          <AccordionContent className="text-sm text-muted-foreground leading-relaxed pb-3">
+            {a}
+          </AccordionContent>
+        </AccordionItem>
+      ))}
+    </Accordion>
   );
 }

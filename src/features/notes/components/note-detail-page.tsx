@@ -1,14 +1,13 @@
-"use client";
-
 import Image from "next/image";
 import Link from "next/link";
-import { Download, Lock, ShieldCheck } from "lucide-react";
+import { ArrowLeft, Download, Lock, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import { ErrorState } from "@/components/shared/error-state";
 import { GroupCard } from "@/components/shared/group-card";
 import { NoteCard } from "@/components/shared/note-card";
+import { ShimmerLoader } from "@/components/shared/shimmer-loader";
 import { PdfPreviewDialog } from "@/components/shared/pdf-preview-dialog";
 import { PriceTag } from "@/components/shared/price-tag";
 import { StatusBadge } from "@/components/shared/status-badge";
@@ -21,8 +20,14 @@ export function NoteDetailPage({ slug }: { slug: string }) {
 
   if (query.isPending) {
     return (
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="h-96 animate-pulse rounded-3xl bg-muted" />
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div className="space-y-4">
+          <ShimmerLoader className="h-4 w-48" />
+          <ShimmerLoader className="h-56 w-full rounded-2xl" />
+          <ShimmerLoader className="h-6 w-3/4" />
+          <ShimmerLoader className="h-4 w-full" />
+          <ShimmerLoader className="h-4 w-2/3" />
+        </div>
       </div>
     );
   }
@@ -41,80 +46,83 @@ export function NoteDetailPage({ slug }: { slug: string }) {
   const { note, groups, relatedNotes } = query.data;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-      <nav aria-label="Breadcrumb" className="mb-6 text-sm text-muted-foreground">
-        <Link href="/" className="text-muted-foreground">
-          Home
-        </Link>
-        <span className="px-2">/</span>
-        <Link href="/notes" className="text-muted-foreground">
-          Notes
-        </Link>
-        <span className="px-2">/</span>
-        <span className="text-foreground font-medium">{note.title}</span>
+    <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
+      <nav aria-label="Breadcrumb" className="mb-4 text-xs text-muted-foreground">
+        <Link href="/" className="text-muted-foreground">Home</Link>
+        <span className="mx-1.5 text-muted-foreground/50">/</span>
+        <Link href="/notes" className="text-muted-foreground">Notes</Link>
+        <span className="mx-1.5 text-muted-foreground/50">/</span>
+        <span className="font-medium text-foreground">{note.title}</span>
       </nav>
 
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        <article className="min-w-0 space-y-7">
-          {note.coverImageUrl ? (
-            <div className="relative aspect-[16/9] w-full overflow-hidden rounded-3xl border shadow-sm brand-gradient-soft">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <article className="space-y-5">
+          <div className="relative aspect-[19/8] w-full overflow-hidden rounded-xl border border-border/60 bg-muted/40">
+            {note.coverImageUrl ? (
               <Image
                 src={note.coverImageUrl}
-                alt={`Cover for ${note.title}`}
+                alt=""
                 fill
                 sizes="(max-width: 1024px) 100vw, 66vw"
                 className="object-cover"
               />
-            </div>
-          ) : (
-            <div className="aspect-[16/9] rounded-3xl brand-gradient-soft shadow-sm flex items-center justify-center text-primary/40">
-              <span className="text-sm font-medium">Study Note Document</span>
-            </div>
-          )}
-          <div className="space-y-4">
-            <div className="flex flex-wrap gap-2">
-              <Badge variant="secondary">{note.category.name}</Badge>
+            ) : (
+              <div className="flex h-full items-center justify-center text-primary/30">
+                <span className="text-xs font-medium">Study Note Document</span>
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge variant="secondary" className="h-5 rounded-full px-2 text-[10px] font-medium">
+                {note.category.name}
+              </Badge>
               <StatusBadge type="level" value={note.level} />
+              {note.pricingType === "paid" && (
+                <Badge variant="secondary" className="h-5 rounded-full bg-accent/15 px-2 text-[10px] font-medium text-accent-foreground">
+                  Premium
+                </Badge>
+              )}
             </div>
 
-            <h1 className="font-heading text-3xl font-bold tracking-tight md:text-5xl">
+            <h1 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">
               {note.title}
             </h1>
 
-            <div className="flex flex-wrap gap-3 text-sm text-muted-foreground">
-              <span>{note.pageCount ? `${note.pageCount} pages` : "Study resource"}</span>
-              {note.fileSizeLabel ? <span>• {note.fileSizeLabel}</span> : null}
-              <span>• {note.downloadCount} downloads</span>
+            <div className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+              {note.pageCount ? <span>{note.pageCount} pages</span> : null}
+              {note.pageCount && note.fileSizeLabel ? <span className="text-muted-foreground/50">·</span> : null}
+              {note.fileSizeLabel ? <span>{note.fileSizeLabel}</span> : null}
+              <span className="text-muted-foreground/50">·</span>
+              <span>{note.downloadCount} downloads</span>
             </div>
 
-            <p className="max-w-3xl text-base leading-relaxed text-muted-foreground">
+            <p className="text-sm leading-relaxed text-muted-foreground">
               {note.description}
             </p>
 
-            <div className="flex flex-wrap gap-2 pt-2">
-              {note.tags.map((tag) => (
-                <Badge key={tag} variant="outline">
-                  {tag}
-                </Badge>
-              ))}
-            </div>
+            {note.tags.length > 0 && (
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {note.tags.map((tag) => (
+                  <Badge key={tag} variant="outline" className="text-[10px]">
+                    {tag}
+                  </Badge>
+                ))}
+              </div>
+            )}
           </div>
         </article>
 
-        <aside className="lg:sticky lg:top-24 lg:self-start">
-          <Card className="rounded-3xl border shadow-sm">
-            <CardContent className="space-y-5 p-6">
-              <PriceTag
-                price={note.price}
-                priceLabel={note.priceLabel}
-                compareAtPrice={note.compareAtPrice}
-                size="large"
-              />
+        <aside className="lg:sticky lg:top-16 lg:self-start">
+          <Card className="rounded-xl border border-border/60">
+            <CardContent className="space-y-4 p-4">
+              <PriceTag price={note.price} priceLabel={note.priceLabel} compareAtPrice={note.compareAtPrice} size="large" />
 
               {note.pricingType === "free" ? (
                 <>
                   <Button
-                    className="w-full"
+                    className="w-full rounded-lg"
                     size="lg"
                     disabled={isDownloading}
                     onClick={() =>
@@ -133,42 +141,42 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                       </>
                     )}
                   </Button>
-                  <p className="text-center text-sm text-muted-foreground">
+                  <p className="text-center text-[10px] text-muted-foreground">
                     No sign-up required. Instant download.
                   </p>
                 </>
               ) : (
                 <>
-                  <div className="rounded-2xl border bg-muted/50 p-4">
-                    <Lock aria-hidden="true" className="mb-2 size-5 text-primary" />
-                    <p className="font-semibold">Full notes locked</p>
-                    <p className="mt-1 text-sm text-muted-foreground">
+                  <div className="rounded-lg border border-border/60 bg-muted/30 p-3">
+                    <Lock aria-hidden="true" className="mb-1.5 size-4 text-primary" />
+                    <p className="text-sm font-semibold">Full notes locked</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">
                       Review the preview, then buy to receive your complete notes.
                     </p>
                   </div>
 
-                  {note.hasPreview ? (
+                  {note.hasPreview && (
                     <PdfPreviewDialog
                       url={`/api/notes/${note.slug}/preview?mode=view`}
                       filename={`${note.slug}-preview.pdf`}
                     />
-                  ) : null}
+                  )}
 
                   <Button
                     render={<Link href={`/checkout/${note.slug}`} />}
                     size="lg"
-                    className="w-full"
+                    className="w-full rounded-lg"
                   >
                     Buy now — {note.priceLabel}
                   </Button>
-                  <p className="text-sm leading-relaxed text-muted-foreground">
-                    Delivered to your Instagram, WhatsApp, or email within 4–6 hours of payment.
+                  <p className="text-center text-[10px] leading-relaxed text-muted-foreground">
+                    Delivered to your Instagram, WhatsApp, or email within 4–6 hours.
                   </p>
                 </>
               )}
 
-              <div className="flex items-center gap-2 border-t pt-4 text-xs text-muted-foreground">
-                <ShieldCheck aria-hidden="true" className="size-4 text-primary shrink-0" />
+              <div className="flex items-center justify-center gap-1.5 border-t border-border/60 pt-3 text-[10px] text-muted-foreground">
+                <ShieldCheck aria-hidden="true" className="size-3 text-primary shrink-0" />
                 <span>Secure payment · Original content · No spam</span>
               </div>
             </CardContent>
@@ -176,27 +184,27 @@ export function NoteDetailPage({ slug }: { slug: string }) {
         </aside>
       </div>
 
-      {groups.length ? (
-        <section className="mt-16 border-t pt-12">
-          <h2 className="mb-6 text-2xl font-bold tracking-tight">Also in these bundles</h2>
-          <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+      {groups.length > 0 && (
+        <section className="mt-10 border-t border-border/40 pt-8">
+          <h2 className="mb-4 font-heading text-base font-bold tracking-tight">Also in these bundles</h2>
+          <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3">
             {groups.map((group) => (
               <GroupCard key={group.id} group={group} />
             ))}
           </div>
         </section>
-      ) : null}
+      )}
 
-      {relatedNotes.length ? (
-        <section className="mt-16 border-t pt-12">
-          <h2 className="mb-6 text-2xl font-bold tracking-tight">Related notes</h2>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+      {relatedNotes.length > 0 && (
+        <section className="mt-10 border-t border-border/40 pt-8">
+          <h2 className="mb-4 font-heading text-base font-bold tracking-tight">Related notes</h2>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {relatedNotes.map((related) => (
               <NoteCard key={related.id} note={related} />
             ))}
           </div>
         </section>
-      ) : null}
+      )}
     </div>
   );
 }

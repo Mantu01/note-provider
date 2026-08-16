@@ -2,25 +2,22 @@ import { FolderOpen, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import { Empty, EmptyContent, EmptyDescription, EmptyHeader, EmptyMedia, EmptyTitle } from "@/components/ui/empty";
 
-export function EmptyState({
-  icon: Icon = FolderOpen,
-  title,
-  description,
-  action,
-}: {
+type EmptyStateProps = {
   icon?: LucideIcon;
   title: string;
   description: string;
   action?: ReactNode;
-}) {
+};
+
+export function EmptyState({ icon: Icon = FolderOpen, title, description, action }: EmptyStateProps) {
   return (
     <Empty className="min-h-64 border">
       <EmptyHeader>
-        {Icon ? (
+        {Icon && (
           <EmptyMedia variant="icon">
-            <Icon aria-hidden="true" />
+            <Icon aria-hidden="true" className="size-5" />
           </EmptyMedia>
-        ) : null}
+        )}
         <EmptyTitle>{title}</EmptyTitle>
         <EmptyDescription>{description}</EmptyDescription>
       </EmptyHeader>

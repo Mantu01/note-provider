@@ -33,8 +33,8 @@ vi.mock('@/components/shared/note-card', () => ({
   ),
 }));
 
-vi.mock('@/components/shared/note-card-skeleton', () => ({
-  NoteCardSkeleton: () => <div data-testid='note-skeleton' />,
+vi.mock('@/components/shared/shimmer-loader', () => ({
+  ShimmerNoteCard: () => <div data-testid='note-skeleton' />,
 }));
 
 vi.mock('@/components/shared/empty-state', () => ({
@@ -175,7 +175,7 @@ describe('NotesCatalogue', () => {
 
     renderWithProvider(<NotesCatalogue />);
     await waitFor(() => {
-      expect(screen.getByText(/Showing 1 of 10 notes/)).toBeInTheDocument();
+      expect(screen.getByText('10 notes')).toBeInTheDocument();
     });
   });
 
@@ -188,7 +188,7 @@ describe('NotesCatalogue', () => {
     } as any);
 
     renderWithProvider(<NotesCatalogue />);
-    expect(screen.getByText(/Loading notes/)).toBeInTheDocument();
+    expect(screen.getByText(/Loading/)).toBeInTheDocument();
   });
 
   it('respects list view from query state', () => {

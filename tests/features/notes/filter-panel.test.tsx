@@ -131,7 +131,7 @@ describe('FilterPanel', () => {
     } as any);
 
     render(<FilterPanel />);
-    expect(screen.getByTestId('error-retry')).toBeInTheDocument();
+    expect(screen.getByText('Could not load filter options.')).toBeInTheDocument();
   });
 
   it('calls setFilter when search input changes', () => {
