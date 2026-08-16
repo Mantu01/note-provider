@@ -10,13 +10,9 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ErrorState } from "@/components/shared/error-state";
 import { useFilters } from "@/features/notes/api/use-filters";
 import { useNotesQueryState } from "@/features/notes/hooks/use-notes-query-state";
 import { cn } from "@/lib/utils";
-
-type CategoryOption = { name: string; slug: string; count: number };
-type LevelOption = { value: string; label: string; count: number };
 
 interface FilterPanelProps {
   className?: string;
@@ -36,7 +32,7 @@ export function FilterPanel({ className }: FilterPanelProps) {
 
   if (filters.isError) {
     return (
-      <div className={cn("rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive", className)}>
+      <div className={cn("rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-xs text-destructive", className)}>
         Could not load filter options.
       </div>
     );
@@ -45,18 +41,18 @@ export function FilterPanel({ className }: FilterPanelProps) {
   const data = filters.data;
 
   return (
-    <aside className={cn("space-y-5", className)}>
-      <div className="space-y-3">
+    <aside className={cn("space-y-4", className)}>
+      <div className="space-y-2.5">
         <div className="relative">
           <Search
             aria-hidden="true"
-            className="pointer-events-none absolute top-1/2 left-3 size-3.5 -translate-y-1/2 text-muted-foreground"
+            className="pointer-events-none absolute top-1/2 left-2.5 size-3 -translate-y-1/2 text-muted-foreground"
           />
           <Input
             value={state.q}
             onChange={(event) => setFilter({ q: event.target.value })}
             placeholder="Search notes or tags"
-            className="h-9 pl-8 rounded-lg text-sm"
+            className="h-8 pl-7 rounded-lg text-xs"
           />
           <Button
             type="button"
@@ -69,18 +65,18 @@ export function FilterPanel({ className }: FilterPanelProps) {
               !state.q && "hidden",
             )}
           >
-            <X aria-hidden="true" className="size-3.5" />
+            <X aria-hidden="true" className="size-3" />
           </Button>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-1.5">
           <Select
             value={state.sort}
             onValueChange={(value) =>
               setFilter({ sort: value as typeof state.sort })
             }
           >
-            <SelectTrigger className="rounded-lg flex-1 h-9 text-sm">
+            <SelectTrigger className="rounded-lg flex-1 h-8 text-xs">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
@@ -101,7 +97,7 @@ export function FilterPanel({ className }: FilterPanelProps) {
               aria-label="Grid view"
               onClick={() => setFilter({ view: "grid" })}
             >
-              <Grid2X2 aria-hidden="true" className="size-3.5" />
+              <Grid2X2 aria-hidden="true" className="size-3" />
             </Button>
             <Button
               type="button"
@@ -110,7 +106,7 @@ export function FilterPanel({ className }: FilterPanelProps) {
               aria-label="List view"
               onClick={() => setFilter({ view: "list" })}
             >
-              <List aria-hidden="true" className="size-3.5" />
+              <List aria-hidden="true" className="size-3" />
             </Button>
           </div>
         </div>
@@ -118,65 +114,65 @@ export function FilterPanel({ className }: FilterPanelProps) {
 
       {activeFilterCount > 0 && (
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold">Filters</h2>
+          <h2 className="text-xs font-semibold">Filters</h2>
           <Button
             type="button"
             variant="ghost"
             size="sm"
             onClick={clearFilters}
-            className="h-7 text-xs text-muted-foreground"
+            className="h-6 text-[10px] text-muted-foreground"
           >
             Clear all
           </Button>
         </div>
       )}
 
-      <div className="space-y-2 border-t pt-4">
-        <h3 className="text-[10px] font-semibold tracking-wide uppercase text-muted-foreground">
+      <div className="space-y-1.5 border-t pt-3">
+        <h3 className="text-[9px] font-semibold tracking-wide uppercase text-muted-foreground">
           Categories
         </h3>
         {data?.categories.map((category) => (
           <Label
             key={category.slug}
-            className="flex cursor-pointer items-center justify-between gap-2 p-1.5 rounded-md text-sm"
+            className="flex cursor-pointer items-center justify-between gap-2 p-1 rounded-md text-xs"
           >
-            <span className="flex items-center gap-2">
+            <span className="flex items-center gap-1.5">
               <Checkbox
                 checked={state.category.includes(category.slug)}
                 onCheckedChange={() => toggle("category", category.slug)}
               />
               <span className="truncate">{category.name}</span>
             </span>
-            <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">
+            <span className="text-[9px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">
               {category.count}
             </span>
           </Label>
         ))}
       </div>
 
-      <div className="space-y-2 border-t pt-4">
-        <h3 className="text-[10px] font-semibold tracking-wide uppercase text-muted-foreground">
+      <div className="space-y-1.5 border-t pt-3">
+        <h3 className="text-[9px] font-semibold tracking-wide uppercase text-muted-foreground">
           Level
         </h3>
         {data?.levels.map((level) => (
           <Label
             key={level.value}
-            className="flex cursor-pointer items-center justify-between gap-2 p-1.5 rounded-md text-sm"
+            className="flex cursor-pointer items-center justify-between gap-2 p-1 rounded-md text-xs"
           >
-            <span className="flex items-center gap-2">
+            <span className="flex items-center gap-1.5">
               <Checkbox
                 checked={state.level.includes(level.value)}
                 onCheckedChange={() => toggle("level", level.value)}
               />
               {level.label}
             </span>
-            <span className="text-[10px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">{level.count}</span>
+            <span className="text-[9px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">{level.count}</span>
           </Label>
         ))}
       </div>
 
-      <div className="space-y-2 border-t pt-4">
-        <h3 className="text-[10px] font-semibold tracking-wide uppercase text-muted-foreground">
+      <div className="space-y-1.5 border-t pt-3">
+        <h3 className="text-[9px] font-semibold tracking-wide uppercase text-muted-foreground">
           Pricing
         </h3>
         <Select
@@ -185,7 +181,7 @@ export function FilterPanel({ className }: FilterPanelProps) {
             setFilter({ pricing: value === "all" || !value ? "" : value })
           }
         >
-          <SelectTrigger className="w-full rounded-lg h-9 text-sm">
+          <SelectTrigger className="w-full rounded-lg h-8 text-xs">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

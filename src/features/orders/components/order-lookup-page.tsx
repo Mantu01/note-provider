@@ -46,27 +46,27 @@ export function OrderLookupPage() {
   };
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-16 sm:px-6">
-      <div className="text-center space-y-3">
-        <div className="mx-auto flex size-14 items-center justify-center rounded-2xl brand-gradient-soft text-primary shadow-sm">
-          <PackageCheck className="size-7" />
+    <div className="mx-auto max-w-xl px-4 py-12 sm:px-6">
+      <div className="text-center space-y-2.5">
+        <div className="mx-auto flex size-12 items-center justify-center rounded-xl brand-gradient-soft text-primary">
+          <PackageCheck className="size-6" />
         </div>
-        <h1 className="text-3xl font-bold tracking-tight">Track Your Order</h1>
-        <p className="text-muted-foreground text-balance">
-          Enter your unique order number (e.g. <code className="rounded bg-muted px-1.5 py-0.5 text-xs font-mono font-semibold text-foreground">NP-20260810-0001</code>) to check your payment and delivery status anytime.
+        <h1 className="text-xl font-bold tracking-tight md:text-2xl">Track Your Order</h1>
+        <p className="text-sm text-muted-foreground text-balance">
+          Enter your order number (e.g. <code className="rounded bg-muted px-1 py-0.5 text-[10px] font-mono font-semibold text-foreground">NP-20260810-0001</code>) to check status.
         </p>
       </div>
 
-      <Card className="mt-8 rounded-3xl border border-border shadow-lg">
+      <Card className="mt-6 rounded-2xl border border-border">
         <CardHeader>
-          <CardTitle className="text-lg">Look up order</CardTitle>
-          <CardDescription>
-            You can find your order number on your payment receipt or order confirmation page.
+          <CardTitle className="text-sm">Look up order</CardTitle>
+          <CardDescription className="text-xs">
+            Find your order number on your payment receipt or order confirmation.
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-            <div className="space-y-2">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
+            <div className="space-y-1.5">
               <Label htmlFor="orderNumber">Order Number</Label>
               <div className="flex gap-2">
                 <Input
@@ -78,27 +78,27 @@ export function OrderLookupPage() {
                 />
                 <Button type="submit" disabled={lookup.isPending} className="shrink-0">
                   {lookup.isPending ? (
-                    <Loader2 aria-hidden="true" className="size-4 animate-spin" />
+                    <Loader2 aria-hidden="true" className="size-3.5 animate-spin" />
                   ) : (
                     <>
-                      <Search aria-hidden="true" className="mr-2 size-4" />
+                      <Search aria-hidden="true" className="mr-1.5 size-3.5" />
                       Search
                     </>
                   )}
                 </Button>
               </div>
               {form.formState.errors.orderNumber?.message && (
-                <p className="text-sm text-destructive">
+                <p className="text-xs text-destructive">
                   {form.formState.errors.orderNumber.message}
                 </p>
               )}
             </div>
           </form>
 
-          <div className="mt-6 flex items-start gap-3 rounded-2xl bg-muted/40 p-4 text-xs text-muted-foreground">
-            <ShieldCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />
+          <div className="mt-5 flex items-start gap-2.5 rounded-xl bg-muted/30 p-3 text-[10px] text-muted-foreground">
+            <ShieldCheck aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-primary" />
             <p>
-              Orders stay pending until reviewed and fulfilled by the admin team within 4–6 hours. You can check this page as many times as you like.
+              Orders stay pending until reviewed and fulfilled within 4–6 hours. Check this page anytime.
             </p>
           </div>
         </CardContent>

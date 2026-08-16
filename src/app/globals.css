@@ -169,4 +169,90 @@
       0 0 0 1px var(--surface-glass-border),
       0 8px 32px -8px var(--brand-green);
   }
+
+  .card-elevated {
+    background: var(--card);
+    border: 1px solid var(--surface-glass-border);
+    box-shadow:
+      0 1px 2px oklch(0 0 0 / 4%),
+      0 4px 16px -4px oklch(0 0 0 / 6%);
+  }
+
+  .section-divider {
+    height: 1px;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      var(--surface-glass-border) 30%,
+      var(--surface-glass-border) 70%,
+      transparent 100%
+    );
+  }
+
+  .hide-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@keyframes shimmer-slide {
+  0% {
+    transform: translate3d(-100%, 0, 0);
+  }
+  100% {
+    transform: translate3d(100%, 0, 0);
+  }
+}
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 12px, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@layer utilities {
+  .shimmer-premium {
+    position: relative;
+    overflow: hidden;
+    background: var(--muted);
+    border-radius: var(--radius-lg);
+  }
+  .shimmer-premium::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      90deg,
+      transparent 0%,
+      oklch(1 0 0 / 8%) 40%,
+      oklch(1 0 0 / 14%) 50%,
+      oklch(1 0 0 / 8%) 60%,
+      transparent 100%
+    );
+    animation: shimmer-slide 1.8s ease-in-out infinite;
+    will-change: transform;
+  }
+
+  .animate-fade-in-up {
+    animation: fade-in-up 0.4s ease-out both;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .shimmer-premium::after {
+    animation: none;
+  }
+  .animate-fade-in-up {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
 }

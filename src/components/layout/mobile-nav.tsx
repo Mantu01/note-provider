@@ -34,19 +34,19 @@ export function MobileNav() {
             variant="ghost"
             size="icon"
             aria-label="Open navigation menu"
-            className="md:hidden"
+            className="size-7 md:hidden"
           />
         }
       >
-        <Menu aria-hidden="true" className="size-5" />
+        <Menu aria-hidden="true" className="size-4" />
       </SheetTrigger>
-      <SheetContent side="right" className="w-[min(20rem,88vw)] p-0">
-        <SheetHeader className="border-b px-5 py-4">
+      <SheetContent side="right" className="w-[min(18rem,88vw)] p-0">
+        <SheetHeader className="border-b px-4 py-3">
           <SheetTitle>
-            <Logo />
+            <Logo size="sm" />
           </SheetTitle>
         </SheetHeader>
-        <nav aria-label="Mobile navigation" className="flex flex-1 flex-col gap-0.5 p-3">
+        <nav aria-label="Mobile navigation" className="flex flex-1 flex-col gap-0.5 p-2.5">
           {links.map((link) => {
             const isActive =
               link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
@@ -55,7 +55,7 @@ export function MobileNav() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "rounded-lg px-3 py-2.5 text-base font-medium transition-colors",
+                  "rounded-lg px-3 py-2 text-sm font-medium",
                   isActive
                     ? "bg-primary/10 text-primary"
                     : "text-muted-foreground",
@@ -66,10 +66,10 @@ export function MobileNav() {
             );
           })}
         </nav>
-        <div className="border-t p-3">
+        <div className="border-t p-2.5">
           <Link
             href="/notes"
-            className="block rounded-xl bg-primary px-4 py-2.5 text-center text-sm font-semibold text-primary-foreground"
+            className="block rounded-xl bg-primary px-4 py-2 text-center text-xs font-semibold text-primary-foreground"
           >
             Browse notes
           </Link>

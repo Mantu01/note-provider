@@ -31,19 +31,19 @@ const PLATFORM_HINTS = {
 
 function CheckoutSkeleton() {
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10">
-      <div className="h-96 animate-pulse rounded-3xl bg-muted" />
+    <div className="mx-auto max-w-5xl px-4 py-8">
+      <div className="h-80 shimmer-premium rounded-2xl" />
     </div>
   );
 }
 
 function FreeNoteGuard({ slug }: { slug: string }) {
   return (
-    <div className="mx-auto max-w-xl px-4 py-16">
-      <Card className="rounded-3xl">
-        <CardContent className="space-y-4 text-center">
-          <h1 className="text-2xl font-bold">This note is free</h1>
-          <p className="text-muted-foreground">
+    <div className="mx-auto max-w-xl px-4 py-12">
+      <Card className="rounded-2xl">
+        <CardContent className="space-y-3 text-center">
+          <h1 className="text-xl font-bold">This note is free</h1>
+          <p className="text-sm text-muted-foreground">
             Free notes are ready for immediate download and do not need checkout.
           </p>
           <Button render={<Link href={`/notes/${slug}`} />}>Go to note</Button>
@@ -70,10 +70,10 @@ function OrderSummaryCard({
 }) {
   return (
     <aside className="order-first lg:order-last">
-      <Card className="rounded-3xl lg:sticky lg:top-24">
-        <CardContent className="space-y-5">
-          <p className="text-sm font-semibold">Order summary</p>
-          <div className="relative aspect-video overflow-hidden rounded-2xl brand-gradient-soft">
+      <Card className="rounded-2xl lg:sticky lg:top-16">
+        <CardContent className="space-y-4">
+          <p className="text-xs font-semibold">Order summary</p>
+          <div className="relative aspect-video overflow-hidden rounded-xl brand-gradient-soft">
             {coverImageUrl ? (
               <Image
                 src={coverImageUrl}
@@ -83,26 +83,26 @@ function OrderSummaryCard({
                 className="object-cover"
               />
             ) : (
-              <div className="flex h-full items-center justify-center text-primary/60">
-                <FileText className="size-10" />
+              <div className="flex h-full items-center justify-center text-primary/40">
+                <FileText className="size-8" />
               </div>
             )}
           </div>
           <div>
-            <h2 className="font-semibold">{title}</h2>
-            <p className="mt-1 text-sm text-muted-foreground">{categoryName}</p>
+            <h2 className="text-sm font-semibold">{title}</h2>
+            <p className="mt-0.5 text-xs text-muted-foreground">{categoryName}</p>
           </div>
-          <div className="border-y py-4">
+          <div className="border-y py-3">
             <PriceTag
               price={price}
               priceLabel={priceLabel}
               compareAtPrice={compareAtPrice}
             />
           </div>
-          <p className="flex gap-2 text-sm leading-relaxed text-muted-foreground">
+          <p className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
             <ShieldCheck
               aria-hidden="true"
-              className="mt-0.5 size-4 shrink-0 text-primary"
+              className="mt-0.5 size-3.5 shrink-0 text-primary"
             />
             Delivered within 4–6 hours after successful payment.
           </p>
@@ -189,7 +189,7 @@ export function CheckoutPage({
 
   if (itemQuery.isError || !item) {
     return (
-      <div className="mx-auto max-w-5xl px-4 py-10">
+      <div className="mx-auto max-w-5xl px-4 py-8">
         <ErrorState
           message="This item is unavailable for checkout."
           onRetry={() => itemQuery.refetch()}
@@ -205,32 +205,32 @@ export function CheckoutPage({
   const submitting = createOrder.isPending || isLoading;
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6">
+    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
       <Link
         href={itemType === "group" ? `/groups/${slug}` : `/notes/${slug}`}
-        className="inline-flex items-center gap-2 text-sm text-muted-foreground"
+        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground"
       >
-        <ArrowLeft aria-hidden="true" className="size-4" />
+        <ArrowLeft aria-hidden="true" className="size-3.5" />
         Back to item
       </Link>
 
-      <div className="mt-6 grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        <form onSubmit={form.handleSubmit(submit)} className="space-y-6">
+      <div className="mt-5 grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <form onSubmit={form.handleSubmit(submit)} className="space-y-5">
           <div>
-            <p className="text-sm font-semibold tracking-wide text-primary uppercase">
+            <p className="text-[10px] font-semibold tracking-wide text-primary uppercase">
               Secure checkout
             </p>
-            <h1 className="mt-2 text-3xl font-bold tracking-tight">
+            <h1 className="mt-1.5 text-xl font-bold tracking-tight md:text-2xl">
               Where should we deliver your notes?
             </h1>
-            <p className="mt-2 text-muted-foreground">
+            <p className="mt-1.5 text-sm text-muted-foreground">
               We only use these details to fulfil your order.
             </p>
           </div>
 
-          <Card className="rounded-3xl">
-            <CardContent className="space-y-5">
-              <div className="space-y-2">
+          <Card className="rounded-2xl">
+            <CardContent className="space-y-4">
+              <div className="space-y-1.5">
                 <Label htmlFor="fullName">Full name</Label>
                 <Input
                   id="fullName"
@@ -238,7 +238,7 @@ export function CheckoutPage({
                   {...form.register("fullName")}
                 />
                 {form.formState.errors.fullName?.message && (
-                  <p className="text-sm text-destructive">
+                  <p className="text-xs text-destructive">
                     {form.formState.errors.fullName.message}
                   </p>
                 )}
@@ -248,7 +248,7 @@ export function CheckoutPage({
                 name="socialPlatform"
                 control={form.control}
                 render={({ field }) => (
-                  <div className="space-y-2">
+                  <div className="space-y-1.5">
                     <Label>Delivery channel</Label>
                     <Select value={field.value} onValueChange={field.onChange}>
                       <SelectTrigger className="w-full">
@@ -264,14 +264,14 @@ export function CheckoutPage({
                 )}
               />
 
-              <div className="space-y-2">
+              <div className="space-y-1.5">
                 <Label htmlFor="socialHandle">
                   {platform === "email"
                     ? "Email address"
                     : `${platform === "instagram" ? "Instagram" : "WhatsApp"} handle`}
                 </Label>
                 <div className="flex rounded-lg border border-input focus-within:ring-2 focus-within:ring-ring">
-                  <span className="flex items-center border-r px-3 text-sm text-muted-foreground">
+                  <span className="flex items-center border-r px-2.5 text-xs text-muted-foreground">
                     {hints.prefix || "@"}
                   </span>
                   <Input
@@ -283,7 +283,7 @@ export function CheckoutPage({
                   />
                 </div>
                 {form.formState.errors.socialHandle?.message && (
-                  <p className="text-sm text-destructive">
+                  <p className="text-xs text-destructive">
                     {form.formState.errors.socialHandle.message}
                   </p>
                 )}
@@ -293,13 +293,13 @@ export function CheckoutPage({
                 name="consentAccepted"
                 control={form.control}
                 render={({ field }) => (
-                  <div className="flex items-start gap-3">
+                  <div className="flex items-start gap-2.5">
                     <Checkbox
                       id="consent"
                       checked={field.value}
                       onCheckedChange={field.onChange}
                     />
-                    <Label htmlFor="consent" className="leading-relaxed text-muted-foreground">
+                    <Label htmlFor="consent" className="text-xs leading-relaxed text-muted-foreground">
                       I agree to the{" "}
                       <Link href="/terms" className="text-primary underline">
                         Terms
@@ -314,7 +314,7 @@ export function CheckoutPage({
                 )}
               />
               {form.formState.errors.consentAccepted?.message && (
-                <p className="text-sm text-destructive">
+                <p className="text-xs text-destructive">
                   {form.formState.errors.consentAccepted.message}
                 </p>
               )}

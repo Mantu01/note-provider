@@ -11,12 +11,12 @@ export function GroupsPage() {
   const query = useGroups({ limit: 12 });
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mt-6">
-        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+    <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
+      <div className="mt-4">
+        <h1 className="font-heading text-xl font-bold tracking-tight text-foreground">
           Bundles
         </h1>
-        <p className="mt-0.5 text-sm text-muted-foreground">
+        <p className="mt-0.5 text-xs text-muted-foreground">
           {query.data
             ? `${query.data.pagination.total} bundle${query.data.pagination.total !== 1 ? "s" : ""}`
             : "Loading…"}
@@ -24,11 +24,11 @@ export function GroupsPage() {
       </div>
 
       {query.isError ? (
-        <div className="mt-6">
+        <div className="mt-5">
           <ErrorState onRetry={() => query.refetch()} />
         </div>
       ) : (
-        <div className="mt-8 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-3">
           {query.isPending ? (
             Array.from({ length: 6 }, (_, i) => <ShimmerNoteCard key={i} />)
           ) : query.data?.items.length ? (

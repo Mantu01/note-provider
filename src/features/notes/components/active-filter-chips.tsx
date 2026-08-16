@@ -15,12 +15,14 @@ export function ActiveFilterChips({
   if (!chips.length) return null;
 
   return (
-    <div className="mt-4 flex flex-wrap gap-2">
+    <div className="mt-2 flex flex-wrap gap-1.5">
       {chips.map((value) => (
         <Button
           key={value}
           type="button"
           variant="secondary"
+          size="sm"
+          className="h-6 rounded-full px-2 text-[10px]"
           onClick={() => {
             const key = (["category", "level"] as const).find((name) =>
               state[name].includes(value),
@@ -30,7 +32,7 @@ export function ActiveFilterChips({
           }}
         >
           {value}
-          <X aria-hidden="true" />
+          <X aria-hidden="true" className="ml-1 size-3" />
         </Button>
       ))}
     </div>

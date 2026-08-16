@@ -3,13 +3,6 @@
 import { Search, SlidersHorizontal } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Sheet,
   SheetContent,
   SheetHeader,
@@ -19,7 +12,7 @@ import {
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { NoteCard } from "@/components/shared/note-card";
-import { ShimmerLoader, ShimmerNoteCard } from "@/components/shared/shimmer-loader";
+import { ShimmerNoteCard } from "@/components/shared/shimmer-loader";
 import { PaginationBar } from "@/components/shared/pagination-bar";
 import { useNotes } from "@/features/notes/api/use-notes";
 import { useNotesQueryState } from "@/features/notes/hooks/use-notes-query-state";
@@ -45,13 +38,13 @@ export function NotesCatalogue() {
   });
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mt-6 flex items-center justify-between gap-3">
+    <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
+      <div className="mt-4 flex items-center justify-between gap-3">
         <div>
-          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+          <h1 className="font-heading text-xl font-bold tracking-tight text-foreground">
             All Notes
           </h1>
-          <p className="mt-0.5 text-sm text-muted-foreground">
+          <p className="mt-0.5 text-xs text-muted-foreground">
             {notes.data
               ? `${notes.data.pagination.total} note${notes.data.pagination.total !== 1 ? "s" : ""}`
               : "Loading…"}
@@ -62,25 +55,25 @@ export function NotesCatalogue() {
           <SheetTrigger render={<Button
             variant="outline"
             size="sm"
-            className="shrink-0 rounded-full h-9 lg:hidden"
+            className="shrink-0 rounded-full h-8 text-xs lg:hidden"
           >
-            <SlidersHorizontal aria-hidden="true" className="mr-1.5 size-3.5" />
+            <SlidersHorizontal aria-hidden="true" className="mr-1.5 size-3" />
             Filters{activeFilterCount ? ` · ${activeFilterCount}` : ""}
           </Button>} />
           <SheetContent side="left" className="w-[85vw] max-w-sm overflow-y-auto">
             <SheetHeader>
               <SheetTitle>Filters</SheetTitle>
             </SheetHeader>
-            <div className="py-6">
+            <div className="py-4">
               <FilterPanel />
             </div>
           </SheetContent>
         </Sheet>
       </div>
 
-      <div className="mt-6 grid gap-8 lg:grid-cols-[20rem_minmax(0,1fr)]">
+      <div className="mt-5 grid gap-6 lg:grid-cols-[18rem_minmax(0,1fr)]">
         <div className="hidden lg:block">
-          <FilterPanel className="sticky top-20 rounded-2xl border bg-card p-4" />
+          <FilterPanel className="sticky top-16 rounded-xl border bg-card p-3" />
         </div>
 
         <div id="results" className="min-w-0">
@@ -88,7 +81,7 @@ export function NotesCatalogue() {
 
           <div
             className={cn(
-              "mt-5 grid gap-3",
+              "mt-4 grid gap-2.5",
               state.view === "grid"
                 ? "sm:grid-cols-2 xl:grid-cols-3"
                 : "grid-cols-1",
@@ -127,7 +120,7 @@ export function NotesCatalogue() {
           </div>
 
           {notes.data ? (
-            <div className="mt-6">
+            <div className="mt-5">
               <PaginationBar
                 pagination={notes.data.pagination}
                 onPageChange={(page) => setFilter({ page })}

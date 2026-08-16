@@ -1,22 +1,21 @@
-import { Card, CardContent } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ShimmerLoader } from "@/components/shared/shimmer-loader";
 
 export function NoteCardSkeleton() {
   return (
-    <Card className="overflow-hidden rounded-2xl border py-0">
-      <Skeleton className="aspect-[19/6] rounded-none" />
-      <CardContent className="space-y-3 py-4 px-4">
-        <div className="flex gap-2">
-          <Skeleton className="h-4 w-16 rounded-full" />
-          <Skeleton className="h-4 w-14 rounded-full" />
+    <div className="overflow-hidden rounded-xl border border-border/50 bg-card">
+      <ShimmerLoader className="aspect-[16/9] rounded-none" />
+      <div className="space-y-2.5 p-3">
+        <div className="flex gap-1.5">
+          <ShimmerLoader className="h-4 w-14 rounded-full" />
+          <ShimmerLoader className="h-4 w-12 rounded-full" />
         </div>
-        <Skeleton className="h-4 w-4/5" />
-        <Skeleton className="h-3 w-full" />
-        <div className="flex items-end justify-between pt-1">
-          <Skeleton className="h-5 w-16" />
-          <Skeleton className="h-4 w-12" />
+        <ShimmerLoader className="h-4 w-4/5" />
+        <ShimmerLoader className="h-3 w-full" />
+        <div className="flex items-end justify-between pt-0.5">
+          <ShimmerLoader className="h-4 w-14" />
+          <ShimmerLoader className="h-3 w-10" />
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
