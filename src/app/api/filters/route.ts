@@ -6,6 +6,8 @@ import { toPublicNote } from "@/server/mappers/note.mapper";
 import { toPublicCategory } from "@/server/mappers/category.mapper";
 
 export const runtime = "nodejs";
+export const revalidate = 300;
+export const dynamic = "force-dynamic";
 
 export const GET = handler(async () => {
   const [categories, facets] = await Promise.all([

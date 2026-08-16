@@ -41,8 +41,8 @@ const FAQS = [
     "Free notes are available for immediate PDF download. No sign-up is required.",
   ],
   [
-    "Can I preview a paid note?",
-    "Yes. Paid notes include a preview PDF so you can check the structure and quality before buying.",
+    "Which topics do you cover?",
+    "We focus on web development, frontend, backend, DSA, DBMS, system design, and interview-prep topics.",
   ],
   [
     "Which payment methods can I use?",
@@ -68,9 +68,9 @@ const HERO_STATS = [
 const HOW_IT_WORKS = [
   {
     icon: BookOpen,
-    title: "Choose your notes",
+    title: "Choose your topic",
     description:
-      "Browse concise, exam-ready resources by category, subject, and level.",
+      "Browse structured resources for frontend, backend, DSA, DBMS, and system design.",
   },
   {
     icon: CreditCard,
@@ -142,12 +142,12 @@ function HeroSection({
         <div className="max-w-4xl space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-1000">
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-4 py-1.5 text-sm font-medium text-primary shadow-sm backdrop-blur-md">
             <Sparkles aria-hidden="true" className="size-4 text-primary" />
-            <span className="font-bold text-primary">Premium study resources</span>
+            <span className="font-bold text-primary">Developer notes that scale</span>
           </div>
           <h1 className="font-heading text-5xl font-extrabold tracking-tighter md:text-7xl lg:text-8xl">
-            Study smarter with{" "}
+            Learn the stack with{" "}
             <span className="brand-gradient-text">
-              notes that click.
+              notes that ship.
             </span>
           </h1>
           <p className="max-w-2xl text-lg leading-relaxed text-muted-foreground md:text-xl lg:text-2xl font-medium">
@@ -202,8 +202,8 @@ function CategoryStrip({
     <Section className="pt-6">
       <SectionHeading
         eyebrow="Explore"
-        title="Find your subject"
-        description="Focused resources designed to make revision easier."
+        title="Find your stack"
+        description="Focused resources for frontend, backend, DSA, DBMS, and system design."
       />
       <div className="flex gap-4 overflow-x-auto pb-3">
         {categories?.length ? (
@@ -239,7 +239,7 @@ function FeaturedNotesSection({
     <Section>
       <SectionHeading
         eyebrow="Featured"
-        title="Notes worth opening"
+        title="Notes worth keeping"
         action={
           <Button render={<Link href="/notes" />} variant="outline">
             View all
@@ -285,8 +285,8 @@ function FreeNotesSection({
     <Section className="bg-brand-green-soft/30">
       <SectionHeading
         eyebrow="Start free"
-        title="Build momentum with free notes"
-        description="Download selected notes instantly, no account required."
+        title="Build momentum with free developer notes"
+        description="Download selected resources instantly, no account required."
         action={
           <Button render={<Link href="/notes?pricing=free" />} variant="outline">
             See free notes
@@ -324,7 +324,7 @@ function BundlesSection({
     <Section>
       <SectionHeading
         eyebrow="Save with bundles"
-        title="Everything for one topic, together"
+        title="One topic, one complete pack"
         action={
           <Button render={<Link href="/groups" />} variant="outline">
             View bundles
@@ -356,7 +356,7 @@ function BundlesSection({
 function HowItWorksSection() {
   return (
     <Section className="bg-muted/50">
-      <SectionHeading eyebrow="Simple by design" title="From discovery to delivery" />
+      <SectionHeading eyebrow="Simple by design" title="From topic discovery to delivery" />
       <div className="grid gap-5 md:grid-cols-3">
         {HOW_IT_WORKS.map(({ icon: Icon, title, description }, index) => (
           <Card key={title} className="rounded-2xl border">
@@ -432,7 +432,7 @@ function CtaBanner() {
             Ready when you are
           </p>
           <h2 className="font-heading text-4xl font-black tracking-tight md:text-5xl lg:text-6xl drop-shadow-md">
-            Find the notes that make studying feel lighter.
+            Find the notes that make building feel easier.
           </h2>
           <div className="pt-4 flex justify-center">
             <Button render={<Link href="/notes" />} size="lg" className="h-14 rounded-full bg-primary px-10 text-lg font-bold text-primary-foreground">

@@ -14,8 +14,34 @@ import type {
 
 export const BRAND = {
   name: "Notes Provider",
-  tagline: "Premium study notes, instantly.",
-  description: "Curated, exam-ready notes crafted for serious learners.",
+  tagline: "Developer notes that actually help you build.",
+  description: "Curated coding notes for web development, DSA, DBMS, backend, frontend, system design, and interview prep.",
+} as const;
+
+export const SEO = {
+  defaultTitle: `${BRAND.name} — Coding Notes for Web Dev, DSA, DBMS, Backend, Frontend & System Design`,
+  defaultDescription: "Download free coding notes and browse premium developer resources covering web development, DSA, DBMS, backend, frontend, system design, and interview prep. Delivered to your Instagram, WhatsApp, or email.",
+  siteName: BRAND.name,
+  locale: "en_IN",
+  countryName: "India",
+  ogImageWidth: 1200,
+  ogImageHeight: 630,
+  ogImageAlt: `${BRAND.name} — Coding notes marketplace`,
+  twitterCard: "summary_large_image",
+  socialHandles: [
+    { platform: "twitter", url: "https://x.com", handle: "@notesprovider" },
+    { platform: "youtube", url: "https://youtube.com", handle: "" },
+    { platform: "instagram", url: "https://instagram.com", handle: "" },
+  ] as const,
+  contactEmail: "support@notesprovider.com",
+  faqs: [
+    { question: "When will I receive paid notes?", answer: "Paid notes are delivered to your selected Instagram, WhatsApp, or email handle within 4–6 hours of a successful payment." },
+    { question: "How do free notes work?", answer: "Free notes are available for immediate PDF download. No sign-up is required." },
+    { question: "Can I preview a paid note?", answer: "Yes. Paid notes include a preview so you can check the structure and depth before buying." },
+    { question: "Which topics do you cover?", answer: "We cover web development, frontend, backend, DSA, DBMS, system design, coding patterns, and interview-focused topics." },
+    { question: "Which payment methods can I use?", answer: "Payments are securely processed by Razorpay and support UPI, cards, net banking, and wallets." },
+    { question: "Can I get a refund?", answer: "Digital notes are non-refundable after delivery. Please review the preview and description before paying." },
+  ] as const,
 } as const;
 
 export const NOTE_VISIBILITIES = ["public", "private"] as const satisfies readonly NoteVisibility[];
@@ -121,3 +147,34 @@ export const SOCIAL_HANDLE_PATTERNS: Record<SocialPlatform, RegExp> = {
 };
 
 export const FULL_NAME_PATTERN = /^[\p{L}\s.'-]+$/u;
+
+export const PRIVACY_POLICY_SECTIONS = [
+  { id: "item-1", title: "1. Information Collection", content: "We take your privacy seriously. This Privacy Policy describes how we collect, use, and protect your personal information. We collect information you provide directly to us, such as when you create an account, make a purchase, or communicate with us." },
+  { id: "item-2", title: "2. Use of Information", content: "We use this information to process transactions, send order confirmations, and respond to customer service requests." },
+  { id: "item-3", title: "3. Data Sharing", content: "We do not sell your personal information to third parties. Your data is strictly used for the provision of our services and to enhance your experience." },
+] as const;
+
+export const TERMS_OF_SERVICE_SECTIONS = [
+  { id: "item-1", title: "1. General Agreement", content: "By accessing or using our services, you agree to be bound by these Terms and Conditions. If you do not agree with any part of these terms, you must not use our services." },
+  { id: "item-2", title: "2. Personal Use Only", content: "Our study notes are provided for personal, non-commercial use only. You may not distribute, modify, or resell any materials purchased from this platform." },
+  { id: "item-3", title: "3. Final Sales & Termination", content: "All sales are final unless otherwise specified in our refund policy. We reserve the right to terminate access for violation of these terms." },
+] as const;
+
+export const REFUND_POLICY_SECTIONS = [
+  { id: "item-1", title: "1. Digital Goods Policy", content: `Due to the digital nature of the products sold on ${BRAND.name} (PDF study notes, revision guides, and note bundles) which are delivered directly to your social handle or email, <strong>all sales are non-refundable once the digital material has been delivered.</strong>` },
+  { id: "item-2", title: "2. Previewing Before Purchase", content: `<p style="margin-bottom:12px">To ensure complete satisfaction before making a payment:</p><ul style="list-style:disc;padding-left:20px;margin:0"><li>Every paid note features a downloadable <strong>Preview PDF</strong> allowing you to assess structure, contents, and readability.</li><li>Note detail pages specify exact page counts, covered topics, subjects, and skill levels.</li><li>Free study notes are available for immediate download without payment so you can evaluate our content quality beforehand.</li></ul>` },
+  { id: "item-3", title: "3. Non-Delivery & Exceptional Assistance", content: `<p style="margin-bottom:12px">While completed orders are final, we ensure every customer receives what they paid for:</p><ul style="list-style:disc;padding-left:20px;margin:0"><li><strong>Delivery Delay:</strong> If you have not received your study notes within 6 hours of payment confirmation, please check your Instagram Message Requests, WhatsApp chats, or Email Spam folder.</li><li><strong>Unfulfilled Orders:</strong> If your order has not been delivered due to an incorrect handle submission or system oversight, contact support with your order number. We will verify payment and resend your files immediately.</li><li><strong>Double Charge / Duplicate Payment:</strong> If you were accidentally charged twice for the same transaction via Razorpay, any excess payment will be refunded to your original payment source.</li></ul>` },
+  { id: "item-4", title: "4. How to Request Assistance", content: `<p style="margin-bottom:12px">If you experience any issues with order delivery or payment status, reach out to our support team with your order number and transaction proof:</p><a href="/contact" style="color:var(--primary);text-decoration:underline;font-weight:500">Contact Support Team →</a>` },
+] as const;
+
+export const ABOUT_VALUES = [
+  { title: "Focused learning", text: "We curate the developer notes that help you learn faster without wasting time on fluff." },
+  { title: "Clear structure", text: "Every note is designed to reduce confusion and make complex topics easier to revisit and retain." },
+  { title: "Practical value", text: "We keep the experience useful, readable, and tailored to how real engineers study and build." },
+] as const;
+
+export const CONTACT_CHANNELS = [
+  { title: "X (Twitter)", description: "Quick updates, support replies, and announcements.", href: "https://x.com", icon: "MessageSquareText", label: "Follow on X" },
+  { title: "GitHub", description: "Code references, resources, and project-driven learning material.", href: "https://github.com", icon: "Code2", label: "Explore GitHub" },
+  { title: "Email", description: "For order help, delivery questions, and support requests.", href: `mailto:${SEO.contactEmail}`, icon: "Mail", label: "Send an email" },
+] as const;

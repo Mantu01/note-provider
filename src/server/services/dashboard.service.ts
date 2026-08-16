@@ -97,6 +97,13 @@ export async function getDashboardStats(): Promise<import("@/lib/types").Dashboa
   };
 }
 
+function toDateKey(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 async function generateRevenueSeries(from: Date): Promise<Array<{ date: string; revenuePaise: number; orders: number }>> {
   const aggregated = await Order.aggregate([
     {
@@ -107,7 +114,13 @@ async function generateRevenueSeries(from: Date): Promise<Array<{ date: string; 
     },
     {
       $group: {
-        _id: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
+        _id: {
+          $dateToString: {
+            format: "%Y-%m-%d",
+            date: "$createdAt",
+            timezone: "+05:30",
+          },
+        },
         revenuePaise: { $sum: "$amount" },
         orders: { $sum: 1 },
       },
@@ -126,7 +139,7 @@ async function generateRevenueSeries(from: Date): Promise<Array<{ date: string; 
   const now = new Date();
 
   while (current <= now) {
-    const dateStr = current.toISOString().split("T")[0];
+    const dateStr = toDateKey(current);
     const data = map.get(dateStr) ?? { revenuePaise: 0, orders: 0 };
     series.push({ date: dateStr, revenuePaise: data.revenuePaise, orders: data.orders });
     current.setDate(current.getDate() + 1);

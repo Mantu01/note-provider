@@ -6,7 +6,11 @@ const globalStore = globalThis as typeof globalThis & { __rateLimitStore?: Map<s
 const store: Map<string, Bucket> = globalStore.__rateLimitStore ?? new Map();
 globalStore.__rateLimitStore = store;
 
-function prune(now: number): void {
+export function resetStore(): void {
+  store.clear();
+}
+
+export function prune(now: number): void {
   if (store.size < 5000) return;
   for (const [key, bucket] of store) {
     if (bucket.resetAt <= now) store.delete(key);

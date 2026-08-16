@@ -9,6 +9,8 @@ import { toPublicGroup } from "@/server/mappers/group.mapper";
 import { toPublicCategory } from "@/server/mappers/category.mapper";
 
 export const runtime = "nodejs";
+export const revalidate = 60;
+export const dynamic = "force-dynamic";
 
 export const GET = handler(async () => {
   const [featuredNotes, latestNotes, freeNotes, featuredGroups, categories, totalNotes, totalDownloads, happyLearners] = await Promise.all([

@@ -2,6 +2,7 @@ import { BookOpen } from "lucide-react";
 import Link from "next/link";
 import { BRAND } from "@/lib/constants";
 import { cn } from "@/lib/utils";
+import Image from "next/image";
 
 type LogoProps = {
   variant?: "full" | "icon" | "wordmark";
@@ -20,24 +21,16 @@ export function Logo({ variant = "full", size = "md", href = "/", className }: L
   const content = (
     <span className={cn("group flex items-center gap-2.5", className)}>
       {variant !== "wordmark" && (
-        <span
+        <Image
+          alt="logo"
+          src={'https://yt3.ggpht.com/oXVVVzBSDvF4QmHBJMj10Gmu8oBUXyp1385fEcAmGG2TV42xfgHj6J3mJkzCJ6suymbVvI-j9Q=s88-c-k-c0x00ffffff-no-rj'}
+          width={30}
+          height={30}
           className={cn(
-            "relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-primary via-primary to-accent text-primary-foreground shadow-sm",
+            "relative flex items-center justify-center overflow-hidden bg-linear-to-br from-primary via-primary to-accent text-primary-foreground shadow-sm",
             sizes[size].mark
           )}
-        >
-          <BookOpen aria-hidden="true" className={cn("relative z-10", sizes[size].icon)} />
-        </span>
-      )}
-      {variant !== "icon" && (
-        <span
-          className={cn(
-            "font-heading font-black tracking-tighter bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text text-transparent",
-            sizes[size].wordmark
-          )}
-        >
-          {BRAND.name}
-        </span>
+        />
       )}
     </span>
   );

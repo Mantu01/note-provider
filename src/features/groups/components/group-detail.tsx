@@ -56,7 +56,7 @@ export function GroupDetailPage({ slug }: { slug: string }) {
 
       <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <article className="space-y-6">
-          <div className="relative aspect-[16/9] overflow-hidden rounded-3xl brand-gradient-soft shadow-sm">
+          <div className="relative aspect-video overflow-hidden rounded-3xl brand-gradient-soft shadow-sm">
             {group.coverImageUrl ? (
               <Image
                 src={group.coverImageUrl}

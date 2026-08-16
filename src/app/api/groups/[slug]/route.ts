@@ -7,6 +7,8 @@ import { toPublicGroup } from "@/server/mappers/group.mapper";
 import { toPublicNote } from "@/server/mappers/note.mapper";
 
 export const runtime = "nodejs";
+export const revalidate = 600;
+export const dynamic = "force-dynamic";
 
 export const GET = handler(async (ctx) => {
   const { slug } = await ctx.params;

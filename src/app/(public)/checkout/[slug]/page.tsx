@@ -1,20 +1,27 @@
-"use client";
-
+import type { Metadata } from "next";
 import { Suspense } from "react";
-import { useParams, useSearchParams } from "next/navigation";
-import { CheckoutPage } from "@/features/checkout/components/checkout-page";
+import CheckoutContent from "@/features/checkout/components/checkout-page-wrapper";
+import { SEO } from "@/lib/constants";
 
-function CheckoutContent() {
-  const params = useParams<{ slug: string }>();
-  const searchParams = useSearchParams();
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
-  return (
-    <CheckoutPage
-      slug={params.slug}
-      itemType={searchParams.get("itemType") === "group" ? "group" : "note"}
-    />
-  );
-}
+export const metadata: Metadata = {
+  title: "Secure Checkout — Notes Provider",
+  description: "Complete your purchase for study notes securely via Razorpay.",
+  robots: { index: false, follow: false },
+  alternates: { canonical: `${APP_URL}/checkout` },
+  openGraph: {
+    title: "Secure Checkout — Notes Provider",
+    description: "Complete your purchase securely.",
+    url: `${APP_URL}/checkout`,
+    type: "website",
+  },
+  twitter: {
+    card: SEO.twitterCard,
+    title: "Secure Checkout — Notes Provider",
+    description: "Complete your purchase securely.",
+  },
+};
 
 export default function CheckoutRoute() {
   return (

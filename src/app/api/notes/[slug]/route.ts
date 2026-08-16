@@ -8,6 +8,8 @@ import { toPublicGroup } from "@/server/mappers/group.mapper";
 import { parsePagination, buildPagination } from "@/server/lib/query";
 
 export const runtime = "nodejs";
+export const revalidate = 600;
+export const dynamic = "force-dynamic";
 
 export const GET = handler(async (ctx) => {
   const { slug } = await ctx.params;
