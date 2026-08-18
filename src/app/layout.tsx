@@ -155,7 +155,7 @@ export default function RootLayout({
         ) : null}
       </head>
       <body suppressHydrationWarning className="font-sans antialiased">
-        <GoogleAnalytics gaId={process.env.GOOGLE_ANALYTICS_ID!}/>
+        {measurementId && <GoogleAnalytics gaId={measurementId} />}
         <AppProviders>{children}</AppProviders>
       </body>
     </html>

@@ -9,6 +9,7 @@ import { createGroupSchema } from "@/lib/schemas/group.schema";
 import { uniqueSlug } from "@/server/lib/slug";
 import { AppError } from "@/server/lib/errors";
 import { rupeesToPaise } from "@/lib/format";
+import { validateNoteIdsExist } from "@/server/lib/note-validation";
 
 export const runtime = "nodejs";
 
@@ -31,7 +32,7 @@ export const GET = adminHandler(async (ctx) => {
   ]);
 
   return ok({
-    items: items.map((item) => toAdminGroup(item as any)),
+    items: items.map((item) => toAdminGroup(item as unknown as Record<string, unknown>)),
     pagination: { page, limit, total, totalPages: Math.ceil(total / limit), hasNext: page < Math.ceil(total / limit), hasPrev: page > 1 },
   });
 });
@@ -54,16 +55,7 @@ export const POST = adminHandler(async (ctx) => {
   const noteIds = input.noteIds.filter((id) => id.trim());
   const uniqueIds = Array.from(new Set(noteIds));
 
-  if (uniqueIds.length === 0) throw AppError.validation({ noteIds: "At least one note is required" });
-
-  const existingNotes = await Note.find({ _id: { $in: uniqueIds.map((id) => new Types.ObjectId(id).toString()) as any } })
-    .select("_id")
-    .lean()
-    .exec();
-
-  const existingIds = existingNotes.map((n) => n._id.toString());
-  const missing = uniqueIds.filter((id) => !existingIds.includes(id));
-  if (missing.length > 0) throw AppError.notFound(`Note(s) ${missing.slice(0, 3).join(", ")} not found`);
+  await validateNoteIdsExist(uniqueIds);
 
   const baseSlug = uniqueSlug(Group, input.name);
   const slug = await baseSlug;

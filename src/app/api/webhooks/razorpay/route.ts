@@ -7,18 +7,28 @@ import { Group } from "@/server/db/models/group.model";
 import { notifyAdminsOnPurchase } from "@/server/lib/mailer";
 
 export const runtime = "nodejs";
-
+export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   const rawBody = await req.text();
   const signature = req.headers.get("x-razorpay-signature");
 
   if (!signature) {
-    return new NextResponse(JSON.stringify({ error: "Missing signature" }), { status: 400 });
+    const r = NextResponse.json(
+      { success: false, error: { code: "VALIDATION_ERROR", message: "Missing signature" } },
+      { status: 400 },
+    );
+    r.headers.set("Cache-Control", "no-store, max-age=0");
+    return r;
   }
 
   if (!verifyWebhookSignature(rawBody, signature)) {
-    return new NextResponse(JSON.stringify({ error: "Invalid signature" }), { status: 400 });
+    const r = NextResponse.json(
+      { success: false, error: { code: "VALIDATION_ERROR", message: "Invalid signature" } },
+      { status: 400 },
+    );
+    r.headers.set("Cache-Control", "no-store, max-age=0");
+    return r;
   }
 
   try {
@@ -33,6 +43,7 @@ export async function POST(req: Request) {
             order_id?: string;
             error_description?: string;
             method?: string;
+            amount?: number;
           };
         };
       };
@@ -41,10 +52,13 @@ export async function POST(req: Request) {
     const payment = payload.payload?.payment?.entity;
 
     if (!payment) {
-      return new NextResponse(JSON.stringify({ received: true }), { status: 200 });
+      const r = NextResponse.json({ success: true, data: { received: true } });
+      r.headers.set("Cache-Control", "no-store, max-age=0");
+      return r;
     }
 
     const razorpayOrderId = payment.order_id;
+    const amount = payment.amount ?? 0;
 
     if ((event === "payment.captured" || event === "order.paid") && razorpayOrderId) {
       const updatedOrder = await Order.findOneAndUpdate(
@@ -56,6 +70,7 @@ export async function POST(req: Request) {
           paymentMethod: payment.method ?? "online",
           paidAt: new Date(),
           fulfillmentStatus: "pending",
+          ...(amount ? { amount } : {}),
         },
         { new: true },
       )
@@ -65,11 +80,11 @@ export async function POST(req: Request) {
       if (updatedOrder) {
         if (updatedOrder.itemType === "note" && updatedOrder.note) {
           await Note.findByIdAndUpdate(updatedOrder.note, {
-            $inc: { purchaseCount: 1, revenuePaise: updatedOrder.amount },
+            $inc: { purchaseCount: 1, revenuePaise: amount },
           }).exec();
         } else if (updatedOrder.itemType === "group" && updatedOrder.group) {
           await Group.findByIdAndUpdate(updatedOrder.group, {
-            $inc: { purchaseCount: 1, revenuePaise: updatedOrder.amount },
+            $inc: { purchaseCount: 1, revenuePaise: amount },
           }).exec();
         }
 
@@ -85,9 +100,13 @@ export async function POST(req: Request) {
       ).exec();
     }
 
-    return new NextResponse(JSON.stringify({ received: true }), { status: 200 });
+    const r = NextResponse.json({ success: true, data: { received: true } });
+    r.headers.set("Cache-Control", "no-store, max-age=0");
+    return r;
   } catch (error) {
     console.error("[webhook] error", error);
-    return new NextResponse(JSON.stringify({ received: true }), { status: 200 });
+    const r = NextResponse.json({ success: true, data: { received: true } });
+    r.headers.set("Cache-Control", "no-store, max-age=0");
+    return r;
   }
 }

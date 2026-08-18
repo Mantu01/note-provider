@@ -1,14 +1,22 @@
 import "@testing-library/jest-dom/vitest";
-import { afterEach, vi } from "vitest";
+import { afterEach, vi, beforeEach } from "vitest";
 import { cleanup } from "@testing-library/react";
 import "vitest-canvas-mock";
 
-// Clear rate limit store between test files to prevent cross-test interference
+declare global {
+  var __rateLimitStore: Map<string, unknown> | undefined;
+  var __queryClient: { clear: () => void } | undefined;
+}
+
 afterEach(() => {
   cleanup();
-  // Reset the global rate limit store
-  const store = (globalThis as any).__rateLimitStore;
+  const store = global.__rateLimitStore;
   if (store) store.clear();
+  global.__queryClient?.clear();
+});
+
+beforeEach(() => {
+  vi.clearAllMocks();
 });
 
 Object.defineProperty(window, "matchMedia", {
@@ -29,9 +37,6 @@ Object.defineProperty(window, "scrollTo", {
   writable: true,
   value: () => {},
 });
-
-const mockSearchParams = new URLSearchParams();
-const mockSetSearchParams = vi.fn();
 
 vi.mock("nuqs", async (importOriginal) => {
   const actual = await importOriginal<typeof import("nuqs")>();
@@ -56,7 +61,7 @@ vi.mock("next/navigation", async (importOriginal) => {
       pathname: "/",
       query: {},
     })),
-    useSearchParams: vi.fn(() => mockSearchParams),
+    useSearchParams: vi.fn(() => new URLSearchParams()),
     usePathname: vi.fn(() => "/"),
   };
 });

@@ -58,5 +58,7 @@ export const POST = handler(async (ctx) => {
     userAgent: ctx.userAgent,
   });
 
-  return ok(toAdminProfile(admin.toJSON()));
+  const res = ok(toAdminProfile(admin.toJSON()));
+  res.headers.set("Cache-Control", "no-store, max-age=0");
+  return res;
 });

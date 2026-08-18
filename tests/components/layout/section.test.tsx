@@ -11,8 +11,8 @@ describe("Section", () => {
   it("has correct padding classes", () => {
     const { container } = render(<Section data-testid="section">Content</Section>);
     const section = container.firstChild as HTMLElement;
-    expect(section).toHaveClass("py-16");
-    expect(section).toHaveClass("md:py-24");
+    expect(section).toHaveClass("py-10");
+    expect(section).toHaveClass("md:py-14");
   });
 
   it("passes through children", () => {
@@ -39,7 +39,7 @@ describe("Section", () => {
     const { container } = render(<Section className="my-section" data-testid="section">Content</Section>);
     const section = container.firstChild as HTMLElement;
     expect(section).toHaveClass("my-section");
-    expect(section).toHaveClass("py-16");
+    expect(section).toHaveClass("py-10");
   });
 
   it("passes through additional props", () => {

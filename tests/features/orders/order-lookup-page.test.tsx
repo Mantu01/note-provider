@@ -1,115 +1,121 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { OrderLookupPage } from '@/features/orders/components/order-lookup-page';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { OrderLookupPage } from "@/features/orders/components/order-lookup-page";
 
-const mocks = vi.hoisted(() => ({
-  mockUseOrderLookup: vi.fn(),
-  mockPush: vi.fn(),
-}));
+vi.mock("next/navigation", async (importOriginal) => {
+  const actual = await importOriginal<typeof import("next/navigation")>();
+  return {
+    ...actual,
+    useRouter: vi.fn(() => ({ push: vi.fn() })),
+    useParams: vi.fn(() => ({})),
+    useSearchParams: vi.fn(() => new URLSearchParams()),
+  };
+});
 
-vi.mock('@/features/orders/api/use-order-lookup', () => ({
+vi.mock("@/features/orders/api/use-order-lookup", () => ({
   useOrderLookup: vi.fn(),
 }));
 
-vi.mock('sonner', () => ({
-  toast: { success: vi.fn(), error: vi.fn() },
-  Toaster: () => null,
+vi.mock("sonner", () => ({
+  toast: { success: vi.fn(), error: vi.fn(), loading: vi.fn() },
 }));
 
-vi.mock('next/navigation', () => ({
-  useRouter: () => ({ push: mocks.mockPush }),
-}));
-
-const { useOrderLookup } = await import('@/features/orders/api/use-order-lookup');
+const { useOrderLookup } = await import("@/features/orders/api/use-order-lookup");
 const mockUseOrderLookup = vi.mocked(useOrderLookup);
 
-describe('OrderLookupPage', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-    mockUseOrderLookup.mockReturnValue({ mutate: vi.fn(), isPending: false, error: null } as any);
-  });
+beforeEach(() => {
+  vi.clearAllMocks();
+});
 
-  it('renders page title and description', () => {
+describe("OrderLookupPage", () => {
+  it("renders heading and description", () => {
+    mockUseOrderLookup.mockReturnValue({ mutate: vi.fn(), isPending: false } as any);
     render(<OrderLookupPage />);
-    expect(screen.getByText('Track Your Order')).toBeInTheDocument();
-    expect(screen.getByText(/Enter your unique order number/)).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: /Track Your Order/i })).toBeInTheDocument();
+    expect(screen.getByText(/Enter your order number/i)).toBeInTheDocument();
   });
 
-  it('renders order number input field', () => {
+  it("renders input field with placeholder", () => {
+    mockUseOrderLookup.mockReturnValue({ mutate: vi.fn(), isPending: false } as any);
     render(<OrderLookupPage />);
-    expect(screen.getByLabelText('Order Number')).toBeInTheDocument();
-    expect(screen.getByPlaceholderText('NP-20260810-0001')).toBeInTheDocument();
+    const input = screen.getByPlaceholderText(/NP-/i);
+    expect(input).toBeInTheDocument();
   });
 
-  it('renders search button', () => {
+  it("renders search submit button", () => {
+    mockUseOrderLookup.mockReturnValue({ mutate: vi.fn(), isPending: false } as any);
     render(<OrderLookupPage />);
-    expect(screen.getByText('Search')).toBeInTheDocument();
+    expect(screen.getByText(/Search/i)).toBeInTheDocument();
   });
 
-  it('submits form and redirects on success', async () => {
-    const mockMutate = vi.fn((orderNumber: string, options: any) => {
-      options.onSuccess({ orderId: 'ord-123', orderNumber: 'NP-001' });
+  it("show loading spinner on submit when pending", () => {
+    mockUseOrderLookup.mockReturnValue({ mutate: vi.fn(), isPending: true } as any);
+    render(<OrderLookupPage />);
+    const searchBtn = document.querySelector("button[type=\"submit\"]");
+    expect(searchBtn).toBeInTheDocument();
+    expect(searchBtn).toBeDisabled();
+  });
+
+  it("calls mutate with order number on form submit", async () => {
+    const mutate = vi.fn();
+    mockUseOrderLookup.mockReturnValue({ mutate, isPending: false } as any);
+
+    render(<OrderLookupPage />);
+    const input = screen.getByPlaceholderText(/NP-/i);
+    const user = (await import("@testing-library/user-event")).userEvent;
+    await user.type(input, "NP-20260817-0001");
+    await user.click(screen.getByText(/Search/i));
+    expect(mutate).toHaveBeenCalledWith("NP-20260817-0001", expect.objectContaining({}));
+  });
+
+  it("navigates to order page on success", async () => {
+    const push = vi.fn();
+    const navModule = await import("next/navigation");
+    const useRouter = vi.mocked(navModule.useRouter);
+    useRouter.mockReturnValue({ push } as any);
+
+    const mutate = vi.fn((val, opts: any) => {
+      opts.onSuccess({ orderId: "ord-1", orderNumber: "NP-20260817-0001" });
     });
-    mockUseOrderLookup.mockReturnValue({
-      mutate: mockMutate,
-      isPending: false,
-      error: null,
-    } as any);
+    mockUseOrderLookup.mockReturnValue({ mutate, isPending: false } as any);
 
     render(<OrderLookupPage />);
-    const input = screen.getByLabelText('Order Number');
-    fireEvent.change(input, { target: { value: 'NP-20260815-0001' } });
-    const button = screen.getByText('Search');
-    fireEvent.click(button);
-
-    await waitFor(() => {
-      expect(mocks.mockPush).toHaveBeenCalledWith('/order/ord-123');
-    });
+    const input = screen.getByPlaceholderText(/NP-/i);
+    const user = (await import("@testing-library/user-event")).userEvent;
+    await user.type(input, "NP-20260817-0001");
+    await user.click(screen.getByText(/Search/i));
+    expect(push).toHaveBeenCalledWith("/order/ord-1");
   });
 
-  it('shows error toast on lookup failure', async () => {
-    const mockMutate = vi.fn((_orderNumber: string, options: any) => {
-      options.onError({ message: 'Order not found' });
+  it("shows error toast on mutation failure", async () => {
+    const toast = await import("sonner");
+    const errorMock = vi.fn();
+    (toast.toast.error as any).mockImplementation(errorMock);
+
+    const mutate = vi.fn((val, opts: any) => {
+      opts.onError(new Error("Order not found"));
     });
-    mockUseOrderLookup.mockReturnValue({
-      mutate: mockMutate,
-      isPending: false,
-      error: null,
-    } as any);
+    mockUseOrderLookup.mockReturnValue({ mutate, isPending: false } as any);
 
     render(<OrderLookupPage />);
-    const input = screen.getByLabelText('Order Number');
-    fireEvent.change(input, { target: { value: 'INVALID' } });
-    fireEvent.click(screen.getByText('Search'));
-
-    await waitFor(() => {
-      expect(mockMutate).toHaveBeenCalled();
-    });
+    const input = screen.getByPlaceholderText(/NP-/i);
+    const user = (await import("@testing-library/user-event")).userEvent;
+    await user.type(input, "NP-BAD");
+    await user.click(screen.getByText(/Search/i));
+    expect(errorMock).toHaveBeenCalled();
   });
 
-  it('disables search button while loading', () => {
-    mockUseOrderLookup.mockReturnValue({
-      mutate: vi.fn(),
-      isPending: true,
-      error: null,
-    } as any);
-
+  it("displays validation error for empty input", async () => {
+    mockUseOrderLookup.mockReturnValue({ mutate: vi.fn(), isPending: false } as any);
     render(<OrderLookupPage />);
-    const button = screen.getByRole('button');
-    expect(button).toBeDisabled();
+    const user = (await import("@testing-library/user-event")).userEvent;
+    await user.click(screen.getByText(/Search/i));
+    expect(screen.getByText(/Please enter your order number/i)).toBeInTheDocument();
   });
 
-  it('renders helper text about order pending status', () => {
+  it("renders info tooltip with ShieldCheck icon", () => {
+    mockUseOrderLookup.mockReturnValue({ mutate: vi.fn(), isPending: false } as any);
     render(<OrderLookupPage />);
-    expect(screen.getByText(/Orders stay pending until reviewed/)).toBeInTheDocument();
-  });
-
-  it('shows validation error for empty order number', async () => {
-    render(<OrderLookupPage />);
-    const button = screen.getByText('Search');
-    fireEvent.click(button);
-    await waitFor(() => {
-      expect(screen.getByText('Please enter your order number.')).toBeInTheDocument();
-    });
+    expect(screen.getByText(/Orders stay pending/i)).toBeInTheDocument();
   });
 });

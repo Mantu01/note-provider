@@ -1,4 +1,4 @@
-import type { Model, QueryFilter } from "mongoose";
+import type { Model, QueryFilter, HydratedDocument } from "mongoose";
 
 const DIACRITICS = /[̀-ͯ]/g;
 
@@ -12,7 +12,7 @@ export function slugify(text: string): string {
     .replace(/^-|-$/g, "");
 }
 
-export async function uniqueSlug<TDoc = any>(
+export async function uniqueSlug<TDoc extends Record<string, unknown>>(
   model: Model<TDoc>,
   base: string,
   excludeId?: string,

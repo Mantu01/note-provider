@@ -3,7 +3,8 @@ import { Note } from "../db/models/note.model";
 import { Group } from "../db/models/group.model";
 import { logActivity } from "./activity.service";
 import type { RouteContext } from "../lib/api-handler";
-import type { AdminDoc } from "../db/models/admin.model";import { AppError } from "../lib/errors";
+import type { AdminDoc } from "../db/models/admin.model";
+import { AppError } from "../lib/errors";
 import { generateOrderNumber } from "../lib/order-number";
 import { createRazorpayOrder } from "../lib/razorpay";
 import type { UpdateOrderPayload } from "@/lib/schemas/admin.schema";
@@ -55,7 +56,7 @@ export async function createOrder(
     },
     buyer: {
       fullName: input.fullName,
-      socialPlatform: input.socialPlatform as any,
+      socialPlatform: input.socialPlatform as import("@/lib/types").SocialPlatform,
       socialHandle: input.socialHandle,
       consentAccepted: input.consentAccepted,
     },

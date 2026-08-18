@@ -10,6 +10,8 @@ import { rupeesToPaise } from "@/lib/format";
 import { MIN_PAID_PRICE_PAISE } from "@/lib/constants";
 import type { CreateGroupInput, UpdateGroupInput } from "@/lib/schemas/group.schema";
 
+import { validateNoteIdsExist } from "../lib/note-validation";
+
 export async function listGroups(
   filter: Record<string, unknown>,
   skip: number,
@@ -58,12 +60,7 @@ export async function createGroup(
   const noteIds = input.noteIds.filter((id: string) => id.trim());
   const uniqueIds = Array.from(new Set(noteIds));
 
-  if (uniqueIds.length === 0) throw AppError.validation({ noteIds: "At least one note is required" });
-
-  const existingNotes = await Note.find({ _id: { $in: uniqueIds.map((id) => new Types.ObjectId(id).toString()) as any } }).select("_id").lean().exec();
-  const existingIds = existingNotes.map((n) => n._id.toString());
-  const missing = uniqueIds.filter((id) => !existingIds.includes(id));
-  if (missing.length > 0) throw AppError.notFound(`Note(s) ${missing.slice(0, 3).join(", ")} not found`);
+  await validateNoteIdsExist(uniqueIds);
 
   const slug = await uniqueSlug(Group, input.name);
 
@@ -101,12 +98,7 @@ export async function updateGroup(
   if (input.noteIds !== undefined) {
     const noteIds = input.noteIds.filter((n) => n.trim());
     const uniqueIds = Array.from(new Set(noteIds));
-    if (uniqueIds.length === 0) throw AppError.validation({ noteIds: "At least one note is required" });
-
-    const existingNotes = await Note.find({ _id: { $in: uniqueIds.map((nId) => new Types.ObjectId(nId).toString()) as any } }).select("_id").lean().exec();
-    const existingIds = existingNotes.map((n) => n._id.toString());
-    const missing = uniqueIds.filter((nId) => !existingIds.includes(nId));
-    if (missing.length > 0) throw AppError.notFound(`Note(s) ${missing.slice(0, 3).join(", ")} not found`);
+    await validateNoteIdsExist(uniqueIds);
   }
 
   const updates: Record<string, unknown> = { updatedBy: new Types.ObjectId(String(ctx.admin._id)) };
@@ -164,7 +156,7 @@ export async function deleteGroup(
 }
 
 export async function getRelatedGroups(categoryId: string, groupId: string, limit: number): Promise<GroupDoc[]> {
-  return Group.find({ _id: { $ne: new Types.ObjectId(groupId).toString() as any }, category: categoryId, visibility: "public" })
+  return (Group as any).find({ _id: { $ne: groupId }, category: categoryId, visibility: "public" })
     .sort({ createdAt: -1 })
     .limit(limit)
     .populate("category")

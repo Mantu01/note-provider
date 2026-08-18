@@ -1,4 +1,4 @@
-import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary, type UploadApiOptions } from "cloudinary";
 import { SIGNED_URL_TTL_SECONDS } from "@/lib/constants";
 import { AppError } from "./errors";
 
@@ -31,7 +31,7 @@ export async function uploadBuffer(
   },
 ): Promise<UploadResult> {
   return new Promise<UploadResult>((resolve, reject) => {
-    const uploadOptions: Record<string, any> = {
+    const uploadOptions: UploadApiOptions = {
       folder: options.folder,
       resource_type: options.resourceType === "raw" ? "auto" : options.resourceType,
       use_filename: true,

@@ -18,5 +18,8 @@ export function useAdminLogin() {
 }
 
 export function useAdminLogout() {
-  return useMutation({ mutationFn: () => apiClient("/admin/auth/logout", { method: "POST" }) });
+  return useMutation({
+    mutationFn: () => apiClient("/admin/auth/logout", { method: "POST" }),
+    onError: (error: Error) => console.error("[useAdminLogout]", error),
+  });
 }

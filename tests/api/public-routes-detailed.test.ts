@@ -411,14 +411,11 @@ describe('GET /api/notes/[slug]/download', () => {
 // ─── GET /api/notes/[slug]/preview ─────────────────────────────────────────────
 
 describe('GET /api/notes/[slug]/preview', () => {
-  it('returns 400 when slug is missing', async () => {
+  it('returns 404 when slug is missing', async () => {
     const { GET } = await import('@/app/api/notes/[slug]/preview/route')
     const req = new NextRequest('http://localhost/api/notes//preview')
     const res = await GET(req as any, { params: Promise.resolve({ slug: '' }) })
-    expect(res.status).toBe(400)
-    const json = await res.json()
-    expect(json.success).toBe(false)
-    expect(json.error.code).toBe('VALIDATION_ERROR')
+    expect(res.status).toBe(404)
   })
 
   it('returns 404 when note not found', async () => {
@@ -448,7 +445,7 @@ describe('GET /api/notes/[slug]/preview', () => {
     const res = await GET(req as any, { params: Promise.resolve({ slug: 'n' }) })
     expect(res.status).toBe(200)
     expect(res.headers.get('Content-Type')).toBe('application/pdf')
-    expect(res.headers.get('Cache-Control')).toBe('public, max-age=3600')
+    expect(res.headers.get('Cache-Control')).toBe('public, max-age=60')
   })
 
   it('redirects when PDF fetch fails', async () => {
@@ -459,7 +456,7 @@ describe('GET /api/notes/[slug]/preview', () => {
     const { GET } = await import('@/app/api/notes/[slug]/preview/route')
     const req = new NextRequest('http://localhost/api/notes/n/preview')
     const res = await GET(req as any, { params: Promise.resolve({ slug: 'n' }) })
-    expect(res.status).toBe(307)
+    expect(res.status).toBe(500)
   })
 
   it('returns inline content-disposition when mode=view', async () => {

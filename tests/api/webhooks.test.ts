@@ -49,7 +49,7 @@ describe('POST /api/webhooks/razorpay', () => {
     const result = await POST(req as any)
     expect(result.status).toBe(400)
     const json = await result.json()
-    expect(json.error).toBe('Missing signature')
+    expect(json.error.code).toBe('VALIDATION_ERROR')
   })
 
   it('returns 400 when signature is invalid', async () => {
@@ -64,7 +64,7 @@ describe('POST /api/webhooks/razorpay', () => {
     const result = await POST(req as any)
     expect(result.status).toBe(400)
     const json = await result.json()
-    expect(json.error).toBe('Invalid signature')
+    expect(json.error.code).toBe('VALIDATION_ERROR')
   })
 
   it('returns 200 with received true for valid webhook without payment entity', async () => {
@@ -78,7 +78,7 @@ describe('POST /api/webhooks/razorpay', () => {
     const result = await POST(req as any)
     expect(result.status).toBe(200)
     const json = await result.json()
-    expect(json.received).toBe(true)
+    expect(json.data.received).toBe(true)
   })
 
   it('updates order to paid on payment.captured event', async () => {
@@ -245,7 +245,7 @@ describe('POST /api/webhooks/razorpay', () => {
     const result = await POST(req as any)
     expect(result.status).toBe(200)
     const json = await result.json()
-    expect(json.received).toBe(true)
+    expect(json.data.received).toBe(true)
   })
 
   it('returns 200 when webhook handler throws an error', async () => {
@@ -267,7 +267,7 @@ describe('POST /api/webhooks/razorpay', () => {
     const result = await POST(req as any)
     expect(result.status).toBe(200)
     const json = await result.json()
-    expect(json.received).toBe(true)
+    expect(json.data.received).toBe(true)
   })
 
   it('sets paymentMethod from payment entity', async () => {

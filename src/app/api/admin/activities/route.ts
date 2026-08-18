@@ -50,8 +50,10 @@ export const GET = adminHandler(async (ctx) => {
     AdminActivity.countDocuments(filter).exec(),
   ]);
 
-  return ok({
+  const res = ok({
     items: items.map(toAdminActivity),
     pagination: buildPagination(total, page, limit),
   });
+  res.headers.set("Cache-Control", "public, max-age=60, s-maxage=60");
+  return res;
 });

@@ -43,6 +43,7 @@ export const GET = adminHandler(async (ctx) => {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
       "Content-Disposition": `attachment; filename="notes-provider-leads-${date}.csv"`,
+      "Cache-Control": "no-store, max-age=0",
     },
   }) as unknown as ReturnType<typeof import("@/server/lib/api-response").ok>;
 });

@@ -50,7 +50,7 @@ describe("GroupDetailPage", () => {
     } as any);
 
     render(<GroupDetailPage slug="react-bundle" />);
-    expect(document.querySelector(".animate-pulse")).toBeInTheDocument();
+    expect(document.querySelector(".shimmer-premium")).toBeInTheDocument();
   });
 
   it("renders error state when group not found", async () => {
@@ -145,7 +145,7 @@ describe("GroupDetailPage", () => {
     });
   });
 
-  it("shows buy bundle button", async () => {
+  it("shows buy bundle button linking to checkout", async () => {
     mockUseGroup.mockReturnValue({
       isPending: false,
       isError: false,
@@ -163,6 +163,8 @@ describe("GroupDetailPage", () => {
     render(<GroupDetailPage slug="bundle" />);
     await waitFor(() => {
       expect(screen.getByText("Buy this bundle")).toBeInTheDocument();
+      const buyLink = screen.getByText("Buy this bundle").closest("a");
+      expect(buyLink).toHaveAttribute("href", "/checkout/bundle?itemType=group");
     });
   });
 
@@ -230,6 +232,122 @@ describe("GroupDetailPage", () => {
     render(<GroupDetailPage slug="bundle" />);
     await waitFor(() => {
       expect(screen.getByText("Individual value")).toBeInTheDocument();
+    });
+  });
+
+  it("renders category label with bundle suffix", async () => {
+    mockUseGroup.mockReturnValue({
+      isPending: false,
+      isError: false,
+      data: {
+        group: {
+          id: "1", name: "Test Bundle", slug: "test-bundle", price: 49900, priceLabel: "Rs. 499",
+          compareAtPrice: null, noteCount: 1, category: { name: "Frontend" },
+          coverImageUrl: null, notes: [{ id: "1", title: "React Notes", price: 49900 }],
+        },
+        relatedGroups: [],
+      },
+      refetch: vi.fn(),
+    } as any);
+
+    render(<GroupDetailPage slug="test-bundle" />);
+    await waitFor(() => {
+      expect(screen.getByText(/frontend\s*bundle/i)).toBeInTheDocument();
+    });
+  });
+
+  it("shows delivery text in sticky aside", async () => {
+    mockUseGroup.mockReturnValue({
+      isPending: false,
+      isError: false,
+      data: {
+        group: {
+          id: "1", name: "Bundle", slug: "bundle", price: 99900, priceLabel: "Rs. 999",
+          compareAtPrice: null, noteCount: 1, category: { name: "Web Dev" },
+          coverImageUrl: null, notes: [{ id: "1", title: "Note", price: 99900 }],
+        },
+        relatedGroups: [],
+      },
+      refetch: vi.fn(),
+    } as any);
+
+    render(<GroupDetailPage slug="bundle" />);
+    await waitFor(() => {
+      expect(screen.getByText(/Delivered manually within 4–6 hours/i)).toBeInTheDocument();
+    });
+  });
+
+  it("renders with cover image when available", async () => {
+    mockUseGroup.mockReturnValue({
+      isPending: false,
+      isError: false,
+      data: {
+        group: {
+          id: "1", name: "Covered Bundle", slug: "covered-bundle", price: 99900, priceLabel: "Rs. 999",
+          compareAtPrice: null, noteCount: 1, category: { name: "Web Dev" },
+          coverImageUrl: "https://example.com/cover.jpg",
+          notes: [{ id: "1", title: "Note", price: 99900 }],
+        },
+        relatedGroups: [],
+      },
+      refetch: vi.fn(),
+    } as any);
+
+    render(<GroupDetailPage slug="covered-bundle" />);
+    await waitFor(() => {
+      const imgs = document.querySelectorAll('img[alt=""]');
+      expect(imgs.length).toBeGreaterThan(0);
+    });
+  });
+
+  it("shows placeholder when no cover image", async () => {
+    mockUseGroup.mockReturnValue({
+      isPending: false,
+      isError: false,
+      data: {
+        group: {
+          id: "1", name: "No Cover Bundle", slug: "no-cover", price: 49900, priceLabel: "Rs. 499",
+          compareAtPrice: null, noteCount: 1, category: { name: "Web Dev" },
+          coverImageUrl: null,
+          notes: [{ id: "1", title: "Note", price: 49900 }],
+        },
+        relatedGroups: [],
+      },
+      refetch: vi.fn(),
+    } as any);
+
+    render(<GroupDetailPage slug="no-cover" />);
+    expect(document.querySelector(".bg-muted\\/30") || document.querySelector(".flex.h-full")).toBeInTheDocument();
+  });
+
+  it("renders multiple included notes", async () => {
+    mockUseGroup.mockReturnValue({
+      isPending: false,
+      isError: false,
+      data: {
+        group: {
+          id: "1", name: "Big Bundle", slug: "big-bundle", price: 199900, priceLabel: "Rs. 1,999",
+          compareAtPrice: 299900, noteCount: 4, category: { name: "Full Stack" },
+          coverImageUrl: null,
+          notes: [
+            { id: "1", title: "React", price: 49900 },
+            { id: "2", title: "Node", price: 49900 },
+            { id: "3", title: "GraphQL", price: 49900 },
+            { id: "4", title: "PostgreSQL", price: 49900 },
+          ],
+        },
+        relatedGroups: [],
+      },
+      refetch: vi.fn(),
+    } as any);
+
+    render(<GroupDetailPage slug="big-bundle" />);
+    await waitFor(() => {
+      expect(screen.getByText("React")).toBeInTheDocument();
+      expect(screen.getByText("Node")).toBeInTheDocument();
+      expect(screen.getByText("GraphQL")).toBeInTheDocument();
+      expect(screen.getByText("PostgreSQL")).toBeInTheDocument();
+      expect(screen.getByText("4 notes included")).toBeInTheDocument();
     });
   });
 });

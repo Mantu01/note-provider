@@ -1,12 +1,21 @@
 import { Order } from "@/server/db/models/order.model";
-import { adminHandler } from "@/server/lib/api-handler";
+import { adminHandler, type AdminRouteContext } from "@/server/lib/api-handler";
 import { fail, ok } from "@/server/lib/api-response";
 import { AppError } from "@/server/lib/errors";
 import { toAdminOrder } from "@/server/mappers/order.mapper";
 import { fulfillOrder, deleteOrder } from "@/server/services/order.service";
 import { updateOrderSchema } from "@/lib/schemas/admin.schema";
+import { Types } from "mongoose";
 
 export const runtime = "nodejs";
+
+function toServiceContext(ctx: AdminRouteContext): Parameters<typeof fulfillOrder>[2] {
+  return {
+    ip: ctx.ip,
+    userAgent: ctx.userAgent,
+    admin: { _id: new Types.ObjectId(ctx.admin.id), isHead: ctx.admin.isHead, name: ctx.admin.name, email: ctx.admin.email } as any,
+  } as Parameters<typeof fulfillOrder>[2];
+}
 
 export const GET = adminHandler(async (ctx) => {
   const { id } = await ctx.params;
@@ -14,7 +23,7 @@ export const GET = adminHandler(async (ctx) => {
   if (!order) {
     throw AppError.notFound("Order not found");
   }
-  return ok(toAdminOrder(order as any));
+  return ok(toAdminOrder(order));
 });
 
 export const PATCH = adminHandler(async (ctx) => {
@@ -30,7 +39,7 @@ export const PATCH = adminHandler(async (ctx) => {
     return fail(AppError.validation(fields, parsed.error.issues[0]?.message ?? "Invalid input"));
   }
 
-  const updated = await fulfillOrder(id, parsed.data, ctx as any);
+  const updated = await fulfillOrder(id, parsed.data, toServiceContext(ctx));
   return ok(toAdminOrder(updated));
 });
 
@@ -40,6 +49,6 @@ export const DELETE = adminHandler(async (ctx) => {
   }
 
   const { id } = await ctx.params;
-  await deleteOrder(id, ctx as any);
+  await deleteOrder(id, toServiceContext(ctx));
   return ok({ deleted: true });
 });

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArrowUpRight, Clock3, Code2, HelpCircle, Mail, MessageSquareText, PlayCircle } from "lucide-react";
+import { ArrowUpRight, Clock3, Code2, HelpCircle, Mail, MessageSquareText, PlayCircle, type LucideIcon } from "lucide-react";
 import { StaticPage } from "@/components/layout/static-page";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -9,7 +9,7 @@ import JsonLd, { webpageJsonLd } from "@/components/seo/json-ld";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
-const ICON_MAP: Record<string, any> = {
+const ICON_MAP: Record<string, LucideIcon> = {
   MessageSquareText,
   PlayCircle,
   Mail,

@@ -2,10 +2,7 @@ import { handler } from "@/server/lib/api-handler";
 import { ok } from "@/server/lib/api-response";
 import { Note } from "@/server/db/models/note.model";
 import { Category } from "@/server/db/models/category.model";
-import { toPublicNote } from "@/server/mappers/note.mapper";
-import { toPublicCategory } from "@/server/mappers/category.mapper";
 
-export const runtime = "nodejs";
 export const revalidate = 300;
 export const dynamic = "force-dynamic";
 
@@ -29,14 +26,16 @@ export const GET = handler(async () => {
 
   const [catsFacet] = facets;
 
-  const catCounts = new Map(catsFacet.categories.map((c: any) => [c._id.toString(), c.count]));
+  const catCounts = new Map(catsFacet.categories.map((c: { _id: unknown; count: unknown }) => [String(c._id), Number(c.count)]));
 
-  return ok({
+  const res = ok({
     categories: categories.map((cat) => ({ name: cat.name, slug: cat.slug, count: catCounts.get(cat._id.toString()) ?? 0 })),
-    levels: catsFacet.levels.map((l: any) => ({ value: l._id, label: l._id.charAt(0).toUpperCase() + l._id.slice(1), count: l.count })),
-    subjects: catsFacet.subjects.map((s: any) => ({ value: s._id, count: s.count })),
-    tags: catsFacet.tags.map((t: any) => ({ value: t._id, count: t.count })),
-    priceRange: catsFacet.priceRange[0] ? { minPaise: catsFacet.priceRange[0].min, maxPaise: catsFacet.priceRange[0].max } : { minPaise: 0, maxPaise: 0 },
-    pricing: catsFacet.pricing.map((p: any) => ({ value: p._id, count: p.count })),
+    levels: catsFacet.levels.map((l: { _id: string; count: unknown }) => ({ value: l._id, label: l._id.charAt(0).toUpperCase() + l._id.slice(1), count: Number(l.count) })),
+    subjects: catsFacet.subjects.map((s: { _id: string; count: unknown }) => ({ value: s._id, count: Number(s.count) })),
+    tags: catsFacet.tags.map((t: { _id: string; count: unknown }) => ({ value: t._id, count: Number(t.count) })),
+    priceRange: catsFacet.priceRange[0] ? { minPaise: Number(catsFacet.priceRange[0].min), maxPaise: Number(catsFacet.priceRange[0].max) } : { minPaise: 0, maxPaise: 0 },
+    pricing: catsFacet.pricing.map((p: { _id: string; count: unknown }) => ({ value: p._id, count: Number(p.count) })),
   });
+  res.headers.set("Cache-Control", "public, max-age=300, s-maxage=300");
+  return res;
 });

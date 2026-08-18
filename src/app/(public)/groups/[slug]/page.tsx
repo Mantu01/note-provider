@@ -8,8 +8,14 @@ import JsonLd, {
 } from "@/components/seo/json-ld";
 import { GroupDetailPage } from "@/features/groups/components/group-detail";
 import { Group } from "@/server/db/models/group.model";
+import type { GroupDoc } from "@/server/db/models/group.model";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+interface PopulatedGroup extends Omit<GroupDoc, "category"> {
+  category?: { _id: import("mongoose").Types.ObjectId; name: string };
+  noteCount?: number;
+}
 
 interface GroupRouteProps {
   params: Promise<{ slug: string }>;
@@ -19,7 +25,7 @@ export async function generateMetadata({ params }: GroupRouteProps): Promise<Met
   const { slug } = await params;
 
   const groupDoc = await Group.findOne({ slug, visibility: "public" })
-    .populate<{ category: { _id: any; name: string } }>("category")
+    .populate<PopulatedGroup>("category")
     .lean()
     .exec();
 
@@ -31,10 +37,10 @@ export async function generateMetadata({ params }: GroupRouteProps): Promise<Met
     };
   }
 
-  const group = groupDoc as any;
+  const group = groupDoc as unknown as PopulatedGroup;
   const title = `${group.name} — Complete ${group.category?.name || "Developer"} Bundle | Notes Provider`;
   const desc = group.description?.slice(0, 160) || `Get the complete ${group.name} bundle with ${group.noteCount} coding notes for ${group.category?.name || "developer topics"}.`;
-  const imageUrl = group.coverImageUrl || `${APP_URL}/og/group/${slug}.png`;
+  const imageUrl = group.coverImageUrl ?? `${APP_URL}/og/group/${slug}.png`;
   const pageUrl = `${APP_URL}/groups/${slug}`;
 
   return {
@@ -56,8 +62,8 @@ export async function generateMetadata({ params }: GroupRouteProps): Promise<Met
       siteName: "Notes Provider",
       images: [{ url: imageUrl, width: 1200, height: 630, alt: group.name, type: "image/png" }],
       type: "article",
-      publishedTime: group.createdAt,
-      modifiedTime: group.updatedAt,
+      publishedTime: group.createdAt.toISOString(),
+      modifiedTime: group.updatedAt.toISOString(),
       authors: ["Notes Provider"],
       section: group.category?.name || "Study Bundles",
     },
@@ -68,8 +74,8 @@ export async function generateMetadata({ params }: GroupRouteProps): Promise<Met
       images: [imageUrl],
     },
     other: {
-      "article:published_time": group.createdAt,
-      "article:modified_time": group.updatedAt,
+      "article:published_time": group.createdAt.toISOString(),
+      "article:modified_time": group.updatedAt.toISOString(),
       "article:section": group.category?.name || "Study Bundles",
     },
   };
@@ -79,7 +85,7 @@ export default async function GroupRoute({ params }: GroupRouteProps) {
   const { slug } = await params;
 
   const groupDoc = await Group.findOne({ slug, visibility: "public" })
-    .populate<{ category: { _id: any; name: string } }>("category")
+    .populate<PopulatedGroup>("category")
     .lean()
     .exec();
 
@@ -87,9 +93,9 @@ export default async function GroupRoute({ params }: GroupRouteProps) {
     notFound();
   }
 
-  const group = groupDoc as any;
+  const group = groupDoc as unknown as PopulatedGroup;
   const pageUrl = `${APP_URL}/groups/${group.slug}`;
-  const imageUrl = group.coverImageUrl || `${APP_URL}/og/group/${group.slug}.png`;
+  const imageUrl = group.coverImageUrl ?? `${APP_URL}/og/group/${group.slug}.png`;
 
   const jsonLd = [
     productJsonLd({
@@ -98,21 +104,21 @@ export default async function GroupRoute({ params }: GroupRouteProps) {
       price: group.price,
       priceLabel: `₹${group.price}`,
       currency: "INR",
-      imageUrl: group.coverImageUrl,
+      imageUrl: group.coverImageUrl ?? null,
       category: { name: group.category?.name || "Study Bundles" },
       level: "bundle",
-      pageCount: group.noteCount,
+      pageCount: group.noteCount ?? null,
       url: `/groups/${group.slug}`,
     }),
     articleJsonLd({
       title: group.name,
       description: group.description || "",
       url: `/groups/${group.slug}`,
-      imageUrl: group.coverImageUrl,
+      imageUrl: group.coverImageUrl ?? null,
       category: { name: group.category?.name || "Study Bundles" },
       level: "bundle",
-      createdAt: group.createdAt,
-      updatedAt: group.updatedAt,
+      createdAt: group.createdAt.toISOString(),
+      updatedAt: group.updatedAt.toISOString(),
     }),
     breadcrumbJsonLd([
       { name: "Home", url: APP_URL },

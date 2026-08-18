@@ -7,5 +7,8 @@ import type { CheckoutOrderResponse, PurchaseItemType, SocialPlatform } from "@/
 export type CreateOrderInput = { itemType: PurchaseItemType; itemSlug: string; fullName: string; socialPlatform: SocialPlatform; socialHandle: string; consentAccepted: true };
 
 export function useCreateOrder() {
-  return useMutation({ mutationFn: (input: CreateOrderInput) => apiClient<CheckoutOrderResponse>("/orders", { method: "POST", body: JSON.stringify(input) }) });
+  return useMutation({
+    mutationFn: (input: CreateOrderInput) => apiClient<CheckoutOrderResponse>("/orders", { method: "POST", body: JSON.stringify(input) }),
+    onError: (error: Error) => console.error("[useCreateOrder]", error),
+  });
 }

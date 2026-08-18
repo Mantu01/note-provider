@@ -44,8 +44,7 @@ describe("GroupsPage", () => {
     } as any);
 
     render(<GroupsPage />);
-    const grid = document.querySelector('.mt-8');
-    expect(grid).toBeInTheDocument();
+    expect(document.querySelector(".shimmer-premium")).toBeInTheDocument();
   });
 
   it("renders error state when groups query fails", async () => {
@@ -128,6 +127,74 @@ describe("GroupsPage", () => {
     await waitFor(() => {
       const cards = document.querySelectorAll('[data-testid^="group-card-"]');
       expect(cards.length).toBe(6);
+    });
+  });
+
+  it("displays total count in heading", async () => {
+    mockUseGroups.mockReturnValue({
+      isPending: false,
+      isError: false,
+      data: {
+        items: [{ id: "1", slug: "b1", name: "Bundle One" }],
+        pagination: { total: 1, page: 1, limit: 12, totalPages: 1 },
+      },
+      refetch: vi.fn(),
+    } as any);
+
+    render(<GroupsPage />);
+    await waitFor(() => {
+      expect(screen.getByText("1 bundle")).toBeInTheDocument();
+    });
+  });
+
+  it("shows plural count for multiple bundles", async () => {
+    mockUseGroups.mockReturnValue({
+      isPending: false,
+      isError: false,
+      data: {
+        items: [
+          { id: "1", slug: "b1", name: "Bundle A" },
+          { id: "2", slug: "b2", name: "Bundle B" },
+          { id: "3", slug: "b3", name: "Bundle C" },
+        ],
+        pagination: { total: 3, page: 1, limit: 12, totalPages: 1 },
+      },
+      refetch: vi.fn(),
+    } as any);
+
+    render(<GroupsPage />);
+    await waitFor(() => {
+      expect(screen.getByText("3 bundles")).toBeInTheDocument();
+    });
+  });
+
+  it("shows loading text while fetching", () => {
+    mockUseGroups.mockReturnValue({
+      isPending: true,
+      isError: false,
+      data: undefined,
+      refetch: vi.fn(),
+    } as any);
+
+    render(<GroupsPage />);
+    expect(screen.getByText(/Loading/)).toBeInTheDocument();
+  });
+
+  it("calls refetch on retry button click", async () => {
+    const mockRefetch = vi.fn();
+    mockUseGroups.mockReturnValue({
+      isPending: false,
+      isError: true,
+      data: undefined,
+      refetch: mockRefetch,
+    } as any);
+
+    render(<GroupsPage />);
+    await waitFor(() => {
+      const btn = screen.getByTestId("error-retry");
+      expect(btn).toBeInTheDocument();
+      btn.click();
+      expect(mockRefetch).toHaveBeenCalledTimes(1);
     });
   });
 });

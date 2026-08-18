@@ -1,4 +1,4 @@
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 const mockImageResponse = vi.fn();
 
@@ -18,7 +18,7 @@ describe("OG Logo Route", () => {
   it("returns an ImageResponse", async () => {
     const mod = await import("@/app/og/logo/route");
     const request = new Request("http://localhost:3000/og/logo.png");
-    const response = mod.GET(request as any);
+    const response = (mod.GET as any)(request);
     expect(response).toBeDefined();
     expect(mockImageResponse).toHaveBeenCalledOnce();
   });
@@ -26,7 +26,7 @@ describe("OG Logo Route", () => {
   it("renders the brand name Notes Provider", async () => {
     const mod = await import("@/app/og/logo/route");
     const request = new Request("http://localhost:3000/og/logo.png");
-    const response = mod.GET(request as any);
+    const response = (mod.GET as any)(request);
     const responseStr = JSON.stringify(response);
     expect(responseStr).toContain("Notes Provider");
   });
@@ -34,7 +34,7 @@ describe("OG Logo Route", () => {
   it("renders the tagline", async () => {
     const mod = await import("@/app/og/logo/route");
     const request = new Request("http://localhost:3000/og/logo.png");
-    const response = mod.GET(request as any);
+    const response = (mod.GET as any)(request);
     const responseStr = JSON.stringify(response);
     expect(responseStr).toContain("Premium study notes, instantly.");
   });
@@ -42,7 +42,7 @@ describe("OG Logo Route", () => {
   it("renders the N logo character", async () => {
     const mod = await import("@/app/og/logo/route");
     const request = new Request("http://localhost:3000/og/logo.png");
-    const response = mod.GET(request as any);
+    const response = (mod.GET as any)(request);
     const responseStr = JSON.stringify(response);
     expect(responseStr).toContain("N");
   });
@@ -60,7 +60,7 @@ describe("OG Logo Route", () => {
   it("returns ImageResponse with width 1200 and height 630", async () => {
     const mod = await import("@/app/og/logo/route");
     const request = new Request("http://localhost:3000/og/logo.png");
-    mod.GET(request as any);
+    (mod.GET as any)(request);
     expect(mockImageResponse.mock.calls[0][1]).toEqual({ width: 1200, height: 630 });
   });
 });

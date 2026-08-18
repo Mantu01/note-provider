@@ -10,7 +10,7 @@ import path from "path";
 
 export const runtime = "nodejs";
 
-export const GET = handler<{ slug: string }>(async (ctx): Promise<any> => {
+export const GET = handler<{ slug: string }>(async (ctx): Promise<NextResponse<unknown>> => {
   const { slug } = ctx.params;
   enforceRateLimit("noteDownload", ctx.ip, { limit: 30, windowMs: 600000 });
 
@@ -63,7 +63,7 @@ export const GET = handler<{ slug: string }>(async (ctx): Promise<any> => {
 
   const bytes = buffer instanceof Buffer ? buffer : Buffer.from(buffer as ArrayBuffer);
 
-  return new Response(bytes as unknown as ArrayBuffer, {
+  return new NextResponse(bytes as unknown as ArrayBuffer, {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="${fileName}"`,

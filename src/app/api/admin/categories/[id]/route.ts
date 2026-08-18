@@ -36,7 +36,6 @@ export const PATCH = adminHandler(async (ctx) => {
   if (parsed.data.isActive !== undefined) updates.isActive = parsed.data.isActive;
 
   if (parsed.data.subjects !== undefined) {
-    const existingSubjects = Array.isArray(existing.subjects) ? existing.subjects : [];
     const newSubjects = parsed.data.subjects.map((sub, idx) => {
       const slug = sub.slug ? slugify(sub.slug) : slugify(sub.name);
       return {
@@ -46,16 +45,6 @@ export const PATCH = adminHandler(async (ctx) => {
         isActive: sub.isActive !== false,
       };
     });
-
-    for (const oldSub of existingSubjects) {
-      const oldSubDoc = oldSub as { _id?: unknown; name: string; slug: string; isActive?: boolean };
-      const matchedNew = newSubjects.find((ns) => ns.id === String(oldSubDoc._id ?? "") || ns.slug === oldSubDoc.slug);
-      if (!matchedNew || matchedNew.isActive === false) {
-        // skip — subject is no longer tracked on notes
-      } else if (matchedNew.name !== oldSub.name || matchedNew.slug !== oldSub.slug) {
-        // skip — subject is no longer tracked on notes
-      }
-    }
 
     updates.subjects = newSubjects;
   }

@@ -29,6 +29,8 @@ export default function JsonLd({ scripts }: JsonLdProps) {
 
 export type JsonLdReturn = JsonLdScript[];
 
+type WebPageJsonLd = JsonLdScript & { "@type": "WebPage" };
+
 function getAppUrl(): string {
   return process.env.NEXT_PUBLIC_APP_URL || "https://notesprovider.com";
 }
@@ -267,7 +269,7 @@ export function webpageJsonLd(params: {
   itemCount?: number;
 }): JsonLdReturn {
   const appUrl = getAppUrl();
-  const base: JsonLdScript = {
+  const base: WebPageJsonLd = {
     "@context": "https://schema.org",
     "@type": "WebPage",
     name: params.title,
@@ -290,9 +292,9 @@ export function webpageJsonLd(params: {
     },
   };
   if (params.itemCount !== undefined) {
-    (base as any)["numberOfItems"] = params.itemCount;
+    base.numberOfItems = params.itemCount;
   }
-  return [base as JsonLdScript];
+  return [base];
 }
 
 export function collectionPageJsonLd(params: {

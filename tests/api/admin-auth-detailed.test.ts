@@ -58,6 +58,7 @@ vi.mock('@/server/lib/rate-limit', () => ({
 
 vi.mock('@/server/mappers/activity.mapper', () => ({
   toAdminProfile: vi.fn((a: any) => a),
+  toAdminActivity: vi.fn((a: any) => a),
 }))
 
 const adminLoginSchema = { safeParse: vi.fn() }

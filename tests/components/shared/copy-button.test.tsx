@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
+import { useMutation } from "@tanstack/react-query";
 import { CopyButton } from "@/components/shared/copy-button";
 
 vi.mock("sonner", () => ({
@@ -49,18 +50,22 @@ describe("CopyButton", () => {
 
   it("calls mutate on button click", async () => {
     const user = userEvent.setup();
-    render(<CopyButton value="test-value" />);
-    const btn = screen.getByRole("button");
-    await user.click(btn);
-  });
+    const mockMutate = vi.fn();
+    vi.mocked(useMutation).mockReturnValue({
+      data: undefined,
+      error: null,
+      variables: undefined,
+      isSuccess: false,
+      isPending: false,
+      isError: false,
+      isIdle: true,
+      mutate: mockMutate,
+      mutateAsync: mockMutate,
+    } as unknown as ReturnType<typeof useMutation>);
 
-  it("shows check icon after successful copy", async () => {
-    const user = userEvent.setup();
     render(<CopyButton value="test-value" />);
     const btn = screen.getByRole("button");
     await user.click(btn);
-    await new Promise((r) => setTimeout(r, 50));
-    const icon = btn.querySelector('svg[aria-hidden="true"]');
-    expect(icon).toBeInTheDocument();
+    expect(mockMutate).toHaveBeenCalledTimes(1);
   });
 });

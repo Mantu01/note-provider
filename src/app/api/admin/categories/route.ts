@@ -27,10 +27,11 @@ export const GET = adminHandler(async (ctx) => {
     }),
   );
 
-  return ok({
+  const res = ok({
     items: categoriesWithCounts,
-    pagination: { page: 1, limit: total, total, totalPages: 1, hasNext: false, hasPrev: false },
   });
+  res.headers.set("Cache-Control", "public, max-age=60, s-maxage=60");
+  return res;
 });
 
 export const POST = adminHandler(async (ctx) => {

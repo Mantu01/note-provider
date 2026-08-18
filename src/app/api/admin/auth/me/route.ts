@@ -9,6 +9,8 @@ export const runtime = "nodejs";
 export const GET = adminHandler(async (ctx) => {
   const admin = await Admin.findById(ctx.admin.id).select("-passwordHash").lean().exec();
   if (!admin) throw AppError.unauthorized();
-  return ok(toAdminProfile(admin));
+  const res = ok(toAdminProfile(admin));
+  res.headers.set("Cache-Control", "no-store, max-age=0");
+  return res;
 });
 

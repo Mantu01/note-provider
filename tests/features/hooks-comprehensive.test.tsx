@@ -21,7 +21,7 @@ import { useFileUpload } from '@/features/admin/api/use-upload'
 
 function wrapper({ children }: { children: React.ReactNode }) {
   const client = new QueryClient({
-    defaultOptions: { queries: { retry: false, cacheTime: 0 } },
+    defaultOptions: { queries: { retry: false } },
   })
   return React.createElement(QueryClientProvider, { client }, children)
 }
@@ -72,7 +72,7 @@ describe('useNote hook', () => {
     global.fetch = fn
     const { result } = renderHook(() => useNote('test', { enabled: false }), { wrapper })
     // When disabled, hook should not be fetching
-    expect(result.current.isIdle || !result.current.isLoading).toBe(true)
+    expect(!result.current.isLoading).toBe(true)
   })
 })
 

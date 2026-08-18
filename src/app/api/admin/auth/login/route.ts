@@ -51,5 +51,7 @@ export const POST = handler(async (ctx) => {
   });
 
   const profile = { ...admin, passwordHash: undefined };
-  return ok(toAdminProfile(profile));
+  const res = ok(toAdminProfile(profile));
+  res.headers.set("Cache-Control", "no-store, max-age=0");
+  return res;
 });

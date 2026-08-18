@@ -10,14 +10,17 @@ vi.mock("next/image", () => ({
   },
 }));
 
-vi.mock("@/components/shared/note-card-skeleton", () => ({
-  NoteCardSkeleton: () => (
+vi.mock("@/components/shared/shimmer-loader", () => ({
+  ShimmerNoteCard: () => (
     <div data-testid="note-card-skeleton">
-      <div data-slot="skeleton" className="animate-pulse bg-muted aspect-[16/9]" />
-      <div data-slot="skeleton" className="animate-pulse bg-muted h-5 w-20" />
-      <div data-slot="skeleton" className="animate-pulse bg-muted h-6 w-4/5" />
-      <div data-slot="skeleton" className="animate-pulse bg-muted h-4 w-full" />
+      <div data-slot="skeleton" className="shimmer-premium aspect-[16/9]" />
+      <div data-slot="skeleton" className="shimmer-premium h-5 w-20" />
+      <div data-slot="skeleton" className="shimmer-premium h-6 w-4/5" />
+      <div data-slot="skeleton" className="shimmer-premium h-4 w-full" />
     </div>
+  ),
+  ShimmerLoader: ({ className }: { className?: string }) => (
+    <div data-testid={`shimmer-${className?.replace(/\s+/g, "-")}`} className={className} />
   ),
 }));
 
@@ -34,9 +37,9 @@ describe("NotesLoading", () => {
     expect(skeletons.length).toBe(12);
   });
 
-  it("renders a top skeleton banner", () => {
+  it("renders a top shimmer banner", () => {
     render(<NotesLoading />);
-    const banner = document.querySelector(".bg-muted.rounded-2xl");
+    const banner = document.querySelector("[data-testid='shimmer-h-20-rounded-xl']");
     expect(banner).toBeInTheDocument();
   });
 
@@ -50,14 +53,14 @@ describe("NotesLoading", () => {
     const { container } = render(<NotesLoading />);
     const wrapper = container.querySelector(".max-w-7xl");
     expect(wrapper).toHaveClass("px-4");
-    expect(wrapper).toHaveClass("py-10");
+    expect(wrapper).toHaveClass("py-8");
   });
 
   it("renders skeletons in a responsive grid", () => {
     const { container } = render(<NotesLoading />);
     const grid = container.querySelector(".grid");
     expect(grid).toBeInTheDocument();
-    expect(grid).toHaveClass("gap-5");
+    expect(grid).toHaveClass("gap-2.5");
     expect(grid).toHaveClass("sm:grid-cols-2");
     expect(grid).toHaveClass("lg:grid-cols-3");
   });

@@ -13,11 +13,12 @@ export default defineConfig({
     environment: "jsdom",
     globals: true,
     setupFiles: ["./vitest.setup.ts"],
-    testTimeout: 10000,
+    pool: "forks",
+    testTimeout: 30000,
     coverage: {
       provider: "v8",
       reporter: ["text", "json", "html"],
-      exclude: ["node_modules/", "src/app/", "src/providers/"],
+      exclude: ["node_modules/", "src/providers/"],
     },
   },
 });

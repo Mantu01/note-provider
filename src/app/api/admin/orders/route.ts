@@ -37,9 +37,11 @@ export const GET = adminHandler(async (ctx) => {
     failedCount: failedOrders.length,
   };
 
-  return ok({
+  const res = ok({
     items: items.map(toAdminOrder),
     pagination: buildPagination(total, page, limit),
     summary,
   });
+  res.headers.set("Cache-Control", "public, max-age=30, s-maxage=30");
+  return res;
 });

@@ -9,8 +9,14 @@ import JsonLd, {
 } from "@/components/seo/json-ld";
 import { NoteDetailPage } from "@/features/notes/components/note-detail-page";
 import { Note } from "@/server/db/models/note.model";
+import type { NoteDoc } from "@/server/db/models/note.model";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+
+interface PopulatedNote extends Omit<NoteDoc, "category"> {
+  category?: { _id: import("mongoose").Types.ObjectId; name: string };
+  priceLabel?: string;
+}
 
 interface NotePageProps {
   params: Promise<{ slug: string }>;
@@ -20,7 +26,7 @@ export async function generateMetadata({ params }: NotePageProps): Promise<Metad
   const { slug } = await params;
 
   const noteDoc = await Note.findOne({ slug, visibility: "public" })
-    .populate<{ category: { _id: any; name: string } }>("category")
+    .populate<PopulatedNote>("category")
     .lean()
     .exec();
 
@@ -32,10 +38,10 @@ export async function generateMetadata({ params }: NotePageProps): Promise<Metad
     };
   }
 
-  const note = noteDoc as any;
+  const note = noteDoc as unknown as PopulatedNote;
   const title = `${note.title} — ${note.level.charAt(0).toUpperCase() + note.level.slice(1)} Notes | ${note.category?.name || "Coding Notes"}`;
   const desc = note.description?.slice(0, 160) || `Download ${note.title} — ${note.level} developer notes for ${note.category?.name || "coding"}. ${note.pricingType === "free" ? "Completely free." : `Priced at ${note.priceLabel || "affordable rate"}.`}`;
-  const imageUrl = note.coverImageUrl || `${APP_URL}/og/note/${slug}.png`;
+  const imageUrl = note.coverImageUrl ?? `${APP_URL}/og/note/${slug}.png`;
   const pageUrl = `${APP_URL}/notes/${slug}`;
 
   return {
@@ -60,8 +66,8 @@ export async function generateMetadata({ params }: NotePageProps): Promise<Metad
       siteName: "Notes Provider",
       images: [{ url: imageUrl, width: 1200, height: 630, alt: note.title, type: "image/png" }],
       type: "article",
-      publishedTime: note.createdAt,
-      modifiedTime: note.updatedAt,
+      publishedTime: note.createdAt.toISOString(),
+      modifiedTime: note.updatedAt.toISOString(),
       authors: ["Notes Provider"],
       section: note.category?.name || "Study Notes",
       tags: note.tags || [],
@@ -73,8 +79,8 @@ export async function generateMetadata({ params }: NotePageProps): Promise<Metad
       images: [imageUrl],
     },
     other: {
-      "article:published_time": note.createdAt,
-      "article:modified_time": note.updatedAt,
+      "article:published_time": note.createdAt.toISOString(),
+      "article:modified_time": note.updatedAt.toISOString(),
       "article:section": note.category?.name || "Study Notes",
     },
   };
@@ -84,7 +90,7 @@ export default async function NoteRoute({ params }: NotePageProps) {
   const { slug } = await params;
 
   const noteDoc = await Note.findOne({ slug, visibility: "public" })
-    .populate<{ category: { _id: any; name: string } }>("category")
+    .populate<PopulatedNote>("category")
     .lean()
     .exec();
 
@@ -92,9 +98,9 @@ export default async function NoteRoute({ params }: NotePageProps) {
     notFound();
   }
 
-  const note = noteDoc as any;
+  const note = noteDoc as unknown as PopulatedNote;
   const pageUrl = `${APP_URL}/notes/${note.slug}`;
-  const imageUrl = note.coverImageUrl || `${APP_URL}/og/note/${note.slug}.png`;
+  const imageUrl = note.coverImageUrl ?? `${APP_URL}/og/note/${note.slug}.png`;
 
   const jsonLd = [
     productJsonLd({
@@ -103,10 +109,10 @@ export default async function NoteRoute({ params }: NotePageProps) {
       price: note.price,
       priceLabel: note.pricingType === "free" ? "Free" : `₹${note.price}`,
       currency: "INR",
-      imageUrl: note.coverImageUrl,
+      imageUrl: note.coverImageUrl ?? null,
       category: { name: note.category?.name || "Study Notes" },
       level: note.level,
-      pageCount: note.pageCount,
+      pageCount: note.pageCount ?? null,
       url: `/notes/${note.slug}`,
     }),
     courseJsonLd({
@@ -115,17 +121,17 @@ export default async function NoteRoute({ params }: NotePageProps) {
       url: `/notes/${note.slug}`,
       category: { name: note.category?.name || "Study Notes" },
       level: note.level,
-      imageUrl: note.coverImageUrl,
+      imageUrl: note.coverImageUrl ?? null,
     }),
     articleJsonLd({
       title: note.title,
       description: note.description || "",
       url: `/notes/${note.slug}`,
-      imageUrl: note.coverImageUrl,
+      imageUrl: note.coverImageUrl ?? null,
       category: { name: note.category?.name || "Study Notes" },
       level: note.level,
-      createdAt: note.createdAt,
-      updatedAt: note.updatedAt,
+      createdAt: note.createdAt.toISOString(),
+      updatedAt: note.updatedAt.toISOString(),
       tags: note.tags,
     }),
     breadcrumbJsonLd([

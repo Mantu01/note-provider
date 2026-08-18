@@ -8,7 +8,6 @@ import { toPublicNote } from "@/server/mappers/note.mapper";
 import { toPublicGroup } from "@/server/mappers/group.mapper";
 import { toPublicCategory } from "@/server/mappers/category.mapper";
 
-export const runtime = "nodejs";
 export const revalidate = 60;
 export const dynamic = "force-dynamic";
 
@@ -32,11 +31,11 @@ export const GET = handler(async () => {
 
   const countMap = new Map(catCounts.map((c) => [c._id.toString(), c.count]));
 
-  return ok({
+  const res = ok({
     featuredNotes: featuredNotes.map(toPublicNote),
     latestNotes: latestNotes.map(toPublicNote),
     freeNotes: freeNotes.map(toPublicNote),
-    featuredGroups: featuredGroups.map((g) => toPublicGroup(g as any, [])),
+    featuredGroups: featuredGroups.map((g) => toPublicGroup(g as unknown as Record<string, unknown>, [])),
     categories: categories.map((cat) => toPublicCategory({ ...cat, noteCount: countMap.get(cat._id.toString()) ?? 0 }, countMap.get(cat._id.toString()) ?? 0)),
     stats: {
       totalNotes,
@@ -45,4 +44,6 @@ export const GET = handler(async () => {
       happyLearners,
     },
   });
+  res.headers.set("Cache-Control", "public, max-age=60, s-maxage=60");
+  return res;
 });

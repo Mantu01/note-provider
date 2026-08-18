@@ -5,7 +5,6 @@ import { Note } from "@/server/db/models/note.model";
 import { toPublicGroup } from "@/server/mappers/group.mapper";
 import { parsePagination, buildPagination } from "@/server/lib/query";
 
-export const runtime = "nodejs";
 export const revalidate = 300;
 export const dynamic = "force-dynamic";
 
@@ -17,8 +16,10 @@ export const GET = handler(async (ctx) => {
     Group.countDocuments({ visibility: "public" }).exec(),
   ]);
 
-  return ok({
-    items: items.map((item) => toPublicGroup(item as any)),
+  const res = ok({
+    items: items.map((item) => toPublicGroup(item as unknown as Record<string, unknown>)),
     pagination: buildPagination(total, page, limit),
   });
+  res.headers.set("Cache-Control", "public, max-age=300, s-maxage=300");
+  return res;
 });

@@ -8,6 +8,7 @@ import { toAdminGroup } from "@/server/mappers/group.mapper";
 import { updateGroupSchema } from "@/lib/schemas/group.schema";
 import { rupeesToPaise } from "@/lib/format";
 import { Types } from "mongoose";
+import { validateNoteIdsExist } from "@/server/lib/note-validation";
 
 export const runtime = "nodejs";
 
@@ -46,16 +47,7 @@ export const PATCH = adminHandler(async (ctx) => {
     const noteIds = input.noteIds.filter((n) => n.trim());
     const uniqueIds = Array.from(new Set(noteIds));
 
-    if (uniqueIds.length === 0) throw AppError.validation({ noteIds: "At least one note is required" });
-
-    const existingNotes = await Note.find({ _id: { $in: uniqueIds.map((nId) => new Types.ObjectId(nId).toString()) as any } })
-      .select("_id")
-      .lean()
-      .exec();
-
-    const existingIds = existingNotes.map((n) => n._id.toString());
-    const missing = uniqueIds.filter((nId) => !existingIds.includes(nId));
-    if (missing.length > 0) throw AppError.notFound(`Note(s) ${missing.slice(0, 3).join(", ")} not found`);
+    await validateNoteIdsExist(uniqueIds);
   }
 
   const updates: Record<string, unknown> = { updatedBy: admin.id };

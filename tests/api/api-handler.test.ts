@@ -18,8 +18,13 @@ vi.mock('@/server/lib/auth-guard', () => ({
 }))
 
 describe('api-handler', () => {
+  let errorSpy: ReturnType<typeof vi.spyOn>;
   beforeEach(() => {
     vi.clearAllMocks()
+    errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
+  })
+  afterEach(() => {
+    errorSpy.mockRestore()
   })
 
   describe('handler', () => {

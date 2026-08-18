@@ -24,7 +24,7 @@ export async function listNotes(
 }
 
 export async function getNoteBySlug(slug: string): Promise<NoteDoc | null> {
-  return Note.findOne({ slug: slug as any, visibility: "public" }).populate("category").lean().exec();
+  return Note.findOne({ slug, visibility: "public" }).populate("category").lean().exec();
 }
 
 export async function getNoteById(id: string): Promise<NoteDoc | null> {
@@ -171,7 +171,7 @@ export async function deleteNote(
 }
 
 export async function getRelatedNotes(categoryId: string, noteId: string, limit: number): Promise<NoteDoc[]> {
-  return Note.find({ _id: { $ne: new Types.ObjectId(noteId).toString() as any }, category: categoryId, visibility: "public" })
+  return (Note as any).find({ _id: { $ne: noteId }, category: categoryId, visibility: "public" })
     .sort({ createdAt: -1 })
     .limit(limit)
     .populate("category")
@@ -200,14 +200,14 @@ export async function getNotesByCategory(categoryId: string, limit: number): Pro
 }
 
 export async function incrementDownloadCount(noteId: string): Promise<void> {
-  await Note.updateOne({ _id: noteId as any }, { $inc: { downloadCount: 1 } }).exec();
+  await (Note as any).updateOne({ _id: noteId }, { $inc: { downloadCount: 1 } }).exec();
 }
 
 export async function incrementPurchaseCount(model: typeof Note | typeof Group, id: string): Promise<void> {
-  await (model as typeof Note).updateOne({ _id: id as any }, { $inc: { purchaseCount: 1 } }).exec();
+  await (model as any).updateOne({ _id: id }, { $inc: { purchaseCount: 1 } }).exec();
 }
 
 export async function addRevenuePaise(model: typeof Note | typeof Group, id: string, amount: number): Promise<void> {
-  await (model as typeof Note).updateOne({ _id: id as any }, { $inc: { revenuePaise: amount } }).exec();
+  await (model as any).updateOne({ _id: id }, { $inc: { revenuePaise: amount } }).exec();
 }
 

@@ -15,7 +15,6 @@ import {
 } from "@/server/lib/query";
 import type { NoteSort } from "@/lib/types";
 
-export const runtime = "nodejs";
 export const revalidate = 300;
 export const dynamic = "force-dynamic";
 
@@ -36,8 +35,8 @@ export const GET = handler(async (ctx) => {
     featured: parseBooleanParam(ctx.searchParams, "featured"),
   };
 
-  const categoryIds = query.category.length > 0 
-    ? await resolveCategoryIds(Category, query.category) 
+  const categoryIds = query.category.length > 0
+    ? await resolveCategoryIds(Category as unknown as import("mongoose").Model<Record<string, unknown>>, query.category)
     : undefined;
 
   const filter = buildNoteFilter(query, { publicOnly: true, categoryIds });
@@ -48,8 +47,10 @@ export const GET = handler(async (ctx) => {
     Note.countDocuments(filter).exec(),
   ]);
 
-  return ok({
+  const res = ok({
     items: items.map(toPublicNote),
     pagination: buildPagination(total, page, limit),
   });
+  res.headers.set("Cache-Control", "public, max-age=300, s-maxage=300");
+  return res;
 });

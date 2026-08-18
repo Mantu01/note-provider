@@ -26,8 +26,10 @@ export const GET = adminHandler(async (ctx) => {
     Order.countDocuments(filter).exec(),
   ]);
 
-  return ok({
+  const res = ok({
     items: items.map(toAdminLead),
     pagination: buildPagination(total, page, limit),
   });
+  res.headers.set("Cache-Control", "public, max-age=30, s-maxage=30");
+  return res;
 });

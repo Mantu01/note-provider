@@ -65,7 +65,7 @@ function mockReq(method: string, path: string, body?: unknown, headers?: Record<
   const url = `http://localhost${path}`
   const opts: RequestInit = { method, headers: { 'content-type': 'application/json', ...headers } }
   if (body !== undefined) opts.body = typeof body === 'string' ? body : JSON.stringify(body)
-  return new NextRequest(url, opts)
+  return new NextRequest(url, opts as any)
 }
 
 function chainMock(val: unknown) {

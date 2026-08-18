@@ -85,7 +85,7 @@ describe("GlobalError", () => {
     render(<GlobalError error={new Error("test") as any} reset={mockReset} />);
     const link = document.querySelector('a[href="/contact"]');
     expect(link).toBeInTheDocument();
-    expect(link).toHaveTextContent("Contact Support");
+    expect(link).toHaveTextContent("Support");
   });
 
   it("renders Home link", () => {

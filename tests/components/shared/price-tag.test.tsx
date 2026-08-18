@@ -52,21 +52,22 @@ describe("PriceTag", () => {
   it("renders with large size when size prop is large", () => {
     const { container } = render(<PriceTag price={99900} priceLabel="Price" compareAtPrice={null} size="large" />);
     const priceSpan = container.querySelector('span');
-    expect(priceSpan).toHaveClass("text-3xl");
+    expect(priceSpan).toHaveClass("text-2xl");
     expect(priceSpan).toHaveClass("font-bold");
+    expect(priceSpan).toHaveClass("tracking-tight");
   });
 
   it("renders with default size when size prop is default", () => {
     const { container } = render(<PriceTag price={99900} priceLabel="Price" compareAtPrice={null} size="default" />);
-    const priceSpan = container.querySelector('span');
-    expect(priceSpan).toHaveClass("text-lg");
+    const priceSpan = container.querySelectorAll('span')[0];
+    expect(priceSpan).toHaveClass("text-sm");
     expect(priceSpan).toHaveClass("font-bold");
   });
 
   it("defaults to default size when no size prop", () => {
     const { container } = render(<PriceTag price={99900} priceLabel="Price" compareAtPrice={null} />);
-    const priceSpan = container.querySelector('span');
-    expect(priceSpan).toHaveClass("text-lg");
+    const priceSpan = container.querySelectorAll('span')[0];
+    expect(priceSpan).toHaveClass("text-sm");
     expect(priceSpan).toHaveClass("font-bold");
   });
 });

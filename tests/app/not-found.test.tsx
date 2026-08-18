@@ -66,9 +66,9 @@ describe("NotFound", () => {
     expect(main).toHaveClass("place-items-center");
   });
 
-  it("renders max-w-md wrapper", () => {
+  it("renders max-w-sm wrapper", () => {
     const { container } = render(<NotFound />);
-    const wrapper = container.querySelector(".max-w-md");
+    const wrapper = container.querySelector(".max-w-sm");
     expect(wrapper).toBeInTheDocument();
   });
 
@@ -78,9 +78,9 @@ describe("NotFound", () => {
     expect(wrapper).toBeInTheDocument();
   });
 
-  it("renders flex gap-6 wrapper", () => {
+  it("renders flex gap-5 wrapper", () => {
     const { container } = render(<NotFound />);
-    const wrapper = container.querySelector(".gap-6");
+    const wrapper = container.querySelector(".gap-5");
     expect(wrapper).toBeInTheDocument();
   });
 

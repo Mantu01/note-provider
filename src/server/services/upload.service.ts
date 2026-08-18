@@ -38,8 +38,8 @@ export async function uploadFile(
         deliveryType,
         filename,
       });
-    } catch (cloudinaryErr: any) {
-      console.warn("[Cloudinary Upload Failed - Using Graceful Fallback]:", cloudinaryErr?.message || cloudinaryErr);
+    } catch (cloudinaryErr: unknown) {
+      console.warn("[Cloudinary Upload Failed - Using Graceful Fallback]:", cloudinaryErr instanceof Error ? cloudinaryErr.message : String(cloudinaryErr));
       const publicId = `${limit.folder}/${Date.now()}_${filename.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
       result = {
         url: `https://res.cloudinary.com/demo/${resourceType}/upload/${publicId}`,

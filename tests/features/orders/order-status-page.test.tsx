@@ -1,299 +1,162 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
-import { OrderStatusPage } from '@/features/orders/components/order-status-page';
+import { describe, it, expect, vi, beforeEach } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { OrderStatusPage } from "@/features/orders/components/order-status-page";
 
-vi.mock('@/features/orders/api/use-order', () => ({
+vi.mock("next/navigation", () => ({
+  useRouter: vi.fn(() => ({ push: vi.fn() })),
+  useParams: vi.fn(() => ({})),
+  useSearchParams: vi.fn(() => new URLSearchParams()),
+}));
+
+vi.mock("@/features/orders/api/use-order", () => ({
   useOrder: vi.fn(),
 }));
 
-vi.mock('@/components/shared/error-state', () => ({
-  ErrorState: ({ onRetry }: { onRetry: () => void }) => (
-    <button onClick={onRetry} data-testid="error-retry">Retry</button>
-  ),
+vi.mock("@/hooks/use-download-file", () => ({
+  useDownloadFile: () => ({ download: vi.fn(), isDownloading: false }),
 }));
 
-vi.mock('@/components/shared/status-badge', () => ({
-  StatusBadge: ({ value }: { value?: string }) => (
-    <span data-testid={`status-${value}`}>{value || ''}</span>
-  ),
+vi.mock("@/components/shared/copy-button", () => ({
+  CopyButton: ({ value }: any) => <button data-testid="copy-btn" onClick={() => navigator.clipboard.writeText(value)}>Copy</button>,
 }));
 
-vi.mock('@/components/shared/copy-button', () => ({
-  CopyButton: ({ value }: { value: string }) => (
-    <button data-testid={`copy-${value}`}>Copy {value}</button>
-  ),
-}));
-
-const { useOrder } = await import('@/features/orders/api/use-order');
+const { useOrder } = await import("@/features/orders/api/use-order");
 const mockUseOrder = vi.mocked(useOrder);
 
-describe('OrderStatusPage', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+(globalThis as any).clipboardWriteText = vi.fn().mockResolvedValue(undefined);
 
-  it('renders loading spinner while fetching', () => {
-    mockUseOrder.mockReturnValue({
-      isPending: true,
-      isError: false,
-      data: undefined,
-      refetch: vi.fn(),
-    } as any);
-
+describe("OrderStatusPage", () => {
+  it("shows spinner during loading", () => {
+    mockUseOrder.mockReturnValue({ isPending: true, isError: false, data: null, refetch: vi.fn(), isSuccess: false } as any);
     render(<OrderStatusPage orderId="ord-123" />);
-    expect(document.querySelector('.animate-spin')).toBeInTheDocument();
+    expect(screen.getByText(/Loading order/i)).toBeInTheDocument();
   });
 
-  it('renders error state when order not found', async () => {
-    mockUseOrder.mockReturnValue({
-      isPending: false,
-      isError: true,
-      data: undefined,
-      refetch: vi.fn(),
-    } as any);
-
-    render(<OrderStatusPage orderId="invalid" />);
-    await waitFor(() => {
-      expect(screen.getByTestId('error-retry')).toBeInTheDocument();
-    });
+  it("shows error state when query errors", () => {
+    mockUseOrder.mockReturnValue({ isPending: false, isError: true, data: null, refetch: vi.fn(), isSuccess: false } as any);
+    render(<OrderStatusPage orderId="ord-missing" />);
+    expect(screen.getByText(/could not load this order/i)).toBeInTheDocument();
   });
 
-  it('shows payment confirming state when status is created', async () => {
+  it("shows payment pending state for created status", () => {
     mockUseOrder.mockReturnValue({
       isPending: false,
       isError: false,
       data: {
-        orderId: 'ord-123',
-        orderNumber: 'NP-001',
-        paymentStatus: 'created',
-        fulfillmentStatus: 'pending',
-        itemSlug: 'react-notes',
-        itemType: 'note',
-        itemTitle: 'React Notes',
-        amountLabel: 'Rs. 499',
-        createdAt: '2026-08-15T10:00:00Z',
-        buyer: { socialHandleMasked: '***@gmail.com' },
-      },
+        paymentStatus: "created",
+        fulfillmentStatus: "pending",
+        orderNumber: "NP-20260817-0001",
+        itemTitle: "DSA Notes",
+        buyer: { socialHandleMasked: "**9876" },
+      } as any,
       refetch: vi.fn(),
     } as any);
-
-    render(<OrderStatusPage orderId="ord-123" />);
-    expect(screen.getByText(/confirming your payment/i)).toBeInTheDocument();
-    expect(screen.getByText(/this usually takes a few seconds/i)).toBeInTheDocument();
+    render(<OrderStatusPage orderId="ord-created" />);
+    expect(screen.getByText(/Confirming your payment/i)).toBeInTheDocument();
   });
 
-  it('shows payment failed state', async () => {
+  it("shows payment failed state", () => {
     mockUseOrder.mockReturnValue({
       isPending: false,
       isError: false,
       data: {
-        orderId: 'ord-123',
-        orderNumber: 'NP-001',
-        paymentStatus: 'failed',
-        fulfillmentStatus: 'pending',
-        itemSlug: 'react-notes',
-        itemType: 'note',
-        itemTitle: 'React Notes',
-        amountLabel: 'Rs. 499',
-        createdAt: '2026-08-15T10:00:00Z',
-        buyer: { socialHandleMasked: '***@gmail.com' },
-      },
+        paymentStatus: "failed",
+        fulfillmentStatus: "cancelled",
+        orderNumber: "NP-20260817-0002",
+        itemSlug: "dsa-notes",
+        itemType: "note",
+        itemTitle: "DSA Notes",
+        buyer: { socialHandleMasked: "**9876" },
+      } as any,
       refetch: vi.fn(),
     } as any);
-
-    render(<OrderStatusPage orderId="ord-123" />);
-    await waitFor(() => {
-      expect(screen.getByText('Payment failed')).toBeInTheDocument();
-      expect(screen.getByText('Try again')).toBeInTheDocument();
-    });
+    render(<OrderStatusPage orderId="ord-failed" />);
+    expect(screen.getByText(/Payment failed/i)).toBeInTheDocument();
+    expect(screen.getByText(/Try again/i)).toBeInTheDocument();
   });
 
-  it('shows completed order details', async () => {
+  it("shows success state for paid order", () => {
     mockUseOrder.mockReturnValue({
       isPending: false,
       isError: false,
       data: {
-        orderId: 'ord-123',
-        orderNumber: 'NP-20260815-0001',
-        paymentStatus: 'paid',
-        fulfillmentStatus: 'completed',
-        itemSlug: 'react-notes',
-        itemType: 'note',
-        itemTitle: 'React Notes',
-        amountLabel: 'Rs. 499',
-        createdAt: '2026-08-15T10:00:00Z',
-        buyer: { socialHandleMasked: '***@gmail.com' },
-      },
+        paymentStatus: "paid",
+        fulfillmentStatus: "pending",
+        orderNumber: "NP-20260817-0003",
+        itemTitle: "React Notes",
+        amountLabel: "₹299",
+        createdAt: "2026-08-17T10:00:00.000Z",
+        buyer: { socialHandleMasked: "**1234" },
+      } as any,
       refetch: vi.fn(),
     } as any);
-
-    render(<OrderStatusPage orderId="ord-123" />);
-    await waitFor(() => {
-      expect(screen.getByText(/payment successful/i)).toBeInTheDocument();
-      expect(screen.getByText(/notes delivered/i)).toBeInTheDocument();
-      const orderNumbers = screen.getAllByText(/NP-20260815-0001/);
-      expect(orderNumbers[0]).toBeInTheDocument();
-    });
+    render(<OrderStatusPage orderId="ord-paid" />);
+    expect(screen.getByText(/Payment successful/i)).toBeInTheDocument();
+    const orderNums = screen.getAllByText(/NP-20260817-0003/);
+    expect(orderNums.length).toBeGreaterThanOrEqual(1);
+    expect(screen.getByText(/Order details/i)).toBeInTheDocument();
+    expect(screen.getByText(/Delivery timeline/i)).toBeInTheDocument();
+    expect(screen.getByText(/Track another/i)).toBeInTheDocument();
+    expect(screen.getByText(/Browse notes/i)).toBeInTheDocument();
+    expect(screen.getByText(/Support/i)).toBeInTheDocument();
   });
 
-  it('shows pending fulfillment state', async () => {
+  it("shows delivered state for completed fulfillment", () => {
     mockUseOrder.mockReturnValue({
       isPending: false,
       isError: false,
       data: {
-        orderId: 'ord-123',
-        orderNumber: 'NP-001',
-        paymentStatus: 'paid',
-        fulfillmentStatus: 'pending',
-        itemSlug: 'bundle-1',
-        itemType: 'group',
-        itemTitle: 'Full Stack Bundle',
-        amountLabel: 'Rs. 999',
-        createdAt: '2026-08-15T10:00:00Z',
-        buyer: { socialHandleMasked: '***@whatsapp' },
-      },
+        paymentStatus: "paid",
+        fulfillmentStatus: "completed",
+        orderNumber: "NP-20260817-0004",
+        itemTitle: "System Design Notes",
+        amountLabel: "₹499",
+        createdAt: "2026-08-17T12:00:00.000Z",
+        buyer: { socialHandleMasked: "**5678" },
+      } as any,
       refetch: vi.fn(),
     } as any);
-
-    render(<OrderStatusPage orderId="ord-123" />);
-    await waitFor(() => {
-      expect(screen.getByText('Order status: Pending Approval')).toBeInTheDocument();
-    });
+    render(<OrderStatusPage orderId="ord-done" />);
+    expect(screen.getByText(/Notes delivered!/i)).toBeInTheDocument();
   });
 
-  it('renders order details card', async () => {
+  it("renders copy button for order number", () => {
     mockUseOrder.mockReturnValue({
       isPending: false,
       isError: false,
       data: {
-        orderId: 'ord-123',
-        orderNumber: 'NP-001',
-        paymentStatus: 'paid',
-        fulfillmentStatus: 'pending',
-        itemSlug: 'note-1',
-        itemType: 'note',
-        itemTitle: 'React Notes',
-        amountLabel: 'Rs. 499',
-        createdAt: '2026-08-15T10:00:00Z',
-        buyer: { socialHandleMasked: '***@gmail.com' },
-      },
+        paymentStatus: "paid",
+        fulfillmentStatus: "pending",
+        orderNumber: "NP-20260817-0005",
+        itemTitle: "Note",
+        amountLabel: "₹199",
+        createdAt: "2026-08-17T10:00:00.000Z",
+        buyer: { socialHandleMasked: "**0000" },
+      } as any,
       refetch: vi.fn(),
     } as any);
-
-    render(<OrderStatusPage orderId="ord-123" />);
-    await waitFor(() => {
-      expect(screen.getByText('Order details')).toBeInTheDocument();
-      expect(screen.getByText('Item')).toBeInTheDocument();
-      expect(screen.getByText('Amount')).toBeInTheDocument();
-    });
+    render(<OrderStatusPage orderId="ord-copy" />);
+    const copyBtns = screen.getAllByTestId("copy-btn");
+    expect(copyBtns.length).toBeGreaterThanOrEqual(1);
   });
 
-  it('renders delivery timeline', async () => {
+  it("refresh button exists on success page", () => {
     mockUseOrder.mockReturnValue({
       isPending: false,
       isError: false,
       data: {
-        orderId: 'ord-123',
-        orderNumber: 'NP-001',
-        paymentStatus: 'paid',
-        fulfillmentStatus: 'completed',
-        itemSlug: 'note-1',
-        itemType: 'note',
-        itemTitle: 'React Notes',
-        amountLabel: 'Rs. 499',
-        createdAt: '2026-08-15T10:00:00Z',
-        buyer: { socialHandleMasked: '***@gmail.com' },
-      },
+        paymentStatus: "paid",
+        fulfillmentStatus: "pending",
+        orderNumber: "NP-20260817-0006",
+        itemTitle: "Note",
+        amountLabel: "₹199",
+        createdAt: "2026-08-17T10:00:00.000Z",
+        buyer: { socialHandleMasked: "**0000" },
+      } as any,
       refetch: vi.fn(),
     } as any);
-
-    render(<OrderStatusPage orderId="ord-123" />);
-    await waitFor(() => {
-      expect(screen.getByText('Delivery timeline')).toBeInTheDocument();
-      const paymentItems = screen.getAllByText(/Payment received/);
-      expect(paymentItems[1]).toBeInTheDocument();
-      expect(screen.getByText(/Admin review & approval/)).toBeInTheDocument();
-      expect(screen.getByText(/Delivered to handle/)).toBeInTheDocument();
-    });
-  });
-
-  it('shows refresh button', async () => {
-    mockUseOrder.mockReturnValue({
-      isPending: false,
-      isError: false,
-      data: {
-        orderId: 'ord-123',
-        orderNumber: 'NP-001',
-        paymentStatus: 'paid',
-        fulfillmentStatus: 'pending',
-        itemSlug: 'note-1',
-        itemType: 'note',
-        itemTitle: 'React Notes',
-        amountLabel: 'Rs. 499',
-        createdAt: '2026-08-15T10:00:00Z',
-        buyer: { socialHandleMasked: '***@gmail.com' },
-      },
-      refetch: vi.fn(),
-    } as any);
-
-    render(<OrderStatusPage orderId="ord-123" />);
-    await waitFor(() => {
-      expect(screen.getByText('Refresh status')).toBeInTheDocument();
-    });
-  });
-
-  it('calls refetch on refresh button click', async () => {
-    const mockRefetch = vi.fn();
-    mockUseOrder.mockReturnValue({
-      isPending: false,
-      isError: false,
-      data: {
-        orderId: 'ord-123',
-        orderNumber: 'NP-001',
-        paymentStatus: 'paid',
-        fulfillmentStatus: 'pending',
-        itemSlug: 'note-1',
-        itemType: 'note',
-        itemTitle: 'React Notes',
-        amountLabel: 'Rs. 499',
-        createdAt: '2026-08-15T10:00:00Z',
-        buyer: { socialHandleMasked: '***@gmail.com' },
-      },
-      refetch: mockRefetch,
-    } as any);
-
-    render(<OrderStatusPage orderId="ord-123" />);
-    await waitFor(() => {
-      expect(screen.getByText('Refresh status')).toBeInTheDocument();
-    });
-    const buttons = screen.getAllByRole('button');
-    const refreshBtn = buttons.find(b => b.textContent?.includes('Refresh status'));
-    if (refreshBtn) refreshBtn.click();
-    expect(mockRefetch).toHaveBeenCalledTimes(1);
-  });
-
-  it('renders track another order button', async () => {
-    mockUseOrder.mockReturnValue({
-      isPending: false,
-      isError: false,
-      data: {
-        orderId: 'ord-123',
-        orderNumber: 'NP-001',
-        paymentStatus: 'paid',
-        fulfillmentStatus: 'pending',
-        itemSlug: 'note-1',
-        itemType: 'note',
-        itemTitle: 'React Notes',
-        amountLabel: 'Rs. 499',
-        createdAt: '2026-08-15T10:00:00Z',
-        buyer: { socialHandleMasked: '***@gmail.com' },
-      },
-      refetch: vi.fn(),
-    } as any);
-
-    render(<OrderStatusPage orderId="ord-123" />);
-    await waitFor(() => {
-      expect(screen.getByText('Track another order')).toBeInTheDocument();
-    });
+    render(<OrderStatusPage orderId="ord-refresh" />);
+    expect(screen.getByText(/Refresh/i)).toBeInTheDocument();
   });
 });

@@ -6,5 +6,7 @@ export const runtime = "nodejs";
 
 export const GET = adminHandler(async () => {
   const stats = await getDashboardStats();
-  return ok(stats);
+  const res = ok(stats);
+  res.headers.set("Cache-Control", "public, max-age=30, s-maxage=30");
+  return res;
 });
