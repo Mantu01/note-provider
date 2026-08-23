@@ -100,9 +100,9 @@ export default function ContactPage() {
           <div className="flex items-start gap-4 rounded-2xl border border-border/80 bg-muted/30 p-5">
             <Clock3 aria-hidden="true" className="mt-0.5 size-5 text-primary" />
             <div>
-              <h3 className="m-0 text-base font-semibold text-foreground">Expected response time</h3>
+              <h3 className="m-0 text-base font-semibold text-foreground">Note delivery</h3>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                Paid note orders are usually fulfilled within 4–6 hours. Support replies are typically answered within a few hours during active working hours.
+                Paid note orders are fulfilled instantly after payment. You can download your PDF notes directly from the order status page once payment is confirmed.
               </p>
             </div>
           </div>

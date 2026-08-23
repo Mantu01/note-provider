@@ -7,7 +7,7 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 export const metadata: Metadata = {
   title: "Track Your Order — Check Note Delivery Status | Notes Provider",
   description:
-    "Track your study note order and check delivery status. Enter your order ID to see when your PDF notes will be delivered to your Instagram, WhatsApp, or email.",
+    "Track your study note order and check delivery status. Enter your order ID to see when your PDF notes are ready.",
   robots: { index: false, follow: false },
   alternates: { canonical: `${APP_URL}/order/track` },
   openGraph: {

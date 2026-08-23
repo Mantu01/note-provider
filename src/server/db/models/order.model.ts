@@ -1,11 +1,5 @@
 import { Schema, model, models, type InferSchemaType, type Model } from "mongoose";
-import {
-  FULFILLMENT_STATUSES,
-  ORDER_CURRENCY,
-  PAYMENT_STATUSES,
-  PURCHASE_ITEM_TYPES,
-  SOCIAL_PLATFORMS,
-} from "@/lib/constants";
+import { FULFILLMENT_STATUSES, ORDER_CURRENCY, PAYMENT_STATUSES, PURCHASE_ITEM_TYPES } from "@/lib/constants";
 
 const itemSnapshotSchema = new Schema(
   {
@@ -13,6 +7,7 @@ const itemSnapshotSchema = new Schema(
     slug: { type: String, required: true },
     price: { type: Number, required: true },
     noteIds: { type: [{ type: Schema.Types.ObjectId, ref: "Note" }], default: [] },
+    coverImageUrl: { type: String, default: null },
   },
   { _id: false },
 );
@@ -20,8 +15,6 @@ const itemSnapshotSchema = new Schema(
 const buyerSchema = new Schema(
   {
     fullName: { type: String, required: true, trim: true, minlength: 2, maxlength: 80 },
-    socialPlatform: { type: String, enum: SOCIAL_PLATFORMS, required: true },
-    socialHandle: { type: String, required: true, trim: true },
     consentAccepted: { type: Boolean, required: true },
     ipAddress: { type: String, default: null },
     userAgent: { type: String, default: null },
@@ -56,7 +49,6 @@ const orderSchema = new Schema(
 
 orderSchema.index({ paymentStatus: 1, fulfillmentStatus: 1, createdAt: -1 });
 orderSchema.index({ createdAt: -1 });
-orderSchema.index({ "buyer.socialHandle": 1 });
 
 export type OrderDoc = InferSchemaType<typeof orderSchema> & {
   _id: Schema.Types.ObjectId;

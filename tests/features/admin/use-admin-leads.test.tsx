@@ -59,16 +59,6 @@ describe("useAdminLeads", () => {
     });
   });
 
-  it("appends socialPlatform param", async () => {
-    mockApiClient.mockResolvedValue({ items: [], pagination: { total: 0, page: 1, limit: 20, totalPages: 0 } });
-
-    renderHook(() => useAdminLeads({ socialPlatform: "instagram" }), { wrapper: createWrapper() });
-
-    await waitFor(() => {
-      expect(mockApiClient).toHaveBeenCalledWith("/admin/leads?socialPlatform=instagram");
-    });
-  });
-
   it("appends paymentStatus param", async () => {
     mockApiClient.mockResolvedValue({ items: [], pagination: { total: 0, page: 1, limit: 20, totalPages: 0 } });
 
@@ -111,7 +101,7 @@ describe("useAdminLeads", () => {
 
   it("returns leads data on success", async () => {
     const leadsData = {
-      items: [{ id: "1", fullName: "John Doe", socialPlatform: "instagram", socialHandle: "@johndoe" }],
+      items: [{ id: "1", fullName: "John Doe" }],
       pagination: { total: 1, page: 1, limit: 20, totalPages: 1 },
     };
     mockApiClient.mockResolvedValue(leadsData);

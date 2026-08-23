@@ -54,7 +54,7 @@ export default function HomePageRoute() {
             { name: "Browse notes", text: "Explore our collection of free and premium PDF study notes for every exam." },
             { name: "Preview & select", text: "Preview any note for free and choose the ones that match your needs." },
             { name: "Secure checkout", text: "Pay securely via Razorpay using UPI, cards, or net banking." },
-            { name: "Instant delivery", text: "Receive your notes on Instagram, WhatsApp, or email within 4–6 hours." },
+            { name: "Instant delivery", text: "Your PDF notes are available for immediate download after payment." },
           ]),
           webpageJsonLd({
             title: SEO.defaultTitle,

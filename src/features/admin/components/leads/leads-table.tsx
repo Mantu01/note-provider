@@ -31,7 +31,7 @@ export function LeadsTable() {
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search leads by name or social handle..."
+            placeholder="Search leads by name..."
             value={search}
             onChange={(e) => {
               setSearch(e.target.value);
@@ -48,9 +48,8 @@ export function LeadsTable() {
           <TableHeader>
             <TableRow>
               <TableHead>Buyer Name</TableHead>
-              <TableHead>Social Platform</TableHead>
-              <TableHead>Social Handle</TableHead>
               <TableHead>Item Interested</TableHead>
+              <TableHead>Amount</TableHead>
               <TableHead>Payment Status</TableHead>
               <TableHead>Submitted At</TableHead>
             </TableRow>
@@ -59,14 +58,14 @@ export function LeadsTable() {
             {isLoading ? (
               Array.from({ length: 5 }, (_, i) => (
                 <TableRow key={i}>
-                  <TableCell colSpan={6}>
+                  <TableCell colSpan={5}>
                     <div className="h-10 animate-pulse rounded bg-muted/50" />
                   </TableCell>
                 </TableRow>
               ))
             ) : leads.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6}>
+                <TableCell colSpan={5}>
                   <EmptyState
                     title="No leads captured yet"
                     description="Every buyer form submission is recorded here regardless of payment outcome."
@@ -79,15 +78,10 @@ export function LeadsTable() {
                   <TableCell className="font-medium text-foreground">
                     {lead.fullName}
                   </TableCell>
-                  <TableCell className="capitalize font-medium text-primary">
-                    {lead.socialPlatform}
-                  </TableCell>
-                  <TableCell className="font-mono text-sm">
-                    {lead.socialHandle}
-                  </TableCell>
                   <TableCell className="max-w-xs truncate text-sm">
                     {lead.itemTitle}
                   </TableCell>
+                  <TableCell className="font-semibold">{lead.amountLabel}</TableCell>
                   <TableCell>
                     <StatusBadge status={lead.paymentStatus} type="payment" />
                   </TableCell>

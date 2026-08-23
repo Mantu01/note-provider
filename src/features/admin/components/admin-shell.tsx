@@ -48,7 +48,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold text-foreground truncate">{profile.name}</span>
               {profile.isHead ? (
-                <Badge className="bg-emerald-500/10 text-emerald-500 border-emerald-500/20 text-[10px] py-0 px-1.5 flex items-center gap-1">
+                <Badge className="bg-brand-emerald-soft text-brand-emerald border-brand-emerald/20 text-[10px] py-0 px-1.5 flex items-center gap-1">
                   <ShieldCheck className="h-3 w-3" /> Head Admin
                 </Badge>
               ) : (
@@ -103,7 +103,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
           <Logo className="lg:hidden" />
           <div className="ml-auto flex items-center gap-3">
             {profile?.isHead && (
-              <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-500 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+              <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-semibold text-brand-emerald bg-brand-emerald-soft border border-brand-emerald/20 px-2.5 py-1 rounded-full">
                 <ShieldCheck className="h-3.5 w-3.5" /> Full Delete Authority Granted
               </span>
             )}

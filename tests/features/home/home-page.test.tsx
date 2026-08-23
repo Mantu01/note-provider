@@ -207,7 +207,7 @@ describe("HomePage", () => {
     expect(screen.getByText("Browse")).toBeInTheDocument();
     expect(screen.getByText("Preview")).toBeInTheDocument();
     expect(screen.getByText("Pay")).toBeInTheDocument();
-    expect(screen.getByText("Receive")).toBeInTheDocument();
+    expect(screen.getByText("Download")).toBeInTheDocument();
   });
 
   it("renders trust section", () => {

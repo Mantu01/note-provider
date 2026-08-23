@@ -41,6 +41,8 @@ export function toAdminNote(raw: unknown): AdminNote {
     fullFileUrl: nullableStr(doc.fullFileUrl),
     fullFilePublicId: nullableStr(doc.fullFilePublicId),
     fullFileBytes: num(doc.fullFileBytes),
+    pdfSource: str(doc.pdfSource) === "drive" ? "drive" : "upload",
+    drivePdfUrl: nullableStr(doc.drivePdfUrl),
     previewFileUrl: nullableStr(doc.previewFileUrl),
     previewFilePublicId: nullableStr(doc.previewFilePublicId),
     previewFileBytes: nullableNum(doc.previewFileBytes),

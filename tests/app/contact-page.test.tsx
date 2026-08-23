@@ -104,10 +104,10 @@ describe("ContactPage", () => {
     expect(screen.getByText("Send an email")).toBeInTheDocument();
   });
 
-  it("renders response time info", () => {
+  it("renders note delivery info", () => {
     render(<ContactPage />);
-    expect(screen.getByText("Expected response time")).toBeInTheDocument();
-    expect(screen.getByText(/Paid note orders are usually fulfilled within 4–6 hours/i)).toBeInTheDocument();
+    expect(screen.getByText("Note delivery")).toBeInTheDocument();
+    expect(screen.getByText(/Paid note orders are fulfilled instantly/i)).toBeInTheDocument();
   });
 
   it("renders FAQ guidance section", () => {

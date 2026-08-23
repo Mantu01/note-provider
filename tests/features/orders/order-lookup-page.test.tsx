@@ -84,7 +84,7 @@ describe("OrderLookupPage", () => {
     const user = (await import("@testing-library/user-event")).userEvent;
     await user.type(input, "NP-20260817-0001");
     await user.click(screen.getByText(/Search/i));
-    expect(push).toHaveBeenCalledWith("/order/ord-1");
+    expect(push).toHaveBeenCalledWith("/order/success/ord-1");
   });
 
   it("shows error toast on mutation failure", async () => {
@@ -116,6 +116,6 @@ describe("OrderLookupPage", () => {
   it("renders info tooltip with ShieldCheck icon", () => {
     mockUseOrderLookup.mockReturnValue({ mutate: vi.fn(), isPending: false } as any);
     render(<OrderLookupPage />);
-    expect(screen.getByText(/Orders stay pending/i)).toBeInTheDocument();
+    expect(screen.getByText(/Paid orders are fulfilled instantly/i)).toBeInTheDocument();
   });
 });

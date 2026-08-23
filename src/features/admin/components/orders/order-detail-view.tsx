@@ -1,6 +1,5 @@
 "use client";
 
-import { parseAsBoolean, useQueryStates } from "nuqs";
 import Link from "next/link";
 import { ArrowLeft, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,6 +9,7 @@ import { FulfillmentDialog } from "@/features/admin/components/orders/fulfillmen
 import { useAdminOrder } from "@/features/admin/api/use-admin-orders";
 import { formatDateTime } from "@/lib/format";
 import { toast } from "sonner";
+import { parseAsBoolean, useQueryStates } from "nuqs";
 
 export function OrderDetailView({ id }: { id: string }) {
   const { data: order, isLoading, isError } = useAdminOrder(id);
@@ -79,34 +79,12 @@ export function OrderDetailView({ id }: { id: string }) {
 
           <Card>
             <CardHeader>
-              <CardTitle className="text-lg">Buyer Delivery Contact</CardTitle>
+              <CardTitle className="text-lg">Buyer Details</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase">Full Name</p>
-                  <p className="font-medium text-foreground">{order.buyerFull?.fullName || order.buyer?.fullName}</p>
-                </div>
-                <div>
-                  <p className="text-xs font-semibold text-muted-foreground uppercase">Social Platform</p>
-                  <p className="font-medium text-primary capitalize">{order.buyerFull?.socialPlatform}</p>
-                </div>
-              </div>
-
               <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase">Social Handle / Delivery Target</p>
-                <div className="mt-1 flex items-center gap-2">
-                  <code className="rounded bg-muted px-2.5 py-1 text-sm font-mono font-bold text-foreground">
-                    {order.buyerFull?.socialHandle}
-                  </code>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => copyToClipboard(order.buyerFull?.socialHandle || "", "handle")}
-                  >
-                    <Copy className="mr-1.5 h-3.5 w-3.5" /> Copy
-                  </Button>
-                </div>
+                <p className="text-xs font-semibold text-muted-foreground uppercase">Full Name</p>
+                <p className="font-medium text-foreground">{order.buyerFull?.fullName || order.buyer?.fullName}</p>
               </div>
             </CardContent>
           </Card>

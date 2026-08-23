@@ -186,3 +186,17 @@ describe('GET /api/notes/[slug]/download', () => {
     expect(global.fetch).toHaveBeenCalledWith('https://cdn.com/file.pdf')
   })
 })
+  it('fetches from drivePdfUrl when pdfSource is drive', async () => {
+    const buf = Buffer.from('drive-pdf')
+    vi.mocked(_mockFs.readFileSync).mockReturnValue(buf)
+    ;(Note.findOne as any).mockReturnValue(makeChain({
+      _id: 'n1', slug: 'drive-note', visibility: 'public', pricingType: 'free',
+      fullFilePublicId: null, fullFileUrl: 'https://drive.google.com/uc?export=download&id=abc123',
+      pdfSource: 'drive', drivePdfUrl: 'https://drive.google.com/uc?export=download&id=abc123',
+    }))
+    global.fetch = vi.fn().mockResolvedValue({ ok: true, arrayBuffer: () => Promise.resolve(buf.buffer) })
+    const mod = await import('@/app/api/notes/[slug]/download/route')
+    const res = await mod.GET(new NextRequest('http://localhost/api/notes/drive-note/download') as any, { params: Promise.resolve({ slug: 'drive-note' }) })
+    expect(res.status).toBe(200)
+    expect(global.fetch).toHaveBeenCalledWith('https://drive.google.com/uc?export=download&id=abc123')
+  })

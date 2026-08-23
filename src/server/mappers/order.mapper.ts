@@ -1,5 +1,5 @@
-import { DELIVERY_ETA_HOURS, ORDER_CURRENCY } from "@/lib/constants";
-import { formatPrice, maskSocialHandle, toIsoString, toIsoStringRequired } from "@/lib/format";
+import { ORDER_CURRENCY } from "@/lib/constants";
+import { formatPrice, toIsoString, toIsoStringRequired } from "@/lib/format";
 import type { AdminLead, AdminOrder, PublicOrder } from "@/lib/types";
 import { toAdminRef } from "./category.mapper";
 import { id, isPopulated, nullableStr, num, str, toIdList, type Lean } from "./primitives";
@@ -17,7 +17,6 @@ export function toPublicOrder(raw: unknown): PublicOrder {
   const buyer = buyerOf(doc);
   const snapshot = snapshotOf(doc);
   const amount = num(doc.amount);
-  const platform = str(buyer.socialPlatform) as PublicOrder["buyer"]["socialPlatform"];
 
   return {
     id: id(doc._id),
@@ -32,10 +31,8 @@ export function toPublicOrder(raw: unknown): PublicOrder {
     fulfillmentStatus: str(doc.fulfillmentStatus) as PublicOrder["fulfillmentStatus"],
     buyer: {
       fullName: str(buyer.fullName),
-      socialPlatform: platform,
-      socialHandleMasked: maskSocialHandle(platform, str(buyer.socialHandle)),
     },
-    deliveryEtaHours: DELIVERY_ETA_HOURS,
+    coverImageUrl: nullableStr(doc.coverImageUrl),
     createdAt: toIsoStringRequired(doc.createdAt as Date),
     paidAt: toIsoString(doc.paidAt as Date | null),
     completedAt: toIsoString(doc.completedAt as Date | null),
@@ -58,8 +55,6 @@ export function toAdminOrder(raw: unknown): AdminOrder {
     failureReason: nullableStr(doc.failureReason),
     buyerFull: {
       fullName: str(buyer.fullName),
-      socialPlatform: str(buyer.socialPlatform) as AdminOrder["buyerFull"]["socialPlatform"],
-      socialHandle: str(buyer.socialHandle),
       consentAccepted: true,
       ipAddress: nullableStr(buyer.ipAddress),
       userAgent: nullableStr(buyer.userAgent),
@@ -88,8 +83,6 @@ export function toAdminLead(raw: unknown): AdminLead {
     orderId: id(doc._id),
     orderNumber: str(doc.orderNumber),
     fullName: str(buyer.fullName),
-    socialPlatform: str(buyer.socialPlatform) as AdminLead["socialPlatform"],
-    socialHandle: str(buyer.socialHandle),
     itemTitle: str(snapshot.title),
     amount,
     amountLabel: formatPrice(amount),

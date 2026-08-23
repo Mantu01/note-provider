@@ -2,7 +2,7 @@ import type { Model, QueryFilter, SortOrder } from "mongoose";
 import { Types } from "mongoose";
 import { DEFAULT_PAGE_LIMIT, MAX_PAGE_LIMIT } from "@/lib/constants";
 import { rupeesToPaise } from "@/lib/format";
-import type { NoteQuery, OrderQuery } from "@/lib/schemas/query.schema";
+import type { NotesQuerySchema, OrdersQuerySchema } from "@/lib/schemas/query.schema";
 import type { Pagination } from "@/lib/types";
 import type { NoteDoc } from "../db/models/note.model";
 import type { OrderDoc } from "../db/models/order.model";
@@ -75,29 +75,27 @@ export async function resolveCategoryIds(
 }
 
 export function buildNoteFilter(
-  query: NoteQuery,
+  query: Omit<NotesQuerySchema, "page" | "limit"> & Partial<Pick<NotesQuerySchema, "page" | "limit">>,
   options: { publicOnly: boolean; categoryIds?: Types.ObjectId[] },
 ): QueryFilter<NoteDoc> {
   const filter: QueryFilter<NoteDoc> = {};
 
   if (options.publicOnly) {
     filter.visibility = "public";
-  } else if (query.visibility) {
-    filter.visibility = query.visibility;
   }
 
   if (options.categoryIds && options.categoryIds.length > 0) {
     filter.category = { $in: options.categoryIds };
   }
 
-  if (query.level.length > 0) filter.level = { $in: query.level };
-  if (query.tags.length > 0) filter.tags = { $in: query.tags.map((tag) => tag.toLowerCase()) };
+  if (query.level && query.level.length > 0) filter.level = { $in: query.level };
+  if (query.tags && query.tags.length > 0) filter.tags = { $in: query.tags.map((tag: string) => tag.toLowerCase()) };
   if (query.pricing) filter.pricingType = query.pricing;
   if (query.featured !== undefined) filter.isFeatured = query.featured;
 
   const priceFilter: Record<string, number> = {};
-  if (query.minPrice !== undefined) priceFilter.$gte = rupeesToPaise(query.minPrice);
-  if (query.maxPrice !== undefined) priceFilter.$lte = rupeesToPaise(query.maxPrice);
+  if (query.minPrice !== null && query.minPrice !== undefined) priceFilter.$gte = rupeesToPaise(query.minPrice);
+  if (query.maxPrice !== null && query.maxPrice !== undefined) priceFilter.$lte = rupeesToPaise(query.maxPrice);
   if (Object.keys(priceFilter).length > 0) filter.price = priceFilter;
 
   if (query.q) {
@@ -111,8 +109,8 @@ export function buildNoteFilter(
   return filter;
 }
 
-export function buildNoteSort(sort: NoteQuery["sort"]): Record<string, SortOrder> {
-  const sorts: Record<NoteQuery["sort"], Record<string, SortOrder>> = {
+export function buildNoteSort(sort: NotesQuerySchema["sort"]): Record<string, SortOrder> {
+  const sorts: Record<NonNullable<NotesQuerySchema["sort"]>, Record<string, SortOrder>> = {
     newest: { createdAt: -1 },
     oldest: { createdAt: 1 },
     price_asc: { price: 1, createdAt: -1 },
@@ -120,17 +118,17 @@ export function buildNoteSort(sort: NoteQuery["sort"]): Record<string, SortOrder
     popular: { purchaseCount: -1, downloadCount: -1, createdAt: -1 },
     title_asc: { title: 1 },
   };
-  return sorts[sort] ?? sorts.newest;
+  return sorts[sort ?? "newest"] ?? sorts.newest;
 }
 
-export function buildOrderFilter(query: OrderQuery): QueryFilter<OrderDoc> {
+export function buildOrderFilter(query: Omit<OrdersQuerySchema, "page" | "limit"> & Partial<Pick<OrdersQuerySchema, "page" | "limit">>): QueryFilter<OrderDoc> {
   const filter: QueryFilter<OrderDoc> = {};
 
   if (query.paymentStatus) filter.paymentStatus = query.paymentStatus;
   if (query.fulfillmentStatus) filter.fulfillmentStatus = query.fulfillmentStatus;
   if (query.itemType) filter.itemType = query.itemType;
 
-  const createdAt: Record<string, Date> = {};
+  const createdAt: Record<string, unknown> = {};
   if (query.from) createdAt.$gte = query.from;
   if (query.to) createdAt.$lte = query.to;
   if (Object.keys(createdAt).length > 0) filter.createdAt = createdAt;
@@ -140,7 +138,6 @@ export function buildOrderFilter(query: OrderQuery): QueryFilter<OrderDoc> {
     filter.$or = [
       { orderNumber: pattern },
       { "buyer.fullName": pattern },
-      { "buyer.socialHandle": pattern },
       { "itemSnapshot.title": pattern },
     ];
   }
@@ -148,12 +145,12 @@ export function buildOrderFilter(query: OrderQuery): QueryFilter<OrderDoc> {
   return filter;
 }
 
-export function buildOrderSort(sort: OrderQuery["sort"]): Record<string, SortOrder> {
-  const sorts: Record<OrderQuery["sort"], Record<string, SortOrder>> = {
+export function buildOrderSort(sort: OrdersQuerySchema["sort"]): Record<string, SortOrder> {
+  const sorts: Record<NonNullable<OrdersQuerySchema["sort"]>, Record<string, SortOrder>> = {
     newest: { createdAt: -1 },
     oldest: { createdAt: 1 },
     amount_desc: { amount: -1, createdAt: -1 },
     amount_asc: { amount: 1, createdAt: -1 },
   };
-  return sorts[sort] ?? sorts.newest;
+  return sorts[sort ?? "newest"] ?? sorts.newest;
 }

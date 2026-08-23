@@ -9,7 +9,6 @@ export function useAdminLeads(params: {
   page?: number;
   limit?: number;
   q?: string;
-  socialPlatform?: string;
   paymentStatus?: string;
   fulfillmentStatus?: string;
   from?: string;

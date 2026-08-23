@@ -5,23 +5,21 @@ import { Order } from "@/server/db/models/order.model";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
-interface OrderRouteProps {
+interface OrderSuccessRouteProps {
   params: Promise<{ orderId: string }>;
 }
 
-export const dynamic = "force-dynamic";
-
-export async function generateMetadata({ params }: OrderRouteProps): Promise<Metadata> {
+export async function generateMetadata({ params }: OrderSuccessRouteProps): Promise<Metadata> {
   const { orderId } = await params;
   return {
-    title: `Order Status — ${orderId} | Notes Provider`,
-    description: "Track your study note order and check delivery status.",
+    title: `Order Success — Notes Provider`,
+    description: "Your payment was successful. Download your notes now.",
     robots: { index: false, follow: false },
-    alternates: { canonical: `${APP_URL}/order/${orderId}` },
+    alternates: { canonical: `${APP_URL}/order/success/${orderId}` },
   };
 }
 
-export default async function OrderRoute({ params }: OrderRouteProps) {
+export default async function OrderSuccessRoute({ params }: OrderSuccessRouteProps) {
   const { orderId } = await params;
 
   let order = await Order.findById(orderId).lean().exec();

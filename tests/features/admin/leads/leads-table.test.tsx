@@ -71,8 +71,7 @@ describe("LeadsTable", () => {
     } as any);
 
     render(<LeadsTable />);
-    // The actual placeholder has trailing ellipsis: "Search leads by name or social handle..."
-    expect(screen.getByPlaceholderText(/Search leads by name or social handle/)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/Search leads by name/)).toBeInTheDocument();
   });
 
   it("renders export button", () => {
@@ -115,8 +114,6 @@ describe("LeadsTable", () => {
           {
             id: "1",
             fullName: "John Doe",
-            socialPlatform: "instagram",
-            socialHandle: "@johndoe",
             itemTitle: "React Notes",
             paymentStatus: "paid",
             createdAt: "2026-08-15T10:00:00Z",
@@ -130,7 +127,6 @@ describe("LeadsTable", () => {
     render(<LeadsTable />);
     await waitFor(() => {
       expect(screen.getByText("John Doe")).toBeInTheDocument();
-      expect(screen.getByText("@johndoe")).toBeInTheDocument();
       expect(screen.getByText("React Notes")).toBeInTheDocument();
     });
   });
@@ -141,8 +137,6 @@ describe("LeadsTable", () => {
         items: [{
           id: "1",
           fullName: "Jane",
-          socialPlatform: "whatsapp",
-          socialHandle: "9876543210",
           itemTitle: "Bundle",
           paymentStatus: "pending",
           createdAt: "2026-08-15T10:00:00Z",
@@ -170,29 +164,6 @@ describe("LeadsTable", () => {
     render(<LeadsTable />);
     await waitFor(() => {
       expect(screen.getByTestId("pagination")).toBeInTheDocument();
-    });
-  });
-
-  it("shows social platform in primary color", async () => {
-    mockUseAdminLeads.mockReturnValue({
-      data: {
-        items: [{
-          id: "1",
-          fullName: "User",
-          socialPlatform: "email",
-          socialHandle: "user@test.com",
-          itemTitle: "Note",
-          paymentStatus: "paid",
-          createdAt: "2026-08-15T10:00:00Z",
-        }],
-        pagination: null,
-      },
-      isLoading: false,
-    } as any);
-
-    render(<LeadsTable />);
-    await waitFor(() => {
-      expect(screen.getByText("email")).toBeInTheDocument();
     });
   });
 });

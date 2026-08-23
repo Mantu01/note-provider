@@ -1,17 +1,18 @@
 "use client";
 
 import Link from "next/link";
-import { CheckCircle2, CircleAlert, Clock3, Mail, RefreshCw, Search } from "lucide-react";
+import { CheckCircle2, CircleAlert, Download, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { CopyButton } from "@/components/shared/copy-button";
 import { ErrorState } from "@/components/shared/error-state";
-import { StatusBadge } from "@/components/shared/status-badge";
 import { useOrder } from "@/features/orders/api/use-order";
+import { useDownloadFile } from "@/hooks/use-download-file";
 import { formatDateTime } from "@/lib/format";
 
 export function OrderStatusPage({ orderId }: { orderId: string }) {
   const query = useOrder(orderId);
+  const { download, isDownloading } = useDownloadFile();
 
   if (query.isPending) {
     return (
@@ -84,25 +85,57 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
         </div>
       </div>
 
+      {order.coverImageUrl && (
+        <div className="mt-5 overflow-hidden rounded-xl border border-border/50 bg-muted/30">
+          <img
+            src={order.coverImageUrl}
+            alt={`Cover for ${order.itemTitle}`}
+            className="h-40 w-full object-cover"
+          />
+        </div>
+      )}
+
       <Card className="mt-5 rounded-xl border-primary/20 bg-primary/5">
         <CardContent className="p-3">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="text-xs font-semibold">
-                {isCompleted ? "Notes delivered!" : "Order status: Pending Approval"}
+                {isCompleted ? "Notes ready for download!" : "Order status: Pending Approval"}
               </p>
               <p className="mt-0.5 text-[10px] leading-relaxed text-muted-foreground">
-                {isCompleted ? (
-                  <>Your notes for <strong className="text-foreground">{order.itemTitle}</strong> have been sent to <strong className="text-foreground">{order.buyer.socialHandleMasked}</strong>.</>
-                ) : (
-                  <>We&apos;ll review and send <strong className="text-foreground">{order.itemTitle}</strong> to <strong className="text-foreground">{order.buyer.socialHandleMasked}</strong> within 4–6 hours.</>
-                )}
+                {isCompleted
+                  ? <>Your notes for <strong className="text-foreground">{order.itemTitle}</strong> are ready below.</>
+                  : <>We&apos;ll review and send <strong className="text-foreground">{order.itemTitle}</strong> shortly.</>}
               </p>
             </div>
-            <StatusBadge type="fulfillment" value={order.fulfillmentStatus} />
           </div>
         </CardContent>
       </Card>
+
+      {isCompleted && (
+        <Card className="mt-5 rounded-xl border-success/20 bg-success/5">
+          <CardContent className="p-4">
+            <div className="flex items-center gap-3">
+              <div className="flex size-10 shrink-0 items-center justify-center rounded-full bg-success/10">
+                <Download aria-hidden="true" className="size-5 text-success" />
+              </div>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-foreground">Download your notes</p>
+                <p className="text-[10px] text-muted-foreground">Click below to get your PDF</p>
+              </div>
+              {order.itemType === "note" && (
+                <Button
+                  onClick={() => download({ url: `/api/notes/${order.itemSlug}/download?orderId=${order.id}`, filename: `${order.itemSlug}.pdf` })}
+                  disabled={isDownloading}
+                  size="sm"
+                >
+                  {isDownloading ? "Preparing…" : "Download PDF"}
+                </Button>
+              )}
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       <div className="mt-5 grid gap-3 md:grid-cols-2">
         <Card className="rounded-xl">
@@ -129,8 +162,8 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
                 <dd className="font-medium">{formatDateTime(order.createdAt)}</dd>
               </div>
               <div className="flex justify-between gap-3">
-                <dt className="text-muted-foreground">Delivery</dt>
-                <dd className="font-medium">{order.buyer.socialHandleMasked}</dd>
+                <dt className="text-muted-foreground">Paid</dt>
+                <dd className="font-medium">{order.paidAt ? formatDateTime(order.paidAt) : "—"}</dd>
               </div>
             </dl>
           </CardContent>
@@ -144,14 +177,26 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
                 <span className="font-medium">Payment received</span>
                 <CheckCircle2 aria-hidden="true" className="size-3 text-success shrink-0" />
               </li>
-              <li className="flex items-center justify-between">
-                <span className="font-medium">Admin review & approval</span>
-                <StatusBadge type="fulfillment" value={order.fulfillmentStatus} />
-              </li>
-              <li className="flex items-center justify-between">
-                <span className="font-medium">Delivered to handle</span>
-                <span className="text-muted-foreground text-[9px] bg-muted px-1.5 py-0.5 rounded">Within 4–6 hours</span>
-              </li>
+              {isCompleted ? (
+                <>
+                  <li className="flex items-center justify-between">
+                    <span className="font-medium">Notes delivered</span>
+                    <CheckCircle2 aria-hidden="true" className="size-3 text-success shrink-0" />
+                  </li>
+                  <li className="flex items-center justify-between">
+                    <span className="font-medium">Download now</span>
+                    <Download aria-hidden="true" className="size-3 text-primary shrink-0" />
+                  </li>
+                </>
+              ) : (
+                <li className="flex items-center justify-between">
+                  <span className="font-medium">Admin review & approval</span>
+                  <div className="flex items-center gap-1.5">
+                    <Lock aria-hidden="true" className="size-2.5 text-warning-foreground" />
+                    <span className="text-muted-foreground text-[9px] bg-muted px-1.5 py-0.5 rounded">Pending</span>
+                  </div>
+                </li>
+              )}
             </ol>
           </CardContent>
         </Card>
@@ -159,18 +204,15 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
 
       <div className="mt-5 flex flex-wrap justify-center gap-2">
         <Button render={<Link href="/order/track" />} variant="outline" size="sm">
-          <Search aria-hidden="true" className="mr-1 size-3" />
           Track another
         </Button>
         <Button render={<Link href="/notes" />} size="sm">
           Browse notes
         </Button>
         <Button render={<Link href="/contact" />} variant="outline" size="sm">
-          <Mail aria-hidden="true" className="mr-1 size-3" />
           Support
         </Button>
         <Button type="button" variant="ghost" size="sm" onClick={() => query.refetch()}>
-          <RefreshCw aria-hidden="true" className="mr-1 size-3" />
           Refresh
         </Button>
       </div>

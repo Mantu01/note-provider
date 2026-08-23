@@ -1,6 +1,7 @@
-import Image from "next/image";
+"use client";
+
 import Link from "next/link";
-import { Download, Lock, ShieldCheck } from "lucide-react";
+import { Download, FileText, Lock, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
@@ -59,12 +60,10 @@ export function NoteDetailPage({ slug }: { slug: string }) {
         <article className="space-y-4">
           <div className="relative aspect-[19/8] w-full overflow-hidden rounded-xl border border-border/50 bg-muted/30">
             {note.coverImageUrl ? (
-              <Image
+              <img
                 src={note.coverImageUrl}
                 alt=""
-                fill
-                sizes="(max-width: 1024px) 100vw, 66vw"
-                className="object-cover"
+                className="h-full w-full object-cover"
               />
             ) : (
               <div className="flex h-full items-center justify-center text-primary/20">
@@ -121,6 +120,10 @@ export function NoteDetailPage({ slug }: { slug: string }) {
 
               {note.pricingType === "free" ? (
                 <>
+                  <PdfPreviewDialog
+                    url={`/api/notes/${note.slug}/preview?mode=view`}
+                    filename={`${note.slug}-preview.pdf`}
+                  />
                   <Button
                     className="w-full rounded-lg"
                     size="lg"
@@ -141,9 +144,6 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                       </>
                     )}
                   </Button>
-                  <p className="text-center text-[9px] text-muted-foreground">
-                    No sign-up required. Instant download.
-                  </p>
                 </>
               ) : (
                 <>
@@ -151,16 +151,14 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                     <Lock aria-hidden="true" className="mb-1 size-3.5 text-primary" />
                     <p className="text-xs font-semibold">Full notes locked</p>
                     <p className="mt-0.5 text-[10px] text-muted-foreground">
-                      Review the preview, then buy to receive your complete notes.
+                      Preview below, then buy for instant access.
                     </p>
                   </div>
 
-                  {note.hasPreview && (
-                    <PdfPreviewDialog
-                      url={`/api/notes/${note.slug}/preview?mode=view`}
-                      filename={`${note.slug}-preview.pdf`}
-                    />
-                  )}
+                  <PdfPreviewDialog
+                    url={`/api/notes/${note.slug}/preview?mode=view`}
+                    filename={`${note.slug}-preview.pdf`}
+                  />
 
                   <Button
                     render={<Link href={`/checkout/${note.slug}`} />}
@@ -170,7 +168,7 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                     Buy now — {note.priceLabel}
                   </Button>
                   <p className="text-center text-[9px] leading-relaxed text-muted-foreground">
-                    Delivered to your Instagram, WhatsApp, or email within 4–6 hours.
+                    Instant download after payment.
                   </p>
                 </>
               )}

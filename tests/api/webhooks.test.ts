@@ -5,7 +5,6 @@ import { verifyWebhookSignature } from '@/server/lib/razorpay'
 import { Order } from '@/server/db/models/order.model'
 import { Note } from '@/server/db/models/note.model'
 import { Group } from '@/server/db/models/group.model'
-import { notifyAdminsOnPurchase } from '@/server/lib/mailer'
 
 vi.mock('@/server/db/connect', () => ({
   connectDb: vi.fn().mockResolvedValue(undefined),
@@ -23,9 +22,6 @@ vi.mock('@/server/db/models/note.model', () => ({
 vi.mock('@/server/db/models/group.model', () => ({
   Group: { findByIdAndUpdate: vi.fn() },
 }))
-vi.mock('@/server/lib/mailer', () => ({
-  notifyAdminsOnPurchase: vi.fn(),
-}))
 
 describe('POST /api/webhooks/razorpay', () => {
   beforeEach(() => {
@@ -35,7 +31,6 @@ describe('POST /api/webhooks/razorpay', () => {
       lean: vi.fn().mockReturnThis(),
       exec: vi.fn().mockResolvedValue(null),
     })
-    ;(notifyAdminsOnPurchase as any).mockResolvedValue(undefined)
   })
 
   it('returns 400 when signature header is missing', async () => {
@@ -148,8 +143,8 @@ describe('POST /api/webhooks/razorpay', () => {
     expect(Group.findByIdAndUpdate).toHaveBeenCalledWith('group-1', expect.objectContaining({ $inc: expect.anything() }))
   })
 
-  it('notifies admins on successful payment', async () => {
-    const paymentOrder = { id: 'pay_1', order_id: 'order_abc' }
+  it('updates note purchase count on successful payment', async () => {
+    const paymentOrder = { id: 'pay_1', order_id: 'order_abc', amount: 50000 }
     const body = JSON.stringify({
       event: 'payment.captured',
       payload: { payment: { entity: paymentOrder } },
@@ -165,7 +160,9 @@ describe('POST /api/webhooks/razorpay', () => {
     })
     req.text = () => Promise.resolve(body)
     await POST(req as any)
-    expect(notifyAdminsOnPurchase).toHaveBeenCalledWith(expect.objectContaining({ _id: 'ord-1' }))
+    expect(Note.findByIdAndUpdate).toHaveBeenCalledWith('note-1', {
+      $inc: { purchaseCount: 1, revenuePaise: 50000 },
+    })
   })
 
   it('marks order as failed on payment.failed event', async () => {

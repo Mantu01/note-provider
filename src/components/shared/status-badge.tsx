@@ -17,7 +17,7 @@ export function StatusBadge({ type, value, status, className }: StatusBadgeProps
   };
 
   return (
-    <Badge variant="outline" className={`${config.className} ${className ?? ""}`}>
+    <Badge variant="destructive" className={`${config.className} ${className ?? ""}`}>
       {config.label}
     </Badge>
   );

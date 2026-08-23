@@ -15,28 +15,28 @@ export function StatsGrid({ stats }: StatsGridProps) {
       value: stats.revenue.totalLabel,
       subtext: `Today: ${stats.revenue.todayLabel}`,
       icon: DollarSign,
-      color: "text-emerald-500 bg-emerald-500/10",
+      color: "text-brand-emerald-foreground bg-brand-emerald-soft",
     },
     {
       title: "Paid Orders",
       value: stats.orders.paid,
       subtext: `${stats.orders.pendingFulfillment} pending fulfillment`,
       icon: ShoppingBag,
-      color: "text-blue-500 bg-blue-500/10",
+      color: "text-brand-blue-foreground bg-brand-blue-soft",
     },
     {
       title: "Catalogue Notes",
       value: stats.catalog.totalNotes,
       subtext: `${stats.catalog.paidNotes} paid, ${stats.catalog.freeNotes} free`,
       icon: FileText,
-      color: "text-orange-500 bg-orange-500/10",
+      color: "text-brand-orange-foreground bg-brand-orange-soft",
     },
     {
       title: "Total Leads",
       value: stats.leads.total,
       subtext: `Today: ${stats.leads.today} submissions`,
       icon: Users,
-      color: "text-amber-500 bg-amber-500/10",
+      color: "text-brand-amber-foreground bg-brand-amber-soft",
     },
   ];
 

@@ -4,7 +4,6 @@ export type NotePricingType = "free" | "paid";
 export type PurchaseItemType = "note" | "group";
 export type PaymentStatus = "created" | "paid" | "failed";
 export type FulfillmentStatus = "pending" | "completed" | "cancelled";
-export type SocialPlatform = "instagram" | "whatsapp" | "email";
 
 export type AdminActivityAction =
   | "admin.register"
@@ -77,8 +76,6 @@ export type GroupsQuery = {
 export type CategoryRef = { id: string; name: string; slug: string; icon: string | null };
 
 export type SubjectItem = { id: string; name: string; slug: string; order: number; isActive: boolean };
-
-
 
 export type AdminRef = { id: string; name: string };
 
@@ -163,8 +160,8 @@ export type PublicOrder = {
   currency: "INR";
   paymentStatus: PaymentStatus;
   fulfillmentStatus: FulfillmentStatus;
-  buyer: { fullName: string; socialPlatform: SocialPlatform; socialHandleMasked: string };
-  deliveryEtaHours: 6;
+  buyer: { fullName: string };
+  coverImageUrl: string | null;
   createdAt: string;
   paidAt: string | null;
   completedAt: string | null;
@@ -178,7 +175,7 @@ export type CheckoutOrderResponse = {
   amount: number;
   currency: "INR";
   itemTitle: string;
-  buyer: { fullName: string; contact: string; email: string };
+  buyer: { fullName: string };
 };
 
 export type AdminNote = PublicNote & {
@@ -186,6 +183,8 @@ export type AdminNote = PublicNote & {
   fullFileUrl: string | null;
   fullFilePublicId: string | null;
   fullFileBytes: number;
+  pdfSource: "upload" | "drive";
+  drivePdfUrl: string | null;
   previewFileUrl: string | null;
   previewFilePublicId: string | null;
   previewFileBytes: number | null;
@@ -221,8 +220,6 @@ export type AdminOrder = PublicOrder & {
   failureReason: string | null;
   buyerFull: {
     fullName: string;
-    socialPlatform: SocialPlatform;
-    socialHandle: string;
     consentAccepted: true;
     ipAddress: string | null;
     userAgent: string | null;
@@ -244,8 +241,6 @@ export type AdminLead = {
   orderId: string;
   orderNumber: string;
   fullName: string;
-  socialPlatform: SocialPlatform;
-  socialHandle: string;
   itemTitle: string;
   amount: number;
   amountLabel: string;

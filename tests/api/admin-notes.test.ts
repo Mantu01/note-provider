@@ -107,7 +107,7 @@ describe("GET /api/admin/notes", () => {
 });
 
 describe("POST /api/admin/notes", () => {
-  const validFile = { url: "https://cdn/n.pdf", publicId: "pub/n", bytes: 1024 };
+  const validFile = { source: "upload" as const, url: "https://cdn/n.pdf", publicId: "pub/n", bytes: 1024 };
 
   beforeEach(() => {
     vi.clearAllMocks();

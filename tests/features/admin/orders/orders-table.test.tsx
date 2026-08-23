@@ -81,7 +81,7 @@ describe("OrdersTable", () => {
     } as any);
 
     render(<OrdersTable />);
-    expect(screen.getByPlaceholderText("Search order #, buyer name or handle...")).toBeInTheDocument();
+    expect(screen.getByPlaceholderText("Search order # or buyer name...")).toBeInTheDocument();
   });
 
   it("renders loading skeleton rows", () => {
@@ -114,7 +114,7 @@ describe("OrdersTable", () => {
           {
             id: "order-1",
             orderNumber: "NP-20260815-0001",
-            buyerFull: { fullName: "John Doe", socialPlatform: "instagram", socialHandle: "@johndoe" },
+            buyerFull: { fullName: "John Doe" },
             itemTitle: "React Notes",
             amountLabel: "Rs. 499",
             paymentStatus: "paid",
@@ -135,29 +135,6 @@ describe("OrdersTable", () => {
     });
   });
 
-  it("shows copy button for social handle", async () => {
-    mockUseAdminOrders.mockReturnValue({
-      data: {
-        items: [{
-          id: "order-1",
-          orderNumber: "NP-001",
-          buyerFull: { fullName: "John", socialPlatform: "instagram", socialHandle: "@johndoe" },
-          itemTitle: "Note",
-          amountLabel: "Rs. 499",
-          paymentStatus: "paid",
-          fulfillmentStatus: "pending",
-        }],
-        pagination: null,
-      },
-      isLoading: false,
-    } as any);
-
-    render(<OrdersTable />);
-    await waitFor(() => {
-      expect(document.querySelector('[title="Copy handle"]')).toBeInTheDocument();
-    });
-  });
-
   it("navigates to order detail on row click", async () => {
     const customPush = vi.fn();
     vi.mocked(await import("next/navigation")).useRouter.mockReturnValue({ push: customPush } as any);
@@ -167,7 +144,7 @@ describe("OrdersTable", () => {
         items: [{
           id: "order-1",
           orderNumber: "NP-001",
-          buyerFull: { fullName: "John", socialPlatform: "instagram", socialHandle: "@johndoe" },
+          buyerFull: { fullName: "John" },
           itemTitle: "Note",
           amountLabel: "Rs. 499",
           paymentStatus: "paid",
@@ -192,7 +169,7 @@ describe("OrdersTable", () => {
         items: [{
           id: "order-1",
           orderNumber: "NP-001",
-          buyerFull: { fullName: "John", socialPlatform: "email", socialHandle: "john@test.com" },
+          buyerFull: { fullName: "John" },
           itemTitle: "Note",
           amountLabel: "Rs. 499",
           paymentStatus: "paid",

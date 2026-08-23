@@ -60,7 +60,7 @@ describe('GET /api/admin/leads/export', () => {
         _id: 'o1',
         orderNumber: 'NP-001',
         createdAt: new Date('2024-06-15'),
-        buyer: { fullName: 'John Doe', socialPlatform: 'email', socialHandle: 'john@example.com' },
+        buyer: { fullName: 'John Doe' },
         itemType: 'note',
         itemSnapshot: { title: 'React Notes' },
         amount: 50000,
@@ -96,7 +96,7 @@ describe('GET /api/admin/leads/export', () => {
 
   it('returns CSV with amount in INR (divided by 100)', async () => {
     const orders = [
-      { _id: 'o1', orderNumber: 'NP-001', createdAt: new Date(), buyer: { fullName: 'A', socialPlatform: 'email', socialHandle: 'a@b.com' }, itemType: 'note', itemSnapshot: { title: 'Note' }, amount: 50000, paymentStatus: 'paid', fulfillmentStatus: 'completed' },
+      { _id: 'o1', orderNumber: 'NP-001', createdAt: new Date(), buyer: { fullName: 'A' }, itemType: 'note', itemSnapshot: { title: 'Note' }, amount: 50000, paymentStatus: 'paid', fulfillmentStatus: 'completed' },
     ]
     ;(Order.find as any).mockReturnValue({
       sort: vi.fn().mockReturnThis(),

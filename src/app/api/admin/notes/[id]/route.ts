@@ -59,14 +59,27 @@ export const PATCH = adminHandler(async (ctx) => {
 
   if (input.fullFile !== undefined && input.fullFile) {
     updates.fullFileUrl = input.fullFile.url;
-    updates.fullFilePublicId = input.fullFile.publicId;
-    updates.fullFileBytes = input.fullFile.bytes;
+    updates.pdfSource = input.fullFile.source;
+    if (input.fullFile.source === "upload") {
+      updates.fullFilePublicId = input.fullFile.publicId;
+      updates.fullFileBytes = input.fullFile.bytes;
+      updates.drivePdfUrl = null;
+    } else {
+      updates.fullFilePublicId = null;
+      updates.fullFileBytes = 0;
+      updates.drivePdfUrl = input.fullFile.url;
+    }
   }
   if (input.previewFile !== undefined) {
     if (input.previewFile) {
       updates.previewFileUrl = input.previewFile.url;
-      updates.previewFilePublicId = input.previewFile.publicId;
-      updates.previewFileBytes = input.previewFile.bytes;
+      if (input.previewFile.source === "upload") {
+        updates.previewFilePublicId = input.previewFile.publicId;
+        updates.previewFileBytes = input.previewFile.bytes;
+      } else {
+        updates.previewFilePublicId = null;
+        updates.previewFileBytes = null;
+      }
     } else {
       updates.previewFileUrl = null;
       updates.previewFilePublicId = null;
@@ -96,11 +109,11 @@ export const PATCH = adminHandler(async (ctx) => {
   const updated = await Note.findById(id).populate("category").populate("createdBy", "_id name").lean().exec();
   if (!updated) throw AppError.internal("Failed to update note");
 
-  if (input.fullFile?.publicId && input.fullFile.publicId !== existing.fullFilePublicId) {
-    await destroyAsset(existing.fullFilePublicId, "raw", "authenticated");
+  if (input.fullFile?.source === "upload" && input.fullFile.publicId && input.fullFile.publicId !== existing.fullFilePublicId) {
+    if (existing.fullFilePublicId) await destroyAsset(existing.fullFilePublicId, "raw", "authenticated");
   }
-  if (input.previewFile?.publicId && input.previewFile.publicId !== existing.previewFilePublicId) {
-    await destroyAsset(String(existing.previewFilePublicId), "raw", "upload");
+  if (input.previewFile?.source === "upload" && input.previewFile.publicId && input.previewFile.publicId !== existing.previewFilePublicId) {
+    if (existing.previewFilePublicId) await destroyAsset(String(existing.previewFilePublicId), "raw", "upload");
   }
   if (input.coverImage?.publicId && input.coverImage.publicId !== existing.coverImagePublicId) {
     await destroyAsset(String(existing.coverImagePublicId), "image", "upload");

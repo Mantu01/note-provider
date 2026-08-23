@@ -165,13 +165,13 @@ describe('PATCH /api/admin/notes/[id]', () => {
   })
 
   it('destroys old full file asset when replaced', async () => {
-    ;(updateNoteSchema.safeParse as any).mockReturnValue({ success: true, data: { fullFile: { publicId: 'new-pub' } } })
+    ;(updateNoteSchema.safeParse as any).mockReturnValue({ success: true, data: { fullFile: { source: 'upload', publicId: 'new-pub' } } })
     const existing = { _id: 'n1', fullFilePublicId: 'old-pub', previewFilePublicId: null, coverImagePublicId: null, pricingType: 'paid' }
     const updated = { ...existing }
     ;(Note.findById as any).mockReturnValueOnce(makeChain(existing)).mockReturnValueOnce(makeChain(updated))
     ;(Note.findByIdAndUpdate as any).mockReturnValue(makeChain({}))
     const mod = await import('@/app/api/admin/notes/[id]/route')
-    const res = await mod.PATCH(mockReq('PATCH', '/api/admin/notes/n1', { fullFile: { publicId: 'new-pub' } }) as any, { params: Promise.resolve({ id: 'n1' }) })
+    const res = await mod.PATCH(mockReq('PATCH', '/api/admin/notes/n1', { fullFile: { source: 'upload', publicId: 'new-pub' } }) as any, { params: Promise.resolve({ id: 'n1' }) })
     expect(res.status).toBe(200)
     expect(destroyAsset).toHaveBeenCalledWith('old-pub', 'raw', 'authenticated')
   })

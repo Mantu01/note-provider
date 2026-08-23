@@ -87,8 +87,8 @@ describe('GET /api/admin/leads', () => {
     const mod = await import('@/app/api/admin/leads/route')
     await mod.GET(mockReq('GET', '/api/admin/leads?from=2024-01-01&to=2024-12-31') as any, undefined)
     const filterCall = (buildOrderFilter as any).mock.calls[0][0]
-    expect(filterCall.from).toBeInstanceOf(Date)
-    expect(filterCall.to).toBeInstanceOf(Date)
+    expect(typeof filterCall.from).toBe('string')
+    expect(typeof filterCall.to).toBe('string')
   })
 
   it('supports sort parameter', async () => {

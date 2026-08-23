@@ -179,7 +179,6 @@ describe("NoteDetailRoute", () => {
     render(<NoteDetailPage slug="free-note" />);
     await waitFor(() => {
       expect(screen.getByText("Download PDF")).toBeInTheDocument();
-      expect(screen.getByText("No sign-up required. Instant download.")).toBeInTheDocument();
     });
   });
 

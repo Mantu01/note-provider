@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Mail } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
-import { XIcon, YouTubeIcon } from "@/components/shared/social-icons";
+import { GithubIcon, XIcon, InstagramIcon, YouTubeIcon } from "@/components/shared/social-icons";
 import { BRAND, SEO } from "@/lib/constants";
 
 const FOOTER_LINKS = [
@@ -31,8 +31,10 @@ const FOOTER_LINKS = [
 ];
 
 const SOCIAL_LINKS = [
-  { label: "X", href: "https://x.com", Icon: XIcon },
-  { label: "YouTube", href: "https://youtube.com", Icon: YouTubeIcon },
+  { label: "X", href: "https://x.com/Mantu_kumar91", Icon: XIcon },
+  { label: "GitHub", href: "https://github.com/Mantu01", Icon: GithubIcon },
+  { label: "YouTube", href: "https://www.youtube.com/channel/UCgkZ2cdrKLz7dhnXnkDOAgQ", Icon: YouTubeIcon },
+  { label: "Instagram", href: "https://www.instagram.com/programmer_area", Icon: InstagramIcon },
   { label: "Email", href: `mailto:${SEO.contactEmail}`, Icon: Mail },
 ] as const;
 

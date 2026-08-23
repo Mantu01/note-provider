@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Loader2, Save, ArrowLeft, AlertCircle, HelpCircle } from "lucide-react";
+import { Loader2, Save, ArrowLeft, AlertCircle, HelpCircle, HardDrive, UploadCloud, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -37,10 +37,27 @@ export function NoteForm({ initialData }: NoteFormProps) {
   });
   const setCategoryDialogOpen = (open: boolean) => setParams({ categoryDialog: open });
 
+  const defaultFullFile = (() => {
+    if (initialData?.pdfSource === "drive" && initialData.drivePdfUrl) {
+      return { source: "drive" as const, url: initialData.drivePdfUrl };
+    }
+    if (initialData?.fullFileUrl && initialData.fullFilePublicId) {
+      return { source: "upload" as const, url: initialData.fullFileUrl, publicId: initialData.fullFilePublicId, bytes: initialData.fullFileBytes };
+    }
+    return undefined;
+  })();
+
+  const defaultPreviewFile = (() => {
+    if (!initialData?.previewFileUrl) return null;
+    if (initialData.previewFilePublicId) {
+      return { source: "upload" as const, url: initialData.previewFileUrl, publicId: initialData.previewFilePublicId, bytes: initialData.previewFileBytes ?? 0 };
+    }
+    return { source: "drive" as const, url: initialData.previewFileUrl };
+  })();
+
   const form = useForm<CreateNoteInput>({
     resolver: zodResolver(createNoteSchema),
     defaultValues: {
-
       categoryId: initialData?.category?.id ?? "",
       level: initialData?.level ?? "basics",
       visibility: initialData?.visibility ?? "public",
@@ -50,16 +67,8 @@ export function NoteForm({ initialData }: NoteFormProps) {
       tags: initialData?.tags ?? [],
       isFeatured: initialData?.isFeatured ?? false,
       pageCount: initialData?.pageCount ?? null,
-      fullFile: initialData?.fullFileUrl && initialData.fullFilePublicId ? {
-        url: initialData.fullFileUrl,
-        publicId: initialData.fullFilePublicId,
-        bytes: initialData.fullFileBytes,
-      } : undefined,
-      previewFile: initialData?.previewFileUrl && initialData.previewFilePublicId && initialData.previewFileBytes ? {
-        url: initialData.previewFileUrl,
-        publicId: initialData.previewFilePublicId,
-        bytes: initialData.previewFileBytes,
-      } : null,
+      fullFile: defaultFullFile,
+      previewFile: defaultPreviewFile,
       coverImage: initialData?.coverImageUrl && initialData.coverImagePublicId ? {
         url: initialData.coverImageUrl,
         publicId: initialData.coverImagePublicId,
@@ -69,8 +78,8 @@ export function NoteForm({ initialData }: NoteFormProps) {
 
   const selectedCategoryId = form.watch("categoryId");
   const selectedCategory = categories.find((c) => c.id === selectedCategoryId);
-
   const pricingType = form.watch("pricingType");
+  const fullFile = form.watch("fullFile");
 
   const onSubmit = (values: CreateNoteInput) => {
     if (isEditing) {
@@ -211,7 +220,6 @@ export function NoteForm({ initialData }: NoteFormProps) {
                     value={selectedCategoryId}
                     onValueChange={(val) => {
                       form.setValue("categoryId", val ?? "");
-
                     }}
                   >
                     <SelectTrigger>
@@ -231,7 +239,6 @@ export function NoteForm({ initialData }: NoteFormProps) {
                     <p className="mt-1 text-xs text-destructive">{form.formState.errors.categoryId.message}</p>
                   )}
                 </div>
-
               </div>
 
               <div className="pt-2">
@@ -265,42 +272,88 @@ export function NoteForm({ initialData }: NoteFormProps) {
               <CardTitle className="text-lg">File Attachments</CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              {pricingType === "free" ? (
-                <div>
-                  <FileUploadField
-                    kind="note_full"
-                    label="Full Study Note PDF Document (Required for Free Download)"
-                    accept=".pdf"
-                    maxSizeMB={100}
-                    value={form.watch("fullFile")}
-                    onChange={(val) => {
-                      form.setValue("fullFile", val ?? undefined as unknown as CreateNoteInput["fullFile"]);
-                      form.setValue("previewFile", null);
-                    }}
-                  />
-                  {form.formState.errors.fullFile && (
-                    <p className="text-xs text-destructive font-medium mt-1">
-                      {form.formState.errors.fullFile.message}
-                    </p>
+              {/* Full PDF section */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm font-medium">
+                    {pricingType === "free"
+                      ? "Full Study Note PDF (Required for Free Download)"
+                      : "Full Study Note PDF (Required — buyers receive this after payment)"}
+                  </span>
+                  {fullFile && fullFile.source === "upload" && (
+                    <span className="inline-flex items-center gap-1 text-[10px] text-success">
+                      <UploadCloud className="h-3 w-3" /> Uploaded via Cloudinary
+                    </span>
+                  )}
+                  {fullFile && fullFile.source === "drive" && (
+                    <span className="inline-flex items-center gap-1 text-[10px] text-primary">
+                      <HardDrive className="h-3 w-3" /> Google Drive link
+                    </span>
                   )}
                 </div>
-              ) : (
-                <div>
+
+                {fullFile?.source === "drive" ? (
+                  <div className="space-y-2">
+                    <Input
+                      placeholder="https://drive.google.com/file/d/.../view"
+                      value={fullFile.url}
+                      onChange={(e) => {
+                        form.setValue("fullFile", { source: "drive", url: e.target.value } as any);
+                      }}
+                    />
+                    <p className="text-[10px] text-muted-foreground">
+                      Paste the Google Drive share link directly. No file upload needed.
+                    </p>
+                    {form.formState.errors.fullFile && (
+                      <p className="text-xs text-destructive font-medium">{form.formState.errors.fullFile.message}</p>
+                    )}
+                  </div>
+                ) : (
+                  <>
+                    <FileUploadField
+                      kind="note_full"
+                      label=""
+                      accept=".pdf"
+                      maxSizeMB={100}
+                      value={form.watch("fullFile") as any}
+                      onChange={(val) => {
+                        form.setValue("fullFile", (val as any) ?? undefined as unknown as CreateNoteInput["fullFile"]);
+                        form.setValue("previewFile", null);
+                      }}
+                    />
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-muted-foreground">— or —</span>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 text-xs"
+                        onClick={() => form.setValue("fullFile", { source: "drive", url: "" } as any)}
+                      >
+                        <HardDrive className="mr-1 h-3 w-3" /> Use Google Drive URL
+                      </Button>
+                    </div>
+                    {form.formState.errors.fullFile && (
+                      <p className="text-xs text-destructive font-medium">{form.formState.errors.fullFile.message}</p>
+                    )}
+                  </>
+                )}
+              </div>
+
+              {/* Preview PDF section (paid only) — file upload only */}
+              {pricingType === "paid" && (
+                <div className="space-y-3">
+                  <span className="text-sm font-medium">Sample Preview PDF (Optional)</span>
                   <FileUploadField
                     kind="note_preview"
-                    label="Sample Preview PDF (Required for Paid Note)"
+                    label=""
                     accept=".pdf"
                     maxSizeMB={50}
-                    value={form.watch("previewFile") || form.watch("fullFile")}
-                    onChange={(val) => {
-                      form.setValue("previewFile", val);
-                      if (val) form.setValue("fullFile", val);
-                    }}
+                    value={form.watch("previewFile") as any}
+                    onChange={(val) => form.setValue("previewFile", val as any)}
                   />
                   {form.formState.errors.previewFile && (
-                    <p className="text-xs text-destructive font-medium mt-1">
-                      {form.formState.errors.previewFile.message}
-                    </p>
+                    <p className="text-xs text-destructive font-medium">{form.formState.errors.previewFile.message}</p>
                   )}
                 </div>
               )}

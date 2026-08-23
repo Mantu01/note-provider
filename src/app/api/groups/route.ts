@@ -17,7 +17,7 @@ export const GET = handler(async (ctx) => {
   ]);
 
   const res = ok({
-    items: items.map((item) => toPublicGroup(item as unknown as Record<string, unknown>)),
+    items: items.map((item) => toPublicGroup(item)),
     pagination: buildPagination(total, page, limit),
   });
   res.headers.set("Cache-Control", "public, max-age=300, s-maxage=300");

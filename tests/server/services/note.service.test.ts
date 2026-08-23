@@ -178,8 +178,8 @@ describe("createNote", () => {
         level: "intermediate",
         pricingType: "paid",
         price: 500,
-        fullFile: { url: "https://example.com/note.pdf", publicId: "full1", bytes: 100000 },
-        previewFile: { url: "https://example.com/preview.pdf", publicId: "prev1", bytes: 50000 },
+        fullFile: { source: "upload" as const, url: "https://example.com/note.pdf", publicId: "full1", bytes: 100000 },
+        previewFile: { source: "upload" as const, url: "https://example.com/preview.pdf", publicId: "prev1", bytes: 50000 },
         coverImage: null,
         tags: [],
       },
@@ -208,7 +208,7 @@ describe("createNote", () => {
           level: "basics",
           pricingType: "paid",
           price: 0.5,
-          fullFile: { url: "https://example.com/note.pdf", publicId: "full1", bytes: 1000 },
+          fullFile: { source: "upload" as const, url: "https://example.com/note.pdf", publicId: "full1", bytes: 1000 },
           previewFile: null,
           coverImage: null,
           tags: [],
@@ -230,7 +230,7 @@ describe("createNote", () => {
         level: "basics",
         pricingType: "free",
         price: 0,
-        fullFile: { url: "https://example.com/note.pdf", publicId: "full1", bytes: 1000 },
+        fullFile: { source: "upload" as const, url: "https://example.com/note.pdf", publicId: "full1", bytes: 1000 },
         previewFile: null,
         coverImage: null,
         tags: [],
@@ -300,7 +300,7 @@ describe("updateNote", () => {
 
     await updateNote(
       "note1",
-      { previewFile: { url: "https://example.com/p.pdf", publicId: "p1", bytes: 5000 } },
+      { previewFile: { source: "upload" as const, url: "https://example.com/p.pdf", publicId: "p1", bytes: 5000 } },
       mockCtx as any,
     );
 

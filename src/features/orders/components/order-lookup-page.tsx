@@ -1,9 +1,9 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { useRouter } from "next/navigation";
 import { Loader2, Search, PackageCheck, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -37,7 +37,7 @@ export function OrderLookupPage() {
     lookup.mutate(values.orderNumber, {
       onSuccess: (data) => {
         toast.success(`Order #${data.orderNumber} found`);
-        router.push(`/order/${data.orderId}`);
+        router.push(`/order/success/${data.orderId}`);
       },
       onError: (error) => {
         toast.error(error.message || "Order not found. Please check your order number.");
@@ -98,7 +98,7 @@ export function OrderLookupPage() {
           <div className="mt-5 flex items-start gap-2.5 rounded-xl bg-muted/30 p-3 text-[10px] text-muted-foreground">
             <ShieldCheck aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-primary" />
             <p>
-              Orders stay pending until reviewed and fulfilled within 4–6 hours. Check this page anytime.
+              Paid orders are fulfilled instantly. Check this page anytime for updates.
             </p>
           </div>
         </CardContent>

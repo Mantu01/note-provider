@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { MIN_PAID_PRICE_PAISE, NOTE_LEVELS, NOTE_PRICING_TYPES, NOTE_VISIBILITIES } from "../constants";
+import { NOTE_LEVELS, NOTE_PRICING_TYPES, NOTE_VISIBILITIES } from "../constants";
 import { rupeesToPaise } from "../format";
 
 export const objectIdSchema = z
@@ -12,6 +12,30 @@ export const uploadedFileSchema = z.object({
   publicId: z.string().trim().min(1, "Missing file reference"),
   bytes: z.number().int().positive("Invalid file size"),
 });
+
+export const googleDriveFileSchema = z.object({
+  source: z.literal("drive"),
+  url: z.string().url("Invalid Google Drive URL").refine(
+    (val) => {
+      try {
+        const url = new URL(val);
+        return url.hostname === "drive.google.com";
+      } catch {
+        return false;
+      }
+    },
+    { message: "Only Google Drive URLs are accepted" },
+  ),
+});
+
+export const cloudinaryFileSchema = z.object({
+  source: z.literal("upload"),
+  url: z.url("Invalid file URL"),
+  publicId: z.string().trim().min(1, "Missing file reference"),
+  bytes: z.number().int().positive("Invalid file size"),
+});
+
+export const noteFileSchema = z.discriminatedUnion("source", [cloudinaryFileSchema, googleDriveFileSchema]);
 
 export const uploadedImageSchema = z.object({
   url: z.url("Invalid image URL"),
@@ -40,8 +64,8 @@ export const noteBaseSchema = z.object({
   tags: tagsSchema.default([]),
   isFeatured: z.boolean().default(false),
   pageCount: z.number().int().positive().max(20000).nullable().default(null),
-  fullFile: uploadedFileSchema,
-  previewFile: uploadedFileSchema.nullable().default(null),
+  fullFile: noteFileSchema,
+  previewFile: noteFileSchema.nullable().default(null),
   coverImage: uploadedImageSchema.nullable().default(null),
 });
 
@@ -65,18 +89,18 @@ function refineNote(
     }
   } else if (value.pricingType === "paid") {
     const pricePaise = rupeesToPaise(value.price ?? 0);
-    if (pricePaise < MIN_PAID_PRICE_PAISE) {
+    if (pricePaise < 100) {
       ctx.addIssue({
         code: "custom",
         path: ["price"],
         message: "Paid notes must cost at least ₹1",
       });
     }
-    if (!value.previewFile && !value.fullFile) {
+    if (!value.fullFile) {
       ctx.addIssue({
         code: "custom",
-        path: ["previewFile"],
-        message: "Please upload the sample preview PDF for this paid note",
+        path: ["fullFile"],
+        message: "Please upload the full study note PDF that buyers receive after payment",
       });
     }
     if (

@@ -54,7 +54,7 @@ describe("RecentOrders", () => {
     const orders = Array.from({ length: 10 }, (_, i) => ({
       id: `${i}`,
       orderNumber: `NP-00${i}`,
-      buyerFull: { fullName: `User ${i}`, socialPlatform: "instagram", socialHandle: `@user${i}` },
+      buyerFull: { fullName: `User ${i}` },
       itemTitle: `Item ${i}`,
       amountLabel: "Rs. 499",
       paymentStatus: "paid",
@@ -84,7 +84,7 @@ describe("RecentOrders", () => {
       {
         id: "1",
         orderNumber: "NP-001",
-        buyerFull: { fullName: "John", socialPlatform: "email", socialHandle: "john@test.com" },
+        buyerFull: { fullName: "John" },
         itemTitle: "Note",
         amountLabel: "Rs. 499",
         paymentStatus: "paid",

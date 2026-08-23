@@ -88,7 +88,7 @@ describe("FulfillmentDialog", () => {
     expect(screen.getByText("Update Order #NP-20260815-0001")).toBeInTheDocument();
   });
 
-  it("renders buyer handle in description", () => {
+  it("renders buyer name in description", () => {
     render(
       <FulfillmentDialog
         open={true}
@@ -96,12 +96,11 @@ describe("FulfillmentDialog", () => {
         order={{
           id: "order-1",
           orderNumber: "NP-001",
-          buyerFull: { socialHandle: "@johndoe", socialPlatform: "instagram" },
+          buyerFull: { fullName: "John Doe" },
         } as any}
       />
     );
-    expect(screen.getByText("@johndoe")).toBeInTheDocument();
-    expect(screen.getByText(/instagram/)).toBeInTheDocument();
+    expect(screen.getByText("John Doe")).toBeInTheDocument();
   });
 
   it("renders fulfillment status select", () => {
@@ -125,7 +124,7 @@ describe("FulfillmentDialog", () => {
         order={{ id: "order-1" } as any}
       />
     );
-    expect(screen.getByPlaceholderText(/Sent PDF via/)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(/e.g. Notes delivered/)).toBeInTheDocument();
   });
 
   it("renders cancel button", () => {

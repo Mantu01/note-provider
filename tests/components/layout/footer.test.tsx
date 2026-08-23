@@ -90,8 +90,8 @@ describe("Footer", () => {
     const xLink = screen.getByLabelText("X");
     const ytLink = screen.getByLabelText("YouTube");
     const mailLink = screen.getByLabelText("Email");
-    expect(xLink).toHaveAttribute("href", "https://x.com");
-    expect(ytLink).toHaveAttribute("href", "https://youtube.com");
+    expect(xLink).toHaveAttribute("href", "https://x.com/Mantu_kumar91");
+    expect(ytLink).toHaveAttribute("href", "https://www.youtube.com/channel/UCgkZ2cdrKLz7dhnXnkDOAgQ");
     expect(mailLink).toHaveAttribute("href", "mailto:support@notesprovider.com");
   });
 

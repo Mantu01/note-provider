@@ -1,6 +1,5 @@
 import { format, formatDistanceToNow } from "date-fns";
-import { SOCIAL_HANDLE_PATTERNS } from "./constants";
-import type { NotePricingType, SocialPlatform } from "./types";
+import type { NotePricingType } from "./types";
 
 export function formatPrice(paise: number): string {
   return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(paise / 100);
@@ -68,37 +67,4 @@ export function toIsoStringRequired(value: Date | string): string {
 
 export function toDateKey(value: Date): string {
   return value.toISOString().slice(0, 10);
-}
-
-export function normalizeSocialHandle(platform: SocialPlatform, rawHandle: string): string {
-  const handle = rawHandle.trim();
-  if (platform === "instagram") return `@${handle.replace(/^@/, "")}`;
-  if (platform === "email") return handle.toLowerCase();
-  return `+91${handle.replace(/\D/g, "").slice(-10)}`;
-}
-
-export function isValidSocialHandle(platform: SocialPlatform, rawHandle: string): boolean {
-  return SOCIAL_HANDLE_PATTERNS[platform].test(rawHandle.trim());
-}
-
-function maskMiddle(value: string, visibleStart: number, visibleEnd: number): string {
-  if (value.length <= visibleStart + visibleEnd) return "*".repeat(value.length);
-  const start = value.slice(0, visibleStart);
-  const end = value.slice(value.length - visibleEnd);
-  return `${start}${"*".repeat(value.length - visibleStart - visibleEnd)}${end}`;
-}
-
-export function maskSocialHandle(platform: SocialPlatform, handle: string): string {
-  if (platform === "instagram") {
-    const name = handle.replace(/^@/, "");
-    return `@${maskMiddle(name, 2, 2)}`;
-  }
-  if (platform === "whatsapp") {
-    const digits = handle.replace(/\D/g, "");
-    const last4 = digits.slice(-4);
-    return `+91${"*".repeat(Math.max(digits.length - 4 - 2, 0))}${last4}`;
-  }
-  const [local, domain] = handle.split("@");
-  if (!domain) return maskMiddle(handle, 2, 0);
-  return `${maskMiddle(local, 2, 0)}@${domain}`;
 }

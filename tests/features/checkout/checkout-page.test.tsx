@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { CheckoutPage } from "@/features/checkout/components/checkout-page";
 
 vi.mock("@/features/notes/api/use-note", () => ({
@@ -50,8 +50,6 @@ vi.mock("react-hook-form", async (importOriginal) => {
           e?.preventDefault();
           fn({
             fullName: "Test User",
-            socialPlatform: "instagram" as const,
-            socialHandle: "@testuser",
             consentAccepted: true,
           });
         };
@@ -60,10 +58,9 @@ vi.mock("react-hook-form", async (importOriginal) => {
       watch: vi.fn(),
       formState: { errors: {}, isValid: true },
     })),
-    useWatch: vi.fn(() => "instagram"),
     Controller: (props: any) => {
       const renderFn = props.children || props.render;
-      return renderFn({ field: { value: "instagram", onChange: vi.fn() } });
+      return renderFn({ field: { value: false, onChange: vi.fn() } });
     },
   };
 });
@@ -109,18 +106,6 @@ vi.mock("@/components/ui/input", async (importOriginal) => {
   return {
     ...actual,
     Input: (props: any) => <input {...props} />,
-  };
-});
-
-vi.mock("@/components/ui/select", async (importOriginal) => {
-  const actual = await importOriginal<typeof import("@/components/ui/select")>();
-  return {
-    ...actual,
-    Select: ({ children, ...props }: any) => <div {...props} role="combobox">{children}</div>,
-    SelectTrigger: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    SelectContent: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    SelectItem: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    SelectValue: () => <span>Instagram</span>,
   };
 });
 
@@ -223,10 +208,7 @@ describe("CheckoutPage", () => {
 
     render(<CheckoutPage slug="react-notes" itemType="note" />);
     await waitFor(() => {
-      expect(screen.getByText("Where should we deliver your notes?")).toBeInTheDocument();
       expect(screen.getByLabelText(/Full name/i)).toBeInTheDocument();
-      expect(screen.getByText(/Delivery channel/i)).toBeInTheDocument();
-      expect(screen.getByLabelText(/Instagram handle/i)).toBeInTheDocument();
     });
   });
 
@@ -246,29 +228,7 @@ describe("CheckoutPage", () => {
 
     render(<CheckoutPage slug="react-bundle" itemType="group" />);
     await waitFor(() => {
-      expect(screen.getByText("Where should we deliver your notes?")).toBeInTheDocument();
-    });
-  });
-
-  it("shows delivery channel options", async () => {
-    mockUseNote.mockReturnValue({
-      isPending: false,
-      isError: false,
-      data: {
-        note: {
-          id: "1", title: "Note", slug: "note", pricingType: "paid" as const,
-          price: 49900, priceLabel: "Rs. 499", compareAtPrice: null,
-          coverImageUrl: null, category: { name: "Web Dev" },
-        },
-      },
-      refetch: vi.fn(),
-    } as any);
-
-    render(<CheckoutPage slug="note" itemType="note" />);
-    await waitFor(() => {
-      expect(screen.getByText(/Delivery channel/i)).toBeInTheDocument();
-      const comboboxes = screen.getAllByRole("combobox");
-      expect(comboboxes.length).toBeGreaterThan(0);
+      expect(screen.getByLabelText(/Full name/i)).toBeInTheDocument();
     });
   });
 
@@ -404,7 +364,7 @@ describe("CheckoutPage", () => {
       amount: 49900,
       currency: "INR" as const,
       itemTitle: "React Notes",
-      buyer: { fullName: "Test User", contact: "@testuser", email: "test@example.com" },
+      buyer: { fullName: "Test User", email: "test@example.com" },
     };
 
     const mockMutate = vi.fn((_data, options) => {
@@ -436,10 +396,9 @@ describe("CheckoutPage", () => {
       register: vi.fn(() => ({})),
       handleSubmit: vi.fn((fn) => fn),
       control: {},
-      watch: vi.fn(() => "instagram"),
+      watch: vi.fn(),
       formState: { errors: {}, isValid: true },
     } as any);
-    vi.mocked((await import("react-hook-form")).useWatch).mockReturnValueOnce("instagram" as any);
 
     const mockPush = vi.fn();
     mockUseRouter.mockReturnValue({ push: mockPush } as any);
@@ -450,8 +409,6 @@ describe("CheckoutPage", () => {
       itemType: "note",
       itemSlug: "react-notes",
       fullName: "Test User",
-      socialPlatform: "instagram",
-      socialHandle: "@testuser",
       consentAccepted: true,
     };
 
@@ -498,7 +455,6 @@ describe("CheckoutPage", () => {
       watch: vi.fn(),
       formState: { errors: { fullName: { message: "Required" } }, isValid: false },
     } as any);
-    vi.mocked((await import("react-hook-form")).useWatch).mockReturnValueOnce("instagram" as any);
 
     mockUseNote.mockReturnValue({
       isPending: false,
@@ -516,86 +472,6 @@ describe("CheckoutPage", () => {
     render(<CheckoutPage slug="note" itemType="note" />);
     const buttons = document.querySelectorAll("button[disabled]");
     expect(buttons.length).toBeGreaterThan(0);
-  });
-
-  it("shows email platform hint when email is selected", async () => {
-    vi.mocked((await import("react-hook-form")).useForm).mockReturnValue({
-      register: vi.fn(() => ({})),
-      handleSubmit: vi.fn((fn) => {
-        return (e?: React.FormEvent) => {
-          e?.preventDefault();
-          fn({
-            fullName: "Test User",
-            socialPlatform: "email" as const,
-            socialHandle: "test@example.com",
-            consentAccepted: true,
-          });
-        };
-      }),
-      control: {},
-      watch: vi.fn(),
-      formState: { errors: {}, isValid: true },
-    } as any);
-    vi.mocked((await import("react-hook-form")).useWatch).mockReturnValueOnce("email" as any);
-
-    mockUseNote.mockReturnValue({
-      isPending: false,
-      isError: false,
-      data: {
-        note: {
-          id: "1", title: "Note", slug: "note", pricingType: "paid" as const,
-          price: 49900, priceLabel: "Rs. 499", compareAtPrice: null,
-          coverImageUrl: null, category: { name: "Web Dev" },
-        },
-      },
-      refetch: vi.fn(),
-    } as any);
-
-    render(<CheckoutPage slug="note" itemType="note" />);
-    await waitFor(() => {
-      expect(screen.getByLabelText(/Email address/i)).toBeInTheDocument();
-      expect(screen.getByPlaceholderText("you@example.com")).toBeInTheDocument();
-    });
-  });
-
-  it("shows whatsapp platform hint", async () => {
-    vi.mocked((await import("react-hook-form")).useForm).mockReturnValue({
-      register: vi.fn(() => ({})),
-      handleSubmit: vi.fn((fn) => {
-        return (e?: React.FormEvent) => {
-          e?.preventDefault();
-          fn({
-            fullName: "Test User",
-            socialPlatform: "whatsapp" as const,
-            socialHandle: "+919876543210",
-            consentAccepted: true,
-          });
-        };
-      }),
-      control: {},
-      watch: vi.fn(),
-      formState: { errors: {}, isValid: true },
-    } as any);
-    vi.mocked((await import("react-hook-form")).useWatch).mockReturnValueOnce("whatsapp" as any);
-
-    mockUseNote.mockReturnValue({
-      isPending: false,
-      isError: false,
-      data: {
-        note: {
-          id: "1", title: "Note", slug: "note", pricingType: "paid" as const,
-          price: 49900, priceLabel: "Rs. 499", compareAtPrice: null,
-          coverImageUrl: null, category: { name: "Web Dev" },
-        },
-      },
-      refetch: vi.fn(),
-    } as any);
-
-    render(<CheckoutPage slug="note" itemType="note" />);
-    await waitFor(() => {
-      expect(screen.getByLabelText(/WhatsApp handle/i)).toBeInTheDocument();
-      expect(screen.getByPlaceholderText("10-digit number")).toBeInTheDocument();
-    });
   });
 
   it("shows compare at price when available", async () => {

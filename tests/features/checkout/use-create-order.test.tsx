@@ -30,7 +30,7 @@ describe("useCreateOrder", () => {
       amount: 49900,
       razorpayKeyId: "key_test",
       itemTitle: "React Notes",
-      buyer: { name: "John Doe" },
+      buyer: { fullName: "John Doe" },
     });
 
     const { result } = renderHook(() => useCreateOrder(), { wrapper: createWrapper() });
@@ -39,8 +39,6 @@ describe("useCreateOrder", () => {
       itemType: "note",
       itemSlug: "react-notes",
       fullName: "John Doe",
-      socialPlatform: "instagram",
-      socialHandle: "@johndoe",
       consentAccepted: true,
     });
 
@@ -65,7 +63,7 @@ describe("useCreateOrder", () => {
       amount: 99900,
       razorpayKeyId: "key_test",
       itemTitle: "Full Stack Bundle",
-      buyer: { name: "Jane Doe" },
+      buyer: { fullName: "Jane Doe" },
     });
 
     const { result } = renderHook(() => useCreateOrder(), { wrapper: createWrapper() });
@@ -74,8 +72,6 @@ describe("useCreateOrder", () => {
       itemType: "group",
       itemSlug: "fullstack-bundle",
       fullName: "Jane Doe",
-      socialPlatform: "whatsapp",
-      socialHandle: "9876543210",
       consentAccepted: true,
     });
 
@@ -93,8 +89,6 @@ describe("useCreateOrder", () => {
       itemType: "note",
       itemSlug: "react-notes",
       fullName: "John",
-      socialPlatform: "email",
-      socialHandle: "john@example.com",
       consentAccepted: true,
     });
 
@@ -112,8 +106,6 @@ describe("useCreateOrder", () => {
       itemType: "note",
       itemSlug: "test",
       fullName: "Test",
-      socialPlatform: "instagram",
-      socialHandle: "@test",
       consentAccepted: true,
     });
 
@@ -125,7 +117,7 @@ describe("useCreateOrder", () => {
   it("sends correct body for group item type", async () => {
     mockApiClient.mockResolvedValue({
       orderId: "ord-1", orderNumber: "NP-001", razorpayOrderId: "oid",
-      amount: 50000, razorpayKeyId: "key", itemTitle: "Bundle", buyer: { name: "Test" },
+      amount: 50000, razorpayKeyId: "key", itemTitle: "Bundle", buyer: { fullName: "Test" },
     });
 
     const { result } = renderHook(() => useCreateOrder(), { wrapper: createWrapper() });
@@ -134,8 +126,6 @@ describe("useCreateOrder", () => {
       itemType: "group",
       itemSlug: "bundle-1",
       fullName: "Test User",
-      socialPlatform: "email",
-      socialHandle: "test@test.com",
       consentAccepted: true,
     });
 
@@ -152,7 +142,7 @@ describe("useCreateOrder", () => {
   it("sends correct body for note item type", async () => {
     mockApiClient.mockResolvedValue({
       orderId: "ord-2", orderNumber: "NP-002", razorpayOrderId: "oid2",
-      amount: 30000, razorpayKeyId: "key", itemTitle: "Note", buyer: { name: "Test" },
+      amount: 30000, razorpayKeyId: "key", itemTitle: "Note", buyer: { fullName: "Test" },
     });
 
     const { result } = renderHook(() => useCreateOrder(), { wrapper: createWrapper() });
@@ -161,8 +151,6 @@ describe("useCreateOrder", () => {
       itemType: "note",
       itemSlug: "note-1",
       fullName: "Test User",
-      socialPlatform: "whatsapp",
-      socialHandle: "9876543210",
       consentAccepted: true,
     });
 

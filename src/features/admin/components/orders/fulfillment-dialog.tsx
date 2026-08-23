@@ -39,7 +39,7 @@ export function FulfillmentDialog({ open, onOpenChange, order }: FulfillmentDial
           <DialogHeader>
             <DialogTitle>Update Order #{order?.orderNumber}</DialogTitle>
             <DialogDescription>
-              Buyer Handle: <strong className="text-foreground">{order?.buyerFull?.socialHandle}</strong> ({order?.buyerFull?.socialPlatform})
+              Buyer: <strong className="text-foreground">{order?.buyerFull?.fullName}</strong>
             </DialogDescription>
           </DialogHeader>
 
@@ -77,7 +77,7 @@ export function FulfillmentDialog({ open, onOpenChange, order }: FulfillmentDial
               <label className="text-sm font-medium">Internal Admin Note (Optional)</label>
               <Textarea
                 rows={3}
-                placeholder="e.g. Sent PDF via Instagram DM on Aug 4, 2:30 PM..."
+                placeholder="e.g. Notes delivered via email on Aug 4, 2:30 PM..."
                 {...form.register("adminNote")}
               />
             </div>

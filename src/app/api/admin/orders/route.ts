@@ -13,8 +13,8 @@ export const GET = adminHandler(async (ctx) => {
     paymentStatus: (ctx.searchParams.get("paymentStatus") as "created" | "paid" | "failed") || undefined,
     fulfillmentStatus: (ctx.searchParams.get("fulfillmentStatus") as "pending" | "completed" | "cancelled") || undefined,
     itemType: (ctx.searchParams.get("itemType") as "note" | "group") || undefined,
-    from: ctx.searchParams.get("from") ? new Date(ctx.searchParams.get("from")!) : undefined,
-    to: ctx.searchParams.get("to") ? new Date(ctx.searchParams.get("to")!) : undefined,
+    from: ctx.searchParams.get("from") || undefined,
+    to: ctx.searchParams.get("to") || undefined,
     sort: (ctx.searchParams.get("sort") as "newest" | "oldest" | "amount_desc" | "amount_asc") || "newest",
   };
 

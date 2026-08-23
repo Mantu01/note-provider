@@ -89,14 +89,27 @@ export async function updateNote(
   if (input.pageCount !== undefined) updates.pageCount = input.pageCount;
   if (input.fullFile !== undefined && input.fullFile) {
     updates.fullFileUrl = input.fullFile.url;
-    updates.fullFilePublicId = input.fullFile.publicId;
-    updates.fullFileBytes = input.fullFile.bytes;
+    updates.pdfSource = input.fullFile.source;
+    if (input.fullFile.source === "upload") {
+      updates.fullFilePublicId = input.fullFile.publicId;
+      updates.fullFileBytes = input.fullFile.bytes;
+      updates.drivePdfUrl = null;
+    } else {
+      updates.fullFilePublicId = null;
+      updates.fullFileBytes = 0;
+      updates.drivePdfUrl = input.fullFile.url;
+    }
   }
   if (input.previewFile !== undefined) {
     if (input.previewFile) {
       updates.previewFileUrl = input.previewFile.url;
-      updates.previewFilePublicId = input.previewFile.publicId;
-      updates.previewFileBytes = input.previewFile.bytes;
+      if (input.previewFile.source === "upload") {
+        updates.previewFilePublicId = input.previewFile.publicId;
+        updates.previewFileBytes = input.previewFile.bytes;
+      } else {
+        updates.previewFilePublicId = null;
+        updates.previewFileBytes = null;
+      }
     } else {
       updates.previewFileUrl = null;
       updates.previewFilePublicId = null;

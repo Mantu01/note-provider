@@ -84,7 +84,7 @@ describe("createOrder", () => {
     vi.mocked(OrderModel.Order.create).mockResolvedValue(mockOrder as any);
 
     const result = await createOrder(
-      { fullName: "John", socialPlatform: "email", socialHandle: "john@example.com", consentAccepted: true },
+      { fullName: "John", consentAccepted: true },
       "react-notes",
       "note",
       50000,
@@ -107,7 +107,7 @@ describe("createOrder", () => {
     vi.mocked(OrderModel.Order.create).mockResolvedValue({ ...mockOrder, itemType: "group" } as any);
 
     const result = await createOrder(
-      { fullName: "Jane", socialPlatform: "whatsapp", socialHandle: "9876543210", consentAccepted: true },
+      { fullName: "Jane", consentAccepted: true },
       "js-bundle",
       "group",
       100000,
@@ -126,7 +126,7 @@ describe("createOrder", () => {
 
     await expect(
       createOrder(
-        { fullName: "John", socialPlatform: "email", socialHandle: "john@example.com", consentAccepted: true },
+        { fullName: "John", consentAccepted: true },
         "missing",
         "note",
         50000,
@@ -144,7 +144,7 @@ describe("createOrder", () => {
 
     await expect(
       createOrder(
-        { fullName: "John", socialPlatform: "email", socialHandle: "john@example.com", consentAccepted: true },
+        { fullName: "John", consentAccepted: true },
         "missing",
         "group",
         50000,

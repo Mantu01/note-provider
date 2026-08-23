@@ -5,15 +5,14 @@ import { buildOrderFilter, buildOrderSort } from "@/server/lib/query";
 
 export const runtime = "nodejs";
 
-
 export const GET = adminHandler(async (ctx) => {
   const query = {
     q: ctx.searchParams.get("q") || undefined,
     paymentStatus: (ctx.searchParams.get("paymentStatus") as "created" | "paid" | "failed") || undefined,
     fulfillmentStatus: (ctx.searchParams.get("fulfillmentStatus") as "pending" | "completed" | "cancelled") || undefined,
     itemType: (ctx.searchParams.get("itemType") as "note" | "group") || undefined,
-    from: ctx.searchParams.get("from") ? new Date(ctx.searchParams.get("from")!) : undefined,
-    to: ctx.searchParams.get("to") ? new Date(ctx.searchParams.get("to")!) : undefined,
+    from: ctx.searchParams.get("from") || undefined,
+    to: ctx.searchParams.get("to") || undefined,
     sort: (ctx.searchParams.get("sort") as "newest" | "oldest" | "amount_desc" | "amount_asc") || "newest",
   };
 
@@ -26,8 +25,6 @@ export const GET = adminHandler(async (ctx) => {
     "Order Number": o.orderNumber,
     Date: new Date(o.createdAt).toISOString(),
     "Full Name": o.buyer.fullName,
-    Platform: o.buyer.socialPlatform,
-    Handle: o.buyer.socialHandle,
     "Item Type": o.itemType,
     "Item Title": o.itemSnapshot.title,
     "Amount (INR)": (o.amount / 100).toFixed(2),
@@ -35,7 +32,6 @@ export const GET = adminHandler(async (ctx) => {
     "Fulfillment Status": o.fulfillmentStatus,
   }));
 
-  const columns = Object.keys(rows[0] ?? []);
   const csv = toCsv(rows.map((r) => r as Record<string, unknown>));
   const date = new Date().toISOString().split("T")[0];
 

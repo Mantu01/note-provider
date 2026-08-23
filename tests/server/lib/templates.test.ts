@@ -10,8 +10,6 @@ describe('templates', () => {
     itemType: 'note',
     amountLabel: '₹299',
     buyerName: 'John Doe',
-    socialPlatform: 'instagram',
-    socialHandle: '@johndoe',
     paidAt: '2026-08-15 10:30:00',
     paymentMethod: 'UPI',
     adminOrderUrl: 'https://notesprovider.com/admin/orders/NP-20260815-0001',
@@ -55,11 +53,6 @@ describe('templates', () => {
     it('includes buyer name', () => {
       const html = getTemplate(baseProps)
       expect(html).toContain('John Doe')
-    })
-
-    it('includes social platform and handle', () => {
-      const html = getTemplate(baseProps)
-      expect(html).toContain('INSTAGRAM: @johndoe')
     })
 
     it('includes payment method', () => {
@@ -112,12 +105,6 @@ describe('templates', () => {
     it('returns empty string for unknown template type', () => {
       const result = getTemplate({ type: 'unknown_type' as any } as any)
       expect(result).toBe('')
-    })
-
-    it('uses correct social platform label uppercase', () => {
-      const props = { ...baseProps, socialPlatform: 'whatsapp' }
-      const html = getTemplate(props)
-      expect(html).toContain('WHATSAPP: @johndoe')
     })
 
     it('trims leading and trailing whitespace', () => {

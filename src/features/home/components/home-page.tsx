@@ -23,7 +23,7 @@ const TRUST_ITEMS = [
 ] satisfies Array<{ icon: React.ComponentType<{ className?: string }>; label: string }>;
 
 const FAQS = [
-  ["When will I receive paid notes?", "Paid notes are delivered to your selected Instagram, WhatsApp, or email handle within 4–6 hours of a successful payment."],
+  ["When will I receive paid notes?", "Paid notes are available for instant download after successful payment."],
   ["How do free notes work?", "Free notes are available for immediate PDF download. No sign-up is required."],
   ["Which topics do you cover?", "We focus on web development, frontend, backend, DSA, DBMS, system design, and interview-prep topics."],
   ["Which payment methods can I use?", "Payments are securely processed by Razorpay and support its available Indian payment methods."],
@@ -34,7 +34,7 @@ const STEPS = [
   { num: "01", title: "Browse", desc: "Explore curated catalogue by topic." },
   { num: "02", title: "Preview", desc: "Review any note with a free sample." },
   { num: "03", title: "Pay", desc: "Checkout securely via Razorpay." },
-  { num: "04", title: "Receive", desc: "Get notes within 4–6 hours." },
+  { num: "04", title: "Download", desc: "Get your notes instantly after payment." },
 ] satisfies Array<{ num: string; title: string; desc: string }>;
 
 const STATS_CONFIG = [

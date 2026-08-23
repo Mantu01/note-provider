@@ -118,7 +118,7 @@ describe("OrderStatusPage", () => {
       refetch: vi.fn(),
     } as any);
     render(<OrderStatusPage orderId="ord-done" />);
-    expect(screen.getByText(/Notes delivered!/i)).toBeInTheDocument();
+    expect(screen.getByText(/Notes delivered/i)).toBeInTheDocument();
   });
 
   it("renders copy button for order number", () => {

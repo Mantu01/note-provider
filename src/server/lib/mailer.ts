@@ -1,10 +1,11 @@
 import nodemailer from "nodemailer";
-import { getTemplate, TemplateProps } from "./templates";
+import { connectDb } from "../db/connect";
 import { Admin } from "../db/models/admin.model";
+import { getTemplate } from "./templates";
 import { formatPrice, formatDateTime } from "@/lib/format";
 
 interface MailProps {
-  templateProps: TemplateProps;
+  templateProps: import("./templates").TemplateProps;
   to: string | string[];
   subject: string;
 }
@@ -56,7 +57,7 @@ export async function notifyAdminsOnPurchase(order: {
   paymentMethod?: string | null;
   paidAt?: Date | string | null;
   itemSnapshot?: { title?: string; slug?: string };
-  buyer?: { fullName?: string; socialPlatform?: string; socialHandle?: string };
+  buyer?: { fullName?: string };
 }) {
   try {
     const activeAdmins = await Admin.find({ isActive: true }).select("email").lean().exec();
@@ -81,8 +82,6 @@ export async function notifyAdminsOnPurchase(order: {
         itemType: order.itemType,
         amountLabel: formatPrice(order.amount),
         buyerName: order.buyer?.fullName ?? "Customer",
-        socialPlatform: order.buyer?.socialPlatform ?? "handle",
-        socialHandle: order.buyer?.socialHandle ?? "N/A",
         paidAt: paidAtFormatted,
         paymentMethod: order.paymentMethod ?? "Online Payment",
         adminOrderUrl,

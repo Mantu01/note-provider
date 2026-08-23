@@ -4,7 +4,6 @@ import { verifyWebhookSignature } from "@/server/lib/razorpay";
 import { Order } from "@/server/db/models/order.model";
 import { Note } from "@/server/db/models/note.model";
 import { Group } from "@/server/db/models/group.model";
-import { notifyAdminsOnPurchase } from "@/server/lib/mailer";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -14,21 +13,17 @@ export async function POST(req: Request) {
   const signature = req.headers.get("x-razorpay-signature");
 
   if (!signature) {
-    const r = NextResponse.json(
+    return NextResponse.json(
       { success: false, error: { code: "VALIDATION_ERROR", message: "Missing signature" } },
       { status: 400 },
     );
-    r.headers.set("Cache-Control", "no-store, max-age=0");
-    return r;
   }
 
   if (!verifyWebhookSignature(rawBody, signature)) {
-    const r = NextResponse.json(
+    return NextResponse.json(
       { success: false, error: { code: "VALIDATION_ERROR", message: "Invalid signature" } },
       { status: 400 },
     );
-    r.headers.set("Cache-Control", "no-store, max-age=0");
-    return r;
   }
 
   try {
@@ -52,9 +47,7 @@ export async function POST(req: Request) {
     const payment = payload.payload?.payment?.entity;
 
     if (!payment) {
-      const r = NextResponse.json({ success: true, data: { received: true } });
-      r.headers.set("Cache-Control", "no-store, max-age=0");
-      return r;
+      return NextResponse.json({ success: true, data: { received: true } });
     }
 
     const razorpayOrderId = payment.order_id;
@@ -65,11 +58,11 @@ export async function POST(req: Request) {
         { razorpayOrderId, paymentStatus: { $ne: "paid" } },
         {
           paymentStatus: "paid",
+          fulfillmentStatus: "completed",
           razorpayPaymentId: payment.id,
-          razorpaySignature: null,
           paymentMethod: payment.method ?? "online",
           paidAt: new Date(),
-          fulfillmentStatus: "pending",
+          completedAt: new Date(),
           ...(amount ? { amount } : {}),
         },
         { new: true },
@@ -87,8 +80,6 @@ export async function POST(req: Request) {
             $inc: { purchaseCount: 1, revenuePaise: amount },
           }).exec();
         }
-
-        await notifyAdminsOnPurchase(updatedOrder);
       }
     } else if ((event === "payment.failed" || event === "payment.canceled" || event === "order.canceled") && razorpayOrderId) {
       await Order.findOneAndUpdate(
@@ -100,13 +91,9 @@ export async function POST(req: Request) {
       ).exec();
     }
 
-    const r = NextResponse.json({ success: true, data: { received: true } });
-    r.headers.set("Cache-Control", "no-store, max-age=0");
-    return r;
+    return NextResponse.json({ success: true, data: { received: true } });
   } catch (error) {
     console.error("[webhook] error", error);
-    const r = NextResponse.json({ success: true, data: { received: true } });
-    r.headers.set("Cache-Control", "no-store, max-age=0");
-    return r;
+    return NextResponse.json({ success: true, data: { received: true } });
   }
 }

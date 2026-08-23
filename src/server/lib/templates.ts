@@ -5,8 +5,6 @@ export type PurchaseNotificationProps = {
   itemType: "note" | "group";
   amountLabel: string;
   buyerName: string;
-  socialPlatform: string;
-  socialHandle: string;
   paidAt: string;
   paymentMethod: string;
   adminOrderUrl: string;
@@ -60,10 +58,6 @@ function renderPurchaseNotificationTemplate(props: PurchaseNotificationProps): s
                 <tr>
                   <td style="padding:8px 0;color:#94a3b8;font-size:14px;">Buyer Name:</td>
                   <td style="padding:8px 0;color:#f8fafc;font-size:14px;font-weight:600;">${props.buyerName}</td>
-                </tr>
-                <tr>
-                  <td style="padding:8px 0;color:#94a3b8;font-size:14px;">Social Handle:</td>
-                  <td style="padding:8px 0;color:#f97316;font-size:14px;font-weight:700;">${props.socialPlatform.toUpperCase()}: ${props.socialHandle}</td>
                 </tr>
                 <tr>
                   <td style="padding:8px 0;color:#94a3b8;font-size:14px;">Payment Method:</td>

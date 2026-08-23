@@ -1,3 +1,4 @@
+import { connectDb } from "../db/connect";
 import { Order, type OrderDoc } from "../db/models/order.model";
 import { Note } from "../db/models/note.model";
 import { Group } from "../db/models/group.model";
@@ -11,7 +12,7 @@ import type { UpdateOrderPayload } from "@/lib/schemas/admin.schema";
 import { Types } from "mongoose";
 
 export async function createOrder(
-  input: { fullName: string; socialPlatform: string; socialHandle: string; consentAccepted: boolean },
+  input: { fullName: string; consentAccepted: boolean },
   itemSlug: string,
   itemType: "note" | "group",
   amount: number,
@@ -34,8 +35,6 @@ export async function createOrder(
       itemType,
       itemSlug,
       buyerName: input.fullName,
-      socialPlatform: input.socialPlatform,
-      socialHandle: input.socialHandle,
     },
   });
 
@@ -52,13 +51,14 @@ export async function createOrder(
       title: itemType === "note" ? ("title" in itemDoc ? itemDoc.title : itemSlug) : ("name" in itemDoc ? itemDoc.name : itemSlug),
       slug: itemSlug,
       price: amount,
-      noteIds: itemType === "group" && "notes" in itemDoc ? itemDoc.notes : [],
+      noteIds: itemType === "group" && "notes" in itemDoc ? (itemDoc as { notes: Types.ObjectId[] }).notes : [],
+      coverImageUrl: "coverImageUrl" in itemDoc ? (itemDoc as { coverImageUrl: string | null }).coverImageUrl ?? null : null,
     },
     buyer: {
       fullName: input.fullName,
-      socialPlatform: input.socialPlatform as import("@/lib/types").SocialPlatform,
-      socialHandle: input.socialHandle,
       consentAccepted: input.consentAccepted,
+      ipAddress: ctx.ip,
+      userAgent: ctx.userAgent,
     },
   });
 

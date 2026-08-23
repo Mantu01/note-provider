@@ -91,7 +91,7 @@ describe("OrderDetailView", () => {
         itemType: "note",
         amountLabel: "Rs. 499",
         createdAt: "2026-08-15T10:00:00Z",
-        buyerFull: { fullName: "John Doe", socialPlatform: "instagram", socialHandle: "@johndoe" },
+        buyerFull: { fullName: "John Doe" },
         razorpayOrderId: "order_abc123",
         razorpayPaymentId: "pay_xyz",
         paymentMethod: "UPI",
@@ -119,7 +119,7 @@ describe("OrderDetailView", () => {
         itemType: "group",
         amountLabel: "Rs. 999",
         createdAt: "2026-08-15T10:00:00Z",
-        buyerFull: { fullName: "John", socialPlatform: "email", socialHandle: "john@test.com" },
+        buyerFull: { fullName: "John" },
         razorpayOrderId: "oid",
       },
       isLoading: false,
@@ -135,7 +135,7 @@ describe("OrderDetailView", () => {
     });
   });
 
-  it("renders buyer delivery contact card", async () => {
+  it("renders buyer details card", async () => {
     mockUseAdminOrder.mockReturnValue({
       data: {
         id: "order-1",
@@ -146,7 +146,7 @@ describe("OrderDetailView", () => {
         itemType: "note",
         amountLabel: "Rs. 499",
         createdAt: "2026-08-15T10:00:00Z",
-        buyerFull: { fullName: "Jane Doe", socialPlatform: "whatsapp", socialHandle: "9876543210" },
+        buyerFull: { fullName: "Jane Doe" },
         razorpayOrderId: "oid",
       },
       isLoading: false,
@@ -155,10 +155,8 @@ describe("OrderDetailView", () => {
 
     render(<OrderDetailView id="order-1" />);
     await waitFor(() => {
-      expect(screen.getByText("Buyer Delivery Contact")).toBeInTheDocument();
+      expect(screen.getByText("Buyer Details")).toBeInTheDocument();
       expect(screen.getByText("Jane Doe")).toBeInTheDocument();
-      expect(screen.getByText("whatsapp")).toBeInTheDocument();
-      expect(screen.getByText("9876543210")).toBeInTheDocument();
     });
   });
 
@@ -172,7 +170,7 @@ describe("OrderDetailView", () => {
         itemTitle: "Note",
         amountLabel: "Rs. 499",
         createdAt: "2026-08-15T10:00:00Z",
-        buyerFull: { fullName: "John", socialPlatform: "instagram", socialHandle: "@john" },
+        buyerFull: { fullName: "John" },
         razorpayOrderId: "order_abc",
         razorpayPaymentId: "pay_xyz",
         paymentMethod: "UPI",
@@ -200,7 +198,7 @@ describe("OrderDetailView", () => {
         itemTitle: "Note",
         amountLabel: "Rs. 499",
         createdAt: "2026-08-15T10:00:00Z",
-        buyerFull: { fullName: "John", socialPlatform: "instagram", socialHandle: "@john" },
+        buyerFull: { fullName: "John" },
         razorpayOrderId: "oid",
         adminNote: "Sent via DM on Aug 15",
       },
@@ -225,7 +223,7 @@ describe("OrderDetailView", () => {
         itemTitle: "Note",
         amountLabel: "Rs. 499",
         createdAt: "2026-08-15T10:00:00Z",
-        buyerFull: { fullName: "John", socialPlatform: "instagram", socialHandle: "@john" },
+        buyerFull: { fullName: "John" },
         razorpayOrderId: "oid",
       },
       isLoading: false,
@@ -235,29 +233,6 @@ describe("OrderDetailView", () => {
     render(<OrderDetailView id="order-1" />);
     await waitFor(() => {
       expect(screen.getByText("Update Fulfillment Status")).toBeInTheDocument();
-    });
-  });
-
-  it("renders copy button for social handle", async () => {
-    mockUseAdminOrder.mockReturnValue({
-      data: {
-        id: "order-1",
-        orderNumber: "NP-001",
-        paymentStatus: "paid",
-        fulfillmentStatus: "pending",
-        itemTitle: "Note",
-        amountLabel: "Rs. 499",
-        createdAt: "2026-08-15T10:00:00Z",
-        buyerFull: { fullName: "John", socialPlatform: "email", socialHandle: "john@test.com" },
-        razorpayOrderId: "oid",
-      },
-      isLoading: false,
-      isError: false,
-    } as any);
-
-    render(<OrderDetailView id="order-1" />);
-    await waitFor(() => {
-      expect(screen.getByRole("button", { name: /copy/i })).toBeInTheDocument();
     });
   });
 
@@ -271,7 +246,7 @@ describe("OrderDetailView", () => {
         itemTitle: "Note",
         amountLabel: "Rs. 499",
         createdAt: "2026-08-15T10:00:00Z",
-        buyerFull: { fullName: "John", socialPlatform: "instagram", socialHandle: "@john" },
+        buyerFull: { fullName: "John" },
         razorpayOrderId: "oid",
       },
       isLoading: false,

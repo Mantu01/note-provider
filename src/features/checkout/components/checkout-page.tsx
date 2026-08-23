@@ -1,8 +1,7 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { Controller, useForm, useWatch } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRazorpay } from "react-razorpay";
 import { ArrowLeft, FileText, Loader2, ShieldCheck } from "lucide-react";
@@ -13,7 +12,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ErrorState } from "@/components/shared/error-state";
 import { PriceTag } from "@/components/shared/price-tag";
 import { useGroup } from "@/features/groups/api/use-group";
@@ -22,12 +20,6 @@ import { useCreateOrder } from "@/features/checkout/api/use-create-order";
 import { BRAND } from "@/lib/constants";
 import { checkoutSchema, type CheckoutValues } from "@/lib/schemas/checkout.schema";
 import type { PurchaseItemType } from "@/lib/types";
-
-const PLATFORM_HINTS = {
-  instagram: { prefix: "@", placeholder: "yourusername", type: "text" as const },
-  whatsapp: { prefix: "+91", placeholder: "10-digit number", type: "tel" as const },
-  email: { prefix: "", placeholder: "you@example.com", type: "email" as const },
-} as const;
 
 function CheckoutSkeleton() {
   return (
@@ -44,7 +36,7 @@ function FreeNoteGuard({ slug }: { slug: string }) {
         <CardContent className="space-y-3 text-center">
           <h1 className="text-xl font-bold">This note is free</h1>
           <p className="text-sm text-muted-foreground">
-            Free notes are ready for immediate download and do not need checkout.
+            Free notes are ready for immediate download — no payment needed.
           </p>
           <Button render={<Link href={`/notes/${slug}`} />}>Go to note</Button>
         </CardContent>
@@ -75,12 +67,10 @@ function OrderSummaryCard({
           <p className="text-xs font-semibold">Order summary</p>
           <div className="relative aspect-video overflow-hidden rounded-xl brand-gradient-soft">
             {coverImageUrl ? (
-              <Image
+              <img
                 src={coverImageUrl}
                 alt={title}
-                fill
-                sizes="(max-width: 1024px) 100vw, 33vw"
-                className="object-cover"
+                className="h-full w-full object-cover"
               />
             ) : (
               <div className="flex h-full items-center justify-center text-primary/40">
@@ -99,12 +89,9 @@ function OrderSummaryCard({
               compareAtPrice={compareAtPrice}
             />
           </div>
-          <p className="flex gap-2 text-xs leading-relaxed text-muted-foreground">
-            <ShieldCheck
-              aria-hidden="true"
-              className="mt-0.5 size-3.5 shrink-0 text-primary"
-            />
-            Delivered within 4–6 hours after successful payment.
+          <p className="text-xs leading-relaxed text-muted-foreground">
+            <ShieldCheck aria-hidden="true" className="mr-1 inline size-3.5 shrink-0 text-primary" />
+            Instant download after payment.
           </p>
         </CardContent>
       </Card>
@@ -133,21 +120,16 @@ export function CheckoutPage({
     mode: "onChange",
     defaultValues: {
       fullName: "",
-      socialPlatform: "instagram",
-      socialHandle: "",
       consentAccepted: false,
     },
   });
-
-  const platform = useWatch({ control: form.control, name: "socialPlatform" });
-  const hints = PLATFORM_HINTS[platform];
 
   const submit = (values: CheckoutValues) => {
     createOrder.mutate(
       {
         itemType,
         itemSlug: slug,
-        ...values,
+        fullName: values.fullName,
         consentAccepted: true,
       },
       {
@@ -163,16 +145,15 @@ export function CheckoutPage({
             name: BRAND.name,
             description: order.itemTitle,
             order_id: order.razorpayOrderId,
-            prefill: order.buyer,
+            prefill: { name: order.buyer.fullName },
             notes: order.orderNumber,
             theme: { color: themeColor },
             handler: () => {
-              toast.success("Payment successful!");
-              router.push(`/order/${order.orderId}`);
+              router.push(`/order/success/${order.orderId}`);
             },
             modal: {
               ondismiss: () => {
-                router.push(`/order/${order.orderId}`);
+                router.push(`/order/success/${order.orderId}`);
               },
             },
           });
@@ -184,6 +165,8 @@ export function CheckoutPage({
       },
     );
   };
+
+  const submitting = createOrder.isPending || isLoading;
 
   if (itemQuery.isPending) return <CheckoutSkeleton />;
 
@@ -202,8 +185,6 @@ export function CheckoutPage({
     return <FreeNoteGuard slug={slug} />;
   }
 
-  const submitting = createOrder.isPending || isLoading;
-
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
       <Link
@@ -221,10 +202,10 @@ export function CheckoutPage({
               Secure checkout
             </p>
             <h1 className="mt-1.5 text-xl font-bold tracking-tight md:text-2xl">
-              Where should we deliver your notes?
+              Complete your purchase
             </h1>
             <p className="mt-1.5 text-sm text-muted-foreground">
-              We only use these details to fulfil your order.
+              Enter your details below. Your notes will be available instantly after payment.
             </p>
           </div>
 
@@ -240,51 +221,6 @@ export function CheckoutPage({
                 {form.formState.errors.fullName?.message && (
                   <p className="text-xs text-destructive">
                     {form.formState.errors.fullName.message}
-                  </p>
-                )}
-              </div>
-
-              <Controller
-                name="socialPlatform"
-                control={form.control}
-                render={({ field }) => (
-                  <div className="space-y-1.5">
-                    <Label>Delivery channel</Label>
-                    <Select value={field.value} onValueChange={field.onChange}>
-                      <SelectTrigger className="w-full">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="instagram">Instagram</SelectItem>
-                        <SelectItem value="whatsapp">WhatsApp</SelectItem>
-                        <SelectItem value="email">Email</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                )}
-              />
-
-              <div className="space-y-1.5">
-                <Label htmlFor="socialHandle">
-                  {platform === "email"
-                    ? "Email address"
-                    : `${platform === "instagram" ? "Instagram" : "WhatsApp"} handle`}
-                </Label>
-                <div className="flex rounded-lg border border-input focus-within:ring-2 focus-within:ring-ring">
-                  <span className="flex items-center border-r px-2.5 text-xs text-muted-foreground">
-                    {hints.prefix || "@"}
-                  </span>
-                  <Input
-                    id="socialHandle"
-                    type={hints.type}
-                    placeholder={hints.placeholder}
-                    className="border-0"
-                    {...form.register("socialHandle")}
-                  />
-                </div>
-                {form.formState.errors.socialHandle?.message && (
-                  <p className="text-xs text-destructive">
-                    {form.formState.errors.socialHandle.message}
                   </p>
                 )}
               </div>

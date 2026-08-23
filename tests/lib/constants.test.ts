@@ -8,7 +8,6 @@ import {
   PURCHASE_ITEM_TYPES,
   PAYMENT_STATUSES,
   FULFILLMENT_STATUSES,
-  SOCIAL_PLATFORMS,
   NOTE_SORTS,
   ORDER_SORTS,
   UPLOAD_KINDS,
@@ -18,13 +17,11 @@ import {
   PRICING_TYPE_LABELS,
   PAYMENT_STATUS_LABELS,
   FULFILLMENT_STATUS_LABELS,
-  SOCIAL_PLATFORM_LABELS,
   STATUS_CONFIG,
   ERROR_STATUS,
   DEFAULT_PAGE_LIMIT,
   ADMIN_PAGE_LIMIT,
   MAX_PAGE_LIMIT,
-  DELIVERY_ETA_HOURS,
   ADMIN_SESSION_COOKIE,
   ADMIN_SESSION_MAX_AGE_SECONDS,
   LEADS_EXPORT_MAX_ROWS,
@@ -33,7 +30,6 @@ import {
   SIGNED_URL_TTL_SECONDS,
   UPLOAD_LIMITS,
   RATE_LIMITS,
-  SOCIAL_HANDLE_PATTERNS,
   FULL_NAME_PATTERN,
   PRIVACY_POLICY_SECTIONS,
   TERMS_OF_SERVICE_SECTIONS,
@@ -93,13 +89,6 @@ describe('SEO', () => {
     expect(SEO.twitterCard).toBe('summary_large_image');
   });
 
-  it('has social handles', () => {
-    expect(SEO.socialHandles.length).toBe(3);
-    expect(SEO.socialHandles[0].platform).toBe('twitter');
-    expect(SEO.socialHandles[1].platform).toBe('youtube');
-    expect(SEO.socialHandles[2].platform).toBe('instagram');
-  });
-
   it('has contact email', () => {
     expect(SEO.contactEmail).toBe('support@notesprovider.com');
   });
@@ -137,10 +126,6 @@ describe('Enum constants', () => {
 
   it('FULFILLMENT_STATUSES has correct values', () => {
     expect(FULFILLMENT_STATUSES).toEqual(['pending', 'completed', 'cancelled']);
-  });
-
-  it('SOCIAL_PLATFORMS has correct values', () => {
-    expect(SOCIAL_PLATFORMS).toEqual(['instagram', 'whatsapp', 'email']);
   });
 
   it('NOTE_SORTS has correct values', () => {
@@ -192,12 +177,6 @@ describe('Label maps', () => {
     expect(FULFILLMENT_STATUS_LABELS.pending).toBe('Pending');
     expect(FULFILLMENT_STATUS_LABELS.completed).toBe('Completed');
     expect(FULFILLMENT_STATUS_LABELS.cancelled).toBe('Cancelled');
-  });
-
-  it('SOCIAL_PLATFORM_LABELS has all platform labels', () => {
-    expect(SOCIAL_PLATFORM_LABELS.instagram).toBe('Instagram');
-    expect(SOCIAL_PLATFORM_LABELS.whatsapp).toBe('WhatsApp');
-    expect(SOCIAL_PLATFORM_LABELS.email).toBe('Email');
   });
 });
 
@@ -280,10 +259,6 @@ describe('Page and session constants', () => {
     expect(MAX_PAGE_LIMIT).toBe(48);
   });
 
-  it('has correct delivery ETA', () => {
-    expect(DELIVERY_ETA_HOURS).toBe(6);
-  });
-
   it('has correct admin session constants', () => {
     expect(ADMIN_SESSION_COOKIE).toBe('np_admin_session');
     expect(ADMIN_SESSION_MAX_AGE_SECONDS).toBe(604800);
@@ -341,55 +316,6 @@ describe('RATE_LIMITS', () => {
   });
 });
 
-describe('SOCIAL_HANDLE_PATTERNS', () => {
-  it('instagram pattern matches valid handles', () => {
-    expect(SOCIAL_HANDLE_PATTERNS.instagram.test('@johndoe')).toBe(true);
-    expect(SOCIAL_HANDLE_PATTERNS.instagram.test('johndoe')).toBe(true);
-    expect(SOCIAL_HANDLE_PATTERNS.instagram.test('john.doe')).toBe(true);
-    expect(SOCIAL_HANDLE_PATTERNS.instagram.test('john_doe')).toBe(true);
-  });
-
-  it('instagram pattern rejects handles with special characters', () => {
-    expect(SOCIAL_HANDLE_PATTERNS.instagram.test('john@doe')).toBe(false);
-    expect(SOCIAL_HANDLE_PATTERNS.instagram.test('john doe')).toBe(false);
-  });
-
-  it('instagram pattern rejects handles that are too long', () => {
-    expect(SOCIAL_HANDLE_PATTERNS.instagram.test('a'.repeat(31))).toBe(false);
-  });
-
-  it('whatsapp pattern matches valid indian numbers with +91', () => {
-    expect(SOCIAL_HANDLE_PATTERNS.whatsapp.test('+919876543210')).toBe(true);
-  });
-
-  it('whatsapp pattern matches valid indian numbers without +91', () => {
-    expect(SOCIAL_HANDLE_PATTERNS.whatsapp.test('9876543210')).toBe(true);
-  });
-
-  it('whatsapp pattern matches valid indian numbers with 0 prefix', () => {
-    expect(SOCIAL_HANDLE_PATTERNS.whatsapp.test('09876543210')).toBe(true);
-  });
-
-  it('whatsapp pattern rejects numbers starting with digit outside 6-9 after removing prefix', () => {
-    expect(SOCIAL_HANDLE_PATTERNS.whatsapp.test('+915876543210')).toBe(false);
-  });
-
-  it('whatsapp pattern rejects numbers that are too short', () => {
-    expect(SOCIAL_HANDLE_PATTERNS.whatsapp.test('987654321')).toBe(false);
-  });
-
-  it('email pattern matches valid emails', () => {
-    expect(SOCIAL_HANDLE_PATTERNS.email.test('user@example.com')).toBe(true);
-    expect(SOCIAL_HANDLE_PATTERNS.email.test('first.last@domain.org')).toBe(true);
-  });
-
-  it('email pattern rejects invalid emails', () => {
-    expect(SOCIAL_HANDLE_PATTERNS.email.test('not-an-email')).toBe(false);
-    expect(SOCIAL_HANDLE_PATTERNS.email.test('user@')).toBe(false);
-    expect(SOCIAL_HANDLE_PATTERNS.email.test('@example.com')).toBe(false);
-  });
-});
-
 describe('FULL_NAME_PATTERN', () => {
   it('matches valid full names with letters and spaces', () => {
     expect(FULL_NAME_PATTERN.test('John Doe')).toBe(true);
@@ -418,17 +344,17 @@ describe('FULL_NAME_PATTERN', () => {
 
 describe('Policy sections', () => {
   it('has privacy policy sections', () => {
-    expect(PRIVACY_POLICY_SECTIONS.length).toBe(3);
+    expect(PRIVACY_POLICY_SECTIONS.length).toBe(10);
     expect(PRIVACY_POLICY_SECTIONS[0].id).toBe('item-1');
   });
 
   it('has terms of service sections', () => {
-    expect(TERMS_OF_SERVICE_SECTIONS.length).toBe(3);
+    expect(TERMS_OF_SERVICE_SECTIONS.length).toBe(8);
     expect(TERMS_OF_SERVICE_SECTIONS[0].id).toBe('item-1');
   });
 
   it('has refund policy sections', () => {
-    expect(REFUND_POLICY_SECTIONS.length).toBe(4);
+    expect(REFUND_POLICY_SECTIONS.length).toBe(7);
     expect(REFUND_POLICY_SECTIONS[0].id).toBe('item-1');
   });
 });
@@ -447,8 +373,8 @@ describe('ABOUT_VALUES', () => {
 });
 
 describe('CONTACT_CHANNELS', () => {
-  it('has three contact channels', () => {
-    expect(CONTACT_CHANNELS.length).toBe(3);
+  it('has five contact channels', () => {
+    expect(CONTACT_CHANNELS.length).toBe(5);
   });
 
   it('each channel has required properties', () => {

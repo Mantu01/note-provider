@@ -11,7 +11,7 @@ describe("toPublicOrder", () => {
       paymentStatus: "paid",
       fulfillmentStatus: "pending",
       itemSnapshot: { title: "React Notes", slug: "react-notes", price: 50000, noteIds: [] },
-      buyer: { fullName: "John Doe", socialPlatform: "instagram", socialHandle: "@johndoe" },
+      buyer: { fullName: "John Doe" },
       createdAt: new Date("2024-01-01"),
       paidAt: new Date("2024-01-01T10:00:00Z"),
       completedAt: null,
@@ -30,10 +30,8 @@ describe("toPublicOrder", () => {
       fulfillmentStatus: "pending",
       buyer: {
         fullName: "John Doe",
-        socialPlatform: "instagram",
-        socialHandleMasked: "@jo***oe",
       },
-      deliveryEtaHours: 6,
+      coverImageUrl: null,
       createdAt: "2024-01-01T00:00:00.000Z",
       paidAt: "2024-01-01T10:00:00.000Z",
       completedAt: null,
@@ -49,7 +47,7 @@ describe("toPublicOrder", () => {
       paymentStatus: "created",
       fulfillmentStatus: "pending",
       itemSnapshot: { title: "JS Bundle", slug: "js-bundle", price: 100000, noteIds: ["n1", "n2"] },
-      buyer: { fullName: "Jane", socialPlatform: "whatsapp", socialHandle: "9876543210" },
+      buyer: { fullName: "Jane" },
       createdAt: new Date("2024-01-01"),
       paidAt: null,
       completedAt: null,
@@ -57,24 +55,6 @@ describe("toPublicOrder", () => {
     const result = toPublicOrder(doc);
     expect(result.itemType).toBe("group");
     expect(result.itemTitle).toBe("JS Bundle");
-  });
-
-  it("masks social handle for email platform", () => {
-    const doc = {
-      _id: "ord1",
-      orderNumber: "NP-20240101-0001",
-      itemType: "note",
-      amount: 0,
-      paymentStatus: "paid",
-      fulfillmentStatus: "completed",
-      itemSnapshot: { title: "Free Note", slug: "free", price: 0, noteIds: [] },
-      buyer: { fullName: "Test", socialPlatform: "email", socialHandle: "test@example.com" },
-      createdAt: new Date("2024-01-01"),
-      paidAt: new Date(),
-      completedAt: new Date(),
-    };
-    const result = toPublicOrder(doc);
-    expect(result.buyer.socialHandleMasked).toContain("@example.com");
   });
 
   it("handles doc with missing buyer fields", () => {
@@ -93,8 +73,6 @@ describe("toPublicOrder", () => {
     };
     const result = toPublicOrder(doc);
     expect(result.buyer.fullName).toBe("");
-    expect(result.buyer.socialPlatform).toBe("");
-    expect(result.buyer.socialHandleMasked).toBe("");
   });
 
   it("handles non-object input gracefully", () => {
@@ -117,8 +95,6 @@ describe("toAdminOrder", () => {
       itemSnapshot: { title: "React Notes", slug: "react-notes", price: 50000, noteIds: ["n1"] },
       buyer: {
         fullName: "John Doe",
-        socialPlatform: "instagram",
-        socialHandle: "@johndoe",
         consentAccepted: true,
         ipAddress: "1.2.3.4",
         userAgent: "Mozilla/5.0",
@@ -144,7 +120,6 @@ describe("toAdminOrder", () => {
     expect(result.failureReason).toBeNull();
     expect(result.adminNote).toBe("Delivered manually");
     expect(result.buyerFull.fullName).toBe("John Doe");
-    expect(result.buyerFull.socialHandle).toBe("@johndoe");
     expect(result.buyerFull.ipAddress).toBe("1.2.3.4");
     expect(result.buyerFull.userAgent).toBe("Mozilla/5.0");
     expect(result.item.id).toBe("n1");
@@ -161,7 +136,7 @@ describe("toAdminOrder", () => {
       paymentStatus: "paid",
       fulfillmentStatus: "pending",
       itemSnapshot: { title: "JS Bundle", slug: "js-bundle", price: 100000, noteIds: ["n1", "n2"] },
-      buyer: { fullName: "Test", socialPlatform: "whatsapp", socialHandle: "9876543210" },
+      buyer: { fullName: "Test" },
       note: null,
       group: { _id: "grp1" },
       createdAt: new Date("2024-01-01"),
@@ -184,7 +159,7 @@ describe("toAdminOrder", () => {
       paymentStatus: "created",
       fulfillmentStatus: "pending",
       itemSnapshot: { title: "Test", slug: "test", price: 0, noteIds: [] },
-      buyer: { fullName: "Test", socialPlatform: "email", socialHandle: "a@b.com" },
+      buyer: { fullName: "Test" },
       note: "string-id",
       createdAt: new Date("2024-01-01"),
       paidAt: null,
@@ -204,7 +179,7 @@ describe("toAdminOrder", () => {
       paymentStatus: "created",
       fulfillmentStatus: "pending",
       itemSnapshot: { title: "Test", slug: "test", price: 0, noteIds: [] },
-      buyer: { fullName: "Test", socialPlatform: "email", socialHandle: "a@b.com" },
+      buyer: { fullName: "Test" },
       completedBy: null,
       createdAt: new Date("2024-01-01"),
       paidAt: null,
@@ -224,7 +199,7 @@ describe("toAdminOrder", () => {
       paymentStatus: "created",
       fulfillmentStatus: "pending",
       itemSnapshot: { title: "Test", slug: "test", price: 0, noteIds: [] },
-      buyer: { fullName: "Test", socialPlatform: "email", socialHandle: "a@b.com" },
+      buyer: { fullName: "Test" },
       createdAt: new Date("2024-01-01"),
       paidAt: null,
       completedAt: null,
@@ -249,7 +224,7 @@ describe("toAdminLead", () => {
       paymentStatus: "paid",
       fulfillmentStatus: "pending",
       itemSnapshot: { title: "React Notes", slug: "react-notes", price: 50000 },
-      buyer: { fullName: "John Doe", socialPlatform: "instagram", socialHandle: "@johndoe" },
+      buyer: { fullName: "John Doe" },
       createdAt: new Date("2024-01-01"),
     };
     const result = toAdminLead(doc);
@@ -258,8 +233,6 @@ describe("toAdminLead", () => {
       orderId: "ord1",
       orderNumber: "NP-20240101-0001",
       fullName: "John Doe",
-      socialPlatform: "instagram",
-      socialHandle: "@johndoe",
       itemTitle: "React Notes",
       amount: 50000,
       amountLabel: "₹500",
@@ -267,22 +240,6 @@ describe("toAdminLead", () => {
       fulfillmentStatus: "pending",
       createdAt: "2024-01-01T00:00:00.000Z",
     });
-  });
-
-  it("handles email platform", () => {
-    const doc = {
-      _id: "ord1",
-      orderNumber: "NP-20240101-0001",
-      amount: 0,
-      paymentStatus: "created",
-      fulfillmentStatus: "pending",
-      itemSnapshot: { title: "Free Note", slug: "free" },
-      buyer: { fullName: "Test", socialPlatform: "email", socialHandle: "test@example.com" },
-      createdAt: new Date("2024-01-01"),
-    };
-    const result = toAdminLead(doc);
-    expect(result.socialPlatform).toBe("email");
-    expect(result.socialHandle).toBe("test@example.com");
   });
 
   it("handles non-object input gracefully", () => {

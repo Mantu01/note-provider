@@ -168,7 +168,7 @@ describe('useCreateOrder hook', () => {
   it('creates order successfully', async () => {
     mockFetch({ success: true, data: { orderId: 'o1', orderNumber: 'NP-001', razorpayOrderId: 'r_1', razorpayKeyId: 'rzp_key', amount: 50000, currency: 'INR', itemTitle: 'Note', buyer: { fullName: 'User', contact: '', email: 'u@u.com' } } })
     const { result } = renderHook(() => useCreateOrder(), { wrapper })
-    await result.current.mutateAsync({ itemType: 'note', itemSlug: 'n1', fullName: 'User', socialPlatform: 'email', socialHandle: 'u@u.com', consentAccepted: true })
+    await result.current.mutateAsync({ itemType: 'note', itemSlug: 'n1', fullName: 'User', consentAccepted: true })
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
   })
 
@@ -177,7 +177,7 @@ describe('useCreateOrder hook', () => {
     const { result } = renderHook(() => useCreateOrder(), { wrapper })
     let errored = false
     try {
-      await result.current.mutateAsync({ itemType: 'note', itemSlug: 'n1', fullName: 'U', socialPlatform: 'email', socialHandle: 'u@u.com', consentAccepted: true })
+      await result.current.mutateAsync({ itemType: 'note', itemSlug: 'n1', fullName: 'U', consentAccepted: true })
     } catch {
       errored = true
     }

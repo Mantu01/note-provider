@@ -5,7 +5,6 @@ import { Note } from "@/server/db/models/note.model";
 import { Group } from "@/server/db/models/group.model";
 import { createOrder } from "@/server/services/order.service";
 import { checkoutSchema } from "@/lib/schemas/checkout.schema";
-import { normalizeSocialHandle } from "@/lib/format";
 import { enforceRateLimit } from "@/server/lib/rate-limit";
 import { getRazorpayKeyId } from "@/server/lib/razorpay";
 
@@ -17,8 +16,6 @@ export const POST = handler(async (ctx) => {
   if (!parsed.success) {
     return fail(AppError.validation(parsed.error.flatten().fieldErrors as Record<string, string>, parsed.error.issues[0]?.message ?? "Invalid input"));
   }
-
-  const normalized = normalizeSocialHandle(parsed.data.socialPlatform, parsed.data.socialHandle);
 
   enforceRateLimit("createOrder", ctx.ip, { limit: 10, windowMs: 600000 });
 
@@ -47,7 +44,7 @@ export const POST = handler(async (ctx) => {
 
   if (amount < 100) throw AppError.validation({}, "Minimum order amount is ₹1");
 
-  const result = await createOrder({ ...parsed.data, socialHandle: normalized }, itemSlug, itemType, amount, ctx);
+  const result = await createOrder({ fullName: parsed.data.fullName, consentAccepted: parsed.data.consentAccepted }, itemSlug, itemType, amount, ctx);
 
   return ok({
     orderId: result.order._id.toString(),
@@ -59,8 +56,6 @@ export const POST = handler(async (ctx) => {
     itemTitle,
     buyer: {
       fullName: parsed.data.fullName,
-      contact: parsed.data.socialPlatform === "whatsapp" ? normalized : "",
-      email: parsed.data.socialPlatform === "email" ? normalized : "",
     },
   });
 });

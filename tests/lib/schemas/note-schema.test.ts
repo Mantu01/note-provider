@@ -6,6 +6,9 @@ import {
   noteBaseSchema,
   createNoteSchema,
   updateNoteSchema,
+  googleDriveFileSchema,
+  cloudinaryFileSchema,
+  noteFileSchema,
 } from '@/lib/schemas/note.schema';
 
 const validObjectId = '507f1f77bcf86cd799439011';
@@ -124,8 +127,8 @@ describe('noteBaseSchema', () => {
     level: 'intermediate' as const,
     pricingType: 'paid' as const,
     price: 299,
-    fullFile: { url: validUrl, publicId: 'notes/full', bytes: 1024 },
-    previewFile: { url: validUrl, publicId: 'notes/preview', bytes: 512 },
+    fullFile: { source: "upload", url: validUrl, publicId: 'notes/full', bytes: 1024 },
+    previewFile: { source: "upload", url: validUrl, publicId: 'notes/preview', bytes: 512 },
     coverImage: { url: validUrl, publicId: 'cover123' },
   };
 
@@ -141,8 +144,8 @@ describe('noteBaseSchema', () => {
       level: 'intermediate',
       pricingType: 'paid',
       price: 299,
-      fullFile: { url: validUrl, publicId: 'notes/full', bytes: 1024 },
-      previewFile: { url: validUrl, publicId: 'notes/preview', bytes: 512 },
+      fullFile: { source: "upload", url: validUrl, publicId: 'notes/full', bytes: 1024 },
+      previewFile: { source: "upload", url: validUrl, publicId: 'notes/preview', bytes: 512 },
     });
     expect(result.success).toBe(false);
   });
@@ -187,7 +190,7 @@ describe('noteBaseSchema', () => {
       level: 'basics',
       pricingType: 'free',
       price: 0,
-      fullFile: { url: validUrl, publicId: 'notes/full', bytes: 1024 },
+      fullFile: { source: "upload", url: validUrl, publicId: 'notes/full', bytes: 1024 },
     });
     expect(result.success).toBe(true);
   });
@@ -208,8 +211,8 @@ describe('noteBaseSchema', () => {
       pricingType: 'paid',
       price: 299,
       level: 'advance',
-      fullFile: { url: validUrl, publicId: 'notes/full', bytes: 1024 },
-      previewFile: { url: validUrl, publicId: 'notes/preview', bytes: 512 },
+      fullFile: { source: "upload", url: validUrl, publicId: 'notes/full', bytes: 1024 },
+      previewFile: { source: "upload", url: validUrl, publicId: 'notes/preview', bytes: 512 },
     });
     expect(result.success).toBe(true);
   });
@@ -246,8 +249,8 @@ describe('createNoteSchema', () => {
     level: 'intermediate',
     pricingType: 'paid' as const,
     price: 299,
-    fullFile: { url: validUrl, publicId: 'notes/full', bytes: 1024 },
-    previewFile: { url: validUrl, publicId: 'notes/preview', bytes: 512 },
+    fullFile: { source: "upload", url: validUrl, publicId: 'notes/full', bytes: 1024 },
+    previewFile: { source: "upload", url: validUrl, publicId: 'notes/preview', bytes: 512 },
   };
 
   it('accepts valid create data', () => {
@@ -290,7 +293,7 @@ describe('createNoteSchema', () => {
       pricingType: 'free' as const,
       price: 0,
       level: 'basics',
-      fullFile: { url: validUrl, publicId: 'notes/full', bytes: 1024 },
+      fullFile: { source: "upload", url: validUrl, publicId: 'notes/full', bytes: 1024 },
       previewFile: null,
     });
     expect(result.success).toBe(true);
@@ -336,7 +339,7 @@ describe('createNoteSchema', () => {
       pricingType: 'free' as const,
       price: 0,
       level: 'basics',
-      fullFile: { url: validUrl, publicId: 'notes/full', bytes: 1024 },
+      fullFile: { source: "upload", url: validUrl, publicId: 'notes/full', bytes: 1024 },
     });
     if (result.success) expect(result.data.title).toBe('React Notes');
   });
@@ -420,6 +423,80 @@ describe('updateNoteSchema', () => {
     const result = updateNoteSchema.safeParse({
       price: null,
     });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('googleDriveFileSchema', () => {
+  it('accepts valid Google Drive file link', () => {
+    const result = googleDriveFileSchema.safeParse({
+      source: 'drive',
+      url: 'https://drive.google.com/file/d/abc123/view',
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('accepts Google Drive direct download link', () => {
+    const result = googleDriveFileSchema.safeParse({
+      source: 'drive',
+      url: 'https://drive.google.com/uc?export=download&id=abc123',
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects non-Google Drive URLs', () => {
+    const result = googleDriveFileSchema.safeParse({
+      source: 'drive',
+      url: 'https://example.com/file.pdf',
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it('rejects invalid URL string', () => {
+    const result = googleDriveFileSchema.safeParse({
+      source: 'drive',
+      url: 'not-a-url',
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('cloudinaryFileSchema', () => {
+  it('accepts valid upload data', () => {
+    const result = cloudinaryFileSchema.safeParse({
+      source: 'upload',
+      url: 'https://res.cloudinary.com/demo/file.pdf',
+      publicId: 'notes/full/file',
+      bytes: 1024,
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it('rejects missing publicId', () => {
+    const result = cloudinaryFileSchema.safeParse({
+      source: 'upload',
+      url: 'https://res.cloudinary.com/demo/file.pdf',
+      bytes: 1024,
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+describe('noteFileSchema discriminated union', () => {
+  it('accepts a drive source file', () => {
+    const result = noteFileSchema.safeParse({ source: 'drive', url: 'https://drive.google.com/file/d/x/view' });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.source).toBe('drive');
+  });
+
+  it('accepts an upload source file', () => {
+    const result = noteFileSchema.safeParse({ source: 'upload', url: 'https://cdn.com/f.pdf', publicId: 'pub/id', bytes: 500 });
+    expect(result.success).toBe(true);
+    if (result.success) expect(result.data.source).toBe('upload');
+  });
+
+  it('rejects missing source field', () => {
+    const result = noteFileSchema.safeParse({ url: 'https://cdn.com/f.pdf' });
     expect(result.success).toBe(false);
   });
 });

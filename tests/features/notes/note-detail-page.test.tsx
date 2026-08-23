@@ -169,7 +169,6 @@ describe("NoteDetailPage", () => {
     render(<NoteDetailPage slug="free-note" />);
     await waitFor(() => {
       expect(screen.getByText("Download PDF")).toBeInTheDocument();
-      expect(screen.getByText("No sign-up required. Instant download.")).toBeInTheDocument();
     });
   });
 
@@ -359,15 +358,15 @@ describe("NoteDetailPage", () => {
     });
   });
 
-  it("does not show preview dialog when note has no preview", async () => {
+  it("shows preview dialog for paid notes", async () => {
     mockUseNote.mockReturnValue({
       isPending: false,
       isError: false,
       data: {
         note: {
           id: "1",
-          title: "No Preview",
-          slug: "no-preview",
+          title: "Paid Note",
+          slug: "paid-note",
           pricingType: "paid",
           price: 19900,
           priceLabel: "Rs. 199",
@@ -375,12 +374,12 @@ describe("NoteDetailPage", () => {
           coverImageUrl: null,
           category: { name: "Web Dev" },
           level: "intermediate",
-          description: "Note without preview",
+          description: "Paid note with preview",
           pageCount: 20,
           fileSizeLabel: "800 KB",
           downloadCount: 50,
           tags: [],
-          hasPreview: false,
+          hasPreview: true,
         },
         groups: [],
         relatedNotes: [],
@@ -388,8 +387,11 @@ describe("NoteDetailPage", () => {
       refetch: vi.fn(),
     } as any);
 
-    render(<NoteDetailPage slug="no-preview" />);
-    expect(screen.queryByTestId("pdf-preview")).not.toBeInTheDocument();
+    render(<NoteDetailPage slug="paid-note" />);
+    await waitFor(() => {
+      expect(screen.getByTestId("pdf-preview")).toBeInTheDocument();
+      expect(screen.getByText("Buy now — Rs. 199")).toBeInTheDocument();
+    });
   });
 
   it("shows related notes section when available", async () => {
