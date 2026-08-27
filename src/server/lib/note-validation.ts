@@ -1,5 +1,6 @@
 import { Types } from "mongoose";
 import { Note } from "../db/models/note.model";
+import type { NoteDoc } from "../db/models/note.model";
 import { AppError } from "./errors";
 
 export async function validateNoteIdsExist(noteIds: string[]): Promise<void> {
@@ -8,8 +9,11 @@ export async function validateNoteIdsExist(noteIds: string[]): Promise<void> {
 
   if (uniqueIds.length === 0) throw AppError.validation({ noteIds: "At least one note is required" });
 
-  const existingNotes = await (Note as any).find({ _id: { $in: uniqueIds.map((id) => new Types.ObjectId(id)) } }).select("_id").lean().exec();
-  const existingIds = existingNotes.map((n: { _id: import("mongoose").Types.ObjectId }) => n._id.toString());
-  const missing = uniqueIds.filter((id) => !existingIds.includes(id));
+  const existingNotes = await Note.find({ _id: { $in: uniqueIds } })
+    .select("_id")
+    .lean()
+    .exec();
+  const existingIds = new Set(existingNotes.map((n: Pick<NoteDoc, "_id">) => n._id.toString()));
+  const missing = uniqueIds.filter((id) => !existingIds.has(id));
   if (missing.length > 0) throw AppError.notFound(`Note(s) ${missing.slice(0, 3).join(", ")} not found`);
 }

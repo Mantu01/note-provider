@@ -22,10 +22,11 @@ const outfit = Outfit({
 });
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+const safeMetadataBase = URL.canParse(APP_URL) ? new URL(APP_URL) : undefined;
 const measurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 export const metadata: Metadata = {
-  metadataBase: new URL(APP_URL),
+  metadataBase: safeMetadataBase,
   title: {
     default: SEO.defaultTitle,
     template: `%s | ${BRAND.name}`,

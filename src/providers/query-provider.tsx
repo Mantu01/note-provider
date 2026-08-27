@@ -15,7 +15,6 @@ export function QueryProvider({ children }: { children: ReactNode }) {
       onError: (error) => {
         if (error instanceof ApiError && error.code === "UNAUTHORIZED") {
           toast.error("Your session expired. Please log in again.");
-          document.cookie = "admin_session=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT";
           queryCache.clear();
           if (typeof window !== "undefined" && window.location.pathname !== "/admin/login") {
             window.location.assign("/admin/login");

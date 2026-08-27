@@ -158,7 +158,7 @@ export async function deleteNote(
   for (const groupId of groupIds) {
     const group = await Group.findById(groupId).lean().exec();
     if (!group) continue;
-    const updatedNotes = ((group.notes as unknown[]).map((n) => String(n))).filter((n) => n !== id);
+    const updatedNotes = (group.notes as unknown[]).flatMap((n) => n === id ? [] : [String(n)]);
     if (updatedNotes.length === 0) {
       await Group.findByIdAndUpdate(groupId, { visibility: "private" }).exec();
       affectedGroups.push({ id: group._id.toString(), name: group.name, slug: group.slug, hiddenBecauseEmpty: true });
@@ -184,7 +184,7 @@ export async function deleteNote(
 }
 
 export async function getRelatedNotes(categoryId: string, noteId: string, limit: number): Promise<NoteDoc[]> {
-  return (Note as any).find({ _id: { $ne: noteId }, category: categoryId, visibility: "public" })
+  return Note.find({ _id: { $ne: noteId }, category: categoryId, visibility: "public" })
     .sort({ createdAt: -1 })
     .limit(limit)
     .populate("category")
@@ -213,14 +213,14 @@ export async function getNotesByCategory(categoryId: string, limit: number): Pro
 }
 
 export async function incrementDownloadCount(noteId: string): Promise<void> {
-  await (Note as any).updateOne({ _id: noteId }, { $inc: { downloadCount: 1 } }).exec();
+  await Note.updateOne({ _id: noteId }, { $inc: { downloadCount: 1 } }).exec();
 }
 
 export async function incrementPurchaseCount(model: typeof Note | typeof Group, id: string): Promise<void> {
-  await (model as any).updateOne({ _id: id }, { $inc: { purchaseCount: 1 } }).exec();
+  await (model as unknown as typeof Note).updateOne({ _id: id }, { $inc: { purchaseCount: 1 } }).exec();
 }
 
 export async function addRevenuePaise(model: typeof Note | typeof Group, id: string, amount: number): Promise<void> {
-  await (model as any).updateOne({ _id: id }, { $inc: { revenuePaise: amount } }).exec();
+  await (model as unknown as typeof Note).updateOne({ _id: id }, { $inc: { revenuePaise: amount } }).exec();
 }
 

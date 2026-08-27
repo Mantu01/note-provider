@@ -12,7 +12,7 @@ export const revalidate = 60;
 export const dynamic = "force-dynamic";
 
 export const GET = handler(async () => {
-  const [featuredNotes, latestNotes, freeNotes, featuredGroups, categories, totalNotes, totalDownloads, happyLearners] = await Promise.all([
+  const [featuredNotes, latestNotes, freeNotes, featuredGroups, categories, totalNotes, totalDownloads, happyLearners, catCounts] = await Promise.all([
     Note.find({ isFeatured: true, visibility: "public" }).populate("category").sort({ createdAt: -1 }).limit(6).lean().exec(),
     Note.find({ visibility: "public" }).populate("category").sort({ createdAt: -1 }).limit(8).lean().exec(),
     Note.find({ pricingType: "free", visibility: "public" }).populate("category").sort({ createdAt: -1 }).limit(4).lean().exec(),
@@ -21,12 +21,11 @@ export const GET = handler(async () => {
     Note.countDocuments({ visibility: "public" }).exec(),
     Note.aggregate([{ $match: { visibility: "public" } }, { $group: { _id: null, total: { $sum: "$downloadCount" } } }]).then(([r]) => r?.total ?? 0),
     Order.countDocuments({ paymentStatus: "paid" }).exec(),
-  ]);
-
-  const catCounts = await Note.aggregate([
-    { $match: { visibility: "public" } },
-    { $group: { _id: "$category", count: { $sum: 1 } } },
-    { $sort: { count: -1 } },
+    Note.aggregate([
+      { $match: { visibility: "public" } },
+      { $group: { _id: "$category", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+    ]),
   ]);
 
   const countMap = new Map(catCounts.map((c) => [c._id.toString(), c.count]));

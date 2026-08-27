@@ -62,7 +62,7 @@ export function FileUploadField({
 
   return (
     <div className="space-y-2">
-      {label && <label className="text-sm font-medium text-foreground">{label}</label>}
+      {label && <label htmlFor={`file-upload-${kind}`} className="text-sm font-medium text-foreground">{label}</label>}
 
       {value ? (
         <div className="flex items-center justify-between gap-4 rounded-xl border border-border bg-card/60 p-4 shadow-sm backdrop-blur-sm">
@@ -125,6 +125,7 @@ export function FileUploadField({
         >
           <input
             type="file"
+            id={`file-upload-${kind}`}
             accept={accept}
             disabled={disabled || uploadMutation.isPending}
             onChange={(e) => {
@@ -132,6 +133,7 @@ export function FileUploadField({
               if (file) handleFileSelect(file);
             }}
             className="absolute inset-0 z-10 opacity-0 cursor-pointer disabled:cursor-not-allowed"
+            aria-label={label}
           />
 
           {uploadMutation.isPending ? (

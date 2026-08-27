@@ -75,22 +75,22 @@ export const FULFILLMENT_STATUS_LABELS: Record<FulfillmentStatus, string> = { pe
 export const STATUS_CONFIG: Record<StatusType, Record<string, { label: string; className: string }>> = {
   payment: {
     paid: { label: "Paid", className: "border-success bg-success text-success-foreground" },
-    created: { label: "Awaiting payment", className: "border-warning/30 bg-warning/20 text-warning-foreground" },
-    failed: { label: "Failed", className: "border-destructive/30 bg-destructive/10 text-destructive" },
+    created: { label: "Awaiting payment", className: "border-warning text-warning-foreground bg-warning/20" },
+    failed: { label: "Failed", className: "border-destructive text-destructive bg-destructive/10" },
   },
   fulfillment: {
-    pending: { label: "Pending", className: "border-warning/30 bg-warning/20 text-warning-foreground" },
+    pending: { label: "Pending", className: "border-warning text-warning-foreground bg-warning/20" },
     completed: { label: "Completed", className: "border-success bg-success text-success-foreground" },
-    cancelled: { label: "Cancelled", className: "border-border bg-transparent text-muted-foreground" },
+    cancelled: { label: "Cancelled", className: "border-border text-muted-foreground bg-transparent" },
   },
   pricing: {
-    free: { label: "Free", className: "border-success/30 bg-success/15 text-success" },
-    paid: { label: "Paid", className: "border-accent/30 bg-accent/20 text-accent-foreground" },
+    free: { label: "Free", className: "border-success text-success bg-success/15" },
+    paid: { label: "Paid", className: "border-accent text-accent-foreground bg-accent/20" },
   },
   level: {
-    basics: { label: "Basics", className: "border-info/40 bg-transparent text-info" },
-    intermediate: { label: "Intermediate", className: "border-warning/40 bg-transparent text-warning-foreground" },
-    advance: { label: "Advanced", className: "border-destructive/40 bg-transparent text-destructive" },
+    basics: { label: "Basics", className: "border-info text-info bg-transparent" },
+    intermediate: { label: "Intermediate", className: "border-warning text-warning-foreground bg-transparent" },
+    advance: { label: "Advanced", className: "border-destructive text-destructive bg-transparent" },
   },
 };
 

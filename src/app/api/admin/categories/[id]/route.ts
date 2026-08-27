@@ -12,8 +12,7 @@ import { slugify } from "@/server/lib/slug";
 export const runtime = "nodejs";
 
 export const PATCH = adminHandler(async (ctx) => {
-  const { id } = await ctx.params;
-  const body = await ctx.req.json();
+  const [{ id }, body] = await Promise.all([ctx.params, ctx.req.json()]);
   const parsed = updateCategorySchema.safeParse(body);
   if (!parsed.success) {
     const fields: Record<string, string> = {};
@@ -81,8 +80,10 @@ export const DELETE = adminHandler(async (ctx) => {
   const category = await Category.findById(id).lean().exec();
   if (!category) throw AppError.notFound("Category");
 
-  const noteCount = await Note.countDocuments({ category: id }).exec();
-  const groupCount = await Group.countDocuments({ category: id }).exec();
+  const [noteCount, groupCount] = await Promise.all([
+    Note.countDocuments({ category: id }).exec(),
+    Group.countDocuments({ category: id }).exec(),
+  ]);
   const total = noteCount + groupCount;
 
   if (total > 0) {

@@ -111,21 +111,21 @@ export function CategoryDialog({ open, onOpenChange, category }: CategoryDialogP
 
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium">Category Name</label>
-              <Input placeholder="e.g. Computer Science" {...form.register("name")} />
+              <label htmlFor="category-name" className="text-sm font-medium">Category Name</label>
+              <Input id="category-name" placeholder="e.g. Computer Science" {...form.register("name")} />
               {form.formState.errors.name && (
                 <p className="mt-1 text-xs text-destructive">{form.formState.errors.name.message}</p>
               )}
             </div>
 
             <div>
-              <label className="text-sm font-medium">Description (Optional)</label>
-              <Textarea rows={2} placeholder="Brief summary of notes in this category..." {...form.register("description")} />
+              <label htmlFor="category-description" className="text-sm font-medium">Description (Optional)</label>
+              <Textarea id="category-description" rows={2} placeholder="Brief summary of notes in this category..." {...form.register("description")} />
             </div>
 
             <div>
-              <label className="text-sm font-medium block mb-2">Choose Category Icon</label>
-              <Select value={selectedIcon} onValueChange={(val) => form.setValue("icon", val)}>
+              <label htmlFor="category-icon" className="text-sm font-medium block mb-2">Choose Category Icon</label>
+              <Select id="category-icon" value={selectedIcon} onValueChange={(val) => form.setValue("icon", val)}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select an icon">
                     {(() => {
@@ -158,8 +158,8 @@ export function CategoryDialog({ open, onOpenChange, category }: CategoryDialogP
             </div>
 
             <div>
-              <label className="text-sm font-medium">Display Priority / Sort Order</label>
-              <Input type="number" placeholder="0" {...form.register("order", { valueAsNumber: true })} />
+              <label htmlFor="category-order" className="text-sm font-medium">Display Priority / Sort Order</label>
+              <Input id="category-order" type="number" placeholder="0" {...form.register("order", { valueAsNumber: true })} />
               <p className="text-[11px] text-muted-foreground mt-0.5">Lower numbers appear first in the catalog filter.</p>
             </div>
           </div>

@@ -30,5 +30,12 @@ export function isPopulated(value: unknown): value is Lean {
 
 export function toIdList(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
-  return value.map((entry) => (isPopulated(entry) ? id(entry._id) : id(entry))).filter(Boolean);
+  return value.flatMap((entry) => {
+    if (isPopulated(entry)) {
+      const idValue = id(entry._id);
+      return idValue ? [idValue] : [];
+    }
+    const idValue = id(entry);
+    return idValue ? [idValue] : [];
+  });
 }

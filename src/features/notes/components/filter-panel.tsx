@@ -40,6 +40,9 @@ export function FilterPanel({ className }: FilterPanelProps) {
 
   const data = filters.data;
 
+  const categorySet = data ? new Set(data.categories.map((c) => c.slug)) : new Set();
+  const levelSet = data ? new Set(data.levels.map((l) => l.value)) : new Set();
+
   return (
     <aside className={cn("space-y-4", className)}>
       <div className="space-y-2.5">
@@ -138,7 +141,7 @@ export function FilterPanel({ className }: FilterPanelProps) {
           >
             <span className="flex items-center gap-1.5">
               <Checkbox
-                checked={state.category.includes(category.slug)}
+                checked={categorySet.has(category.slug)}
                 onCheckedChange={() => toggle("category", category.slug)}
               />
               <span className="truncate">{category.name}</span>
@@ -161,7 +164,7 @@ export function FilterPanel({ className }: FilterPanelProps) {
           >
             <span className="flex items-center gap-1.5">
               <Checkbox
-                checked={state.level.includes(level.value)}
+                checked={levelSet.has(level.value)}
                 onCheckedChange={() => toggle("level", level.value)}
               />
               {level.label}

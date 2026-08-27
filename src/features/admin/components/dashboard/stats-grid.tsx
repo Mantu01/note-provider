@@ -45,7 +45,7 @@ export function StatsGrid({ stats }: StatsGridProps) {
       {cards.map((card, idx) => {
         const Icon = card.icon;
         return (
-          <Card key={idx} className="rounded-2xl border-border bg-card/60 backdrop-blur-sm">
+          <Card key={card.title} className="rounded-2xl border-border bg-card/60 backdrop-blur-sm">
             <CardContent className="flex items-center justify-between p-6">
               <div>
                 <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">

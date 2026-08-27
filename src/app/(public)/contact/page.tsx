@@ -77,17 +77,11 @@ export default function ContactPage() {
                     <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{description}</p>
                   </div>
                   <Button
-                    render={
-                      <a
-                        href={href}
-                        target={href.startsWith("http") ? "_blank" : undefined}
-                        rel={href.startsWith("http") ? "noreferrer" : undefined}
-                      />
-                    }
+                    render={<a href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined}>{label}<ArrowUpRight aria-hidden="true" className="size-4" /></a>}
                     variant="outline"
                     className="w-full justify-center gap-2"
                   >
-                    {label}
+                    <span className="sr-only">{label}</span>
                     <ArrowUpRight aria-hidden="true" className="size-4" />
                   </Button>
                 </CardContent>

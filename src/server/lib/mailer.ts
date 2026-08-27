@@ -63,7 +63,7 @@ export async function notifyAdminsOnPurchase(order: {
     const activeAdmins = await Admin.find({ isActive: true }).select("email").lean().exec();
     if (!activeAdmins || activeAdmins.length === 0) return;
 
-    const adminEmails = activeAdmins.map((a) => a.email).filter(Boolean);
+    const adminEmails = activeAdmins.flatMap((a) => (a.email ? [a.email] : []));
     if (adminEmails.length === 0) return;
 
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";

@@ -1,5 +1,6 @@
 "use client";
 
+import { useCallback } from "react";
 import Link from "next/link";
 import { ArrowLeft, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -19,6 +20,11 @@ export function OrderDetailView({ id }: { id: string }) {
 
   const setFulfillmentOpen = (open: boolean) => setParams({ edit: open });
 
+  const copyToClipboard = useCallback((text: string, label: string) => {
+    navigator.clipboard.writeText(text);
+    toast.success(`Copied ${label}`);
+  }, []);
+
   if (isLoading) {
     return <div className="h-64 animate-pulse rounded-2xl bg-card" />;
   }
@@ -31,11 +37,6 @@ export function OrderDetailView({ id }: { id: string }) {
       </div>
     );
   }
-
-  const copyToClipboard = (text: string, label: string) => {
-    navigator.clipboard.writeText(text);
-    toast.success(`Copied ${label}`);
-  };
 
   return (
     <div className="space-y-6">

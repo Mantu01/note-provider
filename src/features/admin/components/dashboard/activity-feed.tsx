@@ -20,8 +20,8 @@ export function ActivityFeed({ activities }: { activities: AdminActivity[] }) {
           {activities.length === 0 ? (
             <p className="py-4 text-center text-xs text-muted-foreground">No recent activity.</p>
           ) : (
-            activities.slice(0, 6).map((act, index) => (
-              <div key={act.id || index} className="flex items-start justify-between border-b border-border/40 pb-3 last:border-0 last:pb-0">
+            activities.slice(0, 6).map((act) => (
+              <div key={act.id} className="flex items-start justify-between border-b border-border/40 pb-3 last:border-0 last:pb-0">
                 <div>
                   <p className="text-xs font-semibold text-foreground">{act.admin?.name || "Admin"}</p>
                   <p className="text-xs text-muted-foreground">{act.description}</p>

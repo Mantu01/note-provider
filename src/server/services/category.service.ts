@@ -102,8 +102,10 @@ export async function deleteCategory(
   const category = await Category.findById(id).lean().exec();
   if (!category) throw AppError.notFound("Category");
 
-  const noteCount = await Note.countDocuments({ category: id, visibility: { $in: ["public", "private"] } });
-  const groupCount = await Group.countDocuments({ category: id, visibility: { $in: ["public", "private"] } });
+  const [noteCount, groupCount] = await Promise.all([
+    Note.countDocuments({ category: id, visibility: { $in: ["public", "private"] } }),
+    Group.countDocuments({ category: id, visibility: { $in: ["public", "private"] } }),
+  ]);
   const total = noteCount + groupCount;
 
   if (total > 0) {

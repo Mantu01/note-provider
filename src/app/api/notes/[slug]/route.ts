@@ -19,14 +19,16 @@ export const GET = handler(async (ctx) => {
 
   const categoryId = String((note.category as { _id?: string | Types.ObjectId } | null | undefined)?._id ?? "");
 
+  const noteId = String(note._id);
+
   const [relatedNotes, groups] = await Promise.all([
-    (Note as any).find({ _id: { $ne: String(note._id) }, category: categoryId, visibility: "public" })
+    Note.find({ _id: { $ne: noteId }, category: categoryId, visibility: "public" })
       .populate("category")
       .sort({ createdAt: -1 })
       .limit(4)
       .lean()
       .exec(),
-    (Group as any).find({ notes: { $in: [String(note._id)] }, visibility: "public" }).populate("category").lean().exec(),
+    Group.find({ notes: { $in: [noteId] }, visibility: "public" }).populate("category").lean().exec(),
   ]);
 
   return ok({

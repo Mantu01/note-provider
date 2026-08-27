@@ -41,6 +41,7 @@ export function PdfPreviewDialog({
             title="Note preview"
             src={url}
             className="h-[60vh] w-full border-0"
+            sandbox=""
           />
         </div>
 

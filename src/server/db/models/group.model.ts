@@ -27,10 +27,9 @@ groupSchema.index({ category: 1, visibility: 1 });
 groupSchema.index({ isFeatured: -1, createdAt: -1 });
 
 export type GroupDoc = InferSchemaType<typeof groupSchema> & {
-  _id: Schema.Types.ObjectId;
+  _id: import("mongoose").Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 };
 
-export const Group: Model<GroupDoc> =
-  (models.Group as Model<GroupDoc>) ?? model<GroupDoc>("Group", groupSchema);
+export const Group: Model<GroupDoc> = (models.Group as Model<GroupDoc>) ?? model<GroupDoc>("Group", groupSchema);

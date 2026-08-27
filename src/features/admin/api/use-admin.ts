@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation, useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import type { AdminProfile, DashboardStats } from "@/lib/types";
@@ -14,11 +14,22 @@ export function useDashboard() {
 }
 
 export function useAdminLogin() {
-  return useMutation({ mutationFn: ({ email, password }: { email: string; password: string }) => apiClient<AdminProfile>("/admin/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }) });
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ email, password }: { email: string; password: string }) => apiClient<AdminProfile>("/admin/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.me });
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.dashboard });
+    },
+  });
 }
 
 export function useAdminLogout() {
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: () => apiClient("/admin/auth/logout", { method: "POST" }),
+    onSuccess: () => {
+      queryClient.clear();
+    },
   });
 }

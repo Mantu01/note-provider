@@ -55,10 +55,10 @@ describe("JsonLd component", () => {
   it("handles nested array of scripts", () => {
     const scripts = [
       [
-        { "@context": "https://schema.org", "@type": "Organization", name: "Org 1" },
+        { "@context": "https://schema.org", "@type": "NewsArticle", name: "Nested Article" },
       ],
       [
-        { "@context": "https://schema.org", "@type": "Website", name: "Site 1" },
+        { "@context": "https://schema.org", "@type": "FAQPage", name: "Nested FAQ" },
       ],
     ];
     render(<JsonLd scripts={scripts} />);

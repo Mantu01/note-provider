@@ -45,8 +45,9 @@ export function FulfillmentDialog({ open, onOpenChange, order }: FulfillmentDial
 
           <div className="space-y-4">
             <div>
-              <label className="text-sm font-medium">Fulfillment Status</label>
+              <label htmlFor="fulfillment-status" className="text-sm font-medium">Fulfillment Status</label>
               <Select
+                id="fulfillment-status"
                 value={form.watch("fulfillmentStatus")}
                 onValueChange={(val) => form.setValue("fulfillmentStatus", val as FulfillmentStatus)}
               >
@@ -74,8 +75,9 @@ export function FulfillmentDialog({ open, onOpenChange, order }: FulfillmentDial
             </div>
 
             <div>
-              <label className="text-sm font-medium">Internal Admin Note (Optional)</label>
+              <label htmlFor="admin-note" className="text-sm font-medium">Internal Admin Note (Optional)</label>
               <Textarea
+                id="admin-note"
                 rows={3}
                 placeholder="e.g. Notes delivered via email on Aug 4, 2:30 PM..."
                 {...form.register("adminNote")}

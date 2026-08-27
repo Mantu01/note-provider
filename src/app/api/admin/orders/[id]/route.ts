@@ -13,7 +13,7 @@ function toServiceContext(ctx: AdminRouteContext): Parameters<typeof fulfillOrde
   return {
     ip: ctx.ip,
     userAgent: ctx.userAgent,
-    admin: { _id: new Types.ObjectId(ctx.admin.id), isHead: ctx.admin.isHead, name: ctx.admin.name, email: ctx.admin.email } as any,
+    admin: { _id: ctx.admin.id, name: ctx.admin.name, email: ctx.admin.email, isHead: ctx.admin.isHead } as unknown as Parameters<typeof fulfillOrder>[2]["admin"],
   } as Parameters<typeof fulfillOrder>[2];
 }
 
@@ -28,7 +28,10 @@ export const GET = adminHandler(async (ctx) => {
 
 export const PATCH = adminHandler(async (ctx) => {
   const { id } = await ctx.params;
-  const body = await ctx.req.json();
+  // body parsing is pure CPU — can run in parallel with fulfillOrder's first DB query
+  const [bodyPromise, orderPromise] = [ctx.req.json(), Order.findById(id).lean().exec()];
+  const [body, order] = await Promise.all([bodyPromise, orderPromise]);
+  if (!order) throw AppError.notFound("Order not found");
   const parsed = updateOrderSchema.safeParse(body);
   if (!parsed.success) {
     const fields: Record<string, string> = {};

@@ -21,8 +21,10 @@ export function NoteMultiSelect({ selectedIds, onChange }: NoteMultiSelectProps)
 
   const notes = data?.items ?? [];
 
+  const selectedSet = new Set(selectedIds);
+
   const toggleSelect = (id: string) => {
-    if (selectedIds.includes(id)) {
+    if (selectedSet.has(id)) {
       onChange(selectedIds.filter((item) => item !== id));
     } else {
       onChange([...selectedIds, id]);
@@ -36,7 +38,7 @@ export function NoteMultiSelect({ selectedIds, onChange }: NoteMultiSelectProps)
   return (
     <div className="space-y-4">
       <div>
-        <label className="text-sm font-medium text-foreground">Select Notes in Bundle</label>
+        <label htmlFor="note-multi-select-search" className="text-sm font-medium text-foreground">Select Notes in Bundle</label>
         <p className="text-xs text-muted-foreground">Pick notes that buyers receive when purchasing this bundle.</p>
       </div>
 
@@ -51,6 +53,7 @@ export function NoteMultiSelect({ selectedIds, onChange }: NoteMultiSelectProps)
                 <button
                   type="button"
                   onClick={() => removeId(id)}
+                  aria-label={`Remove ${note ? note.title : id} from selection`}
                   className="rounded-full p-0.5"
                 >
                   <X className="h-3 w-3" />
@@ -78,11 +81,15 @@ export function NoteMultiSelect({ selectedIds, onChange }: NoteMultiSelectProps)
           <div className="p-4 text-center text-sm text-muted-foreground">No matching notes found.</div>
         ) : (
           notes.map((note) => {
-            const isSelected = selectedIds.includes(note.id);
+            const isSelected = selectedSet.has(note.id);
             return (
               <div
                 key={note.id}
                 onClick={() => toggleSelect(note.id)}
+                onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); toggleSelect(note.id); } }}
+                tabIndex={0}
+                role="checkbox"
+                aria-checked={isSelected}
                 className={`flex items-center justify-between p-3 cursor-pointer ${
                   isSelected ? "bg-primary/10" : ""
                 }`}

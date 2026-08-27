@@ -25,8 +25,7 @@ export const GET = adminHandler(async (ctx) => {
 });
 
 export const PATCH = adminHandler(async (ctx) => {
-  const { id } = await ctx.params;
-  const body = await ctx.req.json();
+  const [{ id }, body] = await Promise.all([ctx.params, ctx.req.json()]);
   const parsed = updateGroupSchema.safeParse(body);
   if (!parsed.success) {
     const fields: Record<string, string> = {};

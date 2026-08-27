@@ -15,7 +15,7 @@ export const uploadedFileSchema = z.object({
 
 export const googleDriveFileSchema = z.object({
   source: z.literal("drive"),
-  url: z.string().url("Invalid Google Drive URL").refine(
+  url: z.url().refine(
     (val) => {
       try {
         const url = new URL(val);

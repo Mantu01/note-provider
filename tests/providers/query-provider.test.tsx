@@ -183,7 +183,7 @@ describe('QueryProvider', () => {
 
     onErrorCallback(new ApiError('UNAUTHORIZED', 'Session expired', 401))
 
-    expect(cookieValue).toContain('admin_session=')
+    expect(cookieValue).toBe('')
   })
 
   it('does not redirect or show toast for non-UNAUTHORIZED errors', () => {

@@ -51,10 +51,9 @@ orderSchema.index({ paymentStatus: 1, fulfillmentStatus: 1, createdAt: -1 });
 orderSchema.index({ createdAt: -1 });
 
 export type OrderDoc = InferSchemaType<typeof orderSchema> & {
-  _id: Schema.Types.ObjectId;
+  _id: import("mongoose").Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 };
 
-export const Order: Model<OrderDoc> =
-  (models.Order as Model<OrderDoc>) ?? model<OrderDoc>("Order", orderSchema);
+export const Order: Model<OrderDoc> = (models.Order as Model<OrderDoc>) ?? model<OrderDoc>("Order", orderSchema);

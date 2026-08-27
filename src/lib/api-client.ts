@@ -18,10 +18,20 @@ export async function apiClient<T>(path: string, init: RequestInit = {}): Promis
   const response = await fetch(`/api${path}`, { ...init, headers, credentials: "include" });
   const contentType = response.headers.get("content-type") ?? "";
   if (!contentType.includes("application/json")) {
-    throw new ApiError("INTERNAL_ERROR", "Something went wrong. Please try again.", response.status);
+    throw new ApiError("INTERNAL_ERROR", `Request failed with status ${response.status}`, response.status);
+  }
+  if (!response.ok) {
+    const payload = (await response.json()) as ApiResult<T>;
+    if ("error" in payload && payload.error) {
+      throw new ApiError(payload.error.code, payload.error.message, response.status, payload.error.fields);
+    }
+    throw new ApiError("INTERNAL_ERROR", `Request failed with status ${response.status}`, response.status);
   }
   const payload = (await response.json()) as ApiResult<T>;
   if (payload.success) return payload.data;
+  if (response.ok) {
+    throw new ApiError("INTERNAL_ERROR", payload.error?.message ?? "Unknown error", response.status, payload.error?.fields);
+  }
   throw new ApiError(payload.error.code, payload.error.message, response.status, payload.error.fields);
 }
 

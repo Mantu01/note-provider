@@ -81,13 +81,13 @@ describe("validateNoteIdsExist", () => {
     expect(queryArg._id.$in).toHaveLength(1);
   });
 
-  it("passes 24-char hex string to ObjectId constructor", async () => {
+  it("passes 24-char hex string to query filter", async () => {
     const id1 = "507f1f77bcf86cd799439011";
     ;(Note.find as any).mockReturnValue(makeChain([{ _id: id1 }]));
     await validateNoteIdsExist([id1]);
     const queryArg = (Note.find as any).mock.calls[0][0];
-    expect(typeof queryArg._id.$in[0]).toBe("object");
-    expect((queryArg._id.$in[0] as any).toHexString).toBeDefined();
+    expect(queryArg._id.$in).toHaveLength(1);
+    expect(queryArg._id.$in[0]).toBe(id1);
   });
 
   it("filters out empty strings before querying", async () => {

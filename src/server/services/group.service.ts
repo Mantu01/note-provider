@@ -156,7 +156,7 @@ export async function deleteGroup(
 }
 
 export async function getRelatedGroups(categoryId: string, groupId: string, limit: number): Promise<GroupDoc[]> {
-  return (Group as any).find({ _id: { $ne: groupId }, category: categoryId, visibility: "public" })
+  return Group.find({ _id: { $ne: groupId }, category: categoryId, visibility: "public" })
     .sort({ createdAt: -1 })
     .limit(limit)
     .populate("category")

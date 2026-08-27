@@ -365,8 +365,8 @@ function CTABanner() {
 function FAQAccordion() {
   return (
     <Accordion defaultValue={["faq-0"]} className="rounded-xl border bg-card">
-      {FAQS.map(([q, a], i) => (
-        <AccordionItem key={i} value={`faq-${i}`} className="border-b-0 px-4">
+      {FAQS.map(([q, a]) => (
+        <AccordionItem key={q} value={q} className="border-b-0 px-4">
           <AccordionTrigger className="text-xs font-medium py-2.5">
             {q}
           </AccordionTrigger>

@@ -6,20 +6,13 @@ import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 
 export function ThemeToggle() {
-  const { resolvedTheme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-  const isDark = mounted && resolvedTheme === "dark";
+  const { theme, setTheme } = useTheme();
+  // Read theme only after mount to avoid SSR/CSR mismatch
+  const [isDark, setIsDark] = useState(false);
 
-  useEffect(() => setMounted(true), []);
-
-  if (!mounted) {
-    return (
-      <Button variant="ghost" size="icon" aria-label="Loading theme" disabled className="border border-border/80 bg-card/80">
-        <Sun aria-hidden="true" className="hidden size-4" />
-        <Moon aria-hidden="true" className="block size-4" />
-      </Button>
-    );
-  }
+  useEffect(() => {
+    setIsDark(theme === "dark");
+  }, [theme]);
 
   return (
     <Button

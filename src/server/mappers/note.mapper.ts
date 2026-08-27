@@ -24,7 +24,7 @@ export function toPublicNote(raw: unknown): PublicNote {
     fileSizeLabel: formatFileSizeLabel(nullableNum(doc.fullFileBytes)),
     isLocked: pricingType === "paid",
     hasPreview: Boolean(nullableStr(doc.previewFileUrl)),
-    tags: Array.isArray(doc.tags) ? doc.tags.map(str).filter(Boolean) : [],
+    tags: Array.isArray(doc.tags) ? doc.tags.flatMap((tag) => (typeof tag === "string" && tag.trim() ? [tag.trim()] : [])) : [],
     isFeatured: bool(doc.isFeatured),
     downloadCount: num(doc.downloadCount),
     purchaseCount: num(doc.purchaseCount),

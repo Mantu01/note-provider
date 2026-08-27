@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRazorpay } from "react-razorpay";
@@ -67,9 +68,11 @@ function OrderSummaryCard({
           <p className="text-xs font-semibold">Order summary</p>
           <div className="relative aspect-video overflow-hidden rounded-xl brand-gradient-soft">
             {coverImageUrl ? (
-              <img
+              <Image
                 src={coverImageUrl}
                 alt={title}
+                width={400}
+                height={225}
                 className="h-full w-full object-cover"
               />
             ) : (

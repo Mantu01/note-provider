@@ -26,9 +26,7 @@ export function parsePagination(
 export function parseArrayParam(searchParams: URLSearchParams, key: string): string[] {
   const values = searchParams
     .getAll(key)
-    .flatMap((value) => value.split(","))
-    .map((value) => value.trim())
-    .filter(Boolean);
+    .flatMap((value) => value.split(",").map((v) => v.trim()).filter(Boolean));
   return Array.from(new Set(values));
 }
 
@@ -62,7 +60,11 @@ export function escapeRegex(value: string): string {
 }
 
 export function toObjectIds(ids: string[]): Types.ObjectId[] {
-  return ids.filter((id) => Types.ObjectId.isValid(id)).map((id) => new Types.ObjectId(id));
+  const result: Types.ObjectId[] = [];
+  for (const id of ids) {
+    if (Types.ObjectId.isValid(id)) result.push(new Types.ObjectId(id));
+  }
+  return result;
 }
 
 export async function resolveCategoryIds(

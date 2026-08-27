@@ -17,14 +17,6 @@ export const notesQuerySchema = z.object({
   featured: z.coerce.boolean().optional(),
 });
 
-export const groupsQuerySchema = z.object({
-  page: z.coerce.number().int().positive().optional().default(1),
-  limit: z.coerce.number().int().min(1).max(48).optional().default(DEFAULT_PAGE_LIMIT),
-  q: z.string().trim().optional(),
-  category: z.array(z.string()).optional(),
-  featured: z.coerce.boolean().optional(),
-});
-
 export const ordersQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional().default(1),
   limit: z.coerce.number().int().min(1).max(48).optional().default(DEFAULT_PAGE_LIMIT),
@@ -32,11 +24,10 @@ export const ordersQuerySchema = z.object({
   paymentStatus: z.enum(["created", "paid", "failed"]).optional(),
   fulfillmentStatus: z.enum(["pending", "completed", "cancelled"]).optional(),
   itemType: z.enum(["note", "group"]).optional(),
-  from: z.string().datetime().optional(),
-  to: z.string().datetime().optional(),
+  from: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/, "Invalid date format").optional(),
+  to: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/, "Invalid date format").optional(),
   sort: z.enum(ORDER_SORTS).optional(),
 });
 
 export type NotesQuerySchema = z.infer<typeof notesQuerySchema>;
-export type GroupsQuerySchema = z.infer<typeof groupsQuerySchema>;
 export type OrdersQuerySchema = z.infer<typeof ordersQuerySchema>;

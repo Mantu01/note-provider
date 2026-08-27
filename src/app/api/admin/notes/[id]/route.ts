@@ -20,8 +20,9 @@ export const GET = adminHandler(async (ctx) => {
 });
 
 export const PATCH = adminHandler(async (ctx) => {
-  const { id } = await ctx.params;
-  const body = await ctx.req.json();
+  // Fetch URL param and request body in parallel — they are independent.
+  const [{ id }, body] = await Promise.all([ctx.params, ctx.req.json()]);
+  // Parse body before DB lookup so validation errors return 400 (not 404).
   const parsed = updateNoteSchema.safeParse(body);
   if (!parsed.success) {
     const fields: Record<string, string> = {};
@@ -31,12 +32,11 @@ export const PATCH = adminHandler(async (ctx) => {
     }
     return fail(AppError.validation(fields, parsed.error.issues[0]?.message ?? "Invalid input"));
   }
-
-  const { admin } = ctx;
   const existing = await Note.findById(id).lean().exec();
   if (!existing) throw AppError.notFound("Note");
 
   const input = parsed.data;
+  const { admin } = ctx;
   const updates: Record<string, unknown> = { updatedBy: admin.id };
 
   if (input.title !== undefined) updates.title = input.title;
@@ -161,7 +161,7 @@ export const DELETE = adminHandler(async (ctx) => {
     const group = await Group.findById(groupId).lean().exec();
     if (!group) continue;
 
-    const updatedNotes = (group.notes as unknown[]).map((n) => String(n)).filter((n) => n !== id);
+    const updatedNotes = (group.notes as unknown[]).flatMap((n) => n === id ? [] : [String(n)]);
     if (updatedNotes.length === 0) {
       await Group.findByIdAndUpdate(groupId, { visibility: "private" }).exec();
       affectedGroups.push({ id: group._id.toString(), name: group.name, slug: group.slug, hiddenBecauseEmpty: true });

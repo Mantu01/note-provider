@@ -1,8 +1,11 @@
 import { format, formatDistanceToNow } from "date-fns";
 import type { NotePricingType } from "./types";
 
+const INR_PRICE_FORMAT = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
+const COMPACT_NUMBER_FORMAT = new Intl.NumberFormat("en-IN", { notation: "compact", maximumFractionDigits: 1 });
+
 export function formatPrice(paise: number): string {
-  return new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 }).format(paise / 100);
+  return INR_PRICE_FORMAT.format(paise / 100);
 }
 
 export function formatDate(iso: string): string {
@@ -22,7 +25,7 @@ export function formatRelativeTime(iso: string): string {
 }
 
 export function formatCompactNumber(value: number): string {
-  return new Intl.NumberFormat("en-IN", { notation: "compact", maximumFractionDigits: 1 }).format(value);
+  return COMPACT_NUMBER_FORMAT.format(value);
 }
 
 export function formatFileSize(bytes: number): string {

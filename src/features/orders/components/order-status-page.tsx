@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { CheckCircle2, CircleAlert, Download, Lock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -87,9 +88,11 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
 
       {order.coverImageUrl && (
         <div className="mt-5 overflow-hidden rounded-xl border border-border/50 bg-muted/30">
-          <img
+          <Image
             src={order.coverImageUrl}
             alt={`Cover for ${order.itemTitle}`}
+            width={600}
+            height={160}
             className="h-40 w-full object-cover"
           />
         </div>

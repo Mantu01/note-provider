@@ -1,2 +1,19 @@
 allowBuilds:
   esbuild: true
+  sharp: true
+  unrs-resolver: true
+
+# Security hardening: delay installs of newly published packages
+# Newly published versions can ship malware that gets caught and unpublished within hours
+# https://pnpm.io/pnpm-workspace.yaml#reject-options
+minimumReleaseAge: 10080
+trustPolicy: no-downgrade
+
+# Only allow prebuilt binaries for known-safe packages; block arbitrary native downloads
+onlyBuiltDependencies:
+  - esbuild
+  - sharp
+  - unrs-resolver
+
+# Reject downloadable binary artifacts from packages that aren't in onlyBuiltDependencies
+rejectDownloads: true

@@ -155,8 +155,9 @@ export function GroupForm({ initialData }: GroupFormProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-medium">Bundle Name</label>
+                <label htmlFor="group-name" className="text-sm font-medium">Bundle Name</label>
                 <Input
+                  id="group-name"
                   placeholder="e.g. Master GATE CS Complete Notes Pack"
                   {...form.register("name")}
                 />
@@ -166,8 +167,9 @@ export function GroupForm({ initialData }: GroupFormProps) {
               </div>
 
               <div>
-                <label className="text-sm font-medium">Description</label>
+                <label htmlFor="group-description" className="text-sm font-medium">Description</label>
                 <Textarea
+                  id="group-description"
                   rows={4}
                   placeholder="Explain what is included in this bundle and savings..."
                   {...form.register("description")}
@@ -179,7 +181,7 @@ export function GroupForm({ initialData }: GroupFormProps) {
 
               <div>
                 <div className="flex items-center justify-between mb-1">
-                  <label className="text-sm font-medium">Category</label>
+                  <label htmlFor="group-category" className="text-sm font-medium">Category</label>
                   <Button
                     type="button"
                     variant="link"
@@ -190,6 +192,7 @@ export function GroupForm({ initialData }: GroupFormProps) {
                   </Button>
                 </div>
                 <Select
+                  id="group-category"
                   value={form.watch("categoryId")}
                   onValueChange={(val) => form.setValue("categoryId", val ?? "")}
                 >
@@ -236,8 +239,9 @@ export function GroupForm({ initialData }: GroupFormProps) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
-                <label className="text-sm font-medium">Bundle Price (₹ INR)</label>
+                <label htmlFor="group-price" className="text-sm font-medium">Bundle Price (₹ INR)</label>
                 <Input
+                  id="group-price"
                   type="number"
                   step="1"
                   placeholder="999"
@@ -249,8 +253,9 @@ export function GroupForm({ initialData }: GroupFormProps) {
               </div>
 
               <div>
-                <label className="text-sm font-medium">Original Value (₹ INR - Optional)</label>
+                <label htmlFor="group-compare-at-price" className="text-sm font-medium">Original Value (₹ INR - Optional)</label>
                 <Input
+                  id="group-compare-at-price"
                   type="number"
                   step="1"
                   placeholder="1999"
@@ -259,8 +264,9 @@ export function GroupForm({ initialData }: GroupFormProps) {
               </div>
 
               <div>
-                <label className="text-sm font-medium">Visibility</label>
+                <label htmlFor="group-visibility" className="text-sm font-medium">Visibility</label>
                 <Select
+                  id="group-visibility"
                   value={form.watch("visibility")}
                   onValueChange={(val: "public" | "private" | null) => {
                     if (val !== null) form.setValue("visibility", val);

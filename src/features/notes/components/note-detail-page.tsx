@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { Download, FileText, Lock, ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -60,9 +61,11 @@ export function NoteDetailPage({ slug }: { slug: string }) {
         <article className="space-y-4">
           <div className="relative aspect-[19/8] w-full overflow-hidden rounded-xl border border-border/50 bg-muted/30">
             {note.coverImageUrl ? (
-              <img
+              <Image
                 src={note.coverImageUrl}
                 alt=""
+                width={800}
+                height={340}
                 className="h-full w-full object-cover"
               />
             ) : (

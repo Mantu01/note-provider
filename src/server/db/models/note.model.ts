@@ -44,10 +44,9 @@ noteSchema.index(
 );
 
 export type NoteDoc = InferSchemaType<typeof noteSchema> & {
-  _id: Schema.Types.ObjectId;
+  _id: import("mongoose").Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 };
 
-export const Note: Model<NoteDoc> =
-  (models.Note as Model<NoteDoc>) ?? model<NoteDoc>("Note", noteSchema);
+export const Note: Model<NoteDoc> = (models.Note as Model<NoteDoc>) ?? model<NoteDoc>("Note", noteSchema);

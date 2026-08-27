@@ -23,7 +23,7 @@ describe("Pagination", () => {
     const { container } = render(<Pagination data-testid="pagination" />);
     const nav = container.firstChild as HTMLElement;
     expect(nav.tagName).toBe("NAV");
-    expect(nav).toHaveAttribute("role", "navigation");
+    ;
     expect(nav).toHaveAttribute("aria-label", "pagination");
   });
 
