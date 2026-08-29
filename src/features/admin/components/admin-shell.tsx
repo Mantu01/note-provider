@@ -8,7 +8,7 @@ import { Logo } from "@/components/brand/logo";
 import { ThemeToggle } from "@/components/brand/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { useAdminLogout, useAdminProfile } from "@/features/admin/api/use-admin";
+import { useAdminLogout, useAdminProfile } from "@/features/admin/api/use-admin-auth";
 import { cn } from "@/lib/utils";
 
 const navItems = [

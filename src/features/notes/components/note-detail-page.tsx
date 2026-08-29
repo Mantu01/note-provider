@@ -1,18 +1,18 @@
 "use client";
 
-import Link from "next/link";
 import Image from "next/image";
-import { Download, FileText, Lock, ShieldCheck, Clock, BookOpen } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import Link from "next/link";
+import { ArrowLeft, FileText, Lock, ShieldCheck, Clock, BookOpen, Download } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { ErrorState } from "@/components/shared/error-state";
 import { GroupCard } from "@/components/shared/group-card";
 import { NoteCard } from "@/components/shared/note-card";
 import { ShimmerLoader } from "@/components/shared/shimmer-loader";
-import { PdfPreviewDialog } from "@/components/shared/pdf-preview-dialog";
 import { PriceTag } from "@/components/shared/price-tag";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { PdfPreviewDialog } from "@/components/shared/pdf-preview-dialog";
 import { useDownloadFile } from "@/hooks/use-download-file";
 import { useNote } from "@/features/notes/api/use-note";
 
@@ -73,7 +73,7 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                 className="object-cover"
               />
             ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-2 text-primary/20">
+              <div className="flex h-full flex-col items-center justify-center gap-2 text-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
                 <FileText aria-hidden="true" className="size-12" />
                 <span className="text-xs font-medium uppercase tracking-widest">Study Note Document</span>
               </div>

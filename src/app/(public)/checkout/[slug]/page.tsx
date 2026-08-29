@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import CheckoutContent from "@/features/checkout/components/checkout-page-wrapper";
+import CheckoutContent from "@/features/checkout/components/checkout-content";
 import { SEO } from "@/lib/constants";
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";

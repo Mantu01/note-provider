@@ -9,7 +9,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { EmptyState } from "@/components/shared/empty-state";
 import { CategoryDialog } from "@/features/admin/components/categories/category-dialog";
 import { useAdminCategories, useDeleteCategory } from "@/features/admin/api/use-admin-categories";
-import { useAdminProfile } from "@/features/admin/api/use-admin";
+import { useAdminProfile } from "@/features/admin/api/use-admin-auth";
 import type { AdminCategory } from "@/lib/types";
 
 export function CategoriesTable() {

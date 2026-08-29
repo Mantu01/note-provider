@@ -75,7 +75,7 @@ export function GroupDetailPage({ slug }: { slug: string }) {
                 className="object-cover"
               />
             ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-2 text-primary/20">
+              <div className="flex h-full flex-col items-center justify-center gap-2 text-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
                 <FileText aria-hidden="true" className="size-12" />
                 <span className="text-xs font-medium uppercase tracking-widest">Bundle Cover</span>
               </div>

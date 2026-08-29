@@ -12,13 +12,16 @@ vi.mock("next/navigation", async (importOriginal) => {
   };
 });
 
-vi.mock("@/providers/query-provider", () => ({
-  QueryClientProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+vi.mock("@/providers/app-providers", () => ({
+  QueryProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
   useQueryClient: vi.fn(() => ({ invalidateQueries: vi.fn() })),
 }));
 
-vi.mock("@/features/admin/api/use-admin", () => ({
+vi.mock("@/features/admin/api/use-admin-auth", () => ({
   useAdminProfile: vi.fn(() => ({ data: { id: "a1", name: "Admin", email: "a@b.com", isHead: false }, isLoading: false, error: null })),
+}));
+
+vi.mock("@/features/admin/api/use-admin-dashboard", () => ({
   useDashboard: vi.fn(() => ({
     data: {
       revenue: { totalLabel: "₹1,00,000", todayLabel: "₹5,000", last30DaysLabel: "₹80,000" },

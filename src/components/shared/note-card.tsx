@@ -19,7 +19,7 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
   return (
     <article
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-border/60 bg-card transition-all duration-200 hover:border-primary/30 hover:shadow-lg hover:-translate-y-0.5",
+        "group relative overflow-hidden rounded-2xl border border-border/60 bg-card transition-all duration-200 hover:border-primary/25 hover:shadow-lg hover:-translate-y-0.5",
         compact ? "flex flex-row items-stretch" : "flex flex-col"
       )}
     >
@@ -39,32 +39,28 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
             alt=""
             fill
             sizes={compact ? "112px" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"}
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover transition-transform duration-400 group-hover:scale-105"
           />
         ) : (
-          <div className="flex size-full items-center justify-center">
-            <div className="flex flex-col items-center gap-1 text-primary/30">
-              <FileText aria-hidden="true" className="size-7" />
-              <span className="text-[8px] font-medium uppercase tracking-widest">PDF</span>
-            </div>
+          <div className="flex size-full flex-col items-center justify-center gap-1.5 text-primary/25 bg-gradient-to-br from-primary/5 to-transparent">
+            <FileText aria-hidden="true" className="size-7" />
+            <span className="text-[8px] font-semibold uppercase tracking-widest">PDF</span>
           </div>
         )}
 
         {/* Pricing badge */}
-        {note.pricingType === "paid" && (
-          <span className="absolute top-2 right-2 rounded-full bg-card/90 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-foreground backdrop-blur-sm shadow-sm">
-            Paid
-          </span>
-        )}
-        {note.pricingType === "free" && (
-          <span className="absolute top-2 right-2 rounded-full bg-success/90 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-success-foreground backdrop-blur-sm shadow-sm">
-            Free
-          </span>
-        )}
+        <span className={cn(
+          "absolute top-2 right-2 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide shadow-sm backdrop-blur-md",
+          note.pricingType === "paid"
+            ? "bg-card/90 text-foreground"
+            : "bg-success/90 text-success-foreground"
+        )}>
+          {note.pricingType === "paid" ? "Premium" : "Free"}
+        </span>
 
         {/* Featured ribbon */}
         {featured && (
-          <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-full bg-primary/90 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary-foreground backdrop-blur-sm shadow-sm">
+          <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-full bg-primary/90 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary-foreground shadow-sm">
             <TrendingUp aria-hidden="true" className="size-2.5" />
             Featured
           </span>

@@ -11,7 +11,7 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { PaginationBar } from "@/components/shared/pagination-bar";
 import { EmptyState } from "@/components/shared/empty-state";
 import { useAdminGroups, useDeleteGroup } from "@/features/admin/api/use-admin-groups";
-import { useAdminProfile } from "@/features/admin/api/use-admin";
+import { useAdminProfile } from "@/features/admin/api/use-admin-auth";
 import type { AdminGroup } from "@/lib/types";
 
 export function GroupsTable() {

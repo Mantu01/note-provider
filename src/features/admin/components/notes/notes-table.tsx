@@ -12,7 +12,7 @@ import { PaginationBar } from "@/components/shared/pagination-bar";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { EmptyState } from "@/components/shared/empty-state";
 import { useAdminNotes, useDeleteNote } from "@/features/admin/api/use-admin-notes";
-import { useAdminProfile } from "@/features/admin/api/use-admin";
+import { useAdminProfile } from "@/features/admin/api/use-admin-auth";
 import type { AdminNote } from "@/lib/types";
 
 export function NotesTable() {

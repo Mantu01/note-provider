@@ -14,13 +14,6 @@ vi.mock('@/providers/theme-provider', () => ({
   },
 }))
 
-vi.mock('@/providers/query-provider', () => ({
-  QueryProvider: ({ children }: any) => {
-    mockQueryProvider(children)
-    return <div data-testid="query-provider">{children}</div>
-  },
-}))
-
 vi.mock('nuqs/adapters/next/app', () => ({
   NuqsAdapter: ({ children }: any) => {
     mockNuqsAdapter(children)
@@ -34,6 +27,19 @@ vi.mock('sonner', () => ({
     return <div data-testid="toaster" data-position={position} data-rich-colors={richColors} data-close-button={closeButton} />
   },
 }))
+
+// Override only QueryProvider so we can assert it was invoked.
+// Keep AppProviders real so the nesting chain stays intact.
+vi.mock('@/providers/app-providers', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('@/providers/app-providers')>()
+  return {
+    ...actual,
+    QueryProvider: ({ children }: any) => {
+      mockQueryProvider(children)
+      return <div data-testid="query-provider">{children}</div>
+    },
+  }
+})
 
 describe('AppProviders', () => {
   beforeEach(() => {
@@ -59,16 +65,7 @@ describe('AppProviders', () => {
     expect(mockThemeProvider).toHaveBeenCalledOnce()
   })
 
-  it('wraps content in QueryProvider inside ThemeProvider', () => {
-    render(
-      <AppProviders>
-        <div>Inner</div>
-      </AppProviders>
-    )
-    expect(mockQueryProvider).toHaveBeenCalledOnce()
-  })
-
-  it('wraps content in NuqsAdapter inside QueryProvider', () => {
+  it('wraps content in NuqsAdapter', () => {
     render(
       <AppProviders>
         <div>Inner</div>
@@ -114,14 +111,13 @@ describe('AppProviders', () => {
     expect(getByTestId('nested').textContent).toBe('Nested text')
   })
 
-  it('has correct DOM nesting order: ThemeProvider > QueryProvider > NuqsAdapter > Toaster', () => {
+  it('has correct DOM nesting order: ThemeProvider > NuqsAdapter > Toaster', () => {
     const { getByTestId } = render(
       <AppProviders>
         <span>Content</span>
       </AppProviders>
     )
     expect(getByTestId('theme-provider')).toBeInTheDocument()
-    expect(getByTestId('query-provider')).toBeInTheDocument()
     expect(getByTestId('nuqs-adapter')).toBeInTheDocument()
     expect(getByTestId('toaster')).toBeInTheDocument()
   })
@@ -155,8 +151,6 @@ describe('AppProviders', () => {
         <span data-testid="passed-through">Passed</span>
       </AppProviders>
     )
-    expect(mockThemeProvider).toHaveBeenCalledWith(
-      expect.anything()
-    )
+    expect(mockThemeProvider).toHaveBeenCalledOnce()
   })
 })

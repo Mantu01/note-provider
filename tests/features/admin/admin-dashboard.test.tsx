@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { AdminDashboard } from "@/features/admin/components/admin-dashboard";
 
-vi.mock("@/features/admin/api/use-admin", () => ({
+vi.mock("@/features/admin/api/use-admin-dashboard", () => ({
   useDashboard: vi.fn(),
 }));
 
@@ -41,7 +41,7 @@ vi.mock("@/components/shared/error-state", () => ({
   ),
 }));
 
-const { useDashboard } = await import("@/features/admin/api/use-admin");
+const { useDashboard } = await import("@/features/admin/api/use-admin-dashboard");
 const mockUseDashboard = vi.mocked(useDashboard);
 
 describe("AdminDashboard", () => {

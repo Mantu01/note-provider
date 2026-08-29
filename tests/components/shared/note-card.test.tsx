@@ -44,12 +44,12 @@ describe("NoteCard", () => {
     expect(screen.getByText("Basics")).toBeInTheDocument();
   });
 
-  it("shows 'Paid' badge when pricingType is paid", () => {
+  it("shows 'Premium' badge when pricingType is paid", () => {
     render(<NoteCard note={makeNote({ pricingType: "paid" })} />);
-    expect(screen.getByText("Paid")).toBeInTheDocument();
+    expect(screen.getByText("Premium")).toBeInTheDocument();
   });
 
-  it("does not show 'Paid' badge when pricingType is free", () => {
+  it("does not show 'Premium' badge when pricingType is free", () => {
     render(<NoteCard note={makeNote({ pricingType: "free" })} />);
     expect(screen.queryByText("Paid")).not.toBeInTheDocument();
   });

@@ -17,7 +17,7 @@ export function GroupCard({ group, variant = "default" }: GroupCardProps) {
   return (
     <article
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-border/60 bg-card transition-all duration-200 hover:border-primary/30 hover:shadow-lg hover:-translate-y-0.5",
+        "group relative overflow-hidden rounded-2xl border border-border/60 bg-card transition-all duration-200 hover:border-primary/25 hover:shadow-lg hover:-translate-y-0.5",
         featured && "ring-1 ring-primary/20"
       )}
     >
@@ -36,11 +36,12 @@ export function GroupCard({ group, variant = "default" }: GroupCardProps) {
             alt=""
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-cover transition-transform duration-400 group-hover:scale-105"
           />
         ) : (
-          <div className="flex size-full items-center justify-center text-primary/20">
+          <div className="flex size-full flex-col items-center justify-center gap-1.5 text-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
             <Layers3 aria-hidden="true" className="size-10" />
+            <span className="text-[8px] font-semibold uppercase tracking-widest">Bundle</span>
           </div>
         )}
 

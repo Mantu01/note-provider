@@ -7,7 +7,7 @@ const mockMutate = vi.fn((_: unknown, options: any) => {
   options?.onSuccess?.();
 });
 
-vi.mock("@/features/admin/api/use-admin", () => ({
+vi.mock("@/features/admin/api/use-admin-auth", () => ({
   useAdminProfile: vi.fn(),
   useAdminLogout: vi.fn(() => ({
     mutate: mockMutate,
@@ -30,7 +30,7 @@ vi.mock("sonner", () => ({
   Toaster: () => null,
 }));
 
-const { useAdminProfile } = await import("@/features/admin/api/use-admin");
+const { useAdminProfile } = await import("@/features/admin/api/use-admin-auth");
 const mockUseAdminProfile = vi.mocked(useAdminProfile);
 
 describe("AdminShell", () => {

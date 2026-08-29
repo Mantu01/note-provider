@@ -79,7 +79,7 @@ function OrderSummaryCard({
               className="object-cover"
             />
           ) : (
-            <div className="flex h-full flex-col items-center justify-center gap-2 text-primary/30">
+            <div className="flex h-full flex-col items-center justify-center gap-2 text-primary/30 bg-gradient-to-br from-primary/5 to-transparent">
               <FileText className="size-10" />
               <span className="text-xs font-medium uppercase tracking-widest">PDF Document</span>
             </div>

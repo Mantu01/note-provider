@@ -11,12 +11,11 @@ vi.mock("sonner", () => ({
   Toaster: () => null,
 }));
 
-vi.mock("@/providers/query-provider", () => ({
-  QueryClientProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  useQueryClient: vi.fn(() => ({ invalidateQueries: vi.fn() })),
+vi.mock("@/providers/app-providers", () => ({
+  QueryProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
-vi.mock("@/features/admin/api/use-admin", () => ({
+vi.mock("@/features/admin/api/use-admin-auth", () => ({
   useAdminLogin: vi.fn(() => ({ mutate: vi.fn(), isPending: false, error: null })),
 }));
 
@@ -31,5 +30,11 @@ describe("AdminLoginPage", () => {
   it("renders back to homepage link", () => {
     render(<AdminLoginPage />);
     expect(screen.getByText(/back to homepage/i)).toBeInTheDocument();
+  });
+
+  it("disables submit when form is invalid", () => {
+    render(<AdminLoginPage />);
+    const btn = screen.getByRole("button", { name: /sign in/i });
+    expect(btn).toBeDisabled();
   });
 });

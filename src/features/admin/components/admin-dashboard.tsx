@@ -9,7 +9,7 @@ import { StatsGrid } from "@/features/admin/components/dashboard/stats-grid";
 import { RevenueChart } from "@/features/admin/components/dashboard/revenue-chart";
 import { RecentOrders } from "@/features/admin/components/dashboard/recent-orders";
 import { ActivityFeed } from "@/features/admin/components/dashboard/activity-feed";
-import { useDashboard } from "@/features/admin/api/use-admin";
+import { useDashboard } from "@/features/admin/api/use-admin-dashboard";
 
 export function AdminDashboard() {
   const query = useDashboard();

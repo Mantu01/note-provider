@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Controller, useForm } from "react-hook-form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Loader2, Lock } from "lucide-react";
@@ -9,18 +10,21 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAdminLogin } from "@/features/admin/api/use-admin";
+import { useAdminLogin } from "@/features/admin/api/use-admin-auth";
+import { adminLoginSchema, type AdminLoginInput } from "@/lib/schemas/admin.schema";
 
 export default function AdminLoginPage() {
   const router = useRouter();
   const loginMutation = useAdminLogin();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
 
-  const onSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email || !password) return;
-    loginMutation.mutate({ email, password }, {
+  const form = useForm<AdminLoginInput>({
+    resolver: zodResolver(adminLoginSchema),
+    mode: "onChange",
+    defaultValues: { email: "", password: "" },
+  });
+
+  const onSubmit = (values: AdminLoginInput) => {
+    loginMutation.mutate(values, {
       onSuccess: () => {
         toast.success("Logged in successfully");
         router.push("/admin");
@@ -45,37 +49,51 @@ export default function AdminLoginPage() {
           <CardDescription className="text-xs">Enter your credentials to access the dashboard</CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={onSubmit} className="space-y-4">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-1.5">
               <Label htmlFor="email" className="text-xs font-semibold">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="admin@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-                className="h-10 rounded-xl"
+              <Controller
+                name="email"
+                control={form.control}
+                render={({ field }) => (
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="admin@example.com"
+                    autoComplete="email"
+                    className="h-10 rounded-xl"
+                    {...field}
+                  />
+                )}
               />
+              {form.formState.errors.email?.message && (
+                <p className="text-xs text-destructive">{form.formState.errors.email.message}</p>
+              )}
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="password" className="text-xs font-semibold">Password</Label>
-              <Input
-                id="password"
-                type="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                autoComplete="current-password"
-                className="h-10 rounded-xl"
+              <Controller
+                name="password"
+                control={form.control}
+                render={({ field }) => (
+                  <Input
+                    id="password"
+                    type="password"
+                    placeholder="••••••••"
+                    autoComplete="current-password"
+                    className="h-10 rounded-xl"
+                    {...field}
+                  />
+                )}
               />
+              {form.formState.errors.password?.message && (
+                <p className="text-xs text-destructive">{form.formState.errors.password.message}</p>
+              )}
             </div>
             <Button
               type="submit"
               className="w-full rounded-xl font-semibold shadow-md"
-              disabled={loginMutation.isPending || !email || !password}
+              disabled={loginMutation.isPending || !form.formState.isValid}
             >
               {loginMutation.isPending ? (
                 <><Loader2 aria-hidden="true" className="mr-2 size-4 animate-spin" />Signing in…</>

@@ -11,24 +11,25 @@ const FOOTER_LINKS = [
       { href: "/notes", label: "All Notes" },
       { href: "/groups", label: "Bundles" },
       { href: "/notes?pricing=free", label: "Free Notes" },
+      { href: "/about", label: "About" },
     ],
   },
   {
-    title: "Company",
+    title: "Support",
     links: [
-      { href: "/about", label: "About" },
-      { href: "/contact", label: "Support" },
+      { href: "/contact", label: "Contact" },
+      { href: "/order/track", label: "Track Order" },
     ],
   },
   {
     title: "Legal",
     links: [
-      { href: "/terms", label: "Terms" },
-      { href: "/privacy", label: "Privacy" },
-      { href: "/refund-policy", label: "Refunds" },
+      { href: "/terms", label: "Terms of Service" },
+      { href: "/privacy", label: "Privacy Policy" },
+      { href: "/refund-policy", label: "Refund Policy" },
     ],
   },
-];
+] as const;
 
 const SOCIAL_LINKS = [
   { label: "X", href: "https://x.com/Mantu_kumar91", Icon: XIcon },
@@ -40,15 +41,16 @@ const SOCIAL_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-border/40 bg-card/30">
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="space-y-3 sm:col-span-2">
+    <footer className="border-t border-border/40 bg-muted/10">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-6">
+          {/* Brand column */}
+          <div className="space-y-4 sm:col-span-2">
             <Logo size="sm" />
             <p className="max-w-xs text-xs leading-relaxed text-muted-foreground">
               {BRAND.tagline}
             </p>
-            <div className="flex items-center gap-1.5">
+            <div className="flex items-center gap-2">
               {SOCIAL_LINKS.map(({ label, href, Icon }) => (
                 <a
                   key={label}
@@ -56,7 +58,7 @@ export function Footer() {
                   href={href}
                   target={href.startsWith("http") ? "_blank" : undefined}
                   rel={href.startsWith("http") ? "noreferrer" : undefined}
-                  className="inline-flex size-7 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground"
+                  className="inline-flex size-7 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
                 >
                   <Icon aria-hidden="true" className="size-3" />
                 </a>
@@ -64,17 +66,18 @@ export function Footer() {
             </div>
           </div>
 
+          {/* Link columns */}
           {FOOTER_LINKS.map((column) => (
             <div key={column.title}>
-              <h2 className="mb-2 text-[10px] font-semibold uppercase tracking-widest text-foreground">
+              <h2 className="mb-3 text-[10px] font-bold uppercase tracking-widest text-foreground">
                 {column.title}
               </h2>
-              <ul className="space-y-1.5">
+              <ul className="space-y-2">
                 {column.links.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-xs text-muted-foreground"
+                      className="text-xs text-muted-foreground transition-colors hover:text-foreground"
                     >
                       {link.label}
                     </Link>
@@ -85,10 +88,14 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-8 section-divider" />
-        <p className="mt-4 text-center text-[10px] text-muted-foreground">
-          &copy; {new Date().getFullYear()} {BRAND.name}. All rights reserved.
-        </p>
+        <div className="mt-8 border-t border-border/40 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-center text-[10px] text-muted-foreground">
+            &copy; {new Date().getFullYear()} {BRAND.name}. All rights reserved.
+          </p>
+          <p className="text-[10px] text-muted-foreground">
+            Built with care for developers who want notes that ship.
+          </p>
+        </div>
       </div>
     </footer>
   );

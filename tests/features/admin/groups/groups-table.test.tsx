@@ -17,7 +17,7 @@ vi.mock("@/features/admin/api/use-admin-groups", () => ({
   useDeleteGroup: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
 }));
 
-vi.mock("@/features/admin/api/use-admin", () => ({
+vi.mock("@/features/admin/api/use-admin-auth", () => ({
   useAdminProfile: vi.fn(() => ({
     data: { id: "admin-1", name: "Admin", email: "admin@test.com", isHead: true },
   })),

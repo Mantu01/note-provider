@@ -119,14 +119,14 @@ function HeroSection({
 }) {
   return (
     <section className="relative overflow-hidden pt-12 pb-10 md:pt-20 md:pb-16 lg:pt-24 lg:pb-20">
-      {/* Background orbs */}
+      {/* Background gradient orbs */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,var(--brand-green-soft),transparent_55%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,var(--brand-orange-soft),transparent_55%)]" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl space-y-6">
           {/* Eyebrow badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold tracking-wide text-primary uppercase backdrop-blur-md shadow-sm">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1.5 text-xs font-semibold tracking-wide text-primary uppercase backdrop-blur-md shadow-sm">
             <Sparkles aria-hidden="true" className="size-3.5" />
             Developer notes that scale
           </div>

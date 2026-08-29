@@ -59,9 +59,9 @@ describe("Footer", () => {
 
   it("renders Legal section links", () => {
     render(<Footer />);
-    expect(screen.getByText("Terms")).toBeInTheDocument();
-    expect(screen.getByText("Privacy")).toBeInTheDocument();
-    expect(screen.getByText("Refunds")).toBeInTheDocument();
+    expect(screen.getByText("Terms of Service")).toBeInTheDocument();
+    expect(screen.getByText("Privacy Policy")).toBeInTheDocument();
+    expect(screen.getByText("Refund Policy")).toBeInTheDocument();
   });
 
   it("links point to correct URLs", () => {
