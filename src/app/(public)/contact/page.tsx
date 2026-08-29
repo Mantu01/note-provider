@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { ArrowUpRight, Clock3, Code2, HelpCircle, Mail, MessageSquareText, PlayCircle, type LucideIcon } from "lucide-react";
+import { ArrowUpRight, Clock3, Code2, HelpCircle, Mail, MessageSquareText, PlayCircle, ShieldCheck, type LucideIcon } from "lucide-react";
 import { StaticPage } from "@/components/layout/static-page";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Metadata } from "next";
 import { SEO, CONTACT_CHANNELS } from "@/lib/constants";
@@ -61,27 +62,27 @@ export default function ContactPage() {
       />
       <StaticPage
         title="Contact Support"
-        description="Need help with a note, preview, or delivery? We are here to assist."
+        description="Need help with a note, preview, or delivery? We're here to assist."
       >
         <div className="not-prose grid gap-4 md:grid-cols-3">
           {CONTACT_CHANNELS.map(({ title, description, href, icon, label }) => {
             const Icon = ICON_MAP[icon];
             return (
-              <Card key={title} className="rounded-2xl border border-border/80 bg-card">
-                <CardContent className="space-y-4 p-5">
-                  <span className="inline-flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <Card key={title} className="group rounded-2xl border border-border/80 bg-card transition-shadow hover:shadow-md">
+                <CardContent className="flex flex-col gap-4 p-5">
+                  <span className="inline-flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-105">
                     <Icon aria-hidden="true" className="size-5" />
                   </span>
                   <div>
-                    <h3 className="text-lg font-semibold text-foreground">{title}</h3>
+                    <h3 className="text-base font-semibold text-foreground">{title}</h3>
                     <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{description}</p>
                   </div>
                   <Button
-                    render={<a href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined}>{label}<ArrowUpRight aria-hidden="true" className="size-4" /></a>}
+                    render={<a href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined} className="w-full">{label} <ArrowUpRight aria-hidden="true" className="ml-1 size-3.5" /></a>}
                     variant="outline"
-                    className="w-full justify-center gap-2"
+                    className="mt-auto w-full justify-center gap-2"
                   >
-                    <span className="sr-only">{label}</span>
+                    <span className="sr-only">Visit {label}</span>
                     <ArrowUpRight aria-hidden="true" className="size-4" />
                   </Button>
                 </CardContent>
@@ -90,27 +91,31 @@ export default function ContactPage() {
           })}
         </div>
 
-        <div className="space-y-4 pt-2">
-          <div className="flex items-start gap-4 rounded-2xl border border-border/80 bg-muted/30 p-5">
-            <Clock3 aria-hidden="true" className="mt-0.5 size-5 text-primary" />
+        <div className="mt-8 grid gap-4 md:grid-cols-2">
+          <div className="flex items-start gap-4 rounded-2xl border border-border/60 bg-muted/20 p-5">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <ShieldCheck aria-hidden="true" className="size-5" />
+            </div>
             <div>
-              <h3 className="m-0 text-base font-semibold text-foreground">Note delivery</h3>
+              <h3 className="m-0 text-base font-semibold text-foreground">Instant note delivery</h3>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                Paid note orders are fulfilled instantly after payment. You can download your PDF notes directly from the order status page once payment is confirmed.
+                Paid orders are fulfilled automatically right after payment. Download your PDF directly from the order confirmation page.
               </p>
             </div>
           </div>
 
-          <div className="flex items-start gap-4 rounded-2xl border border-border/80 bg-muted/30 p-5">
-            <HelpCircle aria-hidden="true" className="mt-0.5 size-5 text-primary" />
+          <div className="flex items-start gap-4 rounded-2xl border border-border/60 bg-muted/20 p-5">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+              <HelpCircle aria-hidden="true" className="size-5" />
+            </div>
             <div>
-              <h3 className="m-0 text-base font-semibold text-foreground">Have a general question?</h3>
+              <h3 className="m-0 text-base font-semibold text-foreground">Preview before you buy</h3>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                Browse the FAQ on the home page or open any note preview before buying to confirm the format and quality.
+                Browse every note preview to check formatting and quality. Browse our FAQ for common questions first.
               </p>
               <div className="mt-3">
                 <Button render={<Link href="/" />} variant="link" className="h-auto p-0 text-sm font-medium">
-                  View home page →
+                  Visit home page →
                 </Button>
               </div>
             </div>

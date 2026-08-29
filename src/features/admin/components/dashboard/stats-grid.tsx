@@ -8,56 +8,73 @@ type StatsGridProps = {
   stats: DashboardStats;
 };
 
-export function StatsGrid({ stats }: StatsGridProps) {
-  const cards = [
-    {
-      title: "Total Revenue",
-      value: stats.revenue.totalLabel,
-      subtext: `Today: ${stats.revenue.todayLabel}`,
-      icon: DollarSign,
-      color: "text-brand-emerald-foreground bg-brand-emerald-soft",
-    },
-    {
-      title: "Paid Orders",
-      value: stats.orders.paid,
-      subtext: `${stats.orders.pendingFulfillment} pending fulfillment`,
-      icon: ShoppingBag,
-      color: "text-brand-blue-foreground bg-brand-blue-soft",
-    },
-    {
-      title: "Catalogue Notes",
-      value: stats.catalog.totalNotes,
-      subtext: `${stats.catalog.paidNotes} paid, ${stats.catalog.freeNotes} free`,
-      icon: FileText,
-      color: "text-brand-orange-foreground bg-brand-orange-soft",
-    },
-    {
-      title: "Total Leads",
-      value: stats.leads.total,
-      subtext: `Today: ${stats.leads.today} submissions`,
-      icon: Users,
-      color: "text-brand-amber-foreground bg-brand-amber-soft",
-    },
-  ];
+const STAT_CARDS = [
+  {
+    title: "Total Revenue",
+    valueKey: "revenue",
+    subtextKey: "revenue" as const,
+    icon: DollarSign,
+    ringClass: "ring-brand-emerald/20",
+    iconBgClass: "bg-brand-emerald-soft text-brand-emerald-foreground",
+    getValue: (s: DashboardStats) => s.revenue.totalLabel,
+    getSub: (s: DashboardStats) => `Today: ${s.revenue.todayLabel}`,
+  },
+  {
+    title: "Paid Orders",
+    valueKey: "orders",
+    subtextKey: "orders" as const,
+    icon: ShoppingBag,
+    ringClass: "ring-brand-blue/20",
+    iconBgClass: "bg-brand-blue-soft text-brand-blue-foreground",
+    getValue: (s: DashboardStats) => String(s.orders.paid),
+    getSub: (s: DashboardStats) => `${s.orders.pendingFulfillment} pending fulfillment`,
+  },
+  {
+    title: "Catalogue Notes",
+    valueKey: "catalog",
+    subtextKey: "catalog" as const,
+    icon: FileText,
+    ringClass: "ring-brand-orange/20",
+    iconBgClass: "bg-brand-orange-soft text-brand-orange-foreground",
+    getValue: (s: DashboardStats) => String(s.catalog.totalNotes),
+    getSub: (s: DashboardStats) => `${s.catalog.paidNotes} paid · ${s.catalog.freeNotes} free`,
+  },
+  {
+    title: "Leads Captured",
+    valueKey: "leads",
+    subtextKey: "leads" as const,
+    icon: Users,
+    ringClass: "ring-brand-amber/20",
+    iconBgClass: "bg-brand-amber-soft text-brand-amber-foreground",
+    getValue: (s: DashboardStats) => String(s.leads.total),
+    getSub: (s: DashboardStats) => `Today: ${s.leads.today} submissions`,
+  },
+] as const;
 
+export function StatsGrid({ stats }: StatsGridProps) {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {cards.map((card, idx) => {
-        const Icon = card.icon;
+      {STAT_CARDS.map((item) => {
+        const Icon = item.icon;
         return (
-          <Card key={card.title} className="rounded-2xl border-border bg-card/60 backdrop-blur-sm">
-            <CardContent className="flex items-center justify-between p-6">
+          <Card
+            key={item.title}
+            className="group overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition-shadow hover:shadow-md"
+          >
+            {/* colored top accent bar */}
+            <div className={`h-1 w-full bg-gradient-to-r ${item.ringClass.replace("ring-", "from-").replace("/20", "")}-500 to-transparent`} />
+            <CardContent className="flex items-center justify-between p-5">
               <div>
-                <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
-                  {card.title}
+                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+                  {item.title}
                 </p>
-                <h3 className="mt-1 text-2xl font-bold tracking-tight text-foreground">
-                  {card.value}
-                </h3>
-                <p className="mt-1 text-xs text-muted-foreground">{card.subtext}</p>
+                <p className="mt-1.5 text-2xl font-bold tracking-tight text-foreground">
+                  {item.getValue(stats)}
+                </p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{item.getSub(stats)}</p>
               </div>
-              <div className={`flex h-12 w-12 items-center justify-center rounded-2xl ${card.color}`}>
-                <Icon className="h-6 w-6" />
+              <div className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${item.iconBgClass} ring-1 ring-inset ring-current/10`}>
+                <Icon aria-hidden="true" className="size-5" />
               </div>
             </CardContent>
           </Card>

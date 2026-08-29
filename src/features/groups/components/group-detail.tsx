@@ -2,9 +2,9 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, FileText } from "lucide-react";
+import { ArrowLeft, FileText, Layers, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ErrorState } from "@/components/shared/error-state";
 import { GroupCard } from "@/components/shared/group-card";
@@ -19,12 +19,12 @@ export function GroupDetailPage({ slug }: { slug: string }) {
 
   if (query.isPending) {
     return (
-      <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-        <div className="space-y-3">
-          <ShimmerLoader className="h-3.5 w-40" />
-          <ShimmerLoader className="h-48 w-full rounded-xl" />
-          <ShimmerLoader className="h-5 w-3/4" />
-          <ShimmerLoader className="h-3.5 w-full" />
+      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div className="space-y-4">
+          <ShimmerLoader className="h-3 w-32 rounded" />
+          <ShimmerLoader className="h-56 w-full rounded-2xl" />
+          <ShimmerLoader className="h-5 w-3/4 rounded" />
+          <ShimmerLoader className="h-3 w-full rounded" />
         </div>
       </div>
     );
@@ -32,7 +32,7 @@ export function GroupDetailPage({ slug }: { slug: string }) {
 
   if (query.isError || !query.data) {
     return (
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <ErrorState
           message="This bundle is unavailable."
           onRetry={() => query.refetch()}
@@ -46,20 +46,26 @@ export function GroupDetailPage({ slug }: { slug: string }) {
     (total, note) => total + note.price,
     0,
   );
+  const savings = individualValue - group.price;
+  const savingsPercent = individualValue > 0 ? Math.round((savings / individualValue) * 100) : 0;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-4 sm:px-6 lg:px-8">
-      <nav aria-label="Breadcrumb" className="mb-3 text-[10px] text-muted-foreground">
-        <Link href="/" className="text-muted-foreground">Home</Link>
-        <span className="mx-1 text-muted-foreground/50">/</span>
-        <Link href="/groups" className="text-muted-foreground">Bundles</Link>
-        <span className="mx-1 text-muted-foreground/50">/</span>
-        <span className="font-medium text-foreground">{group.name}</span>
+    <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
+      {/* Breadcrumb */}
+      <nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-1.5 text-xs text-muted-foreground">
+        <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+        <span aria-hidden="true" className="text-muted-foreground/40">/</span>
+        <Link href="/groups" className="hover:text-foreground transition-colors">Bundles</Link>
+        <span aria-hidden="true" className="text-muted-foreground/40">/</span>
+        <span className="font-medium text-foreground truncate">{group.name}</span>
       </nav>
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]">
-        <article className="space-y-4">
-          <div className="relative aspect-video overflow-hidden rounded-xl border border-border/50 bg-muted/30">
+      {/* Main content */}
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        {/* Article */}
+        <article className="space-y-5">
+          {/* Hero image */}
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border/50 bg-muted/20 shadow-sm">
             {group.coverImageUrl ? (
               <Image
                 src={group.coverImageUrl}
@@ -69,27 +75,38 @@ export function GroupDetailPage({ slug }: { slug: string }) {
                 className="object-cover"
               />
             ) : (
-              <div className="flex h-full items-center justify-center text-primary/20">
-                <FileText className="size-8" />
+              <div className="flex h-full flex-col items-center justify-center gap-2 text-primary/20">
+                <FileText aria-hidden="true" className="size-12" />
+                <span className="text-xs font-medium uppercase tracking-widest">Bundle Cover</span>
               </div>
             )}
           </div>
 
-          <div className="space-y-1.5">
-            <p className="text-[9px] font-semibold tracking-[0.15em] uppercase text-primary">
+          {/* Header */}
+          <div className="space-y-2">
+            <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-primary">
               {group.category.name} bundle
             </p>
-            <h1 className="font-heading text-xl font-bold tracking-tight md:text-2xl">
+            <h1 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">
               {group.name}
             </h1>
-            <p className="text-xs leading-relaxed text-muted-foreground">
+            <p className="text-sm leading-relaxed text-muted-foreground">
               {group.description}
             </p>
           </div>
 
-          <div className="border-t border-border/40 pt-4">
-            <h2 className="mb-2.5 font-heading text-xs font-bold tracking-tight">Included notes</h2>
-            <div className="grid gap-2.5 sm:grid-cols-2">
+          {/* Notes included */}
+          <div className="border-t border-border/40 pt-5">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="font-heading text-base font-bold tracking-tight">
+                {group.noteCount} notes included
+              </h2>
+              <Badge variant="secondary" className="h-6 rounded-full px-3 text-xs font-semibold">
+                <Layers aria-hidden="true" className="mr-1 size-3" />
+                Complete pack
+              </Badge>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
               {group.notes.map((note) => (
                 <NoteCard key={note.id} note={note} variant="compact" />
               ))}
@@ -97,37 +114,62 @@ export function GroupDetailPage({ slug }: { slug: string }) {
           </div>
         </article>
 
-        <aside className="lg:sticky lg:top-14 lg:self-start">
-          <Card className="rounded-xl border border-border/50">
-            <CardContent className="space-y-3 p-3">
-              <p className="text-[10px] text-muted-foreground">
-                {group.noteCount} note{group.noteCount !== 1 ? "s" : ""} included
-              </p>
+        {/* Sidebar - sticky purchase card */}
+        <aside className="lg:sticky lg:top-20 lg:self-start space-y-4">
+          <Card className="rounded-2xl border border-border shadow-lg">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-base font-bold">Get this bundle</CardTitle>
+              <CardDescription className="text-xs">
+                {group.noteCount} notes · {group.category.name}
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <PriceTag price={group.price} priceLabel={group.priceLabel} compareAtPrice={group.compareAtPrice} size="large" />
-              <div className="rounded-lg border border-border/50 bg-muted/20 p-2.5 text-xs">
-                <span className="text-muted-foreground">Individual value </span>
-                <span className="font-semibold">{formatPrice(individualValue)}</span>
-              </div>
+
+              {/* Savings callout */}
+              {savings > 0 && (
+                <div className="rounded-xl border border-success/20 bg-success/5 p-3 flex items-center gap-2">
+                  <TrendingUp aria-hidden="true" className="size-4 shrink-0 text-success" />
+                  <div>
+                    <p className="text-xs font-bold text-success">Save {savingsPercent}%</p>
+                    <p className="text-[10px] text-muted-foreground">
+                      Individual value: <span className="line-through text-muted-foreground">{formatPrice(individualValue)}</span>
+                    </p>
+                  </div>
+                </div>
+              )}
+
               <Button
                 render={<Link href={`/checkout/${group.slug}?itemType=group`} />}
-                className="w-full rounded-lg"
+                className="w-full rounded-xl font-semibold shadow-md"
                 size="lg"
               >
                 Buy this bundle
-                <ArrowLeft aria-hidden="true" className="ml-1 size-2.5 rotate-180" />
+                <ArrowLeft aria-hidden="true" className="ml-1 size-3.5 rotate-180" />
               </Button>
-              <p className="text-center text-[9px] text-muted-foreground">
-                Delivered manually within 4–6 hours.
+
+              <p className="text-center text-[10px] leading-relaxed text-muted-foreground">
+                Delivered within 4–6 hours after payment confirmation.
               </p>
+
+              {/* Trust signals */}
+              <div className="flex items-center justify-center gap-2 border-t border-border/50 pt-4 text-[10px] text-muted-foreground">
+                <span>Secure payment</span>
+                <span className="text-muted-foreground/30">·</span>
+                <span>Original content</span>
+                <span className="text-muted-foreground/30">·</span>
+                <span>No spam</span>
+              </div>
             </CardContent>
           </Card>
         </aside>
       </div>
 
+      {/* More bundles */}
       {relatedGroups.length > 0 && (
-        <section className="mt-8 border-t border-border/40 pt-6">
-          <h2 className="mb-3 font-heading text-sm font-bold tracking-tight">More bundles</h2>
-          <div className="grid gap-2.5 md:grid-cols-2 lg:grid-cols-3">
+        <section className="mt-10 border-t border-border/40 pt-8">
+          <h2 className="mb-4 font-heading text-lg font-bold tracking-tight">More bundles you might like</h2>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {relatedGroups.map((related) => (
               <GroupCard key={related.id} group={related} />
             ))}

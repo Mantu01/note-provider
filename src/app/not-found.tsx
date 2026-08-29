@@ -8,13 +8,17 @@ export default function NotFound() {
     <main className="relative grid min-h-screen place-items-center px-4">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--brand-green-soft),transparent_60%)] opacity-40" />
       <div className="relative z-10 flex max-w-sm flex-col items-center gap-5 text-center">
-        <Logo href={null} size="lg" />
-        <div className="space-y-1.5">
-          <SearchX aria-hidden="true" className="mx-auto size-8 text-primary" />
-          <h1 className="text-xl font-bold tracking-tight">Page not found</h1>
-          <p className="text-sm text-muted-foreground">The page you are looking for does not exist or may have moved.</p>
+        <Logo size="lg" />
+        <div className="flex size-16 items-center justify-center rounded-2xl bg-primary/10">
+          <SearchX aria-hidden="true" className="size-8 text-primary" />
         </div>
-        <Button render={<Link href="/" />}>Back home</Button>
+        <div className="space-y-1.5">
+          <h1 className="text-xl font-bold tracking-tight">Page not found</h1>
+          <p className="max-w-xs text-sm text-muted-foreground">The page you are looking for does not exist or may have moved.</p>
+        </div>
+        <Button render={<Link href="/" />} className="rounded-full shadow-lg">
+          Back home
+        </Button>
       </div>
     </main>
   );

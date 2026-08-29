@@ -154,7 +154,7 @@ describe("HomePage", () => {
     } as any);
 
     render(<HomePage />);
-    expect(screen.getByText("Hand-picked notes")).toBeInTheDocument();
+    expect(screen.getByText("Featured notes")).toBeInTheDocument();
   });
 
   it("renders free notes section", () => {

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FileText } from "lucide-react";
+import { FileText, BookOpen, TrendingUp } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { PriceTag } from "@/components/shared/price-tag";
@@ -14,17 +14,22 @@ interface NoteCardProps {
 
 export function NoteCard({ note, variant = "default" }: NoteCardProps) {
   const compact = variant === "compact";
+  const featured = variant === "featured";
 
   return (
-    <div className={cn(
-      "overflow-hidden rounded-xl border border-border/50 bg-card",
-      compact ? "flex flex-row" : "flex flex-col",
-    )}>
+    <article
+      className={cn(
+        "group relative overflow-hidden rounded-2xl border border-border/60 bg-card transition-all duration-200 hover:border-primary/30 hover:shadow-lg hover:-translate-y-0.5",
+        compact ? "flex flex-row items-stretch" : "flex flex-col"
+      )}
+    >
+      {/* Cover image */}
       <Link
         href={`/notes/${note.slug}`}
         className={cn(
-          "relative block overflow-hidden bg-muted/30 shrink-0",
+          "relative block overflow-hidden bg-muted/20 shrink-0",
           compact ? "w-28" : "aspect-[16/9]",
+          featured && "aspect-[16/10]"
         )}
         aria-label={`View ${note.title}`}
       >
@@ -34,56 +39,83 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
             alt=""
             fill
             sizes={compact ? "112px" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"}
-            className="object-cover"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="flex size-full items-center justify-center text-primary/20">
-            <FileText aria-hidden="true" className="size-6" />
+          <div className="flex size-full items-center justify-center">
+            <div className="flex flex-col items-center gap-1 text-primary/30">
+              <FileText aria-hidden="true" className="size-7" />
+              <span className="text-[8px] font-medium uppercase tracking-widest">PDF</span>
+            </div>
           </div>
         )}
+
+        {/* Pricing badge */}
         {note.pricingType === "paid" && (
-          <span className="absolute top-1.5 right-1.5 rounded-full bg-card/90 px-1.5 py-0.5 text-[9px] font-semibold text-foreground backdrop-blur">
+          <span className="absolute top-2 right-2 rounded-full bg-card/90 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-foreground backdrop-blur-sm shadow-sm">
             Paid
+          </span>
+        )}
+        {note.pricingType === "free" && (
+          <span className="absolute top-2 right-2 rounded-full bg-success/90 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-success-foreground backdrop-blur-sm shadow-sm">
+            Free
+          </span>
+        )}
+
+        {/* Featured ribbon */}
+        {featured && (
+          <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-full bg-primary/90 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary-foreground backdrop-blur-sm shadow-sm">
+            <TrendingUp aria-hidden="true" className="size-2.5" />
+            Featured
           </span>
         )}
       </Link>
 
+      {/* Content */}
       <div className={cn(
-        "flex min-w-0 flex-1 flex-col gap-1.5 p-2.5",
-        compact && "py-2.5 pl-2.5 pr-3",
+        "flex min-w-0 flex-1 flex-col gap-2 p-3",
+        compact && "py-3 pl-3 pr-3.5"
       )}>
-        <div className="flex items-center gap-1">
-          <Badge variant="secondary" className="h-4 rounded-full px-1.5 text-[9px] font-medium">
+        {/* Meta row */}
+        <div className="flex items-center gap-1.5 flex-wrap">
+          <Badge variant="secondary" className="h-5 rounded-full px-2 text-[10px] font-semibold">
             {note.category.name}
           </Badge>
           <StatusBadge type="level" value={note.level} />
         </div>
 
+        {/* Title */}
         <Link
           href={`/notes/${note.slug}`}
           className={cn(
-            "font-heading font-semibold leading-snug text-foreground",
-            compact ? "text-xs line-clamp-1" : "text-xs line-clamp-2",
+            "font-heading font-semibold leading-snug text-foreground line-clamp-2 group-hover:text-primary transition-colors",
+            compact ? "text-[11px] line-clamp-1" : "text-xs line-clamp-2"
           )}
         >
           {note.title}
         </Link>
 
+        {/* Description */}
         {!compact && (
-          <p className="line-clamp-2 text-[11px] leading-relaxed text-muted-foreground">
+          <p className="line-clamp-2 text-[11px] leading-relaxed text-muted-foreground flex-1">
             {note.description}
           </p>
         )}
 
-        <div className="mt-auto flex items-end justify-between gap-2 pt-0.5">
+        {/* Footer row */}
+        <div className={cn(
+          "mt-auto flex items-end justify-between gap-2 pt-1",
+          compact && "pt-0"
+        )}>
           <PriceTag price={note.price} priceLabel={note.priceLabel} compareAtPrice={note.compareAtPrice} />
-          {note.pageCount && !compact && (
-            <span className="shrink-0 text-[9px] text-muted-foreground">
+          {!compact && note.pageCount && (
+            <span className="shrink-0 inline-flex items-center gap-1 text-[9px] font-medium text-muted-foreground bg-muted/60 px-1.5 py-0.5 rounded-md">
+              <BookOpen aria-hidden="true" className="size-2.5" />
               {note.pageCount} pg
             </span>
           )}
         </div>
       </div>
-    </div>
+    </article>
   );
 }

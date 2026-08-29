@@ -5,14 +5,13 @@ import Image from "next/image";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRazorpay } from "react-razorpay";
-import { ArrowLeft, FileText, Loader2, ShieldCheck } from "lucide-react";
+import { ArrowLeft, FileText, Loader2, ShieldCheck, PackageCheck } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Checkbox } from "@/components/ui/checkbox";
 import { ErrorState } from "@/components/shared/error-state";
 import { PriceTag } from "@/components/shared/price-tag";
 import { useGroup } from "@/features/groups/api/use-group";
@@ -32,16 +31,21 @@ function CheckoutSkeleton() {
 
 function FreeNoteGuard({ slug }: { slug: string }) {
   return (
-    <div className="mx-auto max-w-xl px-4 py-12">
-      <Card className="rounded-2xl">
-        <CardContent className="space-y-3 text-center">
-          <h1 className="text-xl font-bold">This note is free</h1>
-          <p className="text-sm text-muted-foreground">
-            Free notes are ready for immediate download — no payment needed.
+    <div className="mx-auto max-w-xl px-4 py-16">
+      <div className="text-center space-y-4">
+        <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-success/10">
+          <PackageCheck aria-hidden="true" className="size-8 text-success" />
+        </div>
+        <div>
+          <h1 className="text-xl font-bold tracking-tight">This note is completely free</h1>
+          <p className="mt-2 text-sm text-muted-foreground">
+            No payment needed — download it directly from the note page.
           </p>
-          <Button render={<Link href={`/notes/${slug}`} />}>Go to note</Button>
-        </CardContent>
-      </Card>
+        </div>
+        <Button render={<Link href={`/notes/${slug}`} />} size="lg" className="rounded-full">
+          Go to note
+        </Button>
+      </div>
     </div>
   );
 }
@@ -63,41 +67,47 @@ function OrderSummaryCard({
 }) {
   return (
     <aside className="order-first lg:order-last">
-      <Card className="rounded-2xl lg:sticky lg:top-16">
-        <CardContent className="space-y-4">
-          <p className="text-xs font-semibold">Order summary</p>
-          <div className="relative aspect-video overflow-hidden rounded-xl brand-gradient-soft">
-            {coverImageUrl ? (
-              <Image
-                src={coverImageUrl}
-                alt={title}
-                width={400}
-                height={225}
-                className="h-full w-full object-cover"
-              />
-            ) : (
-              <div className="flex h-full items-center justify-center text-primary/40">
-                <FileText className="size-8" />
-              </div>
-            )}
-          </div>
+      <div className="rounded-2xl border border-border bg-card shadow-lg lg:sticky lg:top-20">
+        {/* Cover image */}
+        <div className="relative aspect-[16/9] overflow-hidden rounded-t-2xl bg-muted/20">
+          {coverImageUrl ? (
+            <Image
+              src={coverImageUrl}
+              alt={title}
+              fill
+              sizes="(max-width: 768px) 100vw, 300px"
+              className="object-cover"
+            />
+          ) : (
+            <div className="flex h-full flex-col items-center justify-center gap-2 text-primary/30">
+              <FileText className="size-10" />
+              <span className="text-xs font-medium uppercase tracking-widest">PDF Document</span>
+            </div>
+          )}
+        </div>
+
+        <div className="p-4 space-y-3">
           <div>
-            <h2 className="text-sm font-semibold">{title}</h2>
+            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Order summary</p>
+            <h2 className="mt-1 text-sm font-bold leading-snug line-clamp-1">{title}</h2>
             <p className="mt-0.5 text-xs text-muted-foreground">{categoryName}</p>
           </div>
-          <div className="border-y py-3">
+
+          <div className="rounded-xl border border-border/60 bg-muted/20 p-3">
             <PriceTag
               price={price}
               priceLabel={priceLabel}
               compareAtPrice={compareAtPrice}
+              size="large"
             />
           </div>
-          <p className="text-xs leading-relaxed text-muted-foreground">
-            <ShieldCheck aria-hidden="true" className="mr-1 inline size-3.5 shrink-0 text-primary" />
+
+          <p className="text-xs leading-relaxed text-muted-foreground flex items-center gap-1.5">
+            <ShieldCheck aria-hidden="true" className="size-3.5 shrink-0 text-primary" />
             Instant download after payment.
           </p>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </aside>
   );
 }
@@ -175,7 +185,7 @@ export function CheckoutPage({
 
   if (itemQuery.isError || !item) {
     return (
-      <div className="mx-auto max-w-5xl px-4 py-8">
+      <div className="mx-auto max-w-5xl px-4 py-10">
         <ErrorState
           message="This item is unavailable for checkout."
           onRetry={() => itemQuery.refetch()}
@@ -190,21 +200,23 @@ export function CheckoutPage({
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
+      {/* Back link */}
       <Link
         href={itemType === "group" ? `/groups/${slug}` : `/notes/${slug}`}
-        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground"
+        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-6"
       >
         <ArrowLeft aria-hidden="true" className="size-3.5" />
-        Back to item
+        Back to {itemType === "group" ? "bundle" : "note"}
       </Link>
 
-      <div className="mt-5 grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+        {/* Form */}
         <form onSubmit={form.handleSubmit(submit)} className="space-y-5">
           <div>
-            <p className="text-[10px] font-semibold tracking-wide text-primary uppercase">
+            <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-primary">
               Secure checkout
             </p>
-            <h1 className="mt-1.5 text-xl font-bold tracking-tight md:text-2xl">
+            <h1 className="mt-1.5 text-2xl font-bold tracking-tight md:text-3xl">
               Complete your purchase
             </h1>
             <p className="mt-1.5 text-sm text-muted-foreground">
@@ -212,71 +224,77 @@ export function CheckoutPage({
             </p>
           </div>
 
-          <Card className="rounded-2xl">
-            <CardContent className="space-y-4">
-              <div className="space-y-1.5">
-                <Label htmlFor="fullName">Full name</Label>
-                <Input
-                  id="fullName"
-                  aria-invalid={Boolean(form.formState.errors.fullName)}
-                  {...form.register("fullName")}
-                />
-                {form.formState.errors.fullName?.message && (
-                  <p className="text-xs text-destructive">
-                    {form.formState.errors.fullName.message}
-                  </p>
-                )}
-              </div>
-
-              <Controller
-                name="consentAccepted"
-                control={form.control}
-                render={({ field }) => (
-                  <div className="flex items-start gap-2.5">
-                    <Checkbox
-                      id="consent"
-                      checked={field.value}
-                      onCheckedChange={field.onChange}
-                    />
-                    <Label htmlFor="consent" className="text-xs leading-relaxed text-muted-foreground">
-                      I agree to the{" "}
-                      <Link href="/terms" className="text-primary underline">
-                        Terms
-                      </Link>{" "}
-                      and{" "}
-                      <Link href="/privacy" className="text-primary underline">
-                        Privacy Policy
-                      </Link>
-                      .
-                    </Label>
-                  </div>
-                )}
+          <div className="rounded-2xl border border-border bg-card p-5 shadow-sm space-y-4">
+            {/* Full name field */}
+            <div className="space-y-1.5">
+              <Label htmlFor="fullName" className="text-sm font-medium">
+                Full name
+              </Label>
+              <Input
+                id="fullName"
+                placeholder="Enter your full name"
+                aria-invalid={Boolean(form.formState.errors.fullName)}
+                {...form.register("fullName")}
+                className="h-10 rounded-xl"
               />
-              {form.formState.errors.consentAccepted?.message && (
-                <p className="text-xs text-destructive">
-                  {form.formState.errors.consentAccepted.message}
-                </p>
+              {form.formState.errors.fullName?.message && (
+                <p className="text-xs text-destructive">{form.formState.errors.fullName.message}</p>
               )}
+            </div>
 
-              <Button
-                type="submit"
-                size="lg"
-                className="w-full"
-                disabled={submitting || !form.formState.isValid}
-              >
-                {submitting ? (
-                  <>
-                    <Loader2 aria-hidden="true" className="animate-spin" />
-                    Processing…
-                  </>
-                ) : (
-                  `Pay ${item.priceLabel}`
-                )}
-              </Button>
-            </CardContent>
-          </Card>
+            {/* Consent checkbox */}
+            <Controller
+              name="consentAccepted"
+              control={form.control}
+              render={({ field }) => (
+                <div className="flex items-start gap-3">
+                  <Checkbox
+                    id="consent"
+                    checked={field.value}
+                    onCheckedChange={field.onChange}
+                    className="mt-0.5"
+                  />
+                  <Label htmlFor="consent" className="text-xs leading-relaxed text-muted-foreground cursor-pointer">
+                    I agree to the{" "}
+                    <Link href="/terms" className="text-primary hover:underline">
+                      Terms of Service
+                    </Link>{" "}
+                    and{" "}
+                    <Link href="/privacy" className="text-primary hover:underline">
+                      Privacy Policy
+                    </Link>
+                    .
+                  </Label>
+                </div>
+              )}
+            />
+            {form.formState.errors.consentAccepted?.message && (
+              <p className="text-xs text-destructive">{form.formState.errors.consentAccepted.message}</p>
+            )}
+
+            {/* Pay button */}
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full rounded-xl font-semibold shadow-lg"
+              disabled={submitting || !form.formState.isValid}
+            >
+              {submitting ? (
+                <><Loader2 aria-hidden="true" className="mr-2 size-4 animate-spin" />Processing payment…</>
+              ) : (
+                <>Pay {item.priceLabel} with Razorpay</>
+              )}
+            </Button>
+          </div>
+
+          {/* Security notice */}
+          <p className="text-center text-[10px] text-muted-foreground flex items-center justify-center gap-1.5">
+            <ShieldCheck aria-hidden="true" className="size-3 text-primary" />
+            Payments are securely processed by Razorpay. We never store your payment details.
+          </p>
         </form>
 
+        {/* Order summary */}
         <OrderSummaryCard
           title={"name" in item ? item.name : item.title}
           categoryName={item.category.name}

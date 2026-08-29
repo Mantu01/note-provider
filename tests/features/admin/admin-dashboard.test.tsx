@@ -118,7 +118,7 @@ describe("AdminDashboard", () => {
 
     render(<AdminDashboard />);
     await waitFor(() => {
-      expect(screen.getByText("Admin Dashboard")).toBeInTheDocument();
+      expect(screen.getByText("Dashboard")).toBeInTheDocument();
       expect(screen.getByText("Analytics & Operations")).toBeInTheDocument();
     });
   });

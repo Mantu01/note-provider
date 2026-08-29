@@ -38,12 +38,12 @@ describe("StatsGrid", () => {
     render(<StatsGrid stats={mockStats} />);
     expect(screen.getByText("Catalogue Notes")).toBeInTheDocument();
     expect(screen.getByText("50")).toBeInTheDocument();
-    expect(screen.getByText("30 paid, 20 free")).toBeInTheDocument();
+    expect(screen.getByText("30 paid · 20 free")).toBeInTheDocument();
   });
 
   it("renders total leads stat", () => {
     render(<StatsGrid stats={mockStats} />);
-    expect(screen.getByText("Total Leads")).toBeInTheDocument();
+    expect(screen.getByText("Leads Captured")).toBeInTheDocument();
     expect(screen.getByText("100")).toBeInTheDocument();
     expect(screen.getByText("Today: 5 submissions")).toBeInTheDocument();
   });

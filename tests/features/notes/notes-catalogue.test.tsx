@@ -251,7 +251,7 @@ describe("NotesCatalogue", () => {
       isError: false,
       data: {
         items: [],
-        pagination: { total: 0, page: 1, limit: 12, totalPages: 0 },
+        pagination: { total: 100, page: 1, limit: 12, totalPages: 9 },
       },
       refetch: vi.fn(),
     } as any);

@@ -460,8 +460,8 @@ describe("NoteDetailPage", () => {
 
     render(<NoteDetailPage slug="note" />);
     await waitFor(() => {
-      expect(screen.getByText("react")).toBeInTheDocument();
-      expect(screen.getByText("hooks")).toBeInTheDocument();
+      expect(screen.getByText("#react")).toBeInTheDocument();
+      expect(screen.getByText("#hooks")).toBeInTheDocument();
     });
   });
 
@@ -506,7 +506,7 @@ describe("NoteDetailPage", () => {
 
     render(<NoteDetailPage slug="react-basics" />);
     await waitFor(() => {
-      expect(screen.getByText("Also in these bundles")).toBeInTheDocument();
+      expect(screen.getByText(/also available in these bundles/i)).toBeInTheDocument();
       expect(screen.getByText("React Bundle")).toBeInTheDocument();
     });
   });
@@ -551,7 +551,8 @@ describe("NoteDetailPage", () => {
 
     render(<NoteDetailPage slug="note" />);
     await waitFor(() => {
-      expect(screen.getByText("Secure payment · Original content · No spam")).toBeInTheDocument();
+      expect(screen.getByText(/Secure payment/)).toBeInTheDocument();
+      expect(screen.getByText(/Original content/)).toBeInTheDocument();
     });
   });
 

@@ -99,25 +99,25 @@ describe("ContactPage", () => {
 
   it("renders action labels for each channel", () => {
     render(<ContactPage />);
-    expect(screen.getByText("Follow on X")).toBeInTheDocument();
-    expect(screen.getByText("Explore GitHub")).toBeInTheDocument();
-    expect(screen.getByText("Send an email")).toBeInTheDocument();
+    expect(screen.getByText(/Follow on X/i)).toBeInTheDocument();
+    expect(screen.getByText(/Explore GitHub/i)).toBeInTheDocument();
+    expect(screen.getByText(/Send an email/i)).toBeInTheDocument();
   });
 
   it("renders note delivery info", () => {
     render(<ContactPage />);
-    expect(screen.getByText("Note delivery")).toBeInTheDocument();
-    expect(screen.getByText(/Paid note orders are fulfilled instantly/i)).toBeInTheDocument();
+    expect(screen.getByText("Instant note delivery")).toBeInTheDocument();
+    expect(screen.getByText(/Paid orders are fulfilled automatically/i)).toBeInTheDocument();
   });
 
   it("renders FAQ guidance section", () => {
     render(<ContactPage />);
-    expect(screen.getByText("Have a general question?")).toBeInTheDocument();
-    expect(screen.getByText(/Browse the FAQ on the home page/i)).toBeInTheDocument();
+    expect(screen.getByText("Preview before you buy")).toBeInTheDocument();
+    expect(screen.getByText(/Browse our FAQ for common questions/i)).toBeInTheDocument();
   });
 
   it("has link to home page present", () => {
     render(<ContactPage />);
-    expect(screen.getByText(/View home page/i)).toBeInTheDocument();
+    expect(screen.getByText(/Visit home page/)).toBeInTheDocument();
   });
 });

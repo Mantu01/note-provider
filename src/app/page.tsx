@@ -1,11 +1,5 @@
 import type { Metadata } from "next";
-import JsonLd, {
-  faqJsonLd,
-  webpageJsonLd,
-  websiteJsonLd,
-  organizationJsonLd,
-  howToJsonLd,
-} from "@/components/seo/json-ld";
+import JsonLd, {faqJsonLd,webpageJsonLd,websiteJsonLd,organizationJsonLd,howToJsonLd} from "@/components/seo/json-ld";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { HomePage } from "@/features/home/components/home-page";

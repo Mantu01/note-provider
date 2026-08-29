@@ -139,7 +139,7 @@ describe("GroupDetailPage", () => {
 
     render(<GroupDetailPage slug="bundle" />);
     await waitFor(() => {
-      expect(screen.getByText("Included notes")).toBeInTheDocument();
+      expect(screen.getByText(/complete pack/i)).toBeInTheDocument();
       expect(screen.getByText("Note 1")).toBeInTheDocument();
       expect(screen.getByText("Note 2")).toBeInTheDocument();
     });
@@ -185,7 +185,7 @@ describe("GroupDetailPage", () => {
 
     render(<GroupDetailPage slug="bundle" />);
     await waitFor(() => {
-      expect(screen.getByText("More bundles")).toBeInTheDocument();
+      expect(screen.getByText(/more bundles you might like/i)).toBeInTheDocument();
       expect(screen.getByText("Related Bundle")).toBeInTheDocument();
     });
   });
@@ -207,7 +207,7 @@ describe("GroupDetailPage", () => {
 
     render(<GroupDetailPage slug="bundle" />);
     await waitFor(() => {
-      expect(screen.queryByText("More bundles")).not.toBeInTheDocument();
+      expect(screen.queryByText(/more bundles you might like/i)).not.toBeInTheDocument();
     });
   });
 
@@ -231,7 +231,7 @@ describe("GroupDetailPage", () => {
 
     render(<GroupDetailPage slug="bundle" />);
     await waitFor(() => {
-      expect(screen.getByText("Individual value")).toBeInTheDocument();
+      expect(screen.getByText(/individual value/i)).toBeInTheDocument();
     });
   });
 
@@ -273,7 +273,7 @@ describe("GroupDetailPage", () => {
 
     render(<GroupDetailPage slug="bundle" />);
     await waitFor(() => {
-      expect(screen.getByText(/Delivered manually within 4–6 hours/i)).toBeInTheDocument();
+      expect(screen.getByText(/delivered within 4–6 hours/i)).toBeInTheDocument();
     });
   });
 

@@ -1,5 +1,4 @@
 import { BookOpen } from "lucide-react";
-import Link from "next/link";
 import { BRAND } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 import Image from "next/image";
@@ -7,7 +6,6 @@ import Image from "next/image";
 type LogoProps = {
   variant?: "full" | "icon" | "wordmark";
   size?: "sm" | "md" | "lg";
-  href?: string | null;
   className?: string;
 };
 
@@ -17,8 +15,8 @@ const sizes = {
   lg: { mark: "size-12 rounded-2xl", icon: "size-6", wordmark: "text-xl" },
 } as const;
 
-export function Logo({ variant = "full", size = "md", href = "/", className }: LogoProps) {
-  const content = (
+export function Logo({ variant = "full", size = "md", className }: LogoProps) {
+  return (
     <span className={cn("group flex items-center gap-2.5", className)}>
       {variant !== "wordmark" && (
         <Image
@@ -33,12 +31,5 @@ export function Logo({ variant = "full", size = "md", href = "/", className }: L
         />
       )}
     </span>
-  );
-  return href ? (
-    <Link href={href} aria-label={`${BRAND.name} home`} className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded-md">
-      {content}
-    </Link>
-  ) : (
-    content
   );
 }

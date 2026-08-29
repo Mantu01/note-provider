@@ -143,7 +143,7 @@ describe("GroupDetailRoute", () => {
 
     render(<GroupDetailPage slug="bundle" />);
     await waitFor(() => {
-      expect(screen.getByText("Included notes")).toBeInTheDocument();
+      expect(screen.getByText("2 notes included")).toBeInTheDocument();
     });
   });
 

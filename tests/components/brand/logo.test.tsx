@@ -54,23 +54,18 @@ describe("Logo", () => {
     expect(img).toHaveClass("rounded-xl");
   });
 
-  it("renders as a link when href is provided", () => {
-    render(<Logo href="/about" />);
-    const link = screen.getByRole("link");
-    expect(link).toHaveAttribute("href", "/about");
-    expect(link).toHaveAttribute("aria-label", "Notes Provider home");
-  });
-
-  it("defaults href to /", () => {
+  it("renders a plain element without link wrapper", () => {
     render(<Logo />);
-    const link = screen.getByRole("link");
-    expect(link).toHaveAttribute("href", "/");
+    const span = document.querySelector('span');
+    expect(span).toBeInTheDocument();
+    expect(document.querySelector('a[href]')).not.toBeInTheDocument();
   });
 
-  it("does not render as a link when href is null", () => {
-    const { container } = render(<Logo href={null} />);
+  it("does not render as a link", () => {
+    const { container } = render(<Logo />);
     const span = container.querySelector('span');
     expect(span).toBeInTheDocument();
+    expect(document.querySelector('a')).not.toBeInTheDocument();
   });
 
   it("applies custom className to the wrapper span", () => {

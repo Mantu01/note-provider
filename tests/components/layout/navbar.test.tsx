@@ -71,7 +71,7 @@ describe("Navbar", () => {
 
   it("renders search button", () => {
     render(<Navbar />);
-    expect(screen.getByLabelText("Search notes")).toBeInTheDocument();
+    expect(screen.getByLabelText("Search notes (Ctrl+K)")).toBeInTheDocument();
   });
 
   it("renders theme toggle", () => {
@@ -88,7 +88,7 @@ describe("Navbar", () => {
     vi.mocked(usePathname).mockReturnValue("/");
     render(<Navbar />);
     const homeLink = screen.getByText("Home").closest("a");
-    expect(homeLink).toHaveClass("bg-primary/10");
+    expect(homeLink).toHaveClass("bg-primary/12");
     expect(homeLink).toHaveClass("text-primary");
   });
 
@@ -96,7 +96,7 @@ describe("Navbar", () => {
     vi.mocked(usePathname).mockReturnValue("/notes");
     render(<Navbar />);
     const notesLink = screen.getByText("Notes").closest("a");
-    expect(notesLink).toHaveClass("bg-primary/10");
+    expect(notesLink).toHaveClass("bg-primary/12");
   });
 
   it("does not render on admin paths", () => {
