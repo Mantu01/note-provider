@@ -118,21 +118,23 @@ function HeroSection({
   isLoading: boolean;
 }) {
   return (
-    <section className="relative overflow-hidden pt-12 pb-10 md:pt-20 md:pb-16 lg:pt-24 lg:pb-20">
+    <section className="relative overflow-hidden pt-14 pb-12 md:pt-24 md:pb-20 lg:pt-32 lg:pb-28">
       {/* Background gradient orbs */}
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,var(--brand-green-soft),transparent_55%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,var(--brand-orange-soft),transparent_55%)]" />
+      {/* Subtle dot pattern */}
+      <div className="pointer-events-none absolute inset-0 page-dot-pattern opacity-40" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl space-y-6">
+        <div className="max-w-2xl space-y-7">
           {/* Eyebrow badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1.5 text-xs font-semibold tracking-wide text-primary uppercase backdrop-blur-md shadow-sm">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/5 px-3 py-1.5 text-xs font-semibold tracking-wide text-primary uppercase backdrop-blur-md shadow-sm animate-fade-in-up">
             <Sparkles aria-hidden="true" className="size-3.5" />
             Developer notes that scale
           </div>
 
           {/* Headline */}
-          <h1 className="font-heading text-4xl font-extrabold tracking-tighter leading-[1.05] text-foreground md:text-5xl lg:text-6xl">
+          <h1 className="font-heading text-4xl font-extrabold tracking-tighter leading-[1.05] text-foreground md:text-5xl lg:text-6xl animate-fade-in-up stagger-1">
             Learn the stack{" "}
             <span className="brand-gradient-text">with notes</span>
             <br className="hidden sm:block" />{" "}
@@ -140,12 +142,12 @@ function HeroSection({
           </h1>
 
           {/* Subheadline */}
-          <p className="max-w-lg text-base leading-relaxed text-muted-foreground">
+          <p className="max-w-lg text-base leading-relaxed text-muted-foreground animate-fade-in-up stagger-2">
             {BRAND.description}
           </p>
 
           {/* CTAs */}
-          <div className="flex flex-wrap gap-3 pt-1">
+          <div className="flex flex-wrap gap-3 pt-1 animate-fade-in-up stagger-3">
             <Button
               render={<Link href="/notes" />}
               size="lg"
@@ -166,11 +168,11 @@ function HeroSection({
         </div>
 
         {/* Stats grid */}
-        <div className="mt-10 grid grid-cols-2 gap-3 md:mt-14 md:grid-cols-4">
+        <div className="mt-12 grid grid-cols-2 gap-3 md:mt-16 md:grid-cols-4 animate-fade-in-up stagger-4">
           {isLoading
             ? Array.from({ length: 4 }, (_, i) => <ShimmerStatCard key={i} />)
-            : STATS_CONFIG.map((s) => (
-                <div key={s.key} className="rounded-2xl border border-border/50 bg-card/70 px-4 py-3 text-center backdrop-blur-md shadow-sm">
+            : STATS_CONFIG.map((s, i) => (
+                <div key={s.key} className="rounded-2xl border border-border/50 bg-card/70 px-4 py-3 text-center backdrop-blur-md shadow-sm animate-fade-in-up" style={{ animationDelay: `${0.3 + i * 0.05}s` }}>
                   <p className="text-2xl font-black tracking-tight text-foreground md:text-3xl">
                     {stats ? formatCompactNumber(stats[s.key]) : "—"}
                   </p>
@@ -187,7 +189,7 @@ function HeroSection({
 
 function HomeSection({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
-    <section className={`py-10 md:py-16 ${className ?? ""}`}>
+    <section className={`py-12 md:py-20 ${className ?? ""}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>
     </section>
   );
@@ -205,7 +207,7 @@ function SectionHead({
   center?: boolean;
 }) {
   return (
-    <div className={center ? "mb-6 text-center" : "mb-6 flex flex-col gap-2 md:flex-row md:items-end md:justify-between"}>
+    <div className={center ? "mb-8 text-center" : "mb-8 flex flex-col gap-2 md:flex-row md:items-end md:justify-between"}>
       <div className={center ? "mx-auto max-w-md space-y-1" : "max-w-md space-y-1"}>
         <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">{eyebrow}</p>
         <h2 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">{title}</h2>
@@ -307,7 +309,7 @@ function StepsRow() {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {STEPS.map(({ num, title, desc }, index) => (
-        <div key={num} className="group relative rounded-2xl border border-border/50 bg-card p-5 transition-all hover:border-primary/20 hover:shadow-md">
+        <div key={num} className="group relative rounded-2xl border border-border/50 bg-card p-5 transition-colors transition-shadow hover:border-primary/20 hover:shadow-md">
           <span className="mb-3 block font-heading text-3xl font-black tracking-tighter text-primary/12 group-hover:text-primary/20 transition-colors">
             {num}
           </span>
@@ -337,14 +339,14 @@ function TrustBar() {
 
 function CTABanner() {
   return (
-    <section className="py-12 md:py-20">
+    <section className="py-14 md:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-3xl border border-border/50 bg-gradient-to-br from-primary/10 via-card to-accent/8 px-6 py-12 text-center md:px-12 md:py-16 shadow-xl">
+        <div className="relative overflow-hidden rounded-3xl border border-border/50 bg-gradient-to-br from-primary/10 via-card to-accent/8 px-6 py-14 text-center md:px-14 md:py-20 shadow-xl">
           {/* Decorative orbs */}
-          <div className="pointer-events-none absolute -top-24 -right-24 size-64 rounded-full bg-primary/10 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-24 -left-24 size-64 rounded-full bg-accent/10 blur-3xl" />
+          <div className="pointer-events-none absolute -top-32 -right-32 size-80 rounded-full bg-primary/10 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-32 -left-32 size-80 rounded-full bg-accent/10 blur-3xl" />
 
-          <div className="relative z-10 mx-auto max-w-lg space-y-4">
+          <div className="relative z-10 mx-auto max-w-lg space-y-5">
             <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">Ready?</p>
             <h2 className="font-heading text-2xl font-black tracking-tight md:text-3xl lg:text-4xl">
               Start learning smarter today.

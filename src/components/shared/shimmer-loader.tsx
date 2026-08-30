@@ -1,3 +1,5 @@
+"use client";
+
 import { cn } from "@/lib/utils";
 
 export function ShimmerLoader({ className }: { className?: string }) {
@@ -11,7 +13,7 @@ export function ShimmerLoader({ className }: { className?: string }) {
 
 export function ShimmerNoteCard() {
   return (
-    <div className="overflow-hidden rounded-xl border border-border/50 bg-card">
+    <div className="overflow-hidden rounded-2xl border border-border/50 bg-card">
       <ShimmerLoader className="aspect-[16/9] rounded-none" />
       <div className="space-y-2.5 p-3">
         <div className="flex items-center justify-between gap-2">
@@ -31,7 +33,7 @@ export function ShimmerNoteCard() {
 
 export function ShimmerStatCard() {
   return (
-    <div className="rounded-xl border border-border/50 bg-card px-4 py-3 text-center backdrop-blur-sm">
+    <div className="rounded-2xl border border-border/50 bg-card px-4 py-3 text-center backdrop-blur-sm">
       <ShimmerLoader className="mx-auto mb-1.5 h-6 w-16 rounded" />
       <ShimmerLoader className="mx-auto h-2.5 w-12 rounded" />
     </div>

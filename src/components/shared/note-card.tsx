@@ -19,15 +19,16 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
   return (
     <article
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-border/60 bg-card transition-all duration-200 hover:border-primary/25 hover:shadow-lg hover:-translate-y-0.5",
-        compact ? "flex flex-row items-stretch" : "flex flex-col"
+        "group relative overflow-hidden rounded-2xl border border-border bg-card transition-all duration-200 hover:border-primary/20 hover:shadow-lg hover:-translate-y-0.5",
+        compact ? "flex flex-row items-stretch" : "flex flex-col",
+        featured && "ring-1 ring-primary/15"
       )}
     >
       {/* Cover image */}
       <Link
         href={`/notes/${note.slug}`}
         className={cn(
-          "relative block overflow-hidden bg-muted/20 shrink-0",
+          "relative block overflow-hidden bg-muted/10 shrink-0",
           compact ? "w-28" : "aspect-[16/9]",
           featured && "aspect-[16/10]"
         )}
@@ -39,7 +40,7 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
             alt=""
             fill
             sizes={compact ? "112px" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"}
-            className="object-cover transition-transform duration-400 group-hover:scale-105"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div className="flex size-full flex-col items-center justify-center gap-1.5 text-primary/25 bg-gradient-to-br from-primary/5 to-transparent">
@@ -105,7 +106,7 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
         )}>
           <PriceTag price={note.price} priceLabel={note.priceLabel} compareAtPrice={note.compareAtPrice} />
           {!compact && note.pageCount && (
-            <span className="shrink-0 inline-flex items-center gap-1 text-[9px] font-medium text-muted-foreground bg-muted/60 px-1.5 py-0.5 rounded-md">
+            <span className="shrink-0 inline-flex items-center gap-1 text-[9px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-md">
               <BookOpen aria-hidden="true" className="size-2.5" />
               {note.pageCount} pg
             </span>

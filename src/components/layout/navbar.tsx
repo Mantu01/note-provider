@@ -27,8 +27,6 @@ export function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
 
-  if (!isPublic) return null;
-
   const handleSearchSubmit = useCallback(() => {
     if (searchQuery.trim()) {
       router.push(`/notes?q=${encodeURIComponent(searchQuery.trim())}`);
@@ -39,7 +37,8 @@ export function Navbar() {
 
   useEffect(() => {
     if (searchOpen) {
-      setTimeout(() => inputRef.current?.focus(), 50);
+      const t = setTimeout(() => inputRef.current?.focus(), 50);
+      return () => clearTimeout(t);
     }
   }, [searchOpen]);
 
@@ -57,11 +56,12 @@ export function Navbar() {
     return () => window.removeEventListener("keydown", handleKeyDown);
   }, []);
 
+  if (!isPublic) return null;
+
   return (
     <>
-      <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl">
+      <header className="sticky top-0 z-50 border-b border-border/50 glass-panel">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
-          {/* Logo */}
           <Link href="/" aria-label="Notes Provider home">
             <div className="flex items-center gap-2.5">
               <Logo variant="icon" size="sm" />
@@ -71,7 +71,6 @@ export function Navbar() {
             </div>
           </Link>
 
-          {/* Desktop Nav */}
           <nav aria-label="Primary navigation" className="hidden md:flex items-center gap-1">
             {NAV_LINKS.map((link) => {
               const isActive = link.href === "/"
@@ -84,8 +83,8 @@ export function Navbar() {
                   className={cn(
                     "relative rounded-full px-3.5 py-1.5 text-xs font-medium transition-all duration-200",
                     isActive
-                      ? "bg-primary/10 text-primary shadow-sm"
-                      : "text-muted-foreground hover:text-foreground hover:bg-muted/60"
+                      ? "bg-primary/12 text-primary shadow-sm"
+                      : "text-muted-foreground hover:text-foreground hover:bg-muted/70"
                   )}
                 >
                   {link.label}
@@ -94,7 +93,6 @@ export function Navbar() {
             })}
           </nav>
 
-          {/* Actions */}
           <div className="flex items-center gap-1.5">
             <Button
               variant="ghost"
@@ -116,10 +114,9 @@ export function Navbar() {
         </div>
       </header>
 
-      {/* Search Overlay */}
       {searchOpen && (
         <div
-          className="fixed inset-0 z-[60] flex items-start justify-center pt-24 bg-background/70 backdrop-blur-sm"
+          className="fixed inset-0 z-[60] flex items-start justify-center pt-24 bg-background/70 backdrop-blur-sm animate-scale-in"
           onClick={() => setSearchOpen(false)}
         >
           <div

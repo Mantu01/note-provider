@@ -17,5 +17,6 @@ export function useAdminLeads(params: {
   return useQuery({
     queryKey: queryKeys.admin.leads(params),
     queryFn: () => apiClient<PaginatedData<AdminLead>>(`/admin/leads${buildQueryString(params)}`),
+    staleTime: 1000 * 60 * 2,
   });
 }

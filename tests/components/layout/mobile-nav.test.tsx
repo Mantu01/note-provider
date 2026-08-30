@@ -94,7 +94,7 @@ describe("MobileNav", () => {
     const notesLink = Array.from(document.querySelectorAll('[data-testid="sheet-content"] a')).find(
       (l) => l.textContent === "Notes"
     );
-    expect(notesLink).toHaveClass("bg-primary/10");
+    expect(notesLink).toHaveClass("bg-primary/12");
     expect(notesLink).toHaveClass("text-primary");
   });
 
@@ -104,7 +104,7 @@ describe("MobileNav", () => {
     const notesLink = Array.from(document.querySelectorAll('[data-testid="sheet-content"] a')).find(
       (l) => l.textContent === "Notes"
     );
-    expect(notesLink).not.toHaveClass("bg-primary/10");
+    expect(notesLink).not.toHaveClass("bg-primary/12");
   });
 
   it("has aria-label on nav", () => {

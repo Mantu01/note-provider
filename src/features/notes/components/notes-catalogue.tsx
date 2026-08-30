@@ -42,6 +42,9 @@ export function NotesCatalogue() {
       {/* Header */}
       <div className="mt-4 mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
+          <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">
+            Catalogue
+          </p>
           <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
             All Notes
           </h1>
@@ -105,11 +108,27 @@ export function NotesCatalogue() {
         </div>
       </div>
 
+      {/* Active filter chips */}
+      {activeFilterCount > 0 && (
+        <div className="mb-4 flex flex-wrap items-center gap-2">
+          <ActiveFilterChips state={state} setFilter={setFilter} />
+          <Button
+            type="button"
+            variant="ghost"
+            size="sm"
+            onClick={clearFilters}
+            className="h-6 text-[10px] text-muted-foreground"
+          >
+            Clear all
+          </Button>
+        </div>
+      )}
+
       {/* Layout: sidebar + grid */}
       <div className="mt-2 grid gap-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
         {/* Desktop filter sidebar */}
         <div className="hidden lg:block">
-          <div className="sticky top-20 rounded-2xl border border-border bg-card p-4 shadow-sm">
+          <div className="sticky top-20 rounded-2xl border border-border bg-card p-4 shadow-sm notebook-lines">
             <FilterPanel />
           </div>
         </div>

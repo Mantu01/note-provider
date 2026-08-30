@@ -57,7 +57,7 @@ export function MobileNav() {
                 className={cn(
                   "rounded-lg px-3 py-2 text-sm font-medium",
                   isActive
-                    ? "bg-primary/10 text-primary"
+                    ? "bg-primary/12 text-primary"
                     : "text-muted-foreground",
                 )}
               >

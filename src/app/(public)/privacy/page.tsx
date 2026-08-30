@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { Metadata } from "next";
 import JsonLd, { webpageJsonLd } from "@/components/seo/json-ld";
 import { StaticPage } from "@/components/layout/static-page";

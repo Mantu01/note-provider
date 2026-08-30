@@ -1,6 +1,7 @@
 import { AppError } from "../lib/errors";
 import { uploadBuffer, destroyAsset } from "../lib/cloudinary";
 import { UPLOAD_LIMITS } from "@/lib/constants";
+import { formatFileSize } from "@/lib/format";
 import type { UploadKind, UploadResponse } from "@/lib/types";
 
 export async function uploadFile(
@@ -86,10 +87,4 @@ export async function deleteUpload(publicId: string, resourceType: "auto" | "ima
       console.warn("[Cloudinary Delete Failed]:", err);
     }
   }
-}
-
-function formatFileSize(bytes: number): string {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
 }

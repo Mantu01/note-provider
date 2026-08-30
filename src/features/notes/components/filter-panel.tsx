@@ -25,7 +25,7 @@ export function FilterPanel({ className }: FilterPanelProps) {
 
   const toggle = (key: "category" | "level", value: string) =>
     setFilter({
-      [key]: state[key].includes(value)
+      [key]: new Set(state[key]).has(value)
         ? state[key].filter((item) => item !== value)
         : [...state[key], value],
     });
@@ -138,7 +138,7 @@ export function FilterPanel({ className }: FilterPanelProps) {
           >
             <span className="flex items-center gap-1.5">
               <Checkbox
-                checked={state.category.includes(category.slug)}
+                checked={new Set(state.category).has(category.slug)}
                 onCheckedChange={() => toggle("category", category.slug)}
               />
               <span className="truncate">{category.name}</span>
@@ -161,7 +161,7 @@ export function FilterPanel({ className }: FilterPanelProps) {
           >
             <span className="flex items-center gap-1.5">
               <Checkbox
-                checked={state.level.includes(level.value)}
+                checked={new Set(state.level).has(level.value)}
                 onCheckedChange={() => toggle("level", level.value)}
               />
               {level.label}

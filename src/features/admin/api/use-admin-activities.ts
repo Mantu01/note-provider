@@ -17,6 +17,14 @@ export function useAdminActivities(params: {
 } = {}) {
   return useQuery({
     queryKey: queryKeys.admin.activities(params),
-    queryFn: () => apiClient<PaginatedData<AdminActivity>>(`/admin/activities${buildQueryString(params)}`),
+    queryFn: async () => {
+      const qs = new URLSearchParams();
+      for (const [key, value] of Object.entries(params)) {
+        if (value !== undefined) qs.set(key, String(value));
+      }
+      const url = `/admin/activities${qs.toString() ? `?${qs.toString()}` : ""}`;
+      return apiClient<PaginatedData<AdminActivity>>(url);
+    },
+    staleTime: 1000 * 60 * 2,
   });
 }

@@ -27,7 +27,7 @@ describe("ShimmerNoteCard", () => {
   it("renders a card wrapper with border and rounded classes", () => {
     const { container } = render(<ShimmerNoteCard />);
     const card = container.firstChild as HTMLElement;
-    expect(card).toHaveClass("rounded-xl");
+    expect(card).toHaveClass("rounded-2xl");
     expect(card).toHaveClass("border");
   });
 
@@ -49,7 +49,7 @@ describe("ShimmerStatCard", () => {
     const { container } = render(<ShimmerStatCard />);
     const el = container.firstChild as HTMLElement;
     expect(el).toHaveClass("text-center");
-    expect(el).toHaveClass("rounded-xl");
+    expect(el).toHaveClass("rounded-2xl");
   });
 
   it("contains shimmer placeholders", () => {

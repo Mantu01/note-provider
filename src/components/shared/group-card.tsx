@@ -17,15 +17,15 @@ export function GroupCard({ group, variant = "default" }: GroupCardProps) {
   return (
     <article
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-border/60 bg-card transition-all duration-200 hover:border-primary/25 hover:shadow-lg hover:-translate-y-0.5",
-        featured && "ring-1 ring-primary/20"
+        "group relative overflow-hidden rounded-2xl border border-border bg-card transition-all duration-200 hover:border-primary/20 hover:shadow-lg hover:-translate-y-0.5",
+        featured && "ring-1 ring-primary/15"
       )}
     >
       {/* Cover image */}
       <Link
         href={`/groups/${group.slug}`}
         className={cn(
-          "relative block overflow-hidden bg-muted/20",
+          "relative block overflow-hidden bg-muted/10",
           featured ? "aspect-[16/8]" : "aspect-[16/9]"
         )}
         aria-label={`View ${group.name}`}
@@ -36,7 +36,7 @@ export function GroupCard({ group, variant = "default" }: GroupCardProps) {
             alt=""
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover transition-transform duration-400 group-hover:scale-105"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
         ) : (
           <div className="flex size-full flex-col items-center justify-center gap-1.5 text-primary/20 bg-gradient-to-br from-primary/5 to-transparent">

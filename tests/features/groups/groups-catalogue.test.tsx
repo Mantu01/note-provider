@@ -143,7 +143,7 @@ describe("GroupsPage", () => {
 
     render(<GroupsPage />);
     await waitFor(() => {
-      expect(screen.getByText("1 bundle")).toBeInTheDocument();
+      expect(screen.getByText("1 bundle available")).toBeInTheDocument();
     });
   });
 
@@ -164,7 +164,7 @@ describe("GroupsPage", () => {
 
     render(<GroupsPage />);
     await waitFor(() => {
-      expect(screen.getByText("3 bundles")).toBeInTheDocument();
+      expect(screen.getByText("3 bundles available")).toBeInTheDocument();
     });
   });
 

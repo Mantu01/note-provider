@@ -44,7 +44,7 @@ describe("GroupsPage (catalogue)", () => {
     } as any);
 
     render(<GroupsPage />);
-    const grid = document.querySelector(".mt-6");
+    const grid = document.querySelector(".mt-2");
     expect(grid).toBeInTheDocument();
   });
 
@@ -126,7 +126,7 @@ describe("GroupsPage (catalogue)", () => {
 
     render(<GroupsPage />);
     await waitFor(() => {
-      expect(screen.getByText("1 bundle")).toBeInTheDocument();
+      expect(screen.getByText("1 bundle available")).toBeInTheDocument();
     });
   });
 
@@ -147,7 +147,7 @@ describe("GroupsPage (catalogue)", () => {
 
     render(<GroupsPage />);
     await waitFor(() => {
-      expect(screen.getByText("3 bundles")).toBeInTheDocument();
+      expect(screen.getByText("3 bundles available")).toBeInTheDocument();
     });
   });
 

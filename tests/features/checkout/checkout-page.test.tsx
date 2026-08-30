@@ -187,7 +187,7 @@ describe("CheckoutPage", () => {
 
     render(<CheckoutPage slug="free-note" itemType="note" />);
     await waitFor(() => {
-      expect(screen.getByText("This note is completely free")).toBeInTheDocument();
+      expect(screen.getByText("This note is free to download")).toBeInTheDocument();
       expect(screen.getByText("Go to note")).toBeInTheDocument();
     });
   });

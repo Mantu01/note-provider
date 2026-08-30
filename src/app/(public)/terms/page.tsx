@@ -58,7 +58,7 @@ export default function TermsPage() {
                 {section.title}
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground leading-relaxed text-base pt-2">
-                {section.content}
+                <div dangerouslySetInnerHTML={{ __html: section.content }} />
               </AccordionContent>
             </AccordionItem>
           ))}

@@ -51,6 +51,7 @@ export function OrderLookupPage() {
         <div className="mx-auto flex size-12 items-center justify-center rounded-xl brand-gradient-soft text-primary">
           <PackageCheck className="size-6" />
         </div>
+        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">Order tracking</p>
         <h1 className="text-xl font-bold tracking-tight md:text-2xl">Track Your Order</h1>
         <p className="text-sm text-muted-foreground text-balance">
           Enter your order number (e.g. <code className="rounded bg-muted px-1 py-0.5 text-[10px] font-mono font-semibold text-foreground">NP-20260810-0001</code>) to check status.

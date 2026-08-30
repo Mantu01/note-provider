@@ -41,7 +41,7 @@ const SOCIAL_LINKS = [
 
 export function Footer() {
   return (
-    <footer className="border-t border-border/40 bg-muted/10">
+    <footer className="border-t border-border/50 bg-card">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-6">
           {/* Brand column */}
@@ -58,7 +58,7 @@ export function Footer() {
                   href={href}
                   target={href.startsWith("http") ? "_blank" : undefined}
                   rel={href.startsWith("http") ? "noreferrer" : undefined}
-                  className="inline-flex size-7 items-center justify-center rounded-lg border border-border bg-card text-muted-foreground transition-colors hover:border-primary/30 hover:text-primary"
+                  className="inline-flex size-7 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition-colors transition-shadow hover:border-primary/40 hover:text-primary hover:shadow-sm"
                 >
                   <Icon aria-hidden="true" className="size-3" />
                 </a>
@@ -88,7 +88,7 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-8 border-t border-border/40 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="mt-8 border-t border-border/50 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-center text-[10px] text-muted-foreground">
             &copy; {new Date().getFullYear()} {BRAND.name}. All rights reserved.
           </p>

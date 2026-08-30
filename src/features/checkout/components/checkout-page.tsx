@@ -31,19 +31,21 @@ function CheckoutSkeleton() {
 
 function FreeNoteGuard({ slug }: { slug: string }) {
   return (
-    <div className="mx-auto max-w-xl px-4 py-16">
+    <div className="mx-auto max-w-xl px-4 py-20">
       <div className="text-center space-y-4">
         <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-success/10">
           <PackageCheck aria-hidden="true" className="size-8 text-success" />
         </div>
         <div>
-          <h1 className="text-xl font-bold tracking-tight">This note is completely free</h1>
+          <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">Completely free</p>
+          <h1 className="mt-2 text-xl font-bold tracking-tight">This note is free to download</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            No payment needed — download it directly from the note page.
+            No payment needed — head back to the note page to get it instantly.
           </p>
         </div>
         <Button render={<Link href={`/notes/${slug}`} />} size="lg" className="rounded-full">
           Go to note
+          <ArrowLeft aria-hidden="true" className="ml-2 size-4 rotate-180" />
         </Button>
       </div>
     </div>
