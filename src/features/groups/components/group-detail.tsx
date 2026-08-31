@@ -50,22 +50,18 @@ export function GroupDetailPage({ slug }: { slug: string }) {
   const savingsPercent = individualValue > 0 ? Math.round((savings / individualValue) * 100) : 0;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-      {/* Breadcrumb */}
+    <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8 paper-bg">
       <nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-1.5 text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+        <Link href="/">Home</Link>
         <span aria-hidden="true" className="text-muted-foreground/40">/</span>
-        <Link href="/groups" className="hover:text-foreground transition-colors">Bundles</Link>
+        <Link href="/groups">Bundles</Link>
         <span aria-hidden="true" className="text-muted-foreground/40">/</span>
         <span className="font-medium text-foreground truncate">{group.name}</span>
       </nav>
 
-      {/* Main content */}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        {/* Article */}
         <article className="space-y-5">
-          {/* Hero image */}
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border/50 bg-muted/20 shadow-sm">
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border/50 bg-muted/20 shadow-sm torn-paper">
             {group.coverImageUrl ? (
               <Image
                 src={group.coverImageUrl}
@@ -82,7 +78,6 @@ export function GroupDetailPage({ slug }: { slug: string }) {
             )}
           </div>
 
-          {/* Header */}
           <div className="space-y-2">
             <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-primary">
               {group.category.name} bundle
@@ -95,7 +90,6 @@ export function GroupDetailPage({ slug }: { slug: string }) {
             </p>
           </div>
 
-          {/* Notes included */}
           <div className="border-t border-border/40 pt-5">
             <div className="mb-4 flex items-center justify-between">
               <h2 className="font-heading text-base font-bold tracking-tight">
@@ -114,9 +108,8 @@ export function GroupDetailPage({ slug }: { slug: string }) {
           </div>
         </article>
 
-        {/* Sidebar - sticky purchase card */}
         <aside className="lg:sticky lg:top-20 lg:self-start space-y-4">
-          <Card className="rounded-2xl border border-border shadow-lg">
+          <Card className="rounded-2xl border border-border bg-card torn-paper shadow-lg">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-bold">Get this bundle</CardTitle>
               <CardDescription className="text-xs">
@@ -126,7 +119,6 @@ export function GroupDetailPage({ slug }: { slug: string }) {
             <CardContent className="space-y-4">
               <PriceTag price={group.price} priceLabel={group.priceLabel} compareAtPrice={group.compareAtPrice} size="large" />
 
-              {/* Savings callout */}
               {savings > 0 && (
                 <div className="rounded-xl border border-success/20 bg-success/5 p-3 flex items-center gap-2">
                   <TrendingUp aria-hidden="true" className="size-4 shrink-0 text-success" />
@@ -141,7 +133,7 @@ export function GroupDetailPage({ slug }: { slug: string }) {
 
               <Button
                 render={<Link href={`/checkout/${group.slug}?itemType=group`} />}
-                className="w-full rounded-xl font-semibold shadow-md"
+                className="w-full rounded-xl font-semibold shadow-md bg-primary text-primary-foreground"
                 size="lg"
               >
                 Buy this bundle
@@ -152,7 +144,6 @@ export function GroupDetailPage({ slug }: { slug: string }) {
                 Delivered within 4–6 hours after payment confirmation.
               </p>
 
-              {/* Trust signals */}
               <div className="flex items-center justify-center gap-2 border-t border-border/50 pt-4 text-[10px] text-muted-foreground">
                 <span>Secure payment</span>
                 <span className="text-muted-foreground/30">·</span>
@@ -165,7 +156,6 @@ export function GroupDetailPage({ slug }: { slug: string }) {
         </aside>
       </div>
 
-      {/* More bundles */}
       {relatedGroups.length > 0 && (
         <section className="mt-10 border-t border-border/40 pt-8">
           <h2 className="mb-4 font-heading text-lg font-bold tracking-tight">More bundles you might like</h2>

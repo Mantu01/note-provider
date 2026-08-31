@@ -49,21 +49,17 @@ export function NoteDetailPage({ slug }: { slug: string }) {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-      {/* Breadcrumb */}
       <nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-1.5 text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+        <Link href="/">Home</Link>
         <span aria-hidden="true" className="text-muted-foreground/40">/</span>
-        <Link href="/notes" className="hover:text-foreground transition-colors">Notes</Link>
+        <Link href="/notes">Notes</Link>
         <span aria-hidden="true" className="text-muted-foreground/40">/</span>
         <span className="font-medium text-foreground truncate">{note.title}</span>
       </nav>
 
-      {/* Main content */}
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        {/* Article */}
         <article className="space-y-5">
-          {/* Hero image */}
-          <div className="relative aspect-[19/8] w-full overflow-hidden rounded-2xl border border-border/50 bg-muted/20 shadow-sm">
+          <div className="relative aspect-[19/8] w-full overflow-hidden rounded-2xl border border-border/50 bg-muted/20 shadow-sm torn-paper">
             {note.coverImageUrl ? (
               <Image
                 src={note.coverImageUrl}
@@ -80,7 +76,6 @@ export function NoteDetailPage({ slug }: { slug: string }) {
             )}
           </div>
 
-          {/* Meta */}
           <div className="space-y-2.5">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary" className="h-5 rounded-full px-2.5 text-xs font-semibold">
@@ -103,7 +98,6 @@ export function NoteDetailPage({ slug }: { slug: string }) {
               {note.title}
             </h1>
 
-            {/* Metadata row */}
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
               {note.pageCount && (
                 <span className="inline-flex items-center gap-1">
@@ -131,7 +125,6 @@ export function NoteDetailPage({ slug }: { slug: string }) {
               {note.description}
             </p>
 
-            {/* Tags */}
             {note.tags.length > 0 && (
               <div className="flex flex-wrap gap-1.5 pt-1">
                 {note.tags.map((tag) => (
@@ -144,9 +137,8 @@ export function NoteDetailPage({ slug }: { slug: string }) {
           </div>
         </article>
 
-        {/* Sidebar - sticky purchase card */}
         <aside className="lg:sticky lg:top-20 lg:self-start space-y-4">
-          <Card className="rounded-2xl border border-border shadow-lg">
+          <Card className="rounded-2xl border border-border bg-card torn-paper shadow-lg">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-bold">Get this note</CardTitle>
               <CardDescription className="text-xs">
@@ -198,7 +190,7 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                   <Button
                     render={<Link href={`/checkout/${note.slug}`} />}
                     size="lg"
-                    className="w-full rounded-xl font-semibold shadow-md bg-primary hover:bg-primary/90"
+                    className="w-full rounded-xl font-semibold shadow-md bg-primary text-primary-foreground"
                   >
                     Buy now — {note.priceLabel}
                   </Button>
@@ -208,7 +200,6 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                 </>
               )}
 
-              {/* Trust signals */}
               <div className="flex flex-col items-center gap-2 border-t border-border/50 pt-4 text-[10px] text-muted-foreground">
                 <div className="flex items-center gap-3">
                   <span className="inline-flex items-center gap-1">
@@ -227,7 +218,6 @@ export function NoteDetailPage({ slug }: { slug: string }) {
         </aside>
       </div>
 
-      {/* Also in bundles */}
       {groups.length > 0 && (
         <section className="mt-10 border-t border-border/40 pt-8">
           <h2 className="mb-4 font-heading text-lg font-bold tracking-tight">Also available in these bundles</h2>
@@ -239,7 +229,6 @@ export function NoteDetailPage({ slug }: { slug: string }) {
         </section>
       )}
 
-      {/* Related notes */}
       {relatedNotes.length > 0 && (
         <section className="mt-10 border-t border-border/40 pt-8">
           <h2 className="mb-4 font-heading text-lg font-bold tracking-tight">Related notes</h2>

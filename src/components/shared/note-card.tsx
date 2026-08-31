@@ -19,12 +19,11 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
   return (
     <article
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-border bg-card transition-all duration-200 hover:border-primary/20 hover:shadow-lg hover:-translate-y-0.5",
+        "relative overflow-hidden rounded-2xl border border-border bg-card torn-paper",
         compact ? "flex flex-row items-stretch" : "flex flex-col",
         featured && "ring-1 ring-primary/15"
       )}
     >
-      {/* Cover image */}
       <Link
         href={`/notes/${note.slug}`}
         className={cn(
@@ -40,7 +39,7 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
             alt=""
             fill
             sizes={compact ? "112px" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"}
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover"
           />
         ) : (
           <div className="flex size-full flex-col items-center justify-center gap-1.5 text-primary/25 bg-gradient-to-br from-primary/5 to-transparent">
@@ -49,7 +48,6 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
           </div>
         )}
 
-        {/* Pricing badge */}
         <span className={cn(
           "absolute top-2 right-2 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide shadow-sm backdrop-blur-md",
           note.pricingType === "paid"
@@ -59,7 +57,6 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
           {note.pricingType === "paid" ? "Premium" : "Free"}
         </span>
 
-        {/* Featured ribbon */}
         {featured && (
           <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-full bg-primary/90 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary-foreground shadow-sm">
             <TrendingUp aria-hidden="true" className="size-2.5" />
@@ -68,12 +65,10 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
         )}
       </Link>
 
-      {/* Content */}
       <div className={cn(
         "flex min-w-0 flex-1 flex-col gap-2 p-3",
         compact && "py-3 pl-3 pr-3.5"
       )}>
-        {/* Meta row */}
         <div className="flex items-center gap-1.5 flex-wrap">
           <Badge variant="secondary" className="h-5 rounded-full px-2 text-[10px] font-semibold">
             {note.category.name}
@@ -81,25 +76,22 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
           <StatusBadge type="level" value={note.level} />
         </div>
 
-        {/* Title */}
         <Link
           href={`/notes/${note.slug}`}
           className={cn(
-            "font-heading font-semibold leading-snug text-foreground line-clamp-2 group-hover:text-primary transition-colors",
+            "font-heading font-semibold leading-snug text-foreground line-clamp-2",
             compact ? "text-[11px] line-clamp-1" : "text-xs line-clamp-2"
           )}
         >
           {note.title}
         </Link>
 
-        {/* Description */}
         {!compact && (
           <p className="line-clamp-2 text-[11px] leading-relaxed text-muted-foreground flex-1">
             {note.description}
           </p>
         )}
 
-        {/* Footer row */}
         <div className={cn(
           "mt-auto flex items-end justify-between gap-2 pt-1",
           compact && "pt-0"

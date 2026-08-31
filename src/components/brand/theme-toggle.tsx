@@ -1,18 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
-  // Read theme only after mount to avoid SSR/CSR mismatch
-  const [isDark, setIsDark] = useState(false);
-
-  useEffect(() => {
-    setIsDark(theme === "dark");
-  }, [theme]);
+  const isDark = theme === "dark";
 
   return (
     <Button

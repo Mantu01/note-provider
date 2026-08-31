@@ -17,11 +17,10 @@ export function GroupCard({ group, variant = "default" }: GroupCardProps) {
   return (
     <article
       className={cn(
-        "group relative overflow-hidden rounded-2xl border border-border bg-card transition-all duration-200 hover:border-primary/20 hover:shadow-lg hover:-translate-y-0.5",
+        "relative overflow-hidden rounded-2xl border border-border bg-card torn-paper",
         featured && "ring-1 ring-primary/15"
       )}
     >
-      {/* Cover image */}
       <Link
         href={`/groups/${group.slug}`}
         className={cn(
@@ -36,7 +35,7 @@ export function GroupCard({ group, variant = "default" }: GroupCardProps) {
             alt=""
             fill
             sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
+            className="object-cover"
           />
         ) : (
           <div className="flex size-full flex-col items-center justify-center gap-1.5 text-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
@@ -45,13 +44,11 @@ export function GroupCard({ group, variant = "default" }: GroupCardProps) {
           </div>
         )}
 
-        {/* Note count badge */}
         <span className="absolute bottom-2 right-2 flex items-center gap-1 rounded-full bg-card/90 px-2 py-0.5 text-[9px] font-bold text-foreground backdrop-blur-sm shadow-sm">
           <BookOpen aria-hidden="true" className="size-2.5 text-primary" />
           {group.noteCount} notes
         </span>
 
-        {/* Featured ribbon */}
         {featured && (
           <span className="absolute top-2 left-2 flex items-center gap-1 rounded-full bg-primary/90 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary-foreground backdrop-blur-sm shadow-sm">
             <TrendingUp aria-hidden="true" className="size-2.5" />
@@ -60,9 +57,7 @@ export function GroupCard({ group, variant = "default" }: GroupCardProps) {
         )}
       </Link>
 
-      {/* Content */}
       <div className="p-3 space-y-2">
-        {/* Category + Price row */}
         <div className="flex items-center justify-between gap-2">
           <Badge variant="secondary" className="h-5 rounded-full px-2 text-[10px] font-semibold">
             {group.category.name}
@@ -70,15 +65,13 @@ export function GroupCard({ group, variant = "default" }: GroupCardProps) {
           <PriceTag price={group.price} priceLabel={group.priceLabel} compareAtPrice={group.compareAtPrice} />
         </div>
 
-        {/* Title */}
         <Link
           href={`/groups/${group.slug}`}
-          className="block font-heading text-sm font-bold leading-snug text-foreground group-hover:text-primary transition-colors line-clamp-1"
+          className="block font-heading text-sm font-bold leading-snug text-foreground line-clamp-1"
         >
           {group.name}
         </Link>
 
-        {/* Description */}
         <p className="line-clamp-2 text-[11px] leading-relaxed text-muted-foreground">
           {group.description}
         </p>

@@ -205,7 +205,7 @@ export function CheckoutPage({
       {/* Back link */}
       <Link
         href={itemType === "group" ? `/groups/${slug}` : `/notes/${slug}`}
-        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors mb-6"
+        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground mb-6"
       >
         <ArrowLeft aria-hidden="true" className="size-3.5" />
         Back to {itemType === "group" ? "bundle" : "note"}
@@ -258,11 +258,11 @@ export function CheckoutPage({
                   />
                   <Label htmlFor="consent" className="text-xs leading-relaxed text-muted-foreground cursor-pointer">
                     I agree to the{" "}
-                    <Link href="/terms" className="text-primary hover:underline">
+                    <Link href="/terms" className="text-primary underline">
                       Terms of Service
                     </Link>{" "}
                     and{" "}
-                    <Link href="/privacy" className="text-primary hover:underline">
+                    <Link href="/privacy" className="text-primary underline">
                       Privacy Policy
                     </Link>
                     .

@@ -38,8 +38,7 @@ export function NotesCatalogue() {
   });
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      {/* Header */}
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 paper-bg">
       <div className="mt-4 mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">
@@ -56,7 +55,6 @@ export function NotesCatalogue() {
         </div>
 
         <div className="flex items-center gap-2">
-          {/* View toggle */}
           <div className="hidden sm:inline-flex items-center rounded-full border border-border bg-card p-0.5 shadow-sm">
             <Button
               variant={state.view === "grid" ? "default" : "ghost"}
@@ -84,7 +82,6 @@ export function NotesCatalogue() {
             </Button>
           </div>
 
-          {/* Mobile filter sheet */}
           <Sheet>
             <SheetTrigger render={
               <Button
@@ -108,7 +105,6 @@ export function NotesCatalogue() {
         </div>
       </div>
 
-      {/* Active filter chips */}
       {activeFilterCount > 0 && (
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <ActiveFilterChips state={state} setFilter={setFilter} />
@@ -124,18 +120,14 @@ export function NotesCatalogue() {
         </div>
       )}
 
-      {/* Layout: sidebar + grid */}
       <div className="mt-2 grid gap-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
-        {/* Desktop filter sidebar */}
         <div className="hidden lg:block">
-          <div className="sticky top-20 rounded-2xl border border-border bg-card p-4 shadow-sm notebook-lines">
+          <div className="sticky top-20 rounded-2xl border border-border bg-card p-4 shadow-sm notebook-lines torn-paper">
             <FilterPanel />
           </div>
         </div>
 
-        {/* Results */}
         <div id="results" className="min-w-0">
-          {/* Note grid */}
           <div
             className={cn(
               "mt-4 grid gap-3",
@@ -176,7 +168,6 @@ export function NotesCatalogue() {
             )}
           </div>
 
-          {/* Pagination */}
           {notes.data && notes.data.pagination.totalPages > 1 && (
             <div className="mt-6">
               <PaginationBar

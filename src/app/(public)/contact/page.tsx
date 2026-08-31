@@ -68,9 +68,9 @@ export default function ContactPage() {
           {CONTACT_CHANNELS.map(({ title, description, href, icon, label }) => {
             const Icon = ICON_MAP[icon];
             return (
-              <Card key={title} className="group rounded-2xl border border-border/80 bg-card transition-colors transition-shadow hover:border-primary/20 hover:shadow-md">
+              <Card key={title} className="rounded-2xl border border-border/80 bg-card">
                 <CardContent className="flex flex-col gap-4 p-5">
-                  <span className="inline-flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary transition-transform group-hover:scale-105">
+                  <span className="inline-flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
                     <Icon aria-hidden="true" className="size-5" />
                   </span>
                   <div>

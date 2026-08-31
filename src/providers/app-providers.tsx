@@ -7,7 +7,7 @@ import { Toaster, toast } from "sonner";
 import { ApiError } from "@/lib/api-client";
 import { ThemeProvider } from "@/providers/theme-provider";
 
-export function getErrorMessage(error: unknown): string {
+function getErrorMessage(error: unknown): string {
   return error instanceof Error ? error.message : "Something went wrong. Please try again.";
 }
 

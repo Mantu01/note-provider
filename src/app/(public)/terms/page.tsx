@@ -54,7 +54,7 @@ export default function TermsPage() {
         <Accordion className="w-full space-y-4">
           {TERMS_OF_SERVICE_SECTIONS.map((section) => (
             <AccordionItem key={section.id} value={section.id} className="border rounded-xl bg-card px-4 shadow-sm">
-              <AccordionTrigger className="hover:no-underline text-lg font-semibold">
+              <AccordionTrigger className="text-lg font-semibold">
                 {section.title}
               </AccordionTrigger>
               <AccordionContent className="text-muted-foreground leading-relaxed text-base pt-2">

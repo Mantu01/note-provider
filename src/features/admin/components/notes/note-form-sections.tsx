@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import Link from "next/link";
 import { HelpCircle, HardDrive, UploadCloud } from "lucide-react";
 import { type UseFormReturn } from "react-hook-form";

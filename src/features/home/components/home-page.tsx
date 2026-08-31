@@ -118,22 +118,18 @@ function HeroSection({
   isLoading: boolean;
 }) {
   return (
-    <section className="relative overflow-hidden pt-14 pb-12 md:pt-24 md:pb-20 lg:pt-32 lg:pb-28">
-      {/* Background gradient orbs */}
+    <section className="relative overflow-hidden pt-14 pb-12 md:pt-24 md:pb-20 lg:pt-32 lg:pb-28 paper-bg">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,var(--brand-green-soft),transparent_55%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,var(--brand-orange-soft),transparent_55%)]" />
-      {/* Subtle dot pattern */}
       <div className="pointer-events-none absolute inset-0 page-dot-pattern opacity-40" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="max-w-2xl space-y-7">
-          {/* Eyebrow badge */}
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/5 px-3 py-1.5 text-xs font-semibold tracking-wide text-primary uppercase backdrop-blur-md shadow-sm animate-fade-in-up">
             <Sparkles aria-hidden="true" className="size-3.5" />
             Developer notes that scale
           </div>
 
-          {/* Headline */}
           <h1 className="font-heading text-4xl font-extrabold tracking-tighter leading-[1.05] text-foreground md:text-5xl lg:text-6xl animate-fade-in-up stagger-1">
             Learn the stack{" "}
             <span className="brand-gradient-text">with notes</span>
@@ -141,17 +137,15 @@ function HeroSection({
             <span className="text-foreground">that ship.</span>
           </h1>
 
-          {/* Subheadline */}
           <p className="max-w-lg text-base leading-relaxed text-muted-foreground animate-fade-in-up stagger-2">
             {BRAND.description}
           </p>
 
-          {/* CTAs */}
           <div className="flex flex-wrap gap-3 pt-1 animate-fade-in-up stagger-3">
             <Button
               render={<Link href="/notes" />}
               size="lg"
-              className="h-11 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-lg hover:shadow-xl transition-shadow"
+              className="h-11 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-lg"
             >
               Browse catalogue
               <ArrowRight aria-hidden="true" className="ml-2 size-4" />
@@ -167,7 +161,6 @@ function HeroSection({
           </div>
         </div>
 
-        {/* Stats grid */}
         <div className="mt-12 grid grid-cols-2 gap-3 md:mt-16 md:grid-cols-4 animate-fade-in-up stagger-4">
           {isLoading
             ? Array.from({ length: 4 }, (_, i) => <ShimmerStatCard key={i} />)
@@ -309,8 +302,8 @@ function StepsRow() {
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
       {STEPS.map(({ num, title, desc }, index) => (
-        <div key={num} className="group relative rounded-2xl border border-border/50 bg-card p-5 transition-colors transition-shadow hover:border-primary/20 hover:shadow-md">
-          <span className="mb-3 block font-heading text-3xl font-black tracking-tighter text-primary/12 group-hover:text-primary/20 transition-colors">
+        <div key={num} className="rounded-2xl border border-border/50 bg-card p-5 torn-paper">
+          <span className="mb-3 block font-heading text-3xl font-black tracking-tighter text-primary/12">
             {num}
           </span>
           <h3 className="mb-1.5 text-sm font-bold">{title}</h3>
@@ -341,8 +334,7 @@ function CTABanner() {
   return (
     <section className="py-14 md:py-24">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-3xl border border-border/50 bg-gradient-to-br from-primary/10 via-card to-accent/8 px-6 py-14 text-center md:px-14 md:py-20 shadow-xl">
-          {/* Decorative orbs */}
+        <div className="relative overflow-hidden rounded-3xl border border-border/50 bg-gradient-to-br from-primary/10 via-card to-accent/8 px-6 py-14 text-center md:px-14 md:py-20 shadow-xl torn-paper">
           <div className="pointer-events-none absolute -top-32 -right-32 size-80 rounded-full bg-primary/10 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-32 -left-32 size-80 rounded-full bg-accent/10 blur-3xl" />
 
@@ -381,10 +373,10 @@ function CTABanner() {
 
 function FAQAccordion() {
   return (
-    <Accordion defaultValue={["faq-0"]} className="rounded-2xl border border-border bg-card shadow-sm">
+    <Accordion defaultValue={["faq-0"]} className="rounded-2xl border border-border bg-card shadow-sm torn-paper">
       {FAQS.map(([q, a], i) => (
         <AccordionItem key={q} value={`faq-${i}`} className="border-b-0">
-          <AccordionTrigger className="text-sm font-semibold py-4 px-6 hover:no-underline">
+          <AccordionTrigger className="text-sm font-semibold py-4 px-6">
             {q}
           </AccordionTrigger>
           <AccordionContent className="text-sm text-muted-foreground leading-relaxed px-6 pb-4">

@@ -56,7 +56,7 @@ export default function AboutPage() {
         <p>From first-time revision to interview prep and system design practice, our approach stays simple: less clutter, better structure, and a clearer path to growth.</p>
         <div className="not-prose grid gap-4 md:grid-cols-3">
           {ABOUT_VALUES.map((value) => (
-            <Card key={value.title} className="group rounded-2xl border border-border/80 bg-card transition-colors transition-shadow hover:border-primary/20 hover:shadow-md">
+            <Card key={value.title} className="rounded-2xl border border-border/80 bg-card">
               <CardContent className="flex flex-col gap-4 p-5">
                 <div>
                   <h3 className="text-base font-semibold text-foreground">{value.title}</h3>

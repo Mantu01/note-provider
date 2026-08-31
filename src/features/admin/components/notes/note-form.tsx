@@ -1,12 +1,12 @@
 "use client";
 
-import React from "react";
 import { parseAsBoolean, useQueryStates } from "nuqs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Save, ArrowLeft, AlertCircle } from "lucide-react";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CategoryDialog } from "@/features/admin/components/categories/category-dialog";
 import { useAdminCategories } from "@/features/admin/api/use-admin-categories";
@@ -89,8 +89,8 @@ export function NoteForm({ initialData }: NoteFormProps) {
   const pricingType = form.watch("pricingType");
   const fullFile = form.watch("fullFile");
   const previewFile = form.watch("previewFile");
-  const [fullFileSource, setFullFileSource] = React.useState<FileSource>(initialPdfSource);
-  const [previewFileSource, setPreviewFileSource] = React.useState<FileSource>("upload");
+  const [fullFileSource, setFullFileSource] = useState<FileSource>(initialPdfSource);
+  const [previewFileSource, setPreviewFileSource] = useState<FileSource>("upload");
 
   const onSubmit = (values: CreateNoteInput) => {
     if (isEditing) {
