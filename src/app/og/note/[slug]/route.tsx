@@ -11,10 +11,6 @@ const MUTED = "#94a3b8";
 export const runtime = "edge";
 export const contentType = "image/png";
 
-/**
- * OG image generator for note detail pages.
- * GET /og/note/[slug].png
- */
 export function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ slug: string }> },
@@ -23,7 +19,6 @@ export function GET(
     (async () => {
       const { slug } = await params;
 
-      // Fetch note data from API
       let title = "Developer Note";
       let description = "Developer notes for coding and interview prep";
       let category = "General";
@@ -46,11 +41,8 @@ export function GET(
             coverUrl = note.coverImageUrl || "";
           }
         }
-      } catch {
-        // Fallback to defaults
-      }
+      } catch {}
 
-      // Truncate title for OG (OG images have limited space)
       const safeTitle = title || "";
       const displayTitle =
         safeTitle.length > 50 ? safeTitle.slice(0, 47) + "..." : safeTitle;
@@ -75,7 +67,6 @@ export function GET(
                 boxSizing: "border-box",
               }}
             >
-              {/* Background decoration */}
               <div
                 style={{
                   position: "absolute",
@@ -89,7 +80,6 @@ export function GET(
                 }}
               />
 
-              {/* Top bar */}
               <div
                 style={{
                   display: "flex",
@@ -148,7 +138,6 @@ export function GET(
                 </div>
               </div>
 
-              {/* Title */}
               <h1
                 style={{
                   fontSize: 40,
@@ -164,7 +153,6 @@ export function GET(
                 {displayTitle}
               </h1>
 
-              {/* Category */}
               <div
                 style={{
                   display: "inline-flex",
@@ -182,7 +170,6 @@ export function GET(
                 {category}
               </div>
 
-              {/* Description */}
               <p
                 style={{
                   fontSize: 20,
@@ -197,7 +184,6 @@ export function GET(
                 {displayDesc}
               </p>
 
-              {/* Bottom bar */}
               <div
                 style={{
                   display: "flex",

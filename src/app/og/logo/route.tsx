@@ -1,10 +1,6 @@
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 
-/**
- * Simple fallback OG logo/image page.
- * GET /og/logo.png
- */
 export function GET(_request: NextRequest) {
   return new ImageResponse(
     (

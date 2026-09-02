@@ -6,11 +6,11 @@ import JsonLd, {
   webpageJsonLd,
   articleJsonLd,
 } from "@/components/seo/json-ld";
+import { APP_URL } from "@/lib/constants";
 import { GroupDetailPage } from "@/features/groups/components/group-detail";
 import { Group } from "@/server/db/models/group.model";
 import type { GroupDoc } from "@/server/db/models/group.model";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+import "@/server/db/models/category.model";
 
 interface PopulatedGroup extends Omit<GroupDoc, "category"> {
   category?: { _id: import("mongoose").Types.ObjectId; name: string };

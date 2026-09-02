@@ -1,6 +1,6 @@
 import { toIsoString, toIsoStringRequired } from "@/lib/format";
 import type { AdminActivity, AdminProfile } from "@/lib/types";
-import { id, isPopulated, nullableStr, str, type Lean } from "./primitives";
+import { id, isPopulated, nullableStr, str } from "./primitives";
 
 export function toAdminProfile(raw: unknown): AdminProfile {
   const doc = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;

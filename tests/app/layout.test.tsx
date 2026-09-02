@@ -31,6 +31,8 @@ vi.mock("@next/third-parties/google", () => ({
 vi.mock("next/font/google", () => ({
   Inter: () => ({ variable: "--font-inter", className: "font-inter inter" }),
   Outfit: () => ({ variable: "--font-outfit", className: "font-outfit outfit" }),
+  Caveat: () => ({ variable: "--font-caveat", className: "font-caveat caveat" }),
+  Instrument_Sans: () => ({ variable: "--font-instrument", className: "font-instrument instrument-sans" }),
 }));
 
 describe("RootLayout", () => {
@@ -75,6 +77,8 @@ describe("RootLayout", () => {
     const html = document.querySelector("html");
     expect(html).toHaveClass("--font-inter");
     expect(html).toHaveClass("--font-outfit");
+    expect(html).toHaveClass("--font-caveat");
+    expect(html).toHaveClass("--font-instrument");
   });
 
   it("includes viewport meta tag", () => {

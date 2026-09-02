@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BookOpen, Download, ShieldCheck, Sparkles, TrendingUp } from "lucide-react";
+import { ArrowRight, BookOpen, Download, ShieldCheck, Sparkles } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
 import { CategoryCard } from "@/components/shared/category-card";
@@ -9,40 +9,11 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { GroupCard } from "@/components/shared/group-card";
 import { NoteCard } from "@/components/shared/note-card";
-import { ShimmerLoader, ShimmerNoteCard, ShimmerStatCard } from "@/components/shared/shimmer-loader";
+import { ShimmerLoader, ShimmerNoteCard, ShimmerGroupCard, ShimmerStatCard } from "@/components/shared/shimmer-loader";
 import { useHome } from "@/features/home/api/use-home";
-import { BRAND } from "@/lib/constants";
+import { BRAND, HOME_TRUST_ITEMS, HOME_FAQS, HOME_STEPS, HOME_STATS_CONFIG } from "@/lib/constants";
 import { formatCompactNumber } from "@/lib/format";
 import type { PublicNote, PublicGroup, PublicCategory } from "@/lib/types";
-
-const TRUST_ITEMS = [
-  { icon: ShieldCheck, label: "Secure payments" },
-  { icon: Download, label: "Instant downloads" },
-  { icon: Sparkles, label: "Curated notes" },
-  { icon: BookOpen, label: "Human support" },
-] satisfies Array<{ icon: React.ComponentType<{ className?: string }>; label: string }>;
-
-const FAQS = [
-  ["When will I receive paid notes?", "Paid notes are available for instant download after successful payment."],
-  ["How do free notes work?", "Free notes are available for immediate PDF download. No sign-up is required."],
-  ["Which topics do you cover?", "We focus on web development, frontend, backend, DSA, DBMS, system design, and interview-prep topics."],
-  ["Which payment methods can I use?", "Payments are securely processed by Razorpay and support its available Indian payment methods."],
-  ["Can I get a refund?", "Digital notes are non-refundable after delivery. Please review the preview and description before paying."],
-] as const;
-
-const STEPS = [
-  { num: "01", title: "Browse", desc: "Explore our curated catalogue by topic." },
-  { num: "02", title: "Preview", desc: "Review any note with a free sample PDF." },
-  { num: "03", title: "Pay", desc: "Checkout securely via Razorpay." },
-  { num: "04", title: "Download", desc: "Get your notes instantly after payment." },
-] satisfies Array<{ num: string; title: string; desc: string }>;
-
-const STATS_CONFIG = [
-  { label: "Notes", key: "totalNotes" as const },
-  { label: "Topics", key: "totalCategories" as const },
-  { label: "Downloads", key: "totalDownloads" as const },
-  { label: "Learners", key: "happyLearners" as const },
-] as const;
 
 export function HomePage() {
   const home = useHome();
@@ -59,14 +30,14 @@ export function HomePage() {
     <div className="overflow-hidden">
       <HeroSection stats={home.data?.stats} isLoading={home.isPending} />
 
-      <div className="section-divider" />
+      <div className="section-fold my-0" />
 
       <HomeSection>
         <SectionHead eyebrow="Browse by topic" title="Find the right notes" />
         <CategoryStrip categories={home.data?.categories} isLoading={home.isPending} />
       </HomeSection>
 
-      <div className="section-divider" />
+      <div className="section-fold my-0" />
 
       <HomeSection>
         <SectionHead eyebrow="Editor's picks" title="Featured notes" action={<SeeAll href="/notes" />} />
@@ -78,14 +49,14 @@ export function HomePage() {
         <NoteGrid items={home.data?.freeNotes ?? []} isLoading={home.isPending} emptyTitle="Free notes coming soon" emptyDesc="Check back for resources you can download immediately." />
       </HomeSection>
 
-      <div className="section-divider" />
+      <div className="section-fold my-0" />
 
       <HomeSection>
         <SectionHead eyebrow="Value bundles" title="Save with complete packs" action={<SeeAll href="/groups" />} />
         <GroupGrid groups={home.data?.featuredGroups ?? []} isLoading={home.isPending} />
       </HomeSection>
 
-      <div className="section-divider" />
+      <div className="section-fold my-0" />
 
       <HomeSection>
         <SectionHead eyebrow="How it works" title="Four simple steps" center />
@@ -96,7 +67,7 @@ export function HomePage() {
         <TrustBar />
       </HomeSection>
 
-      <div className="section-divider" />
+      <div className="section-fold my-0" />
 
       <HomeSection>
         <div className="mx-auto max-w-2xl">
@@ -118,14 +89,14 @@ function HeroSection({
   isLoading: boolean;
 }) {
   return (
-    <section className="relative overflow-hidden pt-14 pb-12 md:pt-24 md:pb-20 lg:pt-32 lg:pb-28 paper-bg">
+    <section className="relative overflow-hidden pt-16 pb-14 md:pt-28 md:pb-24 lg:pt-36 lg:pb-32 paper-bg">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,var(--brand-green-soft),transparent_55%)]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,var(--brand-orange-soft),transparent_55%)]" />
-      <div className="pointer-events-none absolute inset-0 page-dot-pattern opacity-40" />
+      <div className="pointer-events-none absolute inset-0 page-dot-pattern opacity-30" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl space-y-7">
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/25 bg-primary/5 px-3 py-1.5 text-xs font-semibold tracking-wide text-primary uppercase backdrop-blur-md shadow-sm animate-fade-in-up">
+        <div className="max-w-2xl space-y-8">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3.5 py-1.5 text-xs font-semibold tracking-wide text-primary uppercase backdrop-blur-md shadow-sm animate-fade-in-up">
             <Sparkles aria-hidden="true" className="size-3.5" />
             Developer notes that scale
           </div>
@@ -145,7 +116,7 @@ function HeroSection({
             <Button
               render={<Link href="/notes" />}
               size="lg"
-              className="h-11 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-lg"
+              className="h-12 rounded-full bg-primary px-7 text-sm font-semibold text-primary-foreground shadow-lg hover:shadow-xl transition-shadow"
             >
               Browse catalogue
               <ArrowRight aria-hidden="true" className="ml-2 size-4" />
@@ -154,22 +125,26 @@ function HeroSection({
               render={<Link href="/notes?pricing=free" />}
               variant="outline"
               size="lg"
-              className="h-11 rounded-full border-2 px-6 text-sm font-semibold backdrop-blur-sm"
+              className="h-12 rounded-full border-2 px-7 text-sm font-semibold backdrop-blur-sm hover:bg-primary/5 transition-colors"
             >
               Free notes
             </Button>
           </div>
         </div>
 
-        <div className="mt-12 grid grid-cols-2 gap-3 md:mt-16 md:grid-cols-4 animate-fade-in-up stagger-4">
+        <div className="mt-14 grid grid-cols-2 gap-3 md:mt-18 md:grid-cols-4 animate-fade-in-up stagger-4">
           {isLoading
             ? Array.from({ length: 4 }, (_, i) => <ShimmerStatCard key={i} />)
-            : STATS_CONFIG.map((s, i) => (
-                <div key={s.key} className="rounded-2xl border border-border/50 bg-card/70 px-4 py-3 text-center backdrop-blur-md shadow-sm animate-fade-in-up" style={{ animationDelay: `${0.3 + i * 0.05}s` }}>
+            : HOME_STATS_CONFIG.map((s, i) => (
+                <div
+                  key={s.key}
+                  className="rounded-2xl border border-border/50 bg-card/80 px-4 py-3.5 text-center backdrop-blur-md shadow-sm animate-fade-in-up paper-card"
+                  style={{ animationDelay: `${0.3 + i * 0.05}s` }}
+                >
                   <p className="text-2xl font-black tracking-tight text-foreground md:text-3xl">
                     {stats ? formatCompactNumber(stats[s.key]) : "—"}
                   </p>
-                  <p className="mt-1 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                  <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
                     {s.label}
                   </p>
                 </div>
@@ -182,7 +157,7 @@ function HeroSection({
 
 function HomeSection({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
-    <section className={`py-12 md:py-20 ${className ?? ""}`}>
+    <section className={`py-14 md:py-24 ${className ?? ""}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>
     </section>
   );
@@ -200,8 +175,8 @@ function SectionHead({
   center?: boolean;
 }) {
   return (
-    <div className={center ? "mb-8 text-center" : "mb-8 flex flex-col gap-2 md:flex-row md:items-end md:justify-between"}>
-      <div className={center ? "mx-auto max-w-md space-y-1" : "max-w-md space-y-1"}>
+    <div className={center ? "mb-10 text-center" : "mb-10 flex flex-col gap-2 md:flex-row md:items-end md:justify-between"}>
+      <div className={center ? "mx-auto max-w-md space-y-1.5" : "max-w-md space-y-1.5"}>
         <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">{eyebrow}</p>
         <h2 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">{title}</h2>
       </div>
@@ -216,7 +191,7 @@ function SeeAll({ href, label = "View all" }: { href: string; label?: string }) 
       render={<Link href={href} />}
       variant="outline"
       size="sm"
-      className="h-8 rounded-full text-xs font-medium shadow-sm"
+      className="h-8 rounded-full text-xs font-medium shadow-sm hover:shadow-md transition-shadow"
     >
       {label}
       <ArrowRight aria-hidden="true" className="ml-1 size-3" />
@@ -232,10 +207,10 @@ function CategoryStrip({
   isLoading: boolean;
 }) {
   return (
-    <div className="flex gap-3 overflow-x-auto pb-2 hide-scrollbar">
+    <div className="flex gap-3 overflow-x-auto pb-3 hide-scrollbar">
       {isLoading ? (
         Array.from({ length: 5 }, (_, i) => (
-          <ShimmerLoader key={i} className="min-w-40 h-12 rounded-xl shrink-0" />
+          <ShimmerLoader key={i} className="min-w-40 h-14 rounded-xl shrink-0" />
         ))
       ) : categories?.length ? (
         categories.map((c) => <CategoryCard key={c.id} category={c} />)
@@ -286,7 +261,7 @@ function GroupGrid({
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       {isLoading
-        ? Array.from({ length: 3 }, (_, i) => <ShimmerNoteCard key={i} />)
+        ? Array.from({ length: 3 }, (_, i) => <ShimmerGroupCard key={i} />)
         : groups.length
           ? groups.slice(0, 3).map((g) => <GroupCard key={g.id} group={g} variant="featured" />)
           : (
@@ -300,27 +275,37 @@ function GroupGrid({
 
 function StepsRow() {
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {STEPS.map(({ num, title, desc }, index) => (
-        <div key={num} className="rounded-2xl border border-border/50 bg-card p-5 torn-paper">
-          <span className="mb-3 block font-heading text-3xl font-black tracking-tighter text-primary/12">
-            {num}
-          </span>
-          <h3 className="mb-1.5 text-sm font-bold">{title}</h3>
-          <p className="text-[11px] leading-relaxed text-muted-foreground">{desc}</p>
-          {index < STEPS.length - 1 && (
-            <ArrowRight aria-hidden="true" className="absolute -right-3 top-1/2 -translate-y-1/2 size-4 text-muted-foreground/30 hidden lg:block" />
-          )}
-        </div>
-      ))}
+    <div className="relative">
+      <div className="absolute top-8 left-0 right-0 hidden border-t-2 border-dashed border-border/60 lg:block" />
+
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
+        {HOME_STEPS.map(({ num, title, desc, Icon }, index) => (
+          <div key={num} className="relative flex flex-col items-center text-center">
+            <div className="relative z-10 mb-4 flex size-16 items-center justify-center rounded-2xl border border-border/60 bg-card shadow-sm torn-paper paper-card transition-shadow hover:shadow-md">
+              <Icon aria-hidden="true" className="size-6 text-primary" />
+            </div>
+
+            <span className="mb-1 inline-flex size-6 items-center justify-center rounded-full bg-primary text-[10px] font-bold text-primary-foreground">
+              {num}
+            </span>
+
+            <h3 className="mt-1.5 text-sm font-bold tracking-tight">{title}</h3>
+            <p className="mt-1 max-w-[200px] text-[11px] leading-relaxed text-muted-foreground">{desc}</p>
+
+            {index < HOME_STEPS.length - 1 && (
+              <ArrowRight aria-hidden="true" className="absolute right-0 top-8 hidden size-4 -translate-y-1/2 translate-x-1/2 rotate-0 text-muted-foreground/40 lg:block" />
+            )}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
 
 function TrustBar() {
   return (
-    <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3">
-      {TRUST_ITEMS.map(({ icon: Icon, label }) => (
+    <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+      {HOME_TRUST_ITEMS.map(({ icon: Icon, label }) => (
         <div key={label} className="flex items-center gap-2.5">
           <Icon aria-hidden="true" className="size-4 shrink-0 text-primary" />
           <span className="text-xs font-semibold text-foreground">{label}</span>
@@ -332,13 +317,13 @@ function TrustBar() {
 
 function CTABanner() {
   return (
-    <section className="py-14 md:py-24">
+    <section className="py-16 md:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-3xl border border-border/50 bg-gradient-to-br from-primary/10 via-card to-accent/8 px-6 py-14 text-center md:px-14 md:py-20 shadow-xl torn-paper">
-          <div className="pointer-events-none absolute -top-32 -right-32 size-80 rounded-full bg-primary/10 blur-3xl" />
-          <div className="pointer-events-none absolute -bottom-32 -left-32 size-80 rounded-full bg-accent/10 blur-3xl" />
+        <div className="relative overflow-hidden rounded-3xl border border-border/40 bg-linear-to-br from-primary/8 via-card to-accent/6 px-6 py-16 text-center md:px-16 md:py-24 shadow-xl torn-paper paper-card">
+          <div className="pointer-events-none absolute -top-40 -right-40 size-96 rounded-full bg-primary/8 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-40 -left-40 size-96 rounded-full bg-accent/8 blur-3xl" />
 
-          <div className="relative z-10 mx-auto max-w-lg space-y-5">
+          <div className="relative z-10 mx-auto max-w-lg space-y-6">
             <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">Ready?</p>
             <h2 className="font-heading text-2xl font-black tracking-tight md:text-3xl lg:text-4xl">
               Start learning smarter today.
@@ -350,7 +335,7 @@ function CTABanner() {
               <Button
                 render={<Link href="/notes" />}
                 size="lg"
-                className="h-11 rounded-full bg-primary px-6 text-sm font-semibold text-primary-foreground shadow-lg"
+                className="h-12 rounded-full bg-primary px-7 text-sm font-semibold text-primary-foreground shadow-lg hover:shadow-xl transition-shadow"
               >
                 Browse notes
                 <ArrowRight aria-hidden="true" className="ml-2 size-4" />
@@ -359,7 +344,7 @@ function CTABanner() {
                 render={<Link href="/contact" />}
                 variant="outline"
                 size="lg"
-                className="h-11 rounded-full px-6 text-sm font-semibold backdrop-blur-sm"
+                className="h-12 rounded-full px-7 text-sm font-semibold backdrop-blur-sm hover:bg-primary/5 transition-colors"
               >
                 Contact support
               </Button>
@@ -373,8 +358,8 @@ function CTABanner() {
 
 function FAQAccordion() {
   return (
-    <Accordion defaultValue={["faq-0"]} className="rounded-2xl border border-border bg-card shadow-sm torn-paper">
-      {FAQS.map(([q, a], i) => (
+    <Accordion defaultValue={["faq-0"]} className="rounded-2xl border border-border bg-card shadow-sm torn-paper paper-card">
+      {HOME_FAQS.map(([q, a], i) => (
         <AccordionItem key={q} value={`faq-${i}`} className="border-b-0">
           <AccordionTrigger className="text-sm font-semibold py-4 px-6">
             {q}

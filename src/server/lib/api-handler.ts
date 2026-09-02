@@ -39,7 +39,7 @@ function toAppError(error: unknown): AppError {
 
   if (isDuplicateKeyError(error)) return duplicateKeyToAppError(error);
 
-  console.error("[api] unhandled error", error);
+  console.error("[api] error", error);
   return AppError.internal();
 }
 

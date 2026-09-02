@@ -39,28 +39,28 @@ export function NotesCatalogue() {
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 paper-bg">
-      <div className="mt-4 mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+      <div className="mt-4 mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">
+          <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-brand-orange">
             Catalogue
           </p>
-          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground">
+          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground md:text-3xl">
             All Notes
           </h1>
-          <p className="mt-0.5 text-xs text-muted-foreground">
+          <p className="mt-1 text-xs text-muted-foreground">
             {notes.data
-              ? `${notes.data.pagination.total} note${notes.data.pagination.total !== 1 ? "s" : ""}`
+              ? `${notes.data.pagination.total} note${notes.data.pagination.total !== 1 ? "s" : ""} available`
               : "Loading…"}
           </p>
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="hidden sm:inline-flex items-center rounded-full border border-border bg-card p-0.5 shadow-sm">
+          <div className="hidden sm:inline-flex items-center rounded-full border border-border bg-card p-0.5 shadow-sm paper-card">
             <Button
               variant={state.view === "grid" ? "default" : "ghost"}
               size="icon"
               className={cn(
-                "size-7 rounded-full",
+                "size-7 rounded-full transition-all",
                 state.view === "grid" && "bg-primary text-primary-foreground shadow-none"
               )}
               onClick={() => setFilter({ view: "grid" })}
@@ -72,7 +72,7 @@ export function NotesCatalogue() {
               variant={state.view === "list" ? "default" : "ghost"}
               size="icon"
               className={cn(
-                "size-7 rounded-full",
+                "size-7 rounded-full transition-all",
                 state.view === "list" && "bg-primary text-primary-foreground shadow-none"
               )}
               onClick={() => setFilter({ view: "list" })}
@@ -87,13 +87,13 @@ export function NotesCatalogue() {
               <Button
                 variant="outline"
                 size="sm"
-                className="h-9 rounded-full px-3 text-xs shadow-sm lg:hidden"
+                className="h-9 rounded-full px-3 text-xs shadow-sm lg:hidden paper-card transition-shadow hover:shadow-md"
               >
                 <SlidersHorizontal aria-hidden="true" className="mr-1.5 size-3.5" />
                 Filters{activeFilterCount ? ` · ${activeFilterCount}` : ""}
               </Button>
             } />
-            <SheetContent side="left" className="w-[85vw] max-w-sm overflow-y-auto">
+            <SheetContent side="left" className="w-[85vw] max-w-sm overflow-y-auto paper-bg paper-margin">
               <SheetHeader>
                 <SheetTitle>Filters</SheetTitle>
               </SheetHeader>
@@ -106,23 +106,23 @@ export function NotesCatalogue() {
       </div>
 
       {activeFilterCount > 0 && (
-        <div className="mb-4 flex flex-wrap items-center gap-2">
+        <div className="mb-5 flex flex-wrap items-center gap-2">
           <ActiveFilterChips state={state} setFilter={setFilter} />
           <Button
             type="button"
             variant="ghost"
             size="sm"
             onClick={clearFilters}
-            className="h-6 text-[10px] text-muted-foreground"
+            className="h-6 text-[10px] text-muted-foreground hover:text-foreground"
           >
             Clear all
           </Button>
         </div>
       )}
 
-      <div className="mt-2 grid gap-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
+      <div className="mt-3 grid gap-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
         <div className="hidden lg:block">
-          <div className="sticky top-20 rounded-2xl border border-border bg-card p-4 shadow-sm notebook-lines torn-paper">
+          <div className="sticky top-20 rounded-xl border border-border bg-card p-4 shadow-sm notebook-lines torn-paper paper-card">
             <FilterPanel />
           </div>
         </div>
@@ -130,7 +130,7 @@ export function NotesCatalogue() {
         <div id="results" className="min-w-0">
           <div
             className={cn(
-              "mt-4 grid gap-3",
+              "mt-4 grid gap-4",
               state.view === "grid"
                 ? "sm:grid-cols-2 xl:grid-cols-3"
                 : "grid-cols-1"
@@ -169,7 +169,7 @@ export function NotesCatalogue() {
           </div>
 
           {notes.data && notes.data.pagination.totalPages > 1 && (
-            <div className="mt-6">
+            <div className="mt-8">
               <PaginationBar
                 pagination={notes.data.pagination}
                 onPageChange={(page) => setFilter({ page })}

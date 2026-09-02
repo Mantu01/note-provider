@@ -11,7 +11,16 @@ import { toPublicCategory } from "@/server/mappers/category.mapper";
 export const revalidate = 60;
 export const dynamic = "force-dynamic";
 
-export const GET = handler(async () => {
+const EMPTY_HOME = {
+  featuredNotes: [],
+  latestNotes: [],
+  freeNotes: [],
+  featuredGroups: [],
+  categories: [],
+  stats: { totalNotes: 0, totalCategories: 0, totalDownloads: 0, happyLearners: 0 },
+};
+
+async function fetchHomeData() {
   const [featuredNotes, latestNotes, freeNotes, featuredGroups, categories, totalNotes, totalDownloads, happyLearners, catCounts] = await Promise.all([
     Note.find({ isFeatured: true, visibility: "public" }).populate("category").sort({ createdAt: -1 }).limit(6).lean().exec(),
     Note.find({ visibility: "public" }).populate("category").sort({ createdAt: -1 }).limit(8).lean().exec(),
@@ -30,7 +39,7 @@ export const GET = handler(async () => {
 
   const countMap = new Map(catCounts.map((c) => [c._id.toString(), c.count]));
 
-  const res = ok({
+  return {
     featuredNotes: featuredNotes.map(toPublicNote),
     latestNotes: latestNotes.map(toPublicNote),
     freeNotes: freeNotes.map(toPublicNote),
@@ -42,7 +51,12 @@ export const GET = handler(async () => {
       totalDownloads,
       happyLearners,
     },
-  });
+  };
+}
+
+export const GET = handler(async () => {
+  const data = await fetchHomeData().catch(() => EMPTY_HOME);
+  const res = ok(data);
   res.headers.set("Cache-Control", "public, max-age=60, s-maxage=60");
   return res;
 });

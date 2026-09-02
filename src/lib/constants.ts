@@ -1,3 +1,11 @@
+import {
+  BookOpen,
+  Download,
+  Eye,
+  ShieldCheck,
+  ShoppingBag,
+  Sparkles,
+} from "lucide-react";
 import type {
   ErrorCode,
   FulfillmentStatus,
@@ -10,6 +18,8 @@ import type {
   StatusType,
   UploadKind,
 } from "./types";
+
+export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 export const BRAND = {
   name: "Notes Provider",
@@ -180,4 +190,49 @@ export const CONTACT_CHANNELS = [
   { title: "YouTube", description: "Video tutorials and walkthroughs for notes topics.", href: "https://www.youtube.com/channel/UCgkZ2cdrKLz7dhnXnkDOAgQ", icon: "PlayCircle", label: "Watch on YouTube" },
   { title: "Instagram", description: "Behind-the-scenes, study tips, and new releases.", href: "https://www.instagram.com/programmer_area", icon: "Mail", label: "Follow on Instagram" },
   { title: "Email", description: "For order help, delivery questions, and support requests.", href: `mailto:${SEO.contactEmail}`, icon: "Mail", label: "Send an email" },
+] as const;
+
+export const HOME_TRUST_ITEMS = [
+  { icon: ShieldCheck, label: "Secure payments" },
+  { icon: Download, label: "Instant downloads" },
+  { icon: Sparkles, label: "Curated notes" },
+  { icon: BookOpen, label: "Human support" },
+] satisfies Array<{ icon: React.ComponentType<{ className?: string }>; label: string }>;
+
+export const HOME_FAQS = [
+  ["When will I receive paid notes?", "Paid notes are available for instant download after successful payment."],
+  ["How do free notes work?", "Free notes are available for immediate PDF download. No sign-up is required."],
+  ["Which topics do you cover?", "We focus on web development, frontend, backend, DSA, DBMS, system design, and interview-prep topics."],
+  ["Which payment methods can I use?", "Payments are securely processed by Razorpay and support its available Indian payment methods."],
+  ["Can I get a refund?", "Digital notes are non-refundable after delivery. Please review the preview and description before paying."],
+] as const;
+
+export const HOME_STEPS = [
+  { num: "01", title: "Browse", desc: "Explore our curated catalogue by topic.", Icon: BookOpen },
+  { num: "02", title: "Preview", desc: "Review any note with a free sample PDF.", Icon: Eye },
+  { num: "03", title: "Pay", desc: "Checkout securely via Razorpay.", Icon: ShoppingBag },
+  { num: "04", title: "Download", desc: "Get your notes instantly after payment.", Icon: Download },
+] satisfies Array<{ num: string; title: string; desc: string; Icon: React.ComponentType<{ className?: string }> }>;
+
+export const HOME_STATS_CONFIG = [
+  { label: "Notes", key: "totalNotes" as const },
+  { label: "Topics", key: "totalCategories" as const },
+  { label: "Downloads", key: "totalDownloads" as const },
+  { label: "Learners", key: "happyLearners" as const },
+] as const;
+
+export const NAV_LINKS = [
+  { href: "/", label: "Home" },
+  { href: "/notes", label: "Notes" },
+  { href: "/groups", label: "Bundles" },
+  { href: "/order/track", label: "Track Order" },
+] as const;
+
+export const MOBILE_NAV_LINKS = [
+  { href: "/", label: "Home" },
+  { href: "/notes", label: "Notes" },
+  { href: "/groups", label: "Bundles" },
+  { href: "/order/track", label: "Track Order" },
+  { href: "/about", label: "About" },
+  { href: "/contact", label: "Contact" },
 ] as const;

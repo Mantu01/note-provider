@@ -1,7 +1,7 @@
 import { formatPriceLabel, toIsoStringRequired } from "@/lib/format";
 import type { AdminGroup, PublicGroup, PublicNote } from "@/lib/types";
 import { toAdminRef, toCategoryRef } from "./category.mapper";
-import { bool, id, nullableNum, nullableStr, num, str, toIdList, type Lean } from "./primitives";
+import { bool, id, nullableNum, nullableStr, num, str, toIdList } from "./primitives";
 
 export function toPublicGroup(raw: unknown, notes: PublicNote[] = []): PublicGroup {
   const doc = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;

@@ -19,7 +19,7 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
     return (
       <div className="grid min-h-[60vh] place-items-center">
         <div className="flex flex-col items-center gap-3">
-          <div className="size-10 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+          <div className="size-10 rounded-full border-2 border-brand-orange border-t-transparent animate-spin" />
           <p className="text-xs text-muted-foreground">Loading order…</p>
         </div>
       </div>
@@ -39,7 +39,7 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
   if (order.paymentStatus === "created") {
     return (
       <div className="mx-auto max-w-xl px-4 py-20 text-center">
-        <div className="mx-auto size-12 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+        <div className="mx-auto size-12 rounded-full border-2 border-brand-orange border-t-transparent animate-spin" />
         <h1 className="mt-5 text-xl font-bold tracking-tight">Confirming your payment…</h1>
         <p className="mt-2 text-sm text-muted-foreground">This usually takes a few seconds. Do not close this page.</p>
       </div>
@@ -49,7 +49,7 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
   if (order.paymentStatus === "failed") {
     return (
       <div className="mx-auto max-w-xl px-4 py-20 text-center">
-        <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-destructive/10">
+        <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-destructive/10 border border-destructive/20">
           <CircleAlert aria-hidden="true" className="size-8 text-destructive" />
         </div>
         <h1 className="mt-5 text-xl font-bold tracking-tight">Payment failed</h1>
@@ -64,21 +64,21 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
   const isCompleted = order.fulfillmentStatus === "completed";
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
+    <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6 paper-bg">
       {/* Success header */}
       <div className="text-center space-y-3">
-        <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-success/10">
+        <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-success/10 border border-success/20">
           <CheckCircle2 aria-hidden="true" className="size-8 text-success" />
         </div>
         <div>
-          <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-primary">
+          <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-brand-orange">
             Payment received
           </p>
           <h1 className="mt-1 text-2xl font-black tracking-tight md:text-3xl">
             <span className="brand-gradient-text">Payment successful</span>
           </h1>
         </div>
-        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1 text-xs font-mono font-semibold shadow-sm">
+        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1 text-xs font-mono font-semibold shadow-sm paper-card">
           <span>Order #{order.orderNumber}</span>
           <CopyButton value={order.orderNumber} label="Copy order number" />
         </div>
@@ -86,7 +86,7 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
 
       {/* Cover image */}
       {order.coverImageUrl && (
-        <div className="mt-6 overflow-hidden rounded-2xl border border-border/50 bg-muted/20 shadow-md">
+        <div className="mt-6 overflow-hidden rounded-xl border border-border/50 bg-muted/20 shadow-md torn-paper">
           <Image
             src={order.coverImageUrl}
             alt={`Cover for ${order.itemTitle}`}
@@ -98,12 +98,12 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
       )}
 
       {/* Status card */}
-      <Card className="mt-6 rounded-2xl border-primary/20 bg-primary/5 shadow-sm">
+      <Card className="mt-6 rounded-xl border-brand-orange/20 bg-brand-orange/5 shadow-sm paper-card-orange">
         <CardContent className="p-4">
           <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-orange/10 border border-brand-orange/20">
               {isCompleted ? (
-                <CheckCircle2 aria-hidden="true" className="size-5 text-primary" />
+                <CheckCircle2 aria-hidden="true" className="size-5 text-brand-green" />
               ) : (
                 <Lock aria-hidden="true" className="size-5 text-warning-foreground" />
               )}
@@ -122,10 +122,10 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
 
       {/* Download section */}
       {isCompleted && (
-        <Card className="mt-4 rounded-2xl border-success/20 bg-success/5 shadow-sm">
+        <Card className="mt-4 rounded-xl border-success/20 bg-success/5 shadow-sm paper-card-green">
           <CardContent className="p-4">
             <div className="flex items-center gap-3">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-success/10">
+              <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-success/10 border border-success/20">
                 <Download aria-hidden="true" className="size-6 text-success" />
               </div>
               <div className="flex-1">
@@ -150,7 +150,7 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
       {/* Details grid */}
       <div className="mt-6 grid gap-4 md:grid-cols-2">
         {/* Order details */}
-        <Card className="rounded-2xl">
+        <Card className="rounded-xl paper-card">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-bold">Order details</CardTitle>
           </CardHeader>
@@ -184,7 +184,7 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
         </Card>
 
         {/* Delivery timeline */}
-        <Card className="rounded-2xl">
+        <Card className="rounded-xl paper-card">
           <CardHeader className="pb-3">
             <CardTitle className="text-sm font-bold">Delivery timeline</CardTitle>
           </CardHeader>
@@ -202,7 +202,7 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
                   </li>
                   <li className="flex items-center justify-between">
                     <span className="font-medium">Download now</span>
-                    <Download aria-hidden="true" className="size-4 text-primary shrink-0" />
+                    <Download aria-hidden="true" className="size-4 text-brand-green shrink-0" />
                   </li>
                 </>
               ) : (
@@ -221,13 +221,13 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
 
       {/* Action buttons */}
       <div className="mt-6 flex flex-wrap justify-center gap-2">
-        <Button render={<Link href="/order/track" />} variant="outline" size="sm" className="rounded-full">
+        <Button render={<Link href="/order/track" />} variant="outline" size="sm" className="rounded-full paper-card">
           Track another
         </Button>
-        <Button render={<Link href="/notes" />} size="sm" className="rounded-full">
+        <Button render={<Link href="/notes" />} size="sm" className="rounded-full bg-brand-orange text-white">
           Browse notes
         </Button>
-        <Button render={<Link href="/contact" />} variant="outline" size="sm" className="rounded-full">
+        <Button render={<Link href="/contact" />} variant="outline" size="sm" className="rounded-full paper-card">
           Support
         </Button>
         <Button type="button" variant="ghost" size="sm" onClick={() => query.refetch()} className="rounded-full">

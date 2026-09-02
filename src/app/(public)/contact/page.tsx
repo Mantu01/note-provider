@@ -5,10 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
 import type { Metadata } from "next";
-import { SEO, CONTACT_CHANNELS } from "@/lib/constants";
+import { APP_URL, SEO, CONTACT_CHANNELS } from "@/lib/constants";
 import JsonLd, { webpageJsonLd } from "@/components/seo/json-ld";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 const ICON_MAP: Record<string, LucideIcon> = {
   MessageSquareText,

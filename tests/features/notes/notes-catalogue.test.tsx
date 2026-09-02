@@ -211,7 +211,7 @@ describe("NotesCatalogue", () => {
 
     renderWithProvider(<NotesCatalogue />);
     await waitFor(() => {
-      expect(screen.getByText("10 notes")).toBeInTheDocument();
+      expect(screen.getByText(/10 notes? available/)).toBeInTheDocument();
     });
   });
 
@@ -318,7 +318,7 @@ describe("NotesCatalogue", () => {
 
     renderWithProvider(<NotesCatalogue />);
     await waitFor(() => {
-      expect(screen.getByText("1 note")).toBeInTheDocument();
+      expect(screen.getByText(/1 note? available/)).toBeInTheDocument();
     });
   });
 
@@ -335,7 +335,7 @@ describe("NotesCatalogue", () => {
 
     renderWithProvider(<NotesCatalogue />);
     await waitFor(() => {
-      expect(screen.getByText("100 notes")).toBeInTheDocument();
+      expect(screen.getByText(/100 notes? available/)).toBeInTheDocument();
     });
     const paginationEl = screen.getByTestId("pagination");
     expect(paginationEl).toBeInTheDocument();

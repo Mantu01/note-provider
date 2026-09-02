@@ -28,7 +28,6 @@ export const GET = adminHandler(async (ctx) => {
 
 export const PATCH = adminHandler(async (ctx) => {
   const { id } = await ctx.params;
-  // body parsing is pure CPU — can run in parallel with fulfillOrder's first DB query
   const [bodyPromise, orderPromise] = [ctx.req.json(), Order.findById(id).lean().exec()];
   const [body, order] = await Promise.all([bodyPromise, orderPromise]);
   if (!order) throw AppError.notFound("Order not found");

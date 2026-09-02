@@ -25,6 +25,31 @@ vi.mock("@/components/shared/note-card", () => ({
 
 vi.mock("@/lib/constants", () => ({
   BRAND: { name: "Notes Provider", description: "Developer notes that scale." },
+  HOME_TRUST_ITEMS: [
+    { icon: ({ className }: { className?: string }) => <svg className={className} />, label: "Secure payments" },
+    { icon: ({ className }: { className?: string }) => <svg className={className} />, label: "Instant downloads" },
+    { icon: ({ className }: { className?: string }) => <svg className={className} />, label: "Curated notes" },
+    { icon: ({ className }: { className?: string }) => <svg className={className} />, label: "Human support" },
+  ],
+  HOME_FAQS: [
+    ["When will I receive paid notes?", "Paid notes are available for instant download after successful payment."],
+    ["How do free notes work?", "Free notes are available for immediate PDF download. No sign-up is required."],
+    ["Which topics do you cover?", "We focus on web development, frontend, backend, DSA, DBMS, system design, and interview-prep topics."],
+    ["Which payment methods can I use?", "Payments are securely processed by Razorpay."],
+    ["Can I get a refund?", "Digital notes are non-refundable after delivery."],
+  ],
+  HOME_STEPS: [
+    { num: "01", title: "Browse", desc: "Explore our curated catalogue by topic.", Icon: ({ className }: { className?: string }) => <svg className={className} /> },
+    { num: "02", title: "Preview", desc: "Review any note with a free sample PDF.", Icon: ({ className }: { className?: string }) => <svg className={className} /> },
+    { num: "03", title: "Pay", desc: "Checkout securely via Razorpay.", Icon: ({ className }: { className?: string }) => <svg className={className} /> },
+    { num: "04", title: "Download", desc: "Get your notes instantly after payment.", Icon: ({ className }: { className?: string }) => <svg className={className} /> },
+  ],
+  HOME_STATS_CONFIG: [
+    { label: "Notes", key: "totalNotes" },
+    { label: "Topics", key: "totalCategories" },
+    { label: "Downloads", key: "totalDownloads" },
+    { label: "Learners", key: "happyLearners" },
+  ],
 }));
 
 describe("HomePage", () => {

@@ -1,11 +1,9 @@
 import type { MetadataRoute } from "next";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://notesprovider.com";
+import { APP_URL } from "@/lib/constants";
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
-      // Default rules for all crawlers
       {
         userAgent: "*",
         allow: "/",
@@ -20,108 +18,90 @@ export default function robots(): MetadataRoute.Robots {
           "/order/",
         ],
       },
-      // Google's primary crawler
       {
         userAgent: "Googlebot",
         allow: "/",
         disallow: ["/admin", "/checkout", "/api/", "/order/track", "/order/[orderId]"],
       },
-      // Google's image crawler
       {
         userAgent: "Googlebot-Image",
         disallow: ["/api/", "/checkout"],
         allow: ["/og/", "/notes/", "/groups/"],
       },
-      // Google's mobile crawler
       {
         userAgent: "Googlebot-Mobile",
         allow: "/",
         disallow: ["/admin", "/checkout", "/api/", "/order/track", "/order/[orderId]"],
       },
-      // Google's sync crawler
       {
         userAgent: "Googlebot-News",
         allow: ["/notes", "/groups", "/about", "/contact"],
         disallow: ["/admin", "/checkout", "/api/"],
       },
-      // Google's video crawler
       {
         userAgent: "Googlebot-Video",
         allow: ["/notes", "/groups"],
         disallow: ["/admin", "/checkout", "/api/"],
       },
-      // Bing crawler
       {
         userAgent: "Bingbot",
         allow: "/",
         disallow: ["/admin", "/checkout", "/api/", "/order/track", "/order/[orderId]"],
       },
-      // Yahoo crawler
       {
         userAgent: "Slurp",
         allow: "/",
         disallow: ["/admin", "/checkout", "/api/", "/order/track", "/order/[orderId]"],
       },
-      // Baidu crawler
       {
         userAgent: "Baiduspider",
         allow: "/",
         disallow: ["/admin", "/checkout", "/api/", "/order/track", "/order/[orderId]"],
       },
-      // Yandex crawler
       {
         userAgent: "YandexBot",
         allow: "/",
         disallow: ["/admin", "/checkout", "/api/", "/order/track", "/order/[orderId]"],
       },
-      // DuckDuckBot - AI/search crawler, allow content pages
       {
         userAgent: "DuckDuckBot",
         allow: ["/notes", "/groups", "/about", "/contact"],
         disallow: ["/admin", "/checkout", "/api/"],
       },
-      // Applebot - Apple's crawler
       {
         userAgent: "Applebot",
         allow: "/",
         disallow: ["/admin", "/checkout", "/api/", "/order/track", "/order/[orderId]"],
       },
-      // Amazonbot - Amazon's crawler
       {
         userAgent: "Amazonbot",
         disallow: ["/admin", "/checkout", "/api/"],
         allow: ["/notes", "/groups", "/about", "/contact"],
       },
-      // CCBot - Common Crawl (AI training data)
       {
         userAgent: "CCBot",
         disallow: "/",
       },
-      // Facebook crawler
       {
         userAgent: "facebookexternalhit",
         allow: "/",
         disallow: ["/admin", "/checkout", "/api/"],
       },
-      // Twitter crawler
       {
         userAgent: "Twitterbot",
         allow: "/",
         disallow: ["/admin", "/checkout", "/api/"],
       },
-      // LinkedIn crawler
       {
         userAgent: "LinkedInBot",
         allow: "/",
         disallow: ["/admin", "/checkout", "/api/"],
       },
-      // Omgili crawler
       {
         userAgent: "Omgilibot",
         disallow: ["/admin", "/checkout", "/api/"],
         allow: ["/notes", "/groups"],
       },
-      // AI / LLM crawlers - allow content, block sensitive
       {
         userAgent: "Anthropic AI",
         allow: ["/notes", "/groups", "/about", "/contact"],

@@ -37,8 +37,9 @@
   --color-input: var(--input);
   --color-ring: var(--ring);
   --font-sans: var(--font-inter, Arial, Helvetica, sans-serif);
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", Courier New, monospace;
   --font-heading: var(--font-outfit, Arial, Helvetica, sans-serif);
+  --font-handwriting: var(--font-caveat, cursive);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -48,7 +49,7 @@
 }
 
 :root {
-  --background: oklch(0.975 0.008 75);
+  --background: oklch(0.98 0.006 75);
   --foreground: oklch(0.16 0.018 35);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.16 0.018 35);
@@ -219,6 +220,7 @@
       0 6px 20px -6px oklch(0 0 0 / 10%);
   }
 
+  /* Premium notebook page background — off-white lined paper */
   .paper-bg {
     background-color: var(--background);
     background-image:
@@ -241,6 +243,7 @@
       );
   }
 
+  /* Notebook margin line on the left */
   .paper-margin {
     position: relative;
   }
@@ -304,6 +307,151 @@
   .hide-scrollbar::-webkit-scrollbar {
     display: none;
   }
+
+  /* Premium paper card — torn edge with layered shadow */
+  .paper-card {
+    background: var(--card);
+    border: 1.5px solid oklch(0.9 0.005 75);
+    border-radius: 2px 5px 3px 4px / 3px 2px 5px 4px;
+    box-shadow:
+      0 1px 2px oklch(0 0 0 / 4%),
+      0 4px 14px -4px oklch(0 0 0 / 10%),
+      inset 0 1px 0 oklch(1 0 0 / 60%);
+  }
+
+  .dark .paper-card {
+    background: var(--card);
+    border-color: oklch(1 0 0 / 8%);
+    box-shadow:
+      0 1px 2px oklch(0 0 0 / 20%),
+      0 4px 14px -4px oklch(0 0 0 / 30%),
+      inset 0 1px 0 oklch(1 0 0 / 5%);
+  }
+
+  /* Orange-torn accent border */
+  .paper-card-orange {
+    background: var(--card);
+    border: 1.5px solid oklch(0.9 0.005 75);
+    border-left: 3px solid var(--brand-orange);
+    border-radius: 2px 4px 3px 5px / 3px 2px 4px 5px;
+    box-shadow:
+      0 1px 3px oklch(0 0 0 / 5%),
+      0 4px 12px -4px oklch(0 0 0 / 8%),
+      inset 0 1px 0 oklch(1 0 0 / 50%);
+  }
+
+  .dark .paper-card-orange {
+    border-left-color: var(--brand-orange);
+    box-shadow:
+      0 1px 3px oklch(0 0 0 / 25%),
+      0 4px 12px -4px oklch(0 0 0 / 35%),
+      inset 0 1px 0 oklch(1 0 0 / 3%);
+  }
+
+  /* Green-torn accent border */
+  .paper-card-green {
+    background: var(--card);
+    border: 1.5px solid oklch(0.9 0.005 75);
+    border-left: 3px solid var(--brand-green);
+    border-radius: 2px 4px 3px 5px / 3px 2px 4px 5px;
+    box-shadow:
+      0 1px 3px oklch(0 0 0 / 5%),
+      0 4px 12px -4px oklch(0 0 0 / 8%),
+      inset 0 1px 0 oklch(1 0 0 / 50%);
+  }
+
+  .dark .paper-card-green {
+    border-left-color: var(--brand-green);
+    box-shadow:
+      0 1px 3px oklch(0 0 0 / 25%),
+      0 4px 12px -4px oklch(0 0 0 / 35%),
+      inset 0 1px 0 oklch(1 0 0 / 3%);
+  }
+
+  /* Washi tape decoration strip */
+  .washi-strip {
+    position: relative;
+  }
+
+  .washi-strip::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%) rotate(-1deg);
+    width: 48px;
+    height: 16px;
+    background: oklch(0.88 0.06 52 / 45%);
+    border-radius: 1px;
+  }
+
+  .dark .washi-strip::before {
+    background: oklch(0.68 0.12 52 / 30%);
+  }
+
+  .washi-green::before {
+    background: oklch(0.82 0.06 155 / 40%);
+  }
+
+  .dark .washi-green::before {
+    background: oklch(0.6 0.1 155 / 25%);
+  }
+
+  /* Handwritten heading style */
+  .handwritten {
+    font-family: var(--font-handwriting, Caveat, cursive);
+  }
+
+  /* Ink stroke underline */
+  .ink-underline {
+    position: relative;
+  }
+
+  .ink-underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: -2px;
+    height: 3px;
+    background: var(--brand-orange);
+    border-radius: 2px;
+    opacity: 0.4;
+    transform: skewY(-0.5deg);
+  }
+
+  /* Sticker badge */
+  .sticker-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.65rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    border: 1.5px solid;
+  }
+
+  /* Premium section divider — notebook fold */
+  .section-fold {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, oklch(0.85 0.005 75), transparent);
+    position: relative;
+  }
+
+  .section-fold::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -4px;
+    transform: translateX(-50%) rotate(45deg);
+    width: 8px;
+    height: 8px;
+    background: var(--brand-orange-soft);
+    border: 1px solid oklch(0.85 0.06 52 / 30%);
+  }
 }
 
 @keyframes shimmer-slide {
@@ -346,6 +494,11 @@
   }
 }
 
+@keyframes ink-drip {
+  0%, 100% { clip-path: inset(0 0 85% 0); }
+  50% { clip-path: inset(0 0 78% 0); }
+}
+
 @layer utilities {
   .shimmer-premium {
     position: relative;
@@ -381,6 +534,10 @@
     animation: slide-in-right 0.35s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
 
+  .animate-ink-drip {
+    animation: ink-drip 2s ease-in-out infinite;
+  }
+
   .stagger-1 { animation-delay: 0.05s; }
   .stagger-2 { animation-delay: 0.1s; }
   .stagger-3 { animation-delay: 0.15s; }
@@ -395,7 +552,8 @@
   }
   .animate-fade-in-up,
   .animate-scale-in,
-  .animate-slide-in-right {
+  .animate-slide-in-right,
+  .animate-ink-drip {
     animation: none;
     opacity: 1;
     transform: none;

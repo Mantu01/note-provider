@@ -3,9 +3,7 @@ import type { Metadata } from "next";
 import JsonLd, { webpageJsonLd } from "@/components/seo/json-ld";
 import { StaticPage } from "@/components/layout/static-page";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
-import { BRAND, SEO, PRIVACY_POLICY_SECTIONS } from "@/lib/constants";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+import { APP_URL, BRAND, SEO, PRIVACY_POLICY_SECTIONS } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Privacy Policy — How We Protect Your Data | Notes Provider",

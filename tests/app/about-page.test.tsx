@@ -26,13 +26,14 @@ vi.mock("@/components/layout/static-page", () => ({
 }));
 
 vi.mock("@/lib/constants", () => ({
+  APP_URL: "http://localhost:3000",
   BRAND: { name: "Notes Provider", description: "Test brand description" },
   ABOUT_VALUES: [
     { title: "Focused learning", text: "We curate the developer notes that help you learn faster." },
     { title: "Clear structure", text: "Every note is designed to reduce confusion." },
     { title: "Practical value", text: "Useful, readable content tailored to engineers." },
   ],
-  SEO: { siteName: "Notes Provider", ogImageWidth: 1200, ogImageHeight: 630, twitterCard: "summary_large_image" },
+  SEO: { siteName: "Notes Provider", ogImageWidth: 1200, ogImageHeight: 630, twitterCard: "summary_large_image", locale: "en_IN" },
 }));
 
 vi.mock("@/components/ui/card", () => ({

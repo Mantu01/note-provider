@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { OrderLookupPage } from "@/features/orders/components/order-lookup-page";
-import { SEO } from "@/lib/constants";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+import { APP_URL, SEO } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Track Your Order — Check Note Delivery Status | Notes Provider",

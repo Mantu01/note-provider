@@ -26,8 +26,9 @@ vi.mock("@/components/layout/static-page", () => ({
 }));
 
 vi.mock("@/lib/constants", () => ({
+  APP_URL: "http://localhost:3000",
   BRAND: { name: "Notes Provider" },
-  SEO: { siteName: "Notes Provider", contactEmail: "support@notesprovider.com", ogImageWidth: 1200, ogImageHeight: 630, twitterCard: "summary_large_image" },
+  SEO: { siteName: "Notes Provider", contactEmail: "support@notesprovider.com", ogImageWidth: 1200, ogImageHeight: 630, twitterCard: "summary_large_image", locale: "en_IN" },
   REFUND_POLICY_SECTIONS: [
     { id: "item-1", title: "1. Digital Goods Policy", content: "Due to the digital nature of the products sold, all sales are non-refundable once the digital material has been delivered." },
     { id: "item-2", title: "2. Previewing Before Purchase", content: "To ensure complete satisfaction before making a payment, every paid note features a downloadable Preview PDF." },

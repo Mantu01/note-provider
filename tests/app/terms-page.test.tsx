@@ -26,8 +26,9 @@ vi.mock("@/components/layout/static-page", () => ({
 }));
 
 vi.mock("@/lib/constants", () => ({
+  APP_URL: "http://localhost:3000",
   BRAND: { name: "Notes Provider" },
-  SEO: { siteName: "Notes Provider", ogImageWidth: 1200, ogImageHeight: 630, twitterCard: "summary_large_image" },
+  SEO: { siteName: "Notes Provider", ogImageWidth: 1200, ogImageHeight: 630, twitterCard: "summary_large_image", locale: "en_IN" },
   TERMS_OF_SERVICE_SECTIONS: [
     { id: "item-1", title: "1. General Agreement", content: "By accessing our services you agree to these terms." },
     { id: "item-2", title: "2. Personal Use Only", content: "Our study notes are for personal use only." },

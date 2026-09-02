@@ -3,7 +3,6 @@ import { Note } from "../db/models/note.model";
 import { Group } from "../db/models/group.model";
 import { Category } from "../db/models/category.model";
 import { AdminActivity } from "../db/models/admin-activity.model";
-import type { Lean } from "../mappers/primitives";
 
 export async function getDashboardStats(): Promise<import("@/lib/types").DashboardStats> {
   const now = new Date();

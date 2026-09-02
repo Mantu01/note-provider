@@ -20,7 +20,6 @@ export const GET = handler<{ slug: string }>(async (ctx): Promise<NextResponse<u
   const note = await Note.findOne({ slug, visibility: "public" }).lean().exec();
   if (!note) throw AppError.notFound("Note");
 
-  // For paid notes, verify the buyer has a valid paid order
   if (note.pricingType === "paid") {
     if (!orderId) {
       throw AppError.forbidden("This note is locked. Purchase it to receive the full PDF.");

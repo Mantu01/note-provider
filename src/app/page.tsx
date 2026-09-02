@@ -3,9 +3,7 @@ import JsonLd, {faqJsonLd,webpageJsonLd,websiteJsonLd,organizationJsonLd,howToJs
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { HomePage } from "@/features/home/components/home-page";
-import { SEO } from "@/lib/constants";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+import { APP_URL, SEO } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: SEO.defaultTitle,

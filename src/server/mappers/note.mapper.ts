@@ -1,7 +1,7 @@
 import { formatFileSizeLabel, formatPriceLabel, toIsoStringRequired } from "@/lib/format";
 import type { AdminNote, PublicNote } from "@/lib/types";
 import { toAdminRef, toCategoryRef } from "./category.mapper";
-import { bool, id, nullableNum, nullableStr, num, str, type Lean } from "./primitives";
+import { bool, id, nullableNum, nullableStr, num, str } from "./primitives";
 
 export function toPublicNote(raw: unknown): PublicNote {
   const doc = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;

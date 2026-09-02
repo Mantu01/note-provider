@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import JsonLd, { webpageJsonLd } from "@/components/seo/json-ld";
 import { GroupsPage } from "@/features/groups/components/groups-catalogue";
-import { SEO } from "@/lib/constants";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+import { APP_URL, SEO } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: `Developer Bundles — Web Dev, DSA & System Design | ${SEO.siteName}`,

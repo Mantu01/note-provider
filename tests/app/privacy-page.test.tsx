@@ -26,8 +26,9 @@ vi.mock("@/components/layout/static-page", () => ({
 }));
 
 vi.mock("@/lib/constants", () => ({
+  APP_URL: "http://localhost:3000",
   BRAND: { name: "Notes Provider" },
-  SEO: { siteName: "Notes Provider", ogImageWidth: 1200, ogImageHeight: 630, twitterCard: "summary_large_image" },
+  SEO: { siteName: "Notes Provider", ogImageWidth: 1200, ogImageHeight: 630, twitterCard: "summary_large_image", locale: "en_IN" },
   PRIVACY_POLICY_SECTIONS: [
     { id: "item-1", title: "1. Information Collection", content: "We take your privacy seriously. This policy describes how we collect and protect your information." },
     { id: "item-2", title: "2. Use of Information", content: "We use this information to process transactions and respond to requests." },

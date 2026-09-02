@@ -59,14 +59,6 @@ export function escapeRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-export function toObjectIds(ids: string[]): Types.ObjectId[] {
-  const result: Types.ObjectId[] = [];
-  for (const id of ids) {
-    if (Types.ObjectId.isValid(id)) result.push(new Types.ObjectId(id));
-  }
-  return result;
-}
-
 export async function resolveCategoryIds(
   categoryModel: Model<Record<string, unknown>>,
   slugs: string[],

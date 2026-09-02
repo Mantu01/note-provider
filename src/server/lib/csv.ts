@@ -17,14 +17,9 @@ function escapeCell(value: unknown): string {
 }
 
 export function toCsv(rows: Record<string, unknown>[]): string {
-  const rowsWithType = rows as Record<string, unknown>[];
-  return _toCsv(rowsWithType);
-}
-
-function _toCsv<T>(rows: T[]): string {
   const header = Object.keys(rows[0] ?? []).join(",");
   const body = rows.map((row) =>
-    Object.values(row as Record<string, unknown>).map((v) => escapeCell(v)).join(","),
+    Object.values(row).map((v) => escapeCell(v)).join(","),
   );
   return `${UTF8_BOM}${[header, ...body].join("\r\n")}`;
 }

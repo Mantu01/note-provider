@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { ArrowLeft, FileText, Layers, TrendingUp } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ErrorState } from "@/components/shared/error-state";
@@ -52,16 +51,16 @@ export function GroupDetailPage({ slug }: { slug: string }) {
   return (
     <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8 paper-bg">
       <nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-1.5 text-xs text-muted-foreground">
-        <Link href="/">Home</Link>
+        <Link href="/" className="hover:text-foreground">Home</Link>
         <span aria-hidden="true" className="text-muted-foreground/40">/</span>
-        <Link href="/groups">Bundles</Link>
+        <Link href="/groups" className="hover:text-foreground">Bundles</Link>
         <span aria-hidden="true" className="text-muted-foreground/40">/</span>
         <span className="font-medium text-foreground truncate">{group.name}</span>
       </nav>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <article className="space-y-5">
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl border border-border/50 bg-muted/20 shadow-sm torn-paper">
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-border/50 bg-muted/20 shadow-sm torn-paper paper-card-green">
             {group.coverImageUrl ? (
               <Image
                 src={group.coverImageUrl}
@@ -79,7 +78,7 @@ export function GroupDetailPage({ slug }: { slug: string }) {
           </div>
 
           <div className="space-y-2">
-            <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-primary">
+            <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-brand-orange">
               {group.category.name} bundle
             </p>
             <h1 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">
@@ -95,10 +94,10 @@ export function GroupDetailPage({ slug }: { slug: string }) {
               <h2 className="font-heading text-base font-bold tracking-tight">
                 {group.noteCount} notes included
               </h2>
-              <Badge variant="secondary" className="h-6 rounded-full px-3 text-xs font-semibold">
-                <Layers aria-hidden="true" className="mr-1 size-3" />
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-0.5 text-xs font-semibold text-secondary-foreground border border-border/50">
+                <Layers aria-hidden="true" className="size-3" />
                 Complete pack
-              </Badge>
+              </span>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
               {group.notes.map((note) => (
@@ -109,7 +108,7 @@ export function GroupDetailPage({ slug }: { slug: string }) {
         </article>
 
         <aside className="lg:sticky lg:top-20 lg:self-start space-y-4">
-          <Card className="rounded-2xl border border-border bg-card torn-paper shadow-lg">
+          <Card className="rounded-xl border border-border bg-card torn-paper shadow-lg paper-card-orange">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-bold">Get this bundle</CardTitle>
               <CardDescription className="text-xs">
@@ -133,7 +132,7 @@ export function GroupDetailPage({ slug }: { slug: string }) {
 
               <Button
                 render={<Link href={`/checkout/${group.slug}?itemType=group`} />}
-                className="w-full rounded-xl font-semibold shadow-md bg-primary text-primary-foreground"
+                className="w-full rounded-xl font-semibold shadow-md bg-brand-orange text-white"
                 size="lg"
               >
                 Buy this bundle
@@ -146,9 +145,9 @@ export function GroupDetailPage({ slug }: { slug: string }) {
 
               <div className="flex items-center justify-center gap-2 border-t border-border/50 pt-4 text-[10px] text-muted-foreground">
                 <span>Secure payment</span>
-                <span className="text-muted-foreground/30">·</span>
+                <span className="text-muted-foreground/30">\</span>
                 <span>Original content</span>
-                <span className="text-muted-foreground/30">·</span>
+                <span className="text-muted-foreground/30">\</span>
                 <span>No spam</span>
               </div>
             </CardContent>

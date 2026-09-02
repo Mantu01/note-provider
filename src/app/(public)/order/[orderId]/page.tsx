@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { APP_URL } from "@/lib/constants";
 import { OrderStatusPage } from "@/features/orders/components/order-status-page";
 import { Order } from "@/server/db/models/order.model";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 
 interface OrderRouteProps {
   params: Promise<{ orderId: string }>;

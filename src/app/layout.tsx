@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import Script from "next/script";
-import { Inter, Outfit } from "next/font/google";
+import { Inter, Outfit, Caveat, Instrument_Sans } from "next/font/google";
 import "./globals.css";
-import { BRAND, SEO } from "@/lib/constants";
+import { APP_URL, BRAND, SEO } from "@/lib/constants";
 import { AppProviders } from "@/providers/app-providers";
 import JsonLd, {
   organizationJsonLd,
@@ -20,8 +20,19 @@ const outfit = Outfit({
   variable: "--font-outfit",
   display: "swap",
 });
+const caveat = Caveat({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-caveat",
+  display: "swap",
+});
+const instrumentSans = Instrument_Sans({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-instrument",
+  display: "swap",
+});
 
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
 const safeMetadataBase = URL.canParse(APP_URL) ? new URL(APP_URL) : undefined;
 const measurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
@@ -110,7 +121,7 @@ export default function RootLayout({
       lang="en"
       dir="ltr"
       suppressHydrationWarning
-      className={`${inter.variable} ${outfit.variable}`}
+      className={`${inter.variable} ${outfit.variable} ${caveat.variable} ${instrumentSans.variable}`}
       data-scroll-behavior="smooth"
     >
       <head>

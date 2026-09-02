@@ -1,5 +1,4 @@
-import { ShimmerNoteCard } from "@/components/shared/shimmer-loader";
-import { ShimmerLoader } from "@/components/shared/shimmer-loader";
+import { ShimmerLoader, ShimmerNoteCard } from "@/components/shared/shimmer-loader";
 
 export default function NotesLoading() {
   return (

@@ -1,10 +1,9 @@
 import Image from "next/image";
 import Link from "next/link";
 import { FileText, BookOpen, TrendingUp } from "lucide-react";
-import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
-import { PriceTag } from "@/components/shared/price-tag";
-import { StatusBadge } from "@/components/shared/status-badge";
+import { PriceTag } from "./price-tag";
+import { LevelBadge, PricingBadge } from "./badges";
 import type { PublicNote } from "@/lib/types";
 
 interface NoteCardProps {
@@ -19,17 +18,16 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
   return (
     <article
       className={cn(
-        "relative overflow-hidden rounded-2xl border border-border bg-card torn-paper",
+        "group relative overflow-hidden rounded-xl border bg-card torn-paper paper-card transition-shadow hover:shadow-md",
         compact ? "flex flex-row items-stretch" : "flex flex-col",
-        featured && "ring-1 ring-primary/15"
+        featured && "ring-1 ring-brand-orange/30 shadow-sm"
       )}
     >
       <Link
         href={`/notes/${note.slug}`}
         className={cn(
-          "relative block overflow-hidden bg-muted/10 shrink-0",
-          compact ? "w-28" : "aspect-[16/9]",
-          featured && "aspect-[16/10]"
+          "relative block overflow-hidden shrink-0",
+          compact ? "w-28" : "aspect-[16/9]"
         )}
         aria-label={`View ${note.title}`}
       >
@@ -39,26 +37,17 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
             alt=""
             fill
             sizes={compact ? "112px" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"}
-            className="object-cover"
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         ) : (
-          <div className="flex size-full flex-col items-center justify-center gap-1.5 text-primary/25 bg-gradient-to-br from-primary/5 to-transparent">
+          <div className="flex size-full flex-col items-center justify-center gap-1.5 text-primary/30 bg-gradient-to-br from-primary/5 to-transparent">
             <FileText aria-hidden="true" className="size-7" />
             <span className="text-[8px] font-semibold uppercase tracking-widest">PDF</span>
           </div>
         )}
 
-        <span className={cn(
-          "absolute top-2 right-2 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide shadow-sm backdrop-blur-md",
-          note.pricingType === "paid"
-            ? "bg-card/90 text-foreground"
-            : "bg-success/90 text-success-foreground"
-        )}>
-          {note.pricingType === "paid" ? "Premium" : "Free"}
-        </span>
-
         {featured && (
-          <span className="absolute bottom-2 left-2 flex items-center gap-1 rounded-full bg-primary/90 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary-foreground shadow-sm">
+          <span className="absolute bottom-2 left-2 inline-flex items-center gap-1 rounded-full bg-brand-orange/95 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white shadow-md">
             <TrendingUp aria-hidden="true" className="size-2.5" />
             Featured
           </span>
@@ -70,16 +59,16 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
         compact && "py-3 pl-3 pr-3.5"
       )}>
         <div className="flex items-center gap-1.5 flex-wrap">
-          <Badge variant="secondary" className="h-5 rounded-full px-2 text-[10px] font-semibold">
+          <span className="inline-flex h-5 items-center rounded-full bg-secondary px-2 text-[10px] font-semibold text-secondary-foreground border border-border/50">
             {note.category.name}
-          </Badge>
-          <StatusBadge type="level" value={note.level} />
+          </span>
+          <LevelBadge level={note.level} />
         </div>
 
         <Link
           href={`/notes/${note.slug}`}
           className={cn(
-            "font-heading font-semibold leading-snug text-foreground line-clamp-2",
+            "font-heading font-semibold leading-snug text-foreground line-clamp-2 transition-colors group-hover:text-primary/80",
             compact ? "text-[11px] line-clamp-1" : "text-xs line-clamp-2"
           )}
         >
@@ -97,11 +86,16 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
           compact && "pt-0"
         )}>
           <PriceTag price={note.price} priceLabel={note.priceLabel} compareAtPrice={note.compareAtPrice} />
-          {!compact && note.pageCount && (
-            <span className="shrink-0 inline-flex items-center gap-1 text-[9px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-md">
-              <BookOpen aria-hidden="true" className="size-2.5" />
-              {note.pageCount} pg
-            </span>
+          {!compact && (
+            <div className="flex items-center gap-1.5">
+              {note.pageCount && (
+                <span className="inline-flex items-center gap-1 text-[9px] font-medium text-muted-foreground bg-muted px-1.5 py-0.5 rounded-md">
+                  <BookOpen aria-hidden="true" className="size-2.5" />
+                  {note.pageCount}pg
+                </span>
+              )}
+              <PricingBadge pricingType={note.pricingType} />
+            </div>
           )}
         </div>
       </div>

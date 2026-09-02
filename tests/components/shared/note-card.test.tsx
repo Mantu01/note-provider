@@ -46,12 +46,12 @@ describe("NoteCard", () => {
 
   it("shows 'Premium' badge when pricingType is paid", () => {
     render(<NoteCard note={makeNote({ pricingType: "paid" })} />);
-    expect(screen.getByText("Premium")).toBeInTheDocument();
+    expect(screen.getAllByText("Premium").length).toBeGreaterThan(0);
   });
 
   it("does not show 'Premium' badge when pricingType is free", () => {
     render(<NoteCard note={makeNote({ pricingType: "free" })} />);
-    expect(screen.queryByText("Paid")).not.toBeInTheDocument();
+    expect(screen.queryByText("Premium")).not.toBeInTheDocument();
   });
 
   it("links to the correct note URL", () => {
@@ -78,7 +78,7 @@ describe("NoteCard", () => {
 
   it("shows page count in default variant", () => {
     render(<NoteCard note={makeNote({ pageCount: 50 })} />);
-    expect(screen.getByText("50 pg")).toBeInTheDocument();
+    expect(screen.getByText(/50pg/)).toBeInTheDocument();
   });
 
   it("does not show page count in compact variant", () => {

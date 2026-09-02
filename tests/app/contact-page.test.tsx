@@ -33,6 +33,7 @@ vi.mock("@/components/layout/static-page", () => ({
 }));
 
 vi.mock("@/lib/constants", () => ({
+  APP_URL: "http://localhost:3000",
   SEO: {
     siteName: "Notes Provider",
     ogImageWidth: 1200,

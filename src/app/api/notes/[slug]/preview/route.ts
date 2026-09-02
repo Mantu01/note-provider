@@ -15,7 +15,6 @@ export const GET = handler<{ slug: string }>(async (ctx): Promise<NextResponse> 
   const note = await Note.findOne({ slug, visibility: "public" }).lean().exec();
   if (!note) throw AppError.notFound("Preview not found for this note");
 
-  // Try preview file first, then fall back to full PDF URL
   let pdfUrl: string | null = null;
   if (note.previewFileUrl) {
     pdfUrl = note.previewFileUrl;

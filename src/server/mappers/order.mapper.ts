@@ -2,7 +2,7 @@ import { ORDER_CURRENCY } from "@/lib/constants";
 import { formatPrice, toIsoString, toIsoStringRequired } from "@/lib/format";
 import type { AdminLead, AdminOrder, PublicOrder } from "@/lib/types";
 import { toAdminRef } from "./category.mapper";
-import { id, isPopulated, nullableStr, num, str, toIdList, type Lean } from "./primitives";
+import { id, isPopulated, nullableStr, num, str, toIdList } from "./primitives";
 
 function buyerOf(doc: Record<string, unknown>): Record<string, unknown> {
   return (doc.buyer as Record<string, unknown>) ?? {};

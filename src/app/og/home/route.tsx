@@ -1,7 +1,6 @@
 import { ImageResponse } from "next/og";
 import { NextRequest } from "next/server";
 
-// Shared palette
 const BG = "#0f172a";
 const SURFACE = "#1e293b";
 const PRIMARY = "#6366f1";
@@ -13,10 +12,6 @@ const SUCCESS = "#22c55e";
 export const runtime = "edge";
 export const contentType = "image/png";
 
-/**
- * OG image generator for the homepage.
- * GET /og/home.png
- */
 export function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
   const title = searchParams.get("title") || "Notes Provider";
@@ -38,7 +33,6 @@ export function GET(request: NextRequest) {
           textAlign: "center",
         }}
       >
-        {/* Decorative orbs */}
         <div
           style={{
             position: "absolute",
@@ -64,7 +58,6 @@ export function GET(request: NextRequest) {
           }}
         />
 
-        {/* Logo area */}
         <div
           style={{
             display: "flex",
@@ -101,7 +94,6 @@ export function GET(request: NextRequest) {
           </span>
         </div>
 
-        {/* Tagline */}
         <p
           style={{
             fontSize: 28,
@@ -114,7 +106,6 @@ export function GET(request: NextRequest) {
           {tagline}
         </p>
 
-        {/* Feature chips */}
         <div
           style={{
             display: "flex",

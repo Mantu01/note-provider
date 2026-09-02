@@ -1,6 +1,6 @@
 import type { AdminCategory, AdminRef, CategoryRef, PublicCategory, SubjectItem } from "@/lib/types";
 import { toIsoStringRequired } from "@/lib/format";
-import { id, isPopulated, nullableStr, num, str, type Lean } from "./primitives";
+import { id, isPopulated, nullableStr, num, str } from "./primitives";
 
 export function toCategoryRef(value: unknown): CategoryRef {
   if (isPopulated(value)) {

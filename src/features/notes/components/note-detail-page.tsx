@@ -13,6 +13,7 @@ import { ShimmerLoader } from "@/components/shared/shimmer-loader";
 import { PriceTag } from "@/components/shared/price-tag";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { PdfPreviewDialog } from "@/components/shared/pdf-preview-dialog";
+import { LevelBadge, PricingBadge } from "@/components/shared/badges";
 import { useDownloadFile } from "@/hooks/use-download-file";
 import { useNote } from "@/features/notes/api/use-note";
 
@@ -48,18 +49,18 @@ export function NoteDetailPage({ slug }: { slug: string }) {
   const { note, groups, relatedNotes } = query.data;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-      <nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-1.5 text-xs text-muted-foreground">
-        <Link href="/">Home</Link>
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 paper-bg">
+      <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-1.5 text-xs text-muted-foreground">
+        <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
         <span aria-hidden="true" className="text-muted-foreground/40">/</span>
-        <Link href="/notes">Notes</Link>
+        <Link href="/notes" className="hover:text-foreground transition-colors">Notes</Link>
         <span aria-hidden="true" className="text-muted-foreground/40">/</span>
         <span className="font-medium text-foreground truncate">{note.title}</span>
       </nav>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <article className="space-y-5">
-          <div className="relative aspect-[19/8] w-full overflow-hidden rounded-2xl border border-border/50 bg-muted/20 shadow-sm torn-paper">
+      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
+        <article className="space-y-6">
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-border/50 bg-muted/20 shadow-sm torn-paper paper-card-green">
             {note.coverImageUrl ? (
               <Image
                 src={note.coverImageUrl}
@@ -76,25 +77,16 @@ export function NoteDetailPage({ slug }: { slug: string }) {
             )}
           </div>
 
-          <div className="space-y-2.5">
+          <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant="secondary" className="h-5 rounded-full px-2.5 text-xs font-semibold">
+              <span className="inline-flex h-5 items-center rounded-full bg-secondary px-2.5 text-xs font-semibold text-secondary-foreground border border-border/50">
                 {note.category.name}
-              </Badge>
-              <StatusBadge type="level" value={note.level} />
-              {note.pricingType === "paid" && (
-                <Badge variant="default" className="h-5 rounded-full bg-primary px-2.5 text-xs font-semibold text-primary-foreground">
-                  Premium
-                </Badge>
-              )}
-              {note.pricingType === "free" && (
-                <Badge variant="default" className="h-5 rounded-full bg-success px-2.5 text-xs font-semibold text-success-foreground">
-                  Free
-                </Badge>
-              )}
+              </span>
+              <LevelBadge level={note.level} />
+              <PricingBadge pricingType={note.pricingType} />
             </div>
 
-            <h1 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">
+            <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground md:text-3xl">
               {note.title}
             </h1>
 
@@ -106,7 +98,7 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                 </span>
               )}
               {note.pageCount && note.fileSizeLabel && (
-                <span className="text-muted-foreground/40">·</span>
+                <span className="text-muted-foreground/40">\</span>
               )}
               {note.fileSizeLabel && (
                 <span className="inline-flex items-center gap-1">
@@ -114,7 +106,7 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                   {note.fileSizeLabel}
                 </span>
               )}
-              <span className="text-muted-foreground/40">·</span>
+              <span className="text-muted-foreground/40">\</span>
               <span className="inline-flex items-center gap-1">
                 <Clock aria-hidden="true" className="size-3.5" />
                 {note.downloadCount} downloads
@@ -138,7 +130,7 @@ export function NoteDetailPage({ slug }: { slug: string }) {
         </article>
 
         <aside className="lg:sticky lg:top-20 lg:self-start space-y-4">
-          <Card className="rounded-2xl border border-border bg-card torn-paper shadow-lg">
+          <Card className="rounded-xl border border-border bg-card torn-paper shadow-lg paper-card-orange">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-bold">Get this note</CardTitle>
               <CardDescription className="text-xs">
@@ -148,49 +140,43 @@ export function NoteDetailPage({ slug }: { slug: string }) {
             <CardContent className="space-y-4">
               <PriceTag price={note.price} priceLabel={note.priceLabel} compareAtPrice={note.compareAtPrice} size="large" />
 
+              <PdfPreviewDialog
+                url={`/api/notes/${note.slug}/preview?mode=view`}
+                filename={`${note.slug}-preview.pdf`}
+              />
+
               {note.pricingType === "free" ? (
-                <>
-                  <PdfPreviewDialog
-                    url={`/api/notes/${note.slug}/preview?mode=view`}
-                    filename={`${note.slug}-preview.pdf`}
-                  />
-                  <Button
-                    className="w-full rounded-xl font-semibold shadow-md"
-                    size="lg"
-                    disabled={isDownloading}
-                    onClick={() =>
-                      download({
-                        url: `/api/notes/${note.slug}/download`,
-                        filename: `${note.slug}.pdf`,
-                      })
-                    }
-                  >
-                    {isDownloading ? (
-                      <><Clock aria-hidden="true" className="mr-2 size-4 animate-spin" />Preparing…</>
-                    ) : (
-                      <><Download aria-hidden="true" className="mr-2 size-4" />Download PDF</>
-                    )}
-                  </Button>
-                </>
+                <Button
+                  className="w-full rounded-xl font-semibold shadow-md hover:shadow-lg transition-shadow"
+                  size="lg"
+                  disabled={isDownloading}
+                  onClick={() =>
+                    download({
+                      url: `/api/notes/${note.slug}/download`,
+                      filename: `${note.slug}.pdf`,
+                    })
+                  }
+                >
+                  {isDownloading ? (
+                    <><Clock aria-hidden="true" className="mr-2 size-4 animate-spin" />Preparing…</>
+                  ) : (
+                    <><Download aria-hidden="true" className="mr-2 size-4" />Download PDF</>
+                  )}
+                </Button>
               ) : (
                 <>
-                  <div className="rounded-xl border border-border/60 bg-muted/30 p-3.5">
-                    <Lock aria-hidden="true" className="mb-2 size-4 text-primary" />
-                    <p className="text-xs font-bold">Full notes locked</p>
+                  <div className="rounded-xl border border-brand-orange/20 bg-brand-orange/5 p-3.5">
+                    <Lock aria-hidden="true" className="mb-2 size-4 text-brand-orange" />
+                    <p className="text-xs font-bold text-foreground">Full notes locked</p>
                     <p className="mt-0.5 text-[11px] text-muted-foreground leading-relaxed">
                       Preview below, then buy for instant access.
                     </p>
                   </div>
 
-                  <PdfPreviewDialog
-                    url={`/api/notes/${note.slug}/preview?mode=view`}
-                    filename={`${note.slug}-preview.pdf`}
-                  />
-
                   <Button
                     render={<Link href={`/checkout/${note.slug}`} />}
                     size="lg"
-                    className="w-full rounded-xl font-semibold shadow-md bg-primary text-primary-foreground"
+                    className="w-full rounded-xl font-semibold shadow-md bg-brand-orange text-white hover:bg-brand-orange/90 transition-colors"
                   >
                     Buy now — {note.priceLabel}
                   </Button>
@@ -206,9 +192,9 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                     <ShieldCheck aria-hidden="true" className="size-3 text-success" />
                     Secure payment
                   </span>
-                  <span className="text-muted-foreground/30">·</span>
+                  <span className="text-muted-foreground/30">\</span>
                   <span className="inline-flex items-center gap-1">
-                    <Lock aria-hidden="true" className="size-3 text-primary" />
+                    <Lock aria-hidden="true" className="size-3 text-brand-orange" />
                     Original content
                   </span>
                 </div>
@@ -219,8 +205,8 @@ export function NoteDetailPage({ slug }: { slug: string }) {
       </div>
 
       {groups.length > 0 && (
-        <section className="mt-10 border-t border-border/40 pt-8">
-          <h2 className="mb-4 font-heading text-lg font-bold tracking-tight">Also available in these bundles</h2>
+        <section className="mt-12 border-t border-border/40 pt-10">
+          <h2 className="mb-5 font-heading text-lg font-bold tracking-tight">Also available in these bundles</h2>
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {groups.map((group) => (
               <GroupCard key={group.id} group={group} />
@@ -230,8 +216,8 @@ export function NoteDetailPage({ slug }: { slug: string }) {
       )}
 
       {relatedNotes.length > 0 && (
-        <section className="mt-10 border-t border-border/40 pt-8">
-          <h2 className="mb-4 font-heading text-lg font-bold tracking-tight">Related notes</h2>
+        <section className="mt-12 border-t border-border/40 pt-10">
+          <h2 className="mb-5 font-heading text-lg font-bold tracking-tight">Related notes</h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {relatedNotes.map((related) => (
               <NoteCard key={related.id} note={related} />

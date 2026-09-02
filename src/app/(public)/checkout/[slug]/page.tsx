@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import CheckoutContent from "@/features/checkout/components/checkout-content";
-import { SEO } from "@/lib/constants";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+import { APP_URL, SEO } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "Secure Checkout — Notes Provider",

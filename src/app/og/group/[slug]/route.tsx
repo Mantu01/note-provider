@@ -12,10 +12,6 @@ const SUCCESS = "#22c55e";
 export const runtime = "edge";
 export const contentType = "image/png";
 
-/**
- * OG image generator for group/bundle detail pages.
- * GET /og/group/[slug].png
- */
 export function GET(
   _request: NextRequest,
   { params }: { params: Promise<{ slug: string }> },
@@ -46,9 +42,7 @@ export function GET(
             priceLabel = group.price === 0 ? "Free" : group.priceLabel || "Paid";
           }
         }
-      } catch {
-        // Fallback to defaults
-      }
+      } catch {}
 
       const safeName = name || "";
       const displayName =
@@ -74,7 +68,6 @@ export function GET(
                 boxSizing: "border-box",
               }}
             >
-              {/* Background decoration */}
               <div
                 style={{
                   position: "absolute",
@@ -100,7 +93,6 @@ export function GET(
                 }}
               />
 
-              {/* Top bar */}
               <div
                 style={{
                   display: "flex",
@@ -153,7 +145,6 @@ export function GET(
                 </div>
               </div>
 
-              {/* Title */}
               <h1
                 style={{
                   fontSize: 40,
@@ -169,7 +160,6 @@ export function GET(
                 {displayName}
               </h1>
 
-              {/* Category */}
               <div
                 style={{
                   display: "inline-flex",
@@ -187,7 +177,6 @@ export function GET(
                 {category}
               </div>
 
-              {/* Description */}
               <p
                 style={{
                   fontSize: 20,
@@ -202,7 +191,6 @@ export function GET(
                 {displayDesc}
               </p>
 
-              {/* Bottom bar */}
               <div
                 style={{
                   display: "flex",

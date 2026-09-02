@@ -6,7 +6,6 @@ import {
   parseNumberParam,
   buildPagination,
   escapeRegex,
-  toObjectIds,
   resolveCategoryIds,
   buildNoteFilter,
   buildNoteSort,
@@ -278,42 +277,6 @@ describe("escapeRegex", () => {
 
   it("handles empty string", () => {
     expect(escapeRegex("")).toBe("");
-  });
-});
-
-describe("toObjectIds", () => {
-  it("converts valid hex object ids", () => {
-    const ids = ["507f1f77bcf86cd799439011"];
-    const result = toObjectIds(ids);
-    expect(result).toHaveLength(1);
-    expect(result[0]).toBeInstanceOf(Types.ObjectId);
-  });
-
-  it("filters out invalid object ids", () => {
-    const ids = ["not-a-valid-id", "also-invalid", "definitely-not-hex"];
-    const result = toObjectIds(ids);
-    expect(result).toHaveLength(0);
-  });
-
-  it("handles mixed valid and invalid ids", () => {
-    const ids = ["507f1f77bcf86cd799439011", "zzzz", "507f1f77bcf86cd799439012"];
-    const result = toObjectIds(ids);
-    expect(result).toHaveLength(2);
-  });
-
-  it("returns empty array for empty input", () => {
-    expect(toObjectIds([])).toEqual([]);
-  });
-
-  it("returns empty array for all invalid input", () => {
-    expect(toObjectIds(["bad", "worse", "worst"])).toEqual([]);
-  });
-
-  it("creates separate ObjectId instances for duplicates", () => {
-    const idStr = "507f1f77bcf86cd799439011";
-    const result = toObjectIds([idStr, idStr]);
-    expect(result).toHaveLength(2);
-    expect(result[0]).not.toBe(result[1]);
   });
 });
 

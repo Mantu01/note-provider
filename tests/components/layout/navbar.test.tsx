@@ -21,6 +21,12 @@ vi.mock("@/components/brand/theme-toggle", () => ({
 
 vi.mock("@/lib/constants", () => ({
   BRAND: { name: "Notes Provider", tagline: "Test", description: "Test desc" },
+  NAV_LINKS: [
+    { href: "/", label: "Home" },
+    { href: "/notes", label: "Notes" },
+    { href: "/groups", label: "Bundles" },
+    { href: "/order/track", label: "Track Order" },
+  ],
 }));
 
 vi.mock("@/components/layout/mobile-nav", () => ({

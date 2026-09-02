@@ -19,7 +19,7 @@ export async function connectDb(): Promise<typeof mongoose> {
     if (!uri) throw AppError.internal("Database is not configured");
 
     mongoose.set("strictQuery", true);
-    cache.promise = mongoose.connect(uri, { bufferCommands: false, maxPoolSize: 10 });
+    cache.promise = mongoose.connect(uri, { bufferCommands: false, maxPoolSize: 10, serverSelectionTimeoutMS: 5000 });
   }
 
   try {

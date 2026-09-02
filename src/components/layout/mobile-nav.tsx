@@ -13,15 +13,7 @@ import {
 } from "@/components/ui/sheet";
 import { Logo } from "@/components/brand/logo";
 import { cn } from "@/lib/utils";
-
-const links = [
-  { href: "/", label: "Home" },
-  { href: "/notes", label: "Notes" },
-  { href: "/groups", label: "Bundles" },
-  { href: "/order/track", label: "Track Order" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" },
-] as const;
+import { MOBILE_NAV_LINKS } from "@/lib/constants";
 
 export function MobileNav() {
   const pathname = usePathname();
@@ -47,7 +39,7 @@ export function MobileNav() {
           </SheetTitle>
         </SheetHeader>
         <nav aria-label="Mobile navigation" className="flex flex-1 flex-col gap-0.5 p-2.5">
-          {links.map((link) => {
+          {MOBILE_NAV_LINKS.map((link) => {
             const isActive =
               link.href === "/" ? pathname === "/" : pathname.startsWith(link.href);
             return (

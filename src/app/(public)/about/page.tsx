@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import JsonLd, { webpageJsonLd, collectionPageJsonLd } from "@/components/seo/json-ld";
 import { StaticPage } from "@/components/layout/static-page";
 import { Card, CardContent } from "@/components/ui/card";
-import { BRAND, SEO, ABOUT_VALUES } from "@/lib/constants";
-
-const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+import { APP_URL, BRAND, SEO, ABOUT_VALUES } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "About Us — Notes Provider | Mission & Values",

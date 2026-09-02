@@ -20,9 +20,7 @@ export const GET = adminHandler(async (ctx) => {
 });
 
 export const PATCH = adminHandler(async (ctx) => {
-  // Fetch URL param and request body in parallel — they are independent.
   const [{ id }, body] = await Promise.all([ctx.params, ctx.req.json()]);
-  // Parse body before DB lookup so validation errors return 400 (not 404).
   const parsed = updateNoteSchema.safeParse(body);
   if (!parsed.success) {
     const fields: Record<string, string> = {};

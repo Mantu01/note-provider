@@ -39,10 +39,12 @@ const SOCIAL_LINKS = [
   { label: "Email", href: `mailto:${SEO.contactEmail}`, Icon: Mail },
 ] as const;
 
+type SocialLink = (typeof SOCIAL_LINKS)[number];
+
 export function Footer() {
   return (
-    <footer className="border-t border-border/40 bg-card">
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+    <footer className="border-t border-border/40 bg-card torn-edge mt-8">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 paper-bg">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-6">
           <div className="space-y-4 sm:col-span-2">
             <Logo size="sm" />
@@ -50,24 +52,27 @@ export function Footer() {
               {BRAND.tagline}
             </p>
             <div className="flex items-center gap-2">
-              {SOCIAL_LINKS.map(({ label, href, Icon }) => (
-                <a
-                  key={label}
-                  aria-label={label}
-                  href={href}
-                  target={href.startsWith("http") ? "_blank" : undefined}
-                  rel={href.startsWith("http") ? "noreferrer" : undefined}
-                  className="inline-flex size-7 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground"
-                >
-                  <Icon aria-hidden="true" className="size-3" />
-                </a>
-              ))}
+              {SOCIAL_LINKS.map(({ label, href, Icon }) => {
+                const external = href.startsWith("http");
+                return (
+                  <a
+                    key={label}
+                    aria-label={label}
+                    href={href}
+                    target={external ? "_blank" : undefined}
+                    rel={external ? "noreferrer" : undefined}
+                    className="inline-flex size-7 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground"
+                  >
+                    <Icon aria-hidden="true" className="size-3" />
+                  </a>
+                );
+              })}
             </div>
           </div>
 
           {FOOTER_LINKS.map((column) => (
             <div key={column.title}>
-              <h2 className="mb-3 text-[10px] font-bold uppercase tracking-widest text-foreground">
+              <h2 className="mb-3 text-[10px] font-bold uppercase tracking-widest text-brand-orange">
                 {column.title}
               </h2>
               <ul className="space-y-2">

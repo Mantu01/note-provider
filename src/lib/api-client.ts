@@ -29,10 +29,7 @@ export async function apiClient<T>(path: string, init: RequestInit = {}): Promis
   }
   const payload = (await response.json()) as ApiResult<T>;
   if (payload.success) return payload.data;
-  if (response.ok) {
-    throw new ApiError("INTERNAL_ERROR", payload.error?.message ?? "Unknown error", response.status, payload.error?.fields);
-  }
-  throw new ApiError(payload.error.code, payload.error.message, response.status, payload.error.fields);
+  throw new ApiError("INTERNAL_ERROR", payload.error?.message ?? "Unknown error", response.status, payload.error?.fields);
 }
 
 export function buildQueryString(params: Record<string, string | number | boolean | readonly string[] | null | undefined>): string {
