@@ -8,8 +8,6 @@ interface OrderRouteProps {
   params: Promise<{ orderId: string }>;
 }
 
-export const dynamic = "force-dynamic";
-
 export async function generateMetadata({ params }: OrderRouteProps): Promise<Metadata> {
   const { orderId } = await params;
   return {
