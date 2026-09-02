@@ -19,8 +19,8 @@ export async function connectDb(): Promise<typeof mongoose> {
     mongoose.set("strictQuery", true);
     cache.promise = mongoose.connect(uri, {
       bufferCommands: false,
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 10000,
+      maxPoolSize: 20,
+      serverSelectionTimeoutMS: 30000,
     });
   }
 
