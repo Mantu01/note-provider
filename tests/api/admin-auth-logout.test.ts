@@ -6,7 +6,7 @@ import { clearAdminSessionCookie } from "@/server/lib/auth-guard";
 import { logActivity } from "@/server/services/activity.service";
 import { getOptionalAdmin } from "@/server/lib/auth-guard";
 
-vi.mock("@/server/db/connect", () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }));
+vi.mock("@/server/db/connect", () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }));
 vi.mock("@/server/lib/auth-guard", () => ({
   clearAdminSessionCookie: vi.fn().mockResolvedValue(undefined),
   getOptionalAdmin: vi.fn(),

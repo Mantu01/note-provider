@@ -1,4 +1,4 @@
-import { connectDb } from "../db/connect";
+import { connectDB } from "../db/connect";
 import { Order, type OrderDoc } from "../db/models/order.model";
 import { Note } from "../db/models/note.model";
 import { Group } from "../db/models/group.model";

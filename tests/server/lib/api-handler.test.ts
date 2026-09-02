@@ -7,11 +7,11 @@ const mocks = vi.hoisted(() => ({
   mockFail: vi.fn(),
   mockRequireAdmin: vi.fn(),
   mockRequireHeadAdmin: vi.fn(),
-  mockConnectDb: vi.fn(),
+  mockconnectDB: vi.fn(),
 }));
 
 vi.mock('@/server/db/connect', () => ({
-  connectDb: mocks.mockConnectDb,
+  connectDB: mocks.mockconnectDB,
 }));
 
 vi.mock('@/server/lib/api-response', () => ({
@@ -29,7 +29,7 @@ describe('api-handler', () => {
     mocks.mockFail.mockReturnValue({ failCalledWith: true });
     mocks.mockRequireAdmin.mockResolvedValue({ id: 'admin-1', name: 'Admin', email: 'a@b.com', isHead: false });
     mocks.mockRequireHeadAdmin.mockResolvedValue({ id: 'admin-1', name: 'Admin', email: 'a@b.com', isHead: true });
-    mocks.mockConnectDb.mockResolvedValue(undefined);
+    mocks.mockconnectDB.mockResolvedValue(undefined);
   });
 
   describe('getClientIp', () => {
@@ -80,7 +80,7 @@ describe('api-handler', () => {
       const wrapped = handler(fn);
       const req = { headers: { get: () => null }, nextUrl: { searchParams: new URLSearchParams() } } as any;
       await wrapped(req, undefined);
-      expect(mocks.mockConnectDb).toHaveBeenCalledOnce();
+      expect(mocks.mockconnectDB).toHaveBeenCalledOnce();
     });
 
     it('passes context with req, params, searchParams, ip, and userAgent to the function', async () => {

@@ -5,7 +5,7 @@ import { toAdminLead } from '@/server/mappers/order.mapper'
 import { parsePagination, buildPagination, buildOrderFilter, buildOrderSort } from '@/server/lib/query'
 import { requireAdmin } from '@/server/lib/auth-guard'
 
-vi.mock('@/server/db/connect', () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }))
+vi.mock('@/server/db/connect', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/server/db/models/order.model', () => ({
   Order: { find: vi.fn(), countDocuments: vi.fn() },
 }))

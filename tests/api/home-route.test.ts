@@ -8,7 +8,7 @@ import { toPublicNote } from '@/server/mappers/note.mapper'
 import { toPublicGroup } from '@/server/mappers/group.mapper'
 import { toPublicCategory } from '@/server/mappers/category.mapper'
 
-vi.mock('@/server/db/connect', () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }))
+vi.mock('@/server/db/connect', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/server/db/models/note.model', () => ({
   Note: { find: vi.fn(), countDocuments: vi.fn(), aggregate: vi.fn() },
 }))

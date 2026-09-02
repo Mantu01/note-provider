@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server'
 import { Order } from '@/server/db/models/order.model'
 import { toPublicOrder } from '@/server/mappers/order.mapper'
 
-vi.mock('@/server/db/connect', () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }))
+vi.mock('@/server/db/connect', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/server/db/models/order.model', () => ({
   Order: { findById: vi.fn() },
 }))

@@ -10,7 +10,7 @@ import { updateNoteSchema } from '@/lib/schemas/note.schema'
 import { requireAdmin } from '@/server/lib/auth-guard'
 import { rupeesToPaise } from '@/lib/format'
 
-vi.mock('@/server/db/connect', () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }))
+vi.mock('@/server/db/connect', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/server/db/models/note.model', () => ({
   Note: { findById: vi.fn(), findByIdAndUpdate: vi.fn(), findByIdAndDelete: vi.fn(), distinct: vi.fn() },
 }))

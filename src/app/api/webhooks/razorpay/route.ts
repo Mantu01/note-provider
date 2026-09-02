@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { connectDb } from "@/server/db/connect";
+import { connectDB } from "@/server/db/connect";
 import { verifyWebhookSignature } from "@/server/lib/razorpay";
 import { Order } from "@/server/db/models/order.model";
 import { Note } from "@/server/db/models/note.model";
@@ -27,7 +27,7 @@ export async function POST(req: Request) {
   }
 
   try {
-    await connectDb();
+    await connectDB();
 
     const payload = JSON.parse(rawBody) as {
       event: string;

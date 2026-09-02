@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { handler, adminHandler } from "@/server/lib/api-handler";
-import { connectDb } from "@/server/db/connect";
+import { connectDB } from "@/server/db/connect";
 import { fail, ok } from "@/server/lib/api-response";
 import { AppError } from "@/server/lib/errors";
 import { Note } from "@/server/db/models/note.model";

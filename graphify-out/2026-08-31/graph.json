@@ -4594,14 +4594,14 @@
       "source_location": "L40"
     },
     {
-      "id": "src_server_db_connect_connectdb",
-      "label": "connectDb()",
+      "id": "src_server_db_connect_connectDB",
+      "label": "connectDB()",
       "_callable": true,
       "_origin": "ast",
       "community": 30,
       "community_name": "api-handler.ts",
       "file_type": "code",
-      "norm_label": "connectdb()",
+      "norm_label": "connectDB()",
       "source_file": "src/server/db/connect.ts",
       "source_location": "L14"
     },
@@ -18464,7 +18464,7 @@
   "links": [
     {
       "source": "seed_seed",
-      "target": "src_server_db_connect_connectdb",
+      "target": "src_server_db_connect_connectDB",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -18560,7 +18560,7 @@
     },
     {
       "source": "src_app_api_admin_auth_login_route_post",
-      "target": "src_server_db_connect_connectdb",
+      "target": "src_server_db_connect_connectDB",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -18776,7 +18776,7 @@
     },
     {
       "source": "src_app_api_admin_auth_register_route_post",
-      "target": "src_server_db_connect_connectdb",
+      "target": "src_server_db_connect_connectDB",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -20864,7 +20864,7 @@
     },
     {
       "source": "src_app_api_webhooks_razorpay_route_post",
-      "target": "src_server_db_connect_connectdb",
+      "target": "src_server_db_connect_connectDB",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23383,7 +23383,7 @@
       "weight": 1.0
     },
     {
-      "source": "src_server_db_connect_connectdb",
+      "source": "src_server_db_connect_connectDB",
       "target": "src_server_lib_errors_apperror_internal",
       "relation": "calls",
       "_origin": "ast",
@@ -23396,7 +23396,7 @@
     },
     {
       "source": "src_server_lib_api_handler_adminhandler",
-      "target": "src_server_db_connect_connectdb",
+      "target": "src_server_db_connect_connectDB",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23456,7 +23456,7 @@
     },
     {
       "source": "src_server_lib_api_handler_handler",
-      "target": "src_server_db_connect_connectdb",
+      "target": "src_server_db_connect_connectDB",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -23504,7 +23504,7 @@
     },
     {
       "source": "src_server_lib_api_handler_headadminhandler",
-      "target": "src_server_db_connect_connectdb",
+      "target": "src_server_db_connect_connectDB",
       "relation": "calls",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -26483,7 +26483,7 @@
     },
     {
       "source": "seed",
-      "target": "src_server_db_connect_connectdb",
+      "target": "src_server_db_connect_connectDB",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -27047,7 +27047,7 @@
     },
     {
       "source": "src_app_api_admin_auth_login_route",
-      "target": "src_server_db_connect_connectdb",
+      "target": "src_server_db_connect_connectDB",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -27371,7 +27371,7 @@
     },
     {
       "source": "src_app_api_admin_auth_register_route",
-      "target": "src_server_db_connect_connectdb",
+      "target": "src_server_db_connect_connectDB",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -28475,7 +28475,7 @@
     },
     {
       "source": "src_app_api_admin_notes_route",
-      "target": "src_server_db_connect_connectdb",
+      "target": "src_server_db_connect_connectDB",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -29903,7 +29903,7 @@
     },
     {
       "source": "src_app_api_webhooks_razorpay_route",
-      "target": "src_server_db_connect_connectdb",
+      "target": "src_server_db_connect_connectDB",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -38027,7 +38027,7 @@
     },
     {
       "source": "src_server_lib_api_handler",
-      "target": "src_server_db_connect_connectdb",
+      "target": "src_server_db_connect_connectDB",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -38327,7 +38327,7 @@
     },
     {
       "source": "src_server_lib_mailer",
-      "target": "src_server_db_connect_connectdb",
+      "target": "src_server_db_connect_connectDB",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -39971,7 +39971,7 @@
     },
     {
       "source": "src_server_services_order_service",
-      "target": "src_server_db_connect_connectdb",
+      "target": "src_server_db_connect_connectDB",
       "relation": "imports",
       "_origin": "ast",
       "confidence": "EXTRACTED",
@@ -70658,7 +70658,7 @@
     },
     {
       "source": "src_server_db_connect",
-      "target": "src_server_db_connect_connectdb",
+      "target": "src_server_db_connect_connectDB",
       "relation": "contains",
       "_origin": "ast",
       "confidence": "EXTRACTED",

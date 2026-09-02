@@ -3,7 +3,7 @@ import { validateNoteIdsExist } from "@/server/lib/note-validation";
 import { Note } from "@/server/db/models/note.model";
 import { AppError } from "@/server/lib/errors";
 
-vi.mock("@/server/db/connect", () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }));
+vi.mock("@/server/db/connect", () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }));
 vi.mock("@/server/db/models/note.model", () => ({
   Note: {
     find: vi.fn(),

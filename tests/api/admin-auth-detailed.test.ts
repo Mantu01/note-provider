@@ -12,7 +12,7 @@ import { enforceRateLimit } from '@/server/lib/rate-limit'
 import { toAdminProfile } from '@/server/mappers/activity.mapper'
 import { AdminActivity } from '@/server/db/models/admin-activity.model'
 
-vi.mock('@/server/db/connect', () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }))
+vi.mock('@/server/db/connect', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }))
 
 vi.mock('@/server/db/models/admin.model', () => ({
   Admin: {

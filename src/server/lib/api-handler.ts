@@ -1,6 +1,6 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { ZodError } from "zod";
-import { connectDb } from "../db/connect";
+import { connectDB } from "../db/connect";
 import { fail } from "./api-response";
 import { requireAdmin, requireHeadAdmin, type AdminSession } from "./auth-guard";
 import { AppError, duplicateKeyToAppError, isDuplicateKeyError } from "./errors";
@@ -62,7 +62,7 @@ export function handler<P extends Record<string, string> = Record<string, string
 ) {
   return async (req: NextRequest, args: NextRouteArgs<P>): Promise<NextResponse> => {
     try {
-      await connectDb();
+      await connectDB();
       return await fn(await buildContext(req, args));
     } catch (error) {
       return fail(toAppError(error));
@@ -75,7 +75,7 @@ export function adminHandler<P extends Record<string, string> = Record<string, s
 ) {
   return async (req: NextRequest, args: NextRouteArgs<P>): Promise<NextResponse> => {
     try {
-      await connectDb();
+      await connectDB();
       const ctx = await buildContext<P>(req, args);
       const admin = await requireAdmin();
       return await fn({ ...ctx, admin });
@@ -90,7 +90,7 @@ export function headAdminHandler<P extends Record<string, string> = Record<strin
 ) {
   return async (req: NextRequest, args: NextRouteArgs<P>): Promise<NextResponse> => {
     try {
-      await connectDb();
+      await connectDB();
       const ctx = await buildContext<P>(req, args);
       const admin = await requireHeadAdmin();
       return await fn({ ...ctx, admin });

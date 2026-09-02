@@ -27,7 +27,7 @@ vi.mock('@/server/lib/jwt', () => ({
   verifyAdminToken: vi.fn().mockResolvedValue({ sub: 'a1', email: 'a@b.com', name: 'Admin', isHead: false }),
 }))
 
-vi.mock('@/server/db/connect', () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }))
+vi.mock('@/server/db/connect', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/server/db/models/admin.model', () => ({ Admin: { findById: vi.fn() } }))
 vi.mock('@/server/db/models/category.model', () => ({ Category: { find: vi.fn(), countDocuments: vi.fn() } }))
 vi.mock('@/server/db/models/note.model', () => ({ Note: { find: vi.fn(), countDocuments: vi.fn(), aggregate: vi.fn(), findOne: vi.fn(), findById: vi.fn(), findByIdAndUpdate: vi.fn(), findByIdAndDelete: vi.fn() } }))

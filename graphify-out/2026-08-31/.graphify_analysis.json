@@ -1041,7 +1041,7 @@
       "tests_lib_query_keys_test"
     ],
     "30": [
-      "src_server_db_connect_connectdb",
+      "src_server_db_connect_connectDB",
       "src_server_lib_api_handler",
       "src_server_lib_api_handler_adminhandler",
       "src_server_lib_api_handler_adminroutecontext",
@@ -2025,14 +2025,14 @@
   "surprises": [
     {
       "source": "seed()",
-      "target": "connectDb()",
+      "target": "connectDB()",
       "source_files": [
         "seed.ts",
         "src/server/db/connect.ts"
       ],
       "confidence": "EXTRACTED",
       "relation": "calls",
-      "why": "connects across different repos/directories; bridges separate communities; peripheral node `seed()` unexpectedly reaches hub `connectDb()`"
+      "why": "connects across different repos/directories; bridges separate communities; peripheral node `seed()` unexpectedly reaches hub `connectDB()`"
     },
     {
       "source": "loginHandler",

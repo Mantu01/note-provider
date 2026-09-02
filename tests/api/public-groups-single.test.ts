@@ -6,7 +6,7 @@ import { toPublicGroup } from '@/server/mappers/group.mapper'
 import { toPublicNote } from '@/server/mappers/note.mapper'
 import { GET } from '@/app/api/groups/[slug]/route'
 
-vi.mock('@/server/db/connect', () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }))
+vi.mock('@/server/db/connect', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/server/db/models/group.model', () => ({
   Group: { findOne: vi.fn(), find: vi.fn() },
 }))

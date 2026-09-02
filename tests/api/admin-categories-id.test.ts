@@ -9,7 +9,7 @@ import { updateCategorySchema } from '@/lib/schemas/category.schema'
 import { requireAdmin } from '@/server/lib/auth-guard'
 import { AppError } from '@/server/lib/errors'
 
-vi.mock('@/server/db/connect', () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }))
+vi.mock('@/server/db/connect', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/server/db/models/category.model', () => ({
   Category: { findById: vi.fn(), findByIdAndUpdate: vi.fn(), findByIdAndDelete: vi.fn() },
 }))

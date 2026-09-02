@@ -6,7 +6,7 @@ import { fulfillOrder, deleteOrder } from '@/server/services/order.service'
 import { updateOrderSchema } from '@/lib/schemas/admin.schema'
 import { requireAdmin } from '@/server/lib/auth-guard'
 
-vi.mock('@/server/db/connect', () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }))
+vi.mock('@/server/db/connect', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/server/db/models/order.model', () => ({
   Order: { findById: vi.fn() },
 }))

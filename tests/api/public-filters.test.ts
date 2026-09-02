@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server'
 import { Category } from '@/server/db/models/category.model'
 import { Note } from '@/server/db/models/note.model'
 
-vi.mock('@/server/db/connect', () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }))
+vi.mock('@/server/db/connect', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/server/db/models/category.model', () => ({
   Category: { find: vi.fn() },
 }))

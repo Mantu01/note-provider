@@ -4,7 +4,7 @@ import { Note } from '@/server/db/models/note.model'
 import { toPublicNote } from '@/server/mappers/note.mapper'
 import { GET } from '@/app/api/notes/route'
 
-vi.mock('@/server/db/connect', () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }))
+vi.mock('@/server/db/connect', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/server/db/models/note.model', () => ({
   Note: { find: vi.fn(), countDocuments: vi.fn() },
 }))

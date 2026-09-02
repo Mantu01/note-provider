@@ -4,7 +4,7 @@ import { getDashboardStats } from '@/server/services/dashboard.service'
 import { requireAdmin } from '@/server/lib/auth-guard'
 import { Note } from '@/server/db/models/note.model'
 
-vi.mock('@/server/db/connect', () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }))
+vi.mock('@/server/db/connect', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/server/db/models/note.model', () => ({
   Note: { aggregate: vi.fn() },
 }))

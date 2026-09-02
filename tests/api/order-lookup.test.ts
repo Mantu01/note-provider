@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server'
 import { getOrderByNumber } from '@/server/services/order.service'
 import { enforceRateLimit } from '@/server/lib/rate-limit'
 
-vi.mock('@/server/db/connect', () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }))
+vi.mock('@/server/db/connect', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/server/services/order.service', () => ({
   getOrderByNumber: vi.fn(),
 }))

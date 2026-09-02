@@ -1,39 +1,49 @@
-import mongoose from "mongoose";
-import { AppError } from "../lib/errors";
+import mongoose from 'mongoose';
 
-type MongooseCache = {
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017';
+
+if (!MONGODB_URI) {
+  throw new Error('Please define the MONGODB_URI environment variable inside .env');
+}
+
+interface MongooseCache {
   conn: typeof mongoose | null;
   promise: Promise<typeof mongoose> | null;
-};
+}
 
-const globalCache = globalThis as typeof globalThis & { __mongoose?: MongooseCache };
+declare global {
+  var mongoose: MongooseCache | undefined;
+}
 
-const cache: MongooseCache = globalCache.__mongoose ?? { conn: null, promise: null };
-globalCache.__mongoose = cache;
+const cached: MongooseCache = global.mongoose || { conn: null, promise: null };
 
-export async function connectDb(): Promise<typeof mongoose> {
-  if (!cache.promise) {
-    const uri = process.env.MONGODB_URI;
-    if (!uri) throw AppError.internal("Database is not configured");
+if (!global.mongoose) {
+  global.mongoose = cached;
+}
 
-    mongoose.set("strictQuery", true);
-    cache.promise = mongoose.connect(uri, {
-      bufferCommands: true,
-      bufferTimeoutMS: 15000,
-      maxPoolSize: 10,
-      serverSelectionTimeoutMS: 10000,
-      autoIndexOnConnect: false,
-      connectTimeoutMS: 10000,
-      socketTimeoutMS: 20000,
+async function connectDB(): Promise<typeof mongoose> {
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+    };
+
+    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+      return mongoose;
     });
   }
 
   try {
-    cache.conn = await cache.promise;
-  } catch (error) {
-    cache.promise = null;
-    throw error;
+    cached.conn = await cached.promise;
+  } catch (e) {
+    cached.promise = null;
+    throw e;
   }
 
-  return cache.conn;
+  return cached.conn;
 }
+
+export {connectDB};

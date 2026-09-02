@@ -4,7 +4,7 @@ import { Admin } from '@/server/db/models/admin.model'
 import { toAdminProfile } from '@/server/mappers/activity.mapper'
 import { requireAdmin } from '@/server/lib/auth-guard'
 
-vi.mock('@/server/db/connect', () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }))
+vi.mock('@/server/db/connect', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/server/db/models/admin.model', () => ({
   Admin: { find: vi.fn() },
 }))

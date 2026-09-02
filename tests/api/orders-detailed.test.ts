@@ -14,7 +14,7 @@ import { GET as ordersLookupGET } from '@/app/api/orders/lookup/route'
 import { POST as ordersLookupPOST } from '@/app/api/orders/lookup/route'
 
 vi.mock('@/server/db/connect', () => ({
-  connectDb: vi.fn().mockResolvedValue(undefined),
+  connectDB: vi.fn().mockResolvedValue(undefined),
 }))
 
 vi.mock('@/server/db/models/note.model', () => ({

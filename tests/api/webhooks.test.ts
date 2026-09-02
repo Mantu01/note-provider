@@ -7,7 +7,7 @@ import { Note } from '@/server/db/models/note.model'
 import { Group } from '@/server/db/models/group.model'
 
 vi.mock('@/server/db/connect', () => ({
-  connectDb: vi.fn().mockResolvedValue(undefined),
+  connectDB: vi.fn().mockResolvedValue(undefined),
 }))
 vi.mock('@/server/lib/razorpay', () => ({
   getRazorpayKeyId: vi.fn(() => 'rzp_test_key'),

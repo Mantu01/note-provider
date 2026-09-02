@@ -245,7 +245,7 @@ Nodes (16): AboutPage(), metadata, metadata, PrivacyPage(), metadata, RefundPoli
 
 ### Community 22 - "Database Seeding"
 Cohesion: 0.18
-Nodes (20): seed(), POST, runtime, connectDb(), globalCache, MongooseCache, adminHandler(), AdminRouteContext (+12 more)
+Nodes (20): seed(), POST, runtime, connectDB(), globalCache, MongooseCache, adminHandler(), AdminRouteContext (+12 more)
 
 ### Community 23 - "Checkout Flow"
 Cohesion: 0.11

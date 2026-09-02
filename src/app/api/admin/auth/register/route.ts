@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { handler, adminHandler } from "@/server/lib/api-handler";
-import { connectDb } from "@/server/db/connect";
+import { connectDB } from "@/server/db/connect";
 import { fail, ok } from "@/server/lib/api-response";
 import { AppError } from "@/server/lib/errors";
 import { Admin } from "@/server/db/models/admin.model";
@@ -15,7 +15,7 @@ import { toAdminProfile } from "@/server/mappers/activity.mapper";
 export const runtime = "nodejs";
 
 export const POST = handler(async (ctx) => {
-  await connectDb();
+  await connectDB();
   enforceRateLimit("adminRegister", ctx.ip, { limit: 10, windowMs: 3600000 });
 
   const secret = ctx.req.headers.get("x-admin-register-secret");

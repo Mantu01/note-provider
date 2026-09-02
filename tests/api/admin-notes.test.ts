@@ -10,7 +10,7 @@ import { rupeesToPaise } from "@/lib/format";
 import { MIN_PAID_PRICE_PAISE } from "@/lib/constants";
 import { requireAdmin } from "@/server/lib/auth-guard";
 
-vi.mock("@/server/db/connect", () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }));
+vi.mock("@/server/db/connect", () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }));
 vi.mock("@/server/db/models/note.model", () => ({
   Note: {
     find: vi.fn(),

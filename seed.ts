@@ -1,7 +1,7 @@
 import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 import { loadEnvFile } from "node:process";
-import { connectDb } from "./src/server/db/connect";
+import { connectDB } from "./src/server/db/connect";
 import { AdminActivity } from "./src/server/db/models/admin-activity.model";
 import { Admin } from "./src/server/db/models/admin.model";
 import { Category } from "./src/server/db/models/category.model";
@@ -20,7 +20,7 @@ const seedDate = new Date("2026-01-15T09:00:00.000Z");
 loadEnvFile(".env");
 
 async function seed() {
-  await connectDb();
+  await connectDB();
 
   await Promise.all([
     AdminActivity.deleteMany({}), Order.deleteMany({}), Group.deleteMany({}), Note.deleteMany({}),

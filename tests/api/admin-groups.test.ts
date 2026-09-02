@@ -10,7 +10,7 @@ import { validateNoteIdsExist } from "@/server/lib/note-validation";
 import { rupeesToPaise } from "@/lib/format";
 import { requireAdmin } from "@/server/lib/auth-guard";
 
-vi.mock("@/server/db/connect", () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }));
+vi.mock("@/server/db/connect", () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }));
 vi.mock("@/server/db/models/group.model", () => ({
   Group: {
     find: vi.fn(),

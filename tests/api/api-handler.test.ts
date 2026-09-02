@@ -5,7 +5,7 @@ import { AppError } from '@/server/lib/errors'
 import { ZodError } from 'zod'
 
 vi.mock('@/server/db/connect', () => ({
-  connectDb: vi.fn().mockResolvedValue(undefined),
+  connectDB: vi.fn().mockResolvedValue(undefined),
 }))
 
 vi.mock('@/server/lib/api-response', () => ({
@@ -33,8 +33,8 @@ describe('api-handler', () => {
       const wrapped = handler(fn)
       const req = { headers: { get: () => null }, nextUrl: { searchParams: new URLSearchParams() } } as any
       await wrapped(req, undefined)
-      const { connectDb } = await import('@/server/db/connect')
-      expect(connectDb).toHaveBeenCalledOnce()
+      const { connectDB } = await import('@/server/db/connect')
+      expect(connectDB).toHaveBeenCalledOnce()
     })
 
     it('passes context with req, params, searchParams, ip, and userAgent to the function', async () => {

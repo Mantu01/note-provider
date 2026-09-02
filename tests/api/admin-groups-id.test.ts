@@ -8,7 +8,7 @@ import { updateGroupSchema } from '@/lib/schemas/group.schema'
 import { requireAdmin } from '@/server/lib/auth-guard'
 import { Types } from 'mongoose'
 
-vi.mock('@/server/db/connect', () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }))
+vi.mock('@/server/db/connect', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/server/db/models/group.model', () => ({
   Group: { findById: vi.fn(), findByIdAndUpdate: vi.fn(), findByIdAndDelete: vi.fn() },
 }))

@@ -5,7 +5,7 @@ import { Group } from '@/server/db/models/group.model'
 import { toPublicNote } from '@/server/mappers/note.mapper'
 import { toPublicGroup } from '@/server/mappers/group.mapper'
 
-vi.mock('@/server/db/connect', () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }))
+vi.mock('@/server/db/connect', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/server/db/models/note.model', () => ({
   Note: { findOne: vi.fn(), find: vi.fn() },
 }))

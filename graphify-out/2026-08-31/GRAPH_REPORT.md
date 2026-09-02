@@ -159,7 +159,7 @@
   tests/api/admin-auth-detailed.test.ts → src/server/lib/rate-limit.ts
 - `registerHandler` --calls--> `enforceRateLimit()`  [EXTRACTED]
   tests/api/admin-auth-detailed.test.ts → src/server/lib/rate-limit.ts
-- `seed()` --calls--> `connectDb()`  [EXTRACTED]
+- `seed()` --calls--> `connectDB()`  [EXTRACTED]
   seed.ts → src/server/db/connect.ts
 
 ## Import Cycles
@@ -249,7 +249,7 @@ Nodes (26): Adding a First Admin Account, Available Scripts, Buying Notes, Deplo
 
 ### Community 20 - "api-handler.ts"
 Cohesion: 0.17
-Nodes (20): seed(), runtime, GET, runtime, connectDb(), globalCache, MongooseCache, adminHandler() (+12 more)
+Nodes (20): seed(), runtime, GET, runtime, connectDB(), globalCache, MongooseCache, adminHandler() (+12 more)
 
 ### Community 21 - "group.service.ts"
 Cohesion: 0.11

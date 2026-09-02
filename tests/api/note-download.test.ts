@@ -6,7 +6,7 @@ import { enforceRateLimit } from '@/server/lib/rate-limit'
 import { incrementDownloadCount } from '@/server/services/note.service'
 import * as fs from 'fs'
 
-vi.mock('@/server/db/connect', () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }))
+vi.mock('@/server/db/connect', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/server/db/models/note.model', () => ({
   Note: { findOne: vi.fn() },
 }))

@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { connectDb } from "../db/connect";
+import { connectDB } from "../db/connect";
 import { Admin } from "../db/models/admin.model";
 import { getTemplate } from "./templates";
 import { formatPrice, formatDateTime } from "@/lib/format";

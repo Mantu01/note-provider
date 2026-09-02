@@ -3,7 +3,7 @@ import { NextRequest } from 'next/server'
 import { Group } from '@/server/db/models/group.model'
 import { toPublicGroup } from '@/server/mappers/group.mapper'
 
-vi.mock('@/server/db/connect', () => ({ connectDb: vi.fn().mockResolvedValue(undefined) }))
+vi.mock('@/server/db/connect', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/server/db/models/group.model', () => ({
   Group: { find: vi.fn(), countDocuments: vi.fn() },
 }))
