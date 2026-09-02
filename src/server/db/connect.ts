@@ -12,14 +12,16 @@ const cache: MongooseCache = globalCache.__mongoose ?? { conn: null, promise: nu
 globalCache.__mongoose = cache;
 
 export async function connectDb(): Promise<typeof mongoose> {
-  if (cache.conn) return cache.conn;
-
   if (!cache.promise) {
     const uri = process.env.MONGODB_URI;
     if (!uri) throw AppError.internal("Database is not configured");
 
     mongoose.set("strictQuery", true);
-    cache.promise = mongoose.connect(uri, { bufferCommands: false, maxPoolSize: 10, serverSelectionTimeoutMS: 5000 });
+    cache.promise = mongoose.connect(uri, {
+      bufferCommands: false,
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 10000,
+    });
   }
 
   try {
