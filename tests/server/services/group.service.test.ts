@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   listGroups,
   getGroupBySlug,
@@ -11,7 +11,6 @@ import {
 } from "../../../src/server/services/group.service";
 import * as GroupModel from "../../../src/server/db/models/group.model";
 import * as NoteModel from "../../../src/server/db/models/note.model";
-import * as ActivityService from "../../../src/server/services/activity.service";
 import * as SlugLib from "../../../src/server/lib/slug";
 import * as Errors from "../../../src/server/lib/errors";
 
@@ -31,10 +30,6 @@ vi.mock("../../../src/server/db/models/note.model", () => ({
   Note: {
     find: vi.fn(),
   },
-}));
-
-vi.mock("../../../src/server/services/activity.service", () => ({
-  logActivity: vi.fn(),
 }));
 
 vi.mock("../../../src/server/lib/slug", () => ({
@@ -173,11 +168,7 @@ describe("createGroup", () => {
     expect(SlugLib.uniqueSlug).toHaveBeenCalled();
     expect(GroupModel.Group.create).toHaveBeenCalledWith(
       expect.objectContaining({ name: "JS Mastery", slug: "js-mastery" }),
-    );
-    expect(ActivityService.logActivity).toHaveBeenCalledWith(
-      expect.objectContaining({ action: "group.create" }),
-    );
-    expect(result).toEqual(mockGroup);
+    );expect(result).toEqual(mockGroup);
   });
 
   it("throws validation error when price is too low", async () => {
@@ -246,11 +237,7 @@ describe("updateGroup", () => {
     );
 
     const result = await updateGroup("grp1", { name: "Updated JS" }, mockCtx as any);
-    expect(result.name).toBe("Updated JS");
-    expect(ActivityService.logActivity).toHaveBeenCalledWith(
-      expect.objectContaining({ action: "group.update" }),
-    );
-  });
+    expect(result.name).toBe("Updated JS");});
 
   it("throws not found when group does not exist", async () => {
     vi.mocked(GroupModel.Group.findById).mockReturnValue(
@@ -348,11 +335,7 @@ describe("deleteGroup", () => {
     );
 
     const result = await deleteGroup(mockGroupId, mockCtx as any);
-    expect(result.deleted).toBe(true);
-    expect(ActivityService.logActivity).toHaveBeenCalledWith(
-      expect.objectContaining({ action: "group.delete" }),
-    );
-  });
+    expect(result.deleted).toBe(true);});
 
   it("throws not found when group does not exist", async () => {
     vi.mocked(GroupModel.Group.findById).mockReturnValue(

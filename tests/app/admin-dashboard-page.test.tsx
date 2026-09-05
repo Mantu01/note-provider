@@ -32,7 +32,6 @@ vi.mock("@/features/admin/api/use-admin-dashboard", () => ({
       topNotes: [],
       categoryBreakdown: [],
       recentOrders: [],
-      recentActivities: [],
     },
     isLoading: false,
     error: null,

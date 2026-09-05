@@ -1,7 +1,7 @@
 import { adminHandler } from "@/server/lib/api-handler";
 import { ok } from "@/server/lib/api-response";
 import { Admin } from "@/server/db/models/admin.model";
-import { toAdminProfile } from "@/server/mappers/activity.mapper";
+import { toAdminProfile } from "@/server/mappers/admin.mapper";
 
 export const runtime = "nodejs";
 

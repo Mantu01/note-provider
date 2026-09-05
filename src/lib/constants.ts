@@ -58,25 +58,6 @@ export const NOTE_SORTS = ["newest", "oldest", "price_asc", "price_desc", "popul
 export const ORDER_SORTS = ["newest", "oldest", "amount_desc", "amount_asc"] as const satisfies readonly OrderSort[];
 export const UPLOAD_KINDS = ["note_full", "note_preview", "cover"] as const satisfies readonly UploadKind[];
 
-export const ACTIVITY_TARGET_TYPES = ["note", "group", "category", "order", "admin"] as const;
-export const ADMIN_ACTIVITY_ACTIONS = [
-  "admin.register",
-  "admin.login",
-  "admin.logout",
-  "note.create",
-  "note.update",
-  "note.delete",
-  "group.create",
-  "group.update",
-  "group.delete",
-  "category.create",
-  "category.update",
-  "category.delete",
-  "order.update_fulfillment",
-  "order.add_note",
-  "order.delete",
-] as const;
-
 export const NOTE_LEVEL_LABELS: Record<NoteLevel, string> = { basics: "Basics", intermediate: "Intermediate", advance: "Advanced" };
 export const PRICING_TYPE_LABELS: Record<NotePricingType, string> = { free: "Free", paid: "Paid" };
 export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = { created: "Awaiting payment", paid: "Paid", failed: "Failed" };

@@ -2,7 +2,6 @@ import { Order, type OrderDoc } from "../db/models/order.model";
 import { Note } from "../db/models/note.model";
 import { Group } from "../db/models/group.model";
 import { Category } from "../db/models/category.model";
-import { AdminActivity } from "../db/models/admin-activity.model";
 
 export async function getDashboardStats(): Promise<import("@/lib/types").DashboardStats> {
   const now = new Date();
@@ -30,7 +29,6 @@ export async function getDashboardStats(): Promise<import("@/lib/types").Dashboa
     topNotes,
     categoryBreakdown,
     recentOrders,
-    recentActivities,
   ] = await Promise.all([
     Order.aggregate([
       { $match: { paymentStatus: "paid" } },
@@ -60,7 +58,6 @@ export async function getDashboardStats(): Promise<import("@/lib/types").Dashboa
     getTopNotes(),
     getCategoryBreakdown(),
     Order.find().sort({ createdAt: -1 }).limit(10).lean<OrderDoc>().exec(),
-    AdminActivity.find().sort({ createdAt: -1 }).limit(10).lean().exec(),
   ]);
 
   return {
@@ -92,7 +89,6 @@ export async function getDashboardStats(): Promise<import("@/lib/types").Dashboa
     topNotes,
     categoryBreakdown,
     recentOrders: recentOrders as unknown as import("@/lib/types").AdminOrder[],
-    recentActivities: recentActivities as unknown as import("@/lib/types").AdminActivity[],
   };
 }
 

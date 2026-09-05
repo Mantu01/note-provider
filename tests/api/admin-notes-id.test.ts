@@ -3,7 +3,6 @@ import { NextRequest } from 'next/server'
 import { Note } from '@/server/db/models/note.model'
 import { Group } from '@/server/db/models/group.model'
 import { Category } from '@/server/db/models/category.model'
-import { logActivity } from '@/server/services/activity.service'
 import { destroyAsset } from '@/server/lib/cloudinary'
 import { toAdminNote } from '@/server/mappers/note.mapper'
 import { updateNoteSchema } from '@/lib/schemas/note.schema'
@@ -19,9 +18,6 @@ vi.mock('@/server/db/models/group.model', () => ({
 }))
 vi.mock('@/server/db/models/category.model', () => ({
   Category: { findById: vi.fn() },
-}))
-vi.mock('@/server/services/activity.service', () => ({
-  logActivity: vi.fn().mockResolvedValue(undefined),
 }))
 vi.mock('@/server/lib/cloudinary', () => ({
   destroyAsset: vi.fn().mockResolvedValue(undefined),
@@ -142,17 +138,7 @@ describe('PATCH /api/admin/notes/[id]', () => {
     expect(rupeesToPaise).toHaveBeenCalledWith(500)
   })
 
-  it('logs activity on successful update', async () => {
-    ;(updateNoteSchema.safeParse as any).mockReturnValue({ success: true, data: { title: 'Updated Note' } })
-    const updated = { _id: 'n1', title: 'Updated Note' }
-    ;(Note.findById as any).mockReturnValueOnce(makeChain(updated)).mockReturnValueOnce(makeChain(updated))
-    ;(Note.findByIdAndUpdate as any).mockReturnValue(makeChain({}))
-    const mod = await import('@/app/api/admin/notes/[id]/route')
-    await mod.PATCH(mockReq('PATCH', '/api/admin/notes/n1', { title: 'Updated Note' }) as any, { params: Promise.resolve({ id: 'n1' }) })
-    expect(logActivity).toHaveBeenCalledWith(expect.objectContaining({ action: 'note.update' }))
-  })
-
-  it('changes pricingType from paid to free and cleans up preview', async () => {
+  it('clears preview asset when pricingType changes to free', async () => {
     ;(updateNoteSchema.safeParse as any).mockReturnValue({ success: true, data: { pricingType: 'free' } })
     const existing = { _id: 'n1', pricingType: 'paid', previewFilePublicId: 'pub-prev', fullFilePublicId: null, coverImagePublicId: null }
     const updated = { ...existing, pricingType: 'free', previewFilePublicId: null }
@@ -211,11 +197,10 @@ describe('DELETE /api/admin/notes/[id]', () => {
     expect(res.status).toBe(200)
     const json = await res.json()
     expect(json.data.deleted).toBe(true)
-    expect(logActivity).toHaveBeenCalledWith(expect.objectContaining({ action: 'note.delete' }))
   })
 
-  it('allows creator to delete their own note', async () => {
-    const note = { _id: 'n1', title: 'My Note', createdBy: 'a1', fullFilePublicId: null, previewFilePublicId: null, coverImagePublicId: null }
+  it('deletes note and checks permissions for non-head creator admin', async () => {
+    const note = { _id: 'n1', title: 'Note', createdBy: 'a1', fullFilePublicId: null, previewFilePublicId: null, coverImagePublicId: null }
     ;(Note.findById as any).mockReturnValue(makeChain(note))
     ;(Group.distinct as any).mockResolvedValue([])
     ;(Note.findByIdAndDelete as any).mockReturnValue({ exec: vi.fn().mockResolvedValue({}) })

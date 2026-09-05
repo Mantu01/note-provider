@@ -3,7 +3,6 @@ import { fail, ok } from "@/server/lib/api-response";
 import { Category } from "@/server/db/models/category.model";
 import { Note } from "@/server/db/models/note.model";
 import { Group } from "@/server/db/models/group.model";
-import { logActivity } from "@/server/services/activity.service";
 import { toAdminCategory } from "@/server/mappers/category.mapper";
 import { createCategorySchema } from "@/lib/schemas/category.schema";
 import { uniqueSlug } from "@/server/lib/slug";
@@ -51,17 +50,6 @@ export const POST = adminHandler(async (ctx) => {
     slug,
     createdBy: admin.id,
     updatedBy: admin.id,
-  });
-
-  await logActivity({
-    adminId: admin.id,
-    action: "category.create",
-    description: `Created category "${input.name}"`,
-    targetType: "category",
-    targetId: doc._id.toString(),
-    targetLabel: input.name,
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
   });
 
   return ok(toAdminCategory(doc.toJSON(), 0, 0));

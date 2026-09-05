@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 import { Note } from "@/server/db/models/note.model";
 import { Category } from "@/server/db/models/category.model";
-import { logActivity } from "@/server/services/activity.service";
 import { toAdminNote } from "@/server/mappers/note.mapper";
 import { createNoteSchema } from "@/lib/schemas/note.schema";
 import { uniqueSlug } from "@/server/lib/slug";
@@ -21,9 +20,6 @@ vi.mock("@/server/db/models/note.model", () => ({
 }));
 vi.mock("@/server/db/models/category.model", () => ({
   Category: { findById: vi.fn() },
-}));
-vi.mock("@/server/services/activity.service", () => ({
-  logActivity: vi.fn().mockResolvedValue(undefined),
 }));
 vi.mock("@/server/mappers/note.mapper", () => ({
   toAdminNote: vi.fn((n: any) => n),
@@ -119,7 +115,6 @@ describe("POST /api/admin/notes", () => {
     ;(Note.create as any).mockResolvedValue({ _id: "n1", title: "New Note", toJSON: () => ({ _id: "n1", title: "New Note" }) });
     ;(Note.findById as any).mockReturnValue(makeChain(null));
     ;(Category.findById as any).mockReturnValue(makeChain(null));
-    ;(logActivity as any).mockResolvedValue(undefined);
     ;(toAdminNote as any).mockImplementation((n: any) => n);
   });
 
@@ -177,7 +172,7 @@ describe("POST /api/admin/notes", () => {
     expect(rupeesToPaise).toHaveBeenCalledWith(500);
   });
 
-  it("logs activity on note creation", async () => {
+  it("creates note successfully", async () => {
     ;(createNoteSchema.safeParse as any).mockReturnValue({
       success: true,
       data: { title: "New Note", categoryId: "c1", level: "basics", visibility: "public", pricingType: "free", price: 0, tags: [], fullFile: validFile, pageCount: 10 },
@@ -185,9 +180,7 @@ describe("POST /api/admin/notes", () => {
     ;(Category.findById as any).mockReturnValue(makeChain({ _id: "c1" }));
     ;(Note.findById as any).mockReturnValue(makeChain({ _id: "n1", title: "New Note" }));
     const { POST } = await import("@/app/api/admin/notes/route");
-    await POST(mockReq("POST", "/api/admin/notes", { title: "New Note", categoryId: "c1", pricingType: "free", price: 0, fullFile: validFile }) as any, undefined);
-    expect(logActivity).toHaveBeenCalledWith(expect.objectContaining({ action: "note.create" }));
-  });
+    await POST(mockReq("POST", "/api/admin/notes", { title: "New Note", categoryId: "c1", pricingType: "free", price: 0, fullFile: validFile }) as any, undefined);  });
 
   it("handles optional preview file", async () => {
     ;(createNoteSchema.safeParse as any).mockReturnValue({

@@ -3,7 +3,6 @@ import { fail, ok } from "@/server/lib/api-response";
 import { AppError } from "@/server/lib/errors";
 import { Group } from "@/server/db/models/group.model";
 import { Note } from "@/server/db/models/note.model";
-import { logActivity } from "@/server/services/activity.service";
 import { toAdminGroup } from "@/server/mappers/group.mapper";
 import { updateGroupSchema } from "@/lib/schemas/group.schema";
 import { rupeesToPaise } from "@/lib/format";
@@ -73,17 +72,6 @@ export const PATCH = adminHandler(async (ctx) => {
 
   if (!updated) throw AppError.internal("Failed to update group");
 
-  await logActivity({
-    adminId: admin.id,
-    action: "group.update",
-    description: `Updated group "${updated.name}"`,
-    targetType: "group",
-    targetId: id,
-    targetLabel: updated.name,
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
-  });
-
   return ok(toAdminGroup(updated));
 });
 
@@ -102,17 +90,6 @@ export const DELETE = adminHandler(async (ctx) => {
   }
 
   await Group.findByIdAndDelete(id).exec();
-
-  await logActivity({
-    adminId: admin.id,
-    action: "group.delete",
-    description: `Deleted group "${group.name}"`,
-    targetType: "group",
-    targetId: id,
-    targetLabel: group.name,
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
-  });
 
   return ok({ deleted: true });
 });

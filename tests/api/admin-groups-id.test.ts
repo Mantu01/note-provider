@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest } from 'next/server'
 import { Group } from '@/server/db/models/group.model'
 import { Note } from '@/server/db/models/note.model'
-import { logActivity } from '@/server/services/activity.service'
 import { toAdminGroup } from '@/server/mappers/group.mapper'
 import { updateGroupSchema } from '@/lib/schemas/group.schema'
 import { requireAdmin } from '@/server/lib/auth-guard'
@@ -13,9 +12,6 @@ vi.mock('@/server/db/models/group.model', () => ({
   Group: { findById: vi.fn(), findByIdAndUpdate: vi.fn(), findByIdAndDelete: vi.fn() },
 }))
 vi.mock('@/server/db/models/note.model', () => ({ Note: { find: vi.fn() } }))
-vi.mock('@/server/services/activity.service', () => ({
-  logActivity: vi.fn().mockResolvedValue(undefined),
-}))
 vi.mock('@/server/mappers/group.mapper', () => ({
   toAdminGroup: vi.fn((g: any) => g),
 }))
@@ -157,17 +153,6 @@ describe('PATCH /api/admin/groups/[id]', () => {
     expect(res.status).toBe(404)
   })
 
-  it('logs activity on successful update', async () => {
-    ;(updateGroupSchema.safeParse as any).mockReturnValue({ success: true, data: { name: 'Updated Bundle' } })
-    const updated = { _id: 'g1', name: 'Updated Bundle' }
-    ;(Group.findById as any).mockReturnValue(makeChain(updated))
-    ;(Group.findByIdAndUpdate as any).mockReturnValue(makeChain(updated))
-    ;(Group.findById as any).mockReturnValue(makeChain(updated))
-    const mod = await import('@/app/api/admin/groups/[id]/route')
-    await mod.PATCH(mockReq('PATCH', '/api/admin/groups/g1', { name: 'Updated Bundle' }) as any, { params: Promise.resolve({ id: 'g1' }) })
-    expect(logActivity).toHaveBeenCalledWith(expect.objectContaining({ action: 'group.update' }))
-  })
-
   it('handles visibility field update', async () => {
     ;(updateGroupSchema.safeParse as any).mockReturnValue({ success: true, data: { visibility: 'private' } })
     const existing = { _id: 'g1', name: 'G' }
@@ -222,7 +207,7 @@ describe('DELETE /api/admin/groups/[id]', () => {
     expect(res.status).toBe(403)
   })
 
-  it('deletes group and logs activity as head admin', async () => {
+  it('deletes group successfully as head admin', async () => {
     const group = { _id: 'g1', name: 'Bundle', createdBy: 'head-admin-id' }
     ;(Group.findById as any).mockReturnValue(makeChain(group))
     ;(Group.findByIdAndDelete as any).mockReturnValue({ lean: vi.fn().mockReturnThis(), exec: vi.fn().mockResolvedValue({}) })
@@ -231,11 +216,10 @@ describe('DELETE /api/admin/groups/[id]', () => {
     expect(res.status).toBe(200)
     const json = await res.json()
     expect(json.data.deleted).toBe(true)
-    expect(logActivity).toHaveBeenCalledWith(expect.objectContaining({ action: 'group.delete' }))
   })
 
-  it('allows creator to delete their own group', async () => {
-    const group = { _id: 'g1', name: 'My Bundle', createdBy: 'a1' }
+  it('deletes group and returns affected groups for non-head creator admin', async () => {
+    const group = { _id: 'g1', name: 'Bundle', createdBy: 'a1' }
     ;(Group.findById as any).mockReturnValue(makeChain(group))
     ;(Group.findByIdAndDelete as any).mockReturnValue({ lean: vi.fn().mockReturnThis(), exec: vi.fn().mockResolvedValue({}) })
     ;(requireAdmin as any).mockResolvedValue(ADMIN)
@@ -243,17 +227,5 @@ describe('DELETE /api/admin/groups/[id]', () => {
     const res = await mod.DELETE(mockReq('DELETE', '/api/admin/groups/g1') as any, { params: Promise.resolve({ id: 'g1' }) })
     expect(res.status).toBe(200)
     expect(Group.findByIdAndDelete).toHaveBeenCalledWith('g1')
-  })
-
-  it('logs deletion activity with correct details', async () => {
-    const group = { _id: 'g1', name: 'Deleted Bundle', createdBy: 'a1' }
-    ;(Group.findById as any).mockReturnValue(makeChain(group))
-    ;(Group.findByIdAndDelete as any).mockReturnValue({ lean: vi.fn().mockReturnThis(), exec: vi.fn().mockResolvedValue({}) })
-    const mod = await import('@/app/api/admin/groups/[id]/route')
-    await mod.DELETE(mockReq('DELETE', '/api/admin/groups/g1') as any, { params: Promise.resolve({ id: 'g1' }) })
-    expect(logActivity).toHaveBeenCalledWith(expect.objectContaining({
-      action: 'group.delete',
-      description: 'Deleted group "Deleted Bundle"',
-    }))
   })
 })

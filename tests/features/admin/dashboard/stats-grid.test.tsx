@@ -14,9 +14,7 @@ describe("StatsGrid", () => {
     catalog: { totalNotes: 50, paidNotes: 30, freeNotes: 20 },
     leads: { total: 100, today: 5 },
     revenueSeries: [],
-    recentOrders: [],
-    recentActivities: [],
-    topNotes: [],
+    recentOrders: [],    topNotes: [],
     categoryBreakdown: [],
   };
 
@@ -61,9 +59,7 @@ describe("StatsGrid", () => {
       catalog: { totalNotes: 0, paidNotes: 0, freeNotes: 0 },
       leads: { total: 0, today: 0 },
       revenueSeries: [],
-      recentOrders: [],
-      recentActivities: [],
-      topNotes: [],
+      recentOrders: [],      topNotes: [],
       categoryBreakdown: [],
     };
 

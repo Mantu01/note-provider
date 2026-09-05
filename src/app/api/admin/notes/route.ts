@@ -5,7 +5,6 @@ import { fail, ok } from "@/server/lib/api-response";
 import { AppError } from "@/server/lib/errors";
 import { Note } from "@/server/db/models/note.model";
 import { Category } from "@/server/db/models/category.model";
-import { logActivity } from "@/server/services/activity.service";
 import { destroyAsset } from "@/server/lib/cloudinary";
 import { toPublicNote, toAdminNote } from "@/server/mappers/note.mapper";
 import { createNoteSchema, updateNoteSchema } from "@/lib/schemas/note.schema";
@@ -87,17 +86,6 @@ export const POST = adminHandler(async (ctx) => {
   });
 
   const doc = await Note.findById(createdDoc._id).populate("category").populate("createdBy", "_id name").lean().exec();
-
-  await logActivity({
-    adminId: admin.id,
-    action: "note.create",
-    description: `Created note "${input.title}"`,
-    targetType: "note",
-    targetId: createdDoc._id.toString(),
-    targetLabel: input.title,
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
-  });
 
   return ok(toAdminNote(doc ?? createdDoc.toJSON()));
 });

@@ -74,7 +74,6 @@ describe("AdminShell", () => {
     expect(screen.getByText("Categories")).toBeInTheDocument();
     expect(screen.getByText("Orders & Fulfillment")).toBeInTheDocument();
     expect(screen.getByText("Leads")).toBeInTheDocument();
-    expect(screen.getByText("Audit Activity Log")).toBeInTheDocument();
   });
 
   it("shows admin profile info when logged in", () => {

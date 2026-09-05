@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   listNotes,
   getNoteBySlug,
@@ -18,7 +18,6 @@ import {
 } from "../../../src/server/services/note.service";
 import * as NoteModel from "../../../src/server/db/models/note.model";
 import * as GroupModel from "../../../src/server/db/models/group.model";
-import * as ActivityService from "../../../src/server/services/activity.service";
 import * as SlugLib from "../../../src/server/lib/slug";
 import * as Errors from "../../../src/server/lib/errors";
 
@@ -46,10 +45,6 @@ vi.mock("../../../src/server/db/models/group.model", () => ({
     find: vi.fn(),
     updateOne: vi.fn(),
   },
-}));
-
-vi.mock("../../../src/server/services/activity.service", () => ({
-  logActivity: vi.fn(),
 }));
 
 vi.mock("../../../src/server/lib/slug", () => ({
@@ -189,11 +184,7 @@ describe("createNote", () => {
     expect(SlugLib.uniqueSlug).toHaveBeenCalled();
     expect(NoteModel.Note.create).toHaveBeenCalledWith(
       expect.objectContaining({ title: "React Notes", slug: "react-notes" }),
-    );
-    expect(ActivityService.logActivity).toHaveBeenCalledWith(
-      expect.objectContaining({ action: "note.create" }),
-    );
-    expect(result).toEqual(mockNote);
+    );expect(result).toEqual(mockNote);
   });
 
   it("throws validation error when paid note price is too low", async () => {
@@ -256,11 +247,7 @@ describe("updateNote", () => {
     );
 
     const result = await updateNote("note1", { title: "Updated React Notes" }, mockCtx as any);
-    expect(result.title).toBe("Updated React Notes");
-    expect(ActivityService.logActivity).toHaveBeenCalledWith(
-      expect.objectContaining({ action: "note.update" }),
-    );
-  });
+    expect(result.title).toBe("Updated React Notes");});
 
   it("throws not found when note does not exist", async () => {
     vi.mocked(NoteModel.Note.findById).mockReturnValue(
@@ -375,11 +362,7 @@ describe("deleteNote", () => {
 
     const result = await deleteNote("note1", mockCtx as any);
     expect(result.deleted).toBe(true);
-    expect(result.affectedGroups).toEqual([]);
-    expect(ActivityService.logActivity).toHaveBeenCalledWith(
-      expect.objectContaining({ action: "note.delete" }),
-    );
-  });
+    expect(result.affectedGroups).toEqual([]);});
 
   it("deletes a note and updates groups that still have other notes", async () => {
     const group = { _id: "grp1", name: "JS Bundle", slug: "js-bundle", notes: ["note1", "n2"] };

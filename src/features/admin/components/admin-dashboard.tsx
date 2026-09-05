@@ -8,7 +8,6 @@ import { ErrorState } from "@/components/shared/error-state";
 import { StatsGrid } from "@/features/admin/components/dashboard/stats-grid";
 import { RevenueChart } from "@/features/admin/components/dashboard/revenue-chart";
 import { RecentOrders } from "@/features/admin/components/dashboard/recent-orders";
-import { ActivityFeed } from "@/features/admin/components/dashboard/activity-feed";
 import { useDashboard } from "@/features/admin/api/use-admin-dashboard";
 
 export function AdminDashboard() {
@@ -59,11 +58,8 @@ export function AdminDashboard() {
       {/* Revenue chart */}
       <RevenueChart data={data.revenueSeries} />
 
-      {/* Recent orders + activity feed */}
-      <div className="grid gap-6 lg:grid-cols-2">
-        <RecentOrders orders={data.recentOrders} />
-        <ActivityFeed activities={data.recentActivities} />
-      </div>
+      {/* Recent orders */}
+      <RecentOrders orders={data.recentOrders} />
     </div>
   );
 }

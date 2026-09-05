@@ -1,7 +1,6 @@
 import { Types } from "mongoose";
 import { Note, type NoteDoc } from "../db/models/note.model";
 import { Group, type GroupDoc } from "../db/models/group.model";
-import { logActivity } from "./activity.service";
 import type { RouteContext } from "../lib/api-handler";
 import type { AdminDoc } from "../db/models/admin.model";
 import { AppError } from "../lib/errors";
@@ -51,17 +50,6 @@ export async function createNote(
     slug,
     createdBy: new Types.ObjectId(String(ctx.admin._id)),
     updatedBy: new Types.ObjectId(String(ctx.admin._id)),
-  });
-
-  await logActivity({
-    adminId: ctx.admin._id.toString(),
-    action: "note.create",
-    description: `Created note "${input.title}"`,
-    targetType: "note",
-    targetId: doc._id.toString(),
-    targetLabel: input.title,
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
   });
 
   return doc;
@@ -130,18 +118,6 @@ export async function updateNote(
     return JSON.stringify(oldVal) !== JSON.stringify(newVal);
   });
 
-  await logActivity({
-    adminId: ctx.admin._id.toString(),
-    action: "note.update",
-    description: `Updated note "${updated.title}"`,
-    targetType: "note",
-    targetId: id,
-    targetLabel: updated.title,
-    metadata: { changedFields },
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
-  });
-
   return updated;
 }
 
@@ -168,17 +144,6 @@ export async function deleteNote(
   }
 
   await Note.findByIdAndDelete(id).exec();
-
-  await logActivity({
-    adminId: ctx.admin._id.toString(),
-    action: "note.delete",
-    description: `Deleted note "${note.title}"`,
-    targetType: "note",
-    targetId: id,
-    targetLabel: note.title,
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
-  });
 
   return { deleted: true, affectedGroups };
 }

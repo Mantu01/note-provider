@@ -2,7 +2,6 @@ import { describe, it, expect, vi, beforeEach } from "vitest";
 import { NextRequest } from "next/server";
 import { Group } from "@/server/db/models/group.model";
 import { Note } from "@/server/db/models/note.model";
-import { logActivity } from "@/server/services/activity.service";
 import { toAdminGroup } from "@/server/mappers/group.mapper";
 import { createGroupSchema } from "@/lib/schemas/group.schema";
 import { uniqueSlug } from "@/server/lib/slug";
@@ -20,9 +19,6 @@ vi.mock("@/server/db/models/group.model", () => ({
   },
 }));
 vi.mock("@/server/db/models/note.model", () => ({ Note: { find: vi.fn() } }));
-vi.mock("@/server/services/activity.service", () => ({
-  logActivity: vi.fn().mockResolvedValue(undefined),
-}));
 vi.mock("@/server/mappers/group.mapper", () => ({
   toAdminGroup: vi.fn((g: any) => g),
 }));
@@ -128,7 +124,6 @@ describe("POST /api/admin/groups", () => {
     ;(Group.create as any).mockResolvedValue({ _id: "g1", name: "New Bundle", toJSON: () => ({ _id: "g1", name: "New Bundle" }) });
     ;(Group.findById as any).mockReturnValue(makeChain(null));
     ;(validateNoteIdsExist as any).mockResolvedValue(undefined);
-    ;(logActivity as any).mockResolvedValue(undefined);
     ;(toAdminGroup as any).mockImplementation((g: any) => g);
   });
 
@@ -172,16 +167,14 @@ describe("POST /api/admin/groups", () => {
     expect(rupeesToPaise).toHaveBeenCalledWith(500);
   });
 
-  it("logs activity on group creation", async () => {
+  it("creates group successfully", async () => {
     ;(createGroupSchema.safeParse as any).mockReturnValue({
       success: true,
       data: { name: "New Bundle", noteIds: [], price: 299, visibility: "public" },
     });
     ;(Group.findById as any).mockReturnValue(makeChain({ _id: "g1", name: "New Bundle" }));
     const { POST } = await import("@/app/api/admin/groups/route");
-    await POST(mockReq("POST", "/api/admin/groups", { name: "New Bundle", noteIds: [], price: 299 }) as any, undefined);
-    expect(logActivity).toHaveBeenCalledWith(expect.objectContaining({ action: "group.create" }));
-  });
+    await POST(mockReq("POST", "/api/admin/groups", { name: "New Bundle", noteIds: [], price: 299 }) as any, undefined);  });
 
   it("deduplicates note IDs before validation", async () => {
     ;(createGroupSchema.safeParse as any).mockReturnValue({

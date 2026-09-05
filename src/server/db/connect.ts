@@ -27,11 +27,13 @@ async function connectDB(): Promise<typeof mongoose> {
   }
 
   if (!cached.promise) {
-    const opts = {
-      bufferCommands: false,
-    };
-
-    cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
+    cached.promise = mongoose.connect(MONGODB_URI, {
+      bufferCommands: true,
+      maxPoolSize: 10,
+      serverSelectionTimeoutMS: 10000,
+      connectTimeoutMS: 10000,
+      socketTimeoutMS: 20000,
+    }).then((mongoose) => {
       return mongoose;
     });
   }

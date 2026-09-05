@@ -2,7 +2,6 @@ import { connectDB } from "../db/connect";
 import { Order, type OrderDoc } from "../db/models/order.model";
 import { Note } from "../db/models/note.model";
 import { Group } from "../db/models/group.model";
-import { logActivity } from "./activity.service";
 import type { RouteContext } from "../lib/api-handler";
 import type { AdminDoc } from "../db/models/admin.model";
 import { AppError } from "../lib/errors";
@@ -98,18 +97,6 @@ export async function fulfillOrder(
   const updated = await Order.findByIdAndUpdate(orderId, updates, { new: true }).lean().exec();
   if (!updated) throw AppError.internal("Failed to update order");
 
-  await logActivity({
-    adminId: ctx.admin._id.toString(),
-    action: "order.update_fulfillment",
-    description: `Updated order ${order.orderNumber} fulfillment`,
-    targetType: "order",
-    targetId: orderId,
-    targetLabel: order.orderNumber,
-    metadata: { from: order.fulfillmentStatus, to: input.fulfillmentStatus },
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
-  });
-
   return updated;
 }
 
@@ -121,17 +108,6 @@ export async function deleteOrder(
   if (!order) throw AppError.notFound("Order");
 
   await Order.findByIdAndDelete(orderId).exec();
-
-  await logActivity({
-    adminId: ctx.admin._id.toString(),
-    action: "order.delete",
-    description: `Deleted order ${order.orderNumber}`,
-    targetType: "order",
-    targetId: orderId,
-    targetLabel: order.orderNumber,
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
-  });
 
   return { deleted: true };
 }

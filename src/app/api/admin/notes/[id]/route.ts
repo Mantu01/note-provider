@@ -4,7 +4,6 @@ import { AppError } from "@/server/lib/errors";
 import { Note } from "@/server/db/models/note.model";
 import { Group } from "@/server/db/models/group.model";
 import { Category } from "@/server/db/models/category.model";
-import { logActivity } from "@/server/services/activity.service";
 import { destroyAsset } from "@/server/lib/cloudinary";
 import { toAdminNote } from "@/server/mappers/note.mapper";
 import { updateNoteSchema } from "@/lib/schemas/note.schema";
@@ -123,18 +122,6 @@ export const PATCH = adminHandler(async (ctx) => {
     return JSON.stringify(oldVal) !== JSON.stringify(newVal);
   });
 
-  await logActivity({
-    adminId: admin.id,
-    action: "note.update",
-    description: `Updated note "${updated.title}"`,
-    targetType: "note",
-    targetId: id,
-    targetLabel: updated.title,
-    metadata: { changedFields },
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
-  });
-
   return ok(toAdminNote(updated));
 });
 
@@ -173,17 +160,6 @@ export const DELETE = adminHandler(async (ctx) => {
   if (note.coverImagePublicId) await destroyAsset(note.coverImagePublicId, "image", "upload");
 
   await Note.findByIdAndDelete(id).exec();
-
-  await logActivity({
-    adminId: admin.id,
-    action: "note.delete",
-    description: `Deleted note "${note.title}"`,
-    targetType: "note",
-    targetId: id,
-    targetLabel: note.title,
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
-  });
 
   return ok({ deleted: true, affectedGroups });
 });

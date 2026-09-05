@@ -3,7 +3,6 @@ import { fail, ok } from "@/server/lib/api-response";
 import { Types } from "mongoose";
 import { Group } from "@/server/db/models/group.model";
 import { Note } from "@/server/db/models/note.model";
-import { logActivity } from "@/server/services/activity.service";
 import { toAdminGroup } from "@/server/mappers/group.mapper";
 import { createGroupSchema } from "@/lib/schemas/group.schema";
 import { uniqueSlug } from "@/server/lib/slug";
@@ -82,17 +81,6 @@ export const POST = adminHandler(async (ctx) => {
     .populate({ path: "notes", populate: { path: "category" } })
     .lean()
     .exec();
-
-  await logActivity({
-    adminId: admin.id,
-    action: "group.create",
-    description: `Created bundle "${input.name}" with ${uniqueIds.length} notes`,
-    targetType: "group",
-    targetId: createdDoc._id.toString(),
-    targetLabel: input.name,
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
-  });
 
   return ok(toAdminGroup(doc ?? createdDoc.toJSON()));
 });

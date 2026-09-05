@@ -36,7 +36,6 @@ Think of it as a small online bookstore, but specifically for academic notes. A 
 - **Organize Categories**: Create subjects and categories to keep your library tidy
 - **Fulfill Orders**: Mark orders as completed once you deliver the notes to customers
 - **View Analytics**: Track which notes are most popular and where your revenue comes from
-- **Audit Activity**: See a complete log of everything that happens in your admin panel
 
 ### Technical Highlights
 - **Fast & Modern**: Built with Next.js 16 for lightning-fast page loads
@@ -58,7 +57,7 @@ Think of it as a small online bookstore, but specifically for academic notes. A 
 7. Download your notes directly from the order page
 
 ### Selling Notes
-1. Log into the admin dashboard
+1. Log into the admin dashboard (obtain a session token from the login API and add it in your browser)
 2. Upload your note PDF, a preview version, and a cover image
 3. Set the price, category, difficulty level, and tags
 4. Publish — your note becomes available to buyers immediately
@@ -82,14 +81,13 @@ Think of it as a small online bookstore, but specifically for academic notes. A 
 | Privacy Policy (`/privacy`) | How we handle your data |
 | Terms (`/terms`) | Rules for using the platform |
 | Refund Policy (`/refund-policy`) | Digital goods are non-refundable |
-| Admin Login (`/admin/login`) | Secure login for sellers |
+| Admin Panel (`/admin`) | Manage notes, groups, orders, leads, and analytics (requires a valid admin JWT session) |
 | Admin Dashboard (`/admin/dashboard`) | Sales overview, charts, and quick stats |
 | Admin Notes (`/admin/dashboard/notes`) | Manage all your notes |
 | Admin Groups (`/admin/dashboard/groups`) | Manage note bundles |
 | Admin Categories (`/admin/dashboard/categories`) | Organize your note categories |
 | Admin Orders (`/admin/dashboard/orders`) | View and fulfill customer orders |
 | Admin Leads (`/admin/dashboard/leads`) | Pending orders awaiting fulfillment |
-| Admin Activities (`/admin/dashboard/activities`) | Complete audit log of admin actions |
 
 ## Technology Used
 
@@ -102,7 +100,7 @@ This project is built with modern, battle-tested technologies:
 - **File Storage**: Cloudinary (cloud-based PDF and image hosting)
 - **Email**: Nodemailer (for order notifications)
 - **Authentication**: JWT tokens with secure HTTP-only cookies
-- **Testing**: Vitest with React Testing Library (199 test files, 2200+ tests passing)
+- **Testing**: Vitest with React Testing Library (193 test files, 2600+ tests passing)
 
 ## Getting Started (For Developers)
 
@@ -162,13 +160,23 @@ See `.env.example` for the complete list with descriptions.
 
 ### Adding a First Admin Account
 
-Admin accounts are created through the registration API. You need the `ADMIN_REGISTER_SECRET` header to register. This prevents unauthorized people from creating admin accounts.
+There is no frontend login/register page. Admin accounts are created and authenticated through the API (e.g. from Postman), and the response includes the JWT session token under `data.token` (alongside the admin profile under `data.admin`). Paste that token into your browser's DevTools as the `np_admin_session` cookie to access the admin dashboard.
+
+Registering requires the `ADMIN_REGISTER_SECRET` header, which prevents unauthorized people from creating admin accounts:
 
 ```bash
 curl -X POST http://localhost:3000/api/admin/auth/register \
   -H "Content-Type: application/json" \
   -H "x-admin-register-secret: YOUR_SECRET_HERE" \
   -d '{"name":"Admin","email":"admin@example.com","password":"yourpassword123"}'
+```
+
+Logging in with an existing account returns the same payload:
+
+```bash
+curl -X POST http://localhost:3000/api/admin/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@example.com","password":"yourpassword123"}'
 ```
 
 ## Project Structure
@@ -233,7 +241,7 @@ notes-provider/
 
 ## Testing
 
-This project has an extensive test suite with 199 test files covering:
+This project has an extensive test suite with 193 test files covering:
 - API route handlers (mocked database calls)
 - React components (rendering and interactions)
 - Utility functions and validators

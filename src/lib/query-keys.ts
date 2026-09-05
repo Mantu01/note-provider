@@ -36,7 +36,6 @@ export const queryKeys = {
       detail: (id: string) => ["admin", "orders", "detail", id] as const,
     },
     leads: (params: unknown) => ["admin", "leads", params] as const,
-    activities: (params: unknown) => ["admin", "activities", params] as const,
     admins: ["admin", "admins"] as const,
   },
 } as const;

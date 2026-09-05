@@ -107,9 +107,4 @@ describe('queryKeys', () => {
     const params = { page: 1 };
     expect(queryKeys.admin.leads(params)).toEqual(['admin', 'leads', params]);
   });
-
-  it('generates correct admin.activities key', () => {
-    const params = { page: 1 };
-    expect(queryKeys.admin.activities(params)).toEqual(['admin', 'activities', params]);
-  });
 });

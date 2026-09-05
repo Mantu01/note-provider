@@ -7,9 +7,8 @@ import { verifyPassword } from "@/server/lib/password";
 import { signAdminToken } from "@/server/lib/jwt";
 import { setAdminSessionCookie } from "@/server/lib/auth-guard";
 import { adminLoginSchema } from "@/lib/schemas/admin.schema";
-import { logActivity } from "@/server/services/activity.service";
 import { enforceRateLimit } from "@/server/lib/rate-limit";
-import { toAdminProfile } from "@/server/mappers/activity.mapper";
+import { toAdminProfile } from "@/server/mappers/admin.mapper";
 
 export const runtime = "nodejs";
 
@@ -39,19 +38,8 @@ export const POST = handler(async (ctx) => {
   const token = await signAdminToken({ sub: admin._id.toString(), email: admin.email, name: admin.name, isHead: Boolean(admin.isHead) });
   await setAdminSessionCookie(token);
 
-  await logActivity({
-    adminId: admin._id.toString(),
-    action: "admin.login",
-    description: `Admin "${admin.name}" logged in`,
-    targetType: "admin",
-    targetId: admin._id.toString(),
-    targetLabel: admin.name,
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
-  });
-
-  const profile = { ...admin, passwordHash: undefined };
-  const res = ok(toAdminProfile(profile));
+  const adminProfile = toAdminProfile({ ...admin, passwordHash: undefined });
+  const res = ok({ admin: adminProfile, token });
   res.headers.set("Cache-Control", "no-store, max-age=0");
   return res;
 });

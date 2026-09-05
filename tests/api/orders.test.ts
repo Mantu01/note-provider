@@ -18,7 +18,6 @@ import { uploadFile, deleteUpload } from '@/server/services/upload.service'
 import { destroyAsset } from '@/server/lib/cloudinary'
 import { buildOrderFilter, buildOrderSort } from '@/server/lib/query'
 import { UPLOAD_LIMITS } from '@/lib/constants'
-import { logActivity } from '@/server/services/activity.service'
 import { updateNoteSchema } from '@/lib/schemas/note.schema'
 import { updateGroupSchema } from '@/lib/schemas/group.schema'
 
@@ -50,9 +49,6 @@ vi.mock('@/server/db/models/order.model', () => ({
   Order: { findById: vi.fn(), find: vi.fn(), countDocuments: vi.fn(), findOneAndUpdate: vi.fn() },
 }))
 
-vi.mock('@/server/db/models/admin-activity.model', () => ({
-  AdminActivity: { find: vi.fn(), countDocuments: vi.fn() },
-}))
 
 vi.mock('@/server/mappers/note.mapper', () => ({
   toPublicNote: vi.fn((n: any) => n),
@@ -75,10 +71,6 @@ vi.mock('@/server/mappers/order.mapper', () => ({
   toAdminLead: vi.fn((o: any) => o),
 }))
 
-vi.mock('@/server/mappers/activity.mapper', () => ({
-  toAdminProfile: vi.fn((a: any) => a),
-  toAdminActivity: vi.fn((a: any) => a),
-}))
 
 vi.mock('@/server/services/order.service', () => ({
   createOrder: vi.fn(),
@@ -90,9 +82,6 @@ vi.mock('@/server/services/upload.service', () => ({
   deleteUpload: vi.fn(),
 }))
 
-vi.mock('@/server/services/activity.service', () => ({
-  logActivity: vi.fn().mockResolvedValue(undefined),
-}))
 
 vi.mock('@/server/lib/rate-limit', () => ({
   enforceRateLimit: vi.fn(),
@@ -716,7 +705,7 @@ describe('PATCH /api/admin/notes/[id]', () => {
     expect(res.status).toBe(404)
   })
 
-  it('logs activity on successful update', async () => {
+  it('updates note successfully', async () => {
     ;(updateNoteSchema.safeParse as any).mockReturnValue({ success: true, data: { title: 'New Title' } })
     const updatedNote = { _id: 'n1', title: 'New Title', category: null, createdBy: null }
     ;(Note.findById as any).mockReturnValue(makeChain(updatedNote))
@@ -731,7 +720,6 @@ describe('PATCH /api/admin/notes/[id]', () => {
     ;(req as any).json = () => Promise.resolve({ title: 'New Title' })
     const res = await (mod.PATCH as any)(req as any, { params: Promise.resolve({ id: 'n1' }) })
     expect(res.status).toBe(200)
-    expect(logActivity).toHaveBeenCalledWith(expect.objectContaining({ action: 'note.update' }))
   })
 })
 
@@ -769,7 +757,7 @@ describe('PATCH /api/admin/groups/[id]', () => {
     expect(res.status).toBe(404)
   })
 
-  it('logs activity on successful update', async () => {
+  it('updates group successfully', async () => {
     ;(updateGroupSchema.safeParse as any).mockReturnValue({ success: true, data: { name: 'New Bundle' } })
     const updatedGroup = { _id: 'g1', name: 'New Bundle', category: null, createdBy: null }
     ;(Group.findById as any).mockReturnValue(makeChain(updatedGroup))
@@ -783,7 +771,6 @@ describe('PATCH /api/admin/groups/[id]', () => {
     ;(req as any).json = () => Promise.resolve({ name: 'New Bundle' })
     const res = await (mod.PATCH as any)(req as any, { params: Promise.resolve({ id: 'g1' }) })
     expect(res.status).toBe(200)
-    expect(logActivity).toHaveBeenCalledWith(expect.objectContaining({ action: 'group.update' }))
   })
 })
 
@@ -818,7 +805,7 @@ describe('DELETE /api/admin/groups/[id]', () => {
     expect(res.status).toBe(403)
   })
 
-  it('deletes group and logs activity as head admin', async () => {
+  it('deletes group as head admin', async () => {
     const group = { _id: 'g1', name: 'Bundle', createdBy: 'head-admin-id' }
     ;(Group.findById as any).mockReturnValue(makeChain(group))
     ;(Group.findByIdAndDelete as any).mockReturnValue(makeChain({}))
@@ -830,7 +817,6 @@ describe('DELETE /api/admin/groups/[id]', () => {
     expect(res.status).toBe(200)
     const json = await res.json()
     expect(json.data.deleted).toBe(true)
-    expect(logActivity).toHaveBeenCalledWith(expect.objectContaining({ action: 'group.delete' }))
   })
 
   it('allows creator to delete their own group', async () => {

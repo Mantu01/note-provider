@@ -11,8 +11,6 @@ import {
   NOTE_SORTS,
   ORDER_SORTS,
   UPLOAD_KINDS,
-  ACTIVITY_TARGET_TYPES,
-  ADMIN_ACTIVITY_ACTIONS,
   NOTE_LEVEL_LABELS,
   PRICING_TYPE_LABELS,
   PAYMENT_STATUS_LABELS,
@@ -138,20 +136,6 @@ describe('Enum constants', () => {
 
   it('UPLOAD_KINDS has correct values', () => {
     expect(UPLOAD_KINDS).toEqual(['note_full', 'note_preview', 'cover']);
-  });
-});
-
-describe('Activity constants', () => {
-  it('ACTIVITY_TARGET_TYPES has correct values', () => {
-    expect(ACTIVITY_TARGET_TYPES).toEqual(['note', 'group', 'category', 'order', 'admin']);
-  });
-
-  it('ADMIN_ACTIVITY_ACTIONS has correct values', () => {
-    expect(ADMIN_ACTIVITY_ACTIONS).toContain('admin.register');
-    expect(ADMIN_ACTIVITY_ACTIONS).toContain('note.create');
-    expect(ADMIN_ACTIVITY_ACTIONS).toContain('group.delete');
-    expect(ADMIN_ACTIVITY_ACTIONS).toContain('order.update_fulfillment');
-    expect(ADMIN_ACTIVITY_ACTIONS).toContain('category.create');
   });
 });
 

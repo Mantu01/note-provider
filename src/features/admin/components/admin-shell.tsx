@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { Activity, BookOpen, LayoutDashboard, Layers3, LogOut, ReceiptText, Tags, Users, ShieldCheck, Shield } from "lucide-react";
+import { BookOpen, LayoutDashboard, Layers3, LogOut, ReceiptText, Tags, Users, ShieldCheck, Shield } from "lucide-react";
 import { toast } from "sonner";
 import { Logo } from "@/components/brand/logo";
 import { ThemeToggle } from "@/components/brand/theme-toggle";
@@ -18,7 +18,6 @@ const navItems = [
   { href: "/admin/categories", label: "Categories", icon: Tags },
   { href: "/admin/orders", label: "Orders & Fulfillment", icon: ReceiptText },
   { href: "/admin/leads", label: "Leads", icon: Users },
-  { href: "/admin/activities", label: "Audit Activity Log", icon: Activity },
 ];
 
 export function AdminShell({ children }: { children: React.ReactNode }) {
@@ -31,7 +30,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
     logout.mutate(undefined, {
       onSuccess: () => {
         toast.success("Signed out");
-        router.push("/admin/login");
+        router.push("/");
       },
     });
   };

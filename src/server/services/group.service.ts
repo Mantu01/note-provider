@@ -1,7 +1,6 @@
 import { Types } from "mongoose";
 import { Group, type GroupDoc } from "../db/models/group.model";
 import { Note } from "../db/models/note.model";
-import { logActivity } from "./activity.service";
 import type { RouteContext } from "../lib/api-handler";
 import type { AdminDoc } from "../db/models/admin.model";
 import { AppError } from "../lib/errors";
@@ -73,17 +72,6 @@ export async function createGroup(
     updatedBy: new Types.ObjectId(String(ctx.admin._id)),
   });
 
-  await logActivity({
-    adminId: ctx.admin._id.toString(),
-    action: "group.create",
-    description: `Created group "${input.name}" with ${uniqueIds.length} notes`,
-    targetType: "group",
-    targetId: doc._id.toString(),
-    targetLabel: input.name,
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
-  });
-
   return doc;
 }
 
@@ -118,17 +106,6 @@ export async function updateGroup(
   const updated = await Group.findByIdAndUpdate(id, updates, { new: true }).lean().exec();
   if (!updated) throw AppError.internal("Failed to update group");
 
-  await logActivity({
-    adminId: ctx.admin._id.toString(),
-    action: "group.update",
-    description: `Updated group "${updated.name}"`,
-    targetType: "group",
-    targetId: id,
-    targetLabel: updated.name,
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
-  });
-
   return updated;
 }
 
@@ -140,17 +117,6 @@ export async function deleteGroup(
   if (!group) throw AppError.notFound("Group");
 
   await Group.findByIdAndDelete(id).exec();
-
-  await logActivity({
-    adminId: ctx.admin._id.toString(),
-    action: "group.delete",
-    description: `Deleted group "${group.name}"`,
-    targetType: "group",
-    targetId: id,
-    targetLabel: group.name,
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
-  });
 
   return { deleted: true };
 }

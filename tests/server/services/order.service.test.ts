@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import {
   createOrder,
   getOrderById,
@@ -9,7 +9,6 @@ import {
 import * as OrderModel from "../../../src/server/db/models/order.model";
 import * as NoteModel from "../../../src/server/db/models/note.model";
 import * as GroupModel from "../../../src/server/db/models/group.model";
-import * as ActivityService from "../../../src/server/services/activity.service";
 import * as OrderNumberLib from "../../../src/server/lib/order-number";
 import * as RazorpayLib from "../../../src/server/lib/razorpay";
 import * as Errors from "../../../src/server/lib/errors";
@@ -34,10 +33,6 @@ vi.mock("../../../src/server/db/models/group.model", () => ({
   Group: {
     findOne: vi.fn(),
   },
-}));
-
-vi.mock("../../../src/server/services/activity.service", () => ({
-  logActivity: vi.fn(),
 }));
 
 vi.mock("../../../src/server/lib/order-number", () => ({
@@ -205,11 +200,7 @@ describe("fulfillOrder", () => {
     );
 
     const result = await fulfillOrder("ord1", { fulfillmentStatus: "completed" }, mockCtx as any);
-    expect(result.fulfillmentStatus).toBe("completed");
-    expect(ActivityService.logActivity).toHaveBeenCalledWith(
-      expect.objectContaining({ action: "order.update_fulfillment" }),
-    );
-  });
+    expect(result.fulfillmentStatus).toBe("completed");});
 
   it("throws not found when order does not exist", async () => {
     vi.mocked(OrderModel.Order.findById).mockReturnValue(
@@ -286,11 +277,7 @@ describe("deleteOrder", () => {
     );
 
     const result = await deleteOrder("ord1", mockCtx as any);
-    expect(result.deleted).toBe(true);
-    expect(ActivityService.logActivity).toHaveBeenCalledWith(
-      expect.objectContaining({ action: "order.delete" }),
-    );
-  });
+    expect(result.deleted).toBe(true);});
 
   it("throws not found when order does not exist", async () => {
     vi.mocked(OrderModel.Order.findById).mockReturnValue(

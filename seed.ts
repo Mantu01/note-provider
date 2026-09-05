@@ -2,7 +2,6 @@ import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 import { loadEnvFile } from "node:process";
 import { connectDB } from "./src/server/db/connect";
-import { AdminActivity } from "./src/server/db/models/admin-activity.model";
 import { Admin } from "./src/server/db/models/admin.model";
 import { Category } from "./src/server/db/models/category.model";
 import { Counter } from "./src/server/db/models/counter.model";
@@ -23,7 +22,7 @@ async function seed() {
   await connectDB();
 
   await Promise.all([
-    AdminActivity.deleteMany({}), Order.deleteMany({}), Group.deleteMany({}), Note.deleteMany({}),
+    Order.deleteMany({}), Group.deleteMany({}), Note.deleteMany({}),
     Category.deleteMany({}), Counter.deleteMany({}), Admin.deleteMany({}),
   ]);
 
@@ -140,21 +139,9 @@ async function seed() {
     },
   ]);
 
-  const activityDefinitions = [
-    ["admin.register", "admin", headAdmin._id, "Mantu Kumar", "Registered the first head administrator."], ["admin.login", "admin", headAdmin._id, "Mantu Kumar", "Signed in to the admin dashboard."], ["admin.logout", "admin", contentAdmin._id, "Aarav Sharma", "Signed out of the admin dashboard."],
-    ["note.create", "note", notes[0]._id, notes[0].title, "Created a free JavaScript note."], ["note.update", "note", notes[1]._id, notes[1].title, "Updated the React note metadata."], ["note.delete", "note", notes[5]._id, notes[5].title, "Deleted a duplicate database note."],
-    ["group.create", "group", frontendGroup._id, frontendGroup.name, "Created the frontend bundle."], ["group.update", "group", interviewGroup._id, interviewGroup.name, "Updated the interview bundle price."], ["group.delete", "group", privateGroup._id, privateGroup.name, "Removed an obsolete private bundle."],
-    ["category.create", "category", webCategory._id, webCategory.name, "Created the web development category."], ["category.update", "category", computerCategory._id, computerCategory.name, "Updated computer science subjects."], ["category.delete", "category", archivedCategory._id, archivedCategory.name, "Archived an unused category."],
-    ["order.update_fulfillment", "order", new mongoose.Types.ObjectId(), "NP-2026-0001", "Marked a paid order as completed."], ["order.add_note", "order", new mongoose.Types.ObjectId(), "NP-2026-0002", "Added an internal order note."], ["order.delete", "order", new mongoose.Types.ObjectId(), "NP-2026-0003", "Removed a failed test order."],
-  ] as const;
-  await AdminActivity.insertMany(activityDefinitions.map(([action, targetType, targetId, targetLabel, description], index) => ({
-    admin: index % 2 === 0 ? headAdmin._id : contentAdmin._id, action, targetType, targetId, targetLabel, description,
-    metadata: { seed: true, sequence: index + 1, source: "seed.ts" }, ipAddress: index % 3 === 0 ? null : `192.0.2.${index + 10}`, userAgent: index % 4 === 0 ? null : "seed-script/1.0",
-    createdAt: new Date(seedDate.getTime() + index * 3600000), updatedAt: new Date(seedDate.getTime() + index * 3600000),
-  })));
-
+    
   await Counter.insertMany([{ key: "order", seq: 5 }, { key: "note", seq: notes.length }, { key: "group", seq: 3 }]);
-  console.log(`Seeded ${await Admin.countDocuments()} admins, ${await Category.countDocuments()} categories, ${await Note.countDocuments()} notes, ${await Group.countDocuments()} groups, ${await Order.countDocuments()} orders, and ${await AdminActivity.countDocuments()} activities.`);
+  console.log(`Seeded ${await Admin.countDocuments()} admins, ${await Category.countDocuments()} categories, ${await Note.countDocuments()} notes, ${await Group.countDocuments()} groups, ${await Order.countDocuments()} orders.`);
 }
 
 seed().catch((error: unknown) => {

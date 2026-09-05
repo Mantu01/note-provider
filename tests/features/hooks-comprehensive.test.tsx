@@ -16,7 +16,6 @@ import { useAdminGroups } from '@/features/admin/api/use-admin-groups'
 import { useAdminCategories } from '@/features/admin/api/use-admin-categories'
 import { useAdminOrders } from '@/features/admin/api/use-admin-orders'
 import { useAdminLeads } from '@/features/admin/api/use-admin-leads'
-import { useAdminActivities } from '@/features/admin/api/use-admin-activities'
 import { useFileUpload } from '@/features/admin/api/use-upload'
 
 function wrapper({ children }: { children: React.ReactNode }) {
@@ -222,14 +221,6 @@ describe('useAdminLeads hook', () => {
   it('fetches admin leads', async () => {
     mockFetch({ success: true, data: { items: [], pagination: { page: 1, limit: 20, total: 0, totalPages: 1, hasNext: false, hasPrev: false } } })
     const { result } = renderHook(() => useAdminLeads(), { wrapper })
-    await waitFor(() => expect(result.current.isSuccess).toBe(true))
-  })
-})
-
-describe('useAdminActivities hook', () => {
-  it('fetches admin activities', async () => {
-    mockFetch({ success: true, data: { items: [], pagination: { page: 1, limit: 50, total: 0, totalPages: 1, hasNext: false, hasPrev: false } } })
-    const { result } = renderHook(() => useAdminActivities(), { wrapper })
     await waitFor(() => expect(result.current.isSuccess).toBe(true))
   })
 })

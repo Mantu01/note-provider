@@ -2,7 +2,6 @@ import { Types } from "mongoose";
 import { Category, type CategoryDoc } from "../db/models/category.model";
 import { Note } from "../db/models/note.model";
 import { Group } from "../db/models/group.model";
-import { logActivity } from "./activity.service";
 import type { RouteContext } from "../lib/api-handler";
 import type { Admin, AdminDoc } from "../db/models/admin.model";
 import { AppError } from "../lib/errors";
@@ -49,17 +48,6 @@ export async function createCategory(
     updatedBy: new Types.ObjectId(String(ctx.admin._id)),
   });
 
-  await logActivity({
-    adminId: ctx.admin._id.toString(),
-    action: "category.create",
-    description: `Created category "${input.name}"`,
-    targetType: "category",
-    targetId: doc._id.toString(),
-    targetLabel: input.name,
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
-  });
-
   return doc;
 }
 
@@ -80,17 +68,6 @@ export async function updateCategory(
 
   const updated = await Category.findByIdAndUpdate(id, updates, { new: true }).lean().exec();
   if (!updated) throw AppError.internal("Failed to update category");
-
-  await logActivity({
-    adminId: ctx.admin._id.toString(),
-    action: "category.update",
-    description: `Updated category "${updated.name}"`,
-    targetType: "category",
-    targetId: id,
-    targetLabel: updated.name,
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
-  });
 
   return updated;
 }
@@ -113,33 +90,10 @@ export async function deleteCategory(
     if (noteCount > 0) parts.push(`${noteCount} note${noteCount !== 1 ? "s" : ""}`);
     if (groupCount > 0) parts.push(`${groupCount} group${groupCount !== 1 ? "s" : ""}`);
 
-    await logActivity({
-      adminId: ctx.admin._id.toString(),
-      action: "category.delete",
-      description: `Attempted to delete category "${category.name}" (refused)`,
-      targetType: "category",
-      targetId: id,
-      targetLabel: category.name,
-      metadata: { refused: true, noteCount, groupCount },
-      ip: ctx.ip,
-      userAgent: ctx.userAgent,
-    });
-
     return { refused: true, conflictMessage: `${parts.join(" and ")} still use this category. Reassign them first.` };
   }
 
   await Category.findByIdAndDelete(id).exec();
-
-  await logActivity({
-    adminId: ctx.admin._id.toString(),
-    action: "category.delete",
-    description: `Deleted category "${category.name}"`,
-    targetType: "category",
-    targetId: id,
-    targetLabel: category.name,
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
-  });
 
   return { refused: false };
 }

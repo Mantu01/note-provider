@@ -1,4 +1,4 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+﻿import { describe, it, expect, vi, beforeEach } from "vitest";
 import {
   listActiveCategories,
   getCategoryById,
@@ -12,7 +12,6 @@ import {
 import * as CategoryModel from "../../../src/server/db/models/category.model";
 import * as NoteModel from "../../../src/server/db/models/note.model";
 import * as GroupModel from "../../../src/server/db/models/group.model";
-import * as ActivityService from "../../../src/server/services/activity.service";
 import * as SlugLib from "../../../src/server/lib/slug";
 import * as Errors from "../../../src/server/lib/errors";
 
@@ -38,10 +37,6 @@ vi.mock("../../../src/server/db/models/group.model", () => ({
   Group: {
     countDocuments: vi.fn(),
   },
-}));
-
-vi.mock("../../../src/server/services/activity.service", () => ({
-  logActivity: vi.fn(),
 }));
 
 vi.mock("../../../src/server/lib/slug", () => ({
@@ -202,11 +197,7 @@ describe("createCategory", () => {
         createdBy: expect.any(Object),
         updatedBy: expect.any(Object),
       }),
-    );
-    expect(ActivityService.logActivity).toHaveBeenCalledWith(
-      expect.objectContaining({ action: "category.create" }),
-    );
-    expect(result).toEqual(mockCategory);
+    );expect(result).toEqual(mockCategory);
   });
 });
 
@@ -223,11 +214,7 @@ describe("updateCategory", () => {
     );
 
     const result = await updateCategory("cat1", { name: "Updated Name" }, mockCtx as any);
-    expect(result.name).toBe("Updated Name");
-    expect(ActivityService.logActivity).toHaveBeenCalledWith(
-      expect.objectContaining({ action: "category.update" }),
-    );
-  });
+    expect(result.name).toBe("Updated Name");});
 
   it("throws not found when category does not exist", async () => {
     vi.mocked(CategoryModel.Category.findById).mockReturnValue(
@@ -299,11 +286,7 @@ describe("deleteCategory", () => {
 
     const result = await deleteCategory("cat1", mockCtx as any);
     expect(result.refused).toBe(true);
-    expect(result.conflictMessage).toContain("2 notes");
-    expect(ActivityService.logActivity).toHaveBeenCalledWith(
-      expect.objectContaining({ action: "category.delete", metadata: expect.objectContaining({ refused: true }) }),
-    );
-    expect(CategoryModel.Category.findByIdAndDelete).not.toHaveBeenCalled();
+    expect(result.conflictMessage).toContain("2 notes");expect(CategoryModel.Category.findByIdAndDelete).not.toHaveBeenCalled();
   });
 
   it("refuses deletion when groups exist", async () => {
@@ -351,11 +334,7 @@ describe("deleteCategory", () => {
 
     const result = await deleteCategory("cat1", mockCtx as any);
     expect(result.refused).toBe(false);
-    expect(CategoryModel.Category.findByIdAndDelete).toHaveBeenCalledWith("cat1");
-    expect(ActivityService.logActivity).toHaveBeenCalledWith(
-      expect.objectContaining({ action: "category.delete" }),
-    );
-  });
+    expect(CategoryModel.Category.findByIdAndDelete).toHaveBeenCalledWith("cat1");});
 
   it("uses singular 'note' when only one note exists", async () => {
     vi.mocked(CategoryModel.Category.findById).mockReturnValue(

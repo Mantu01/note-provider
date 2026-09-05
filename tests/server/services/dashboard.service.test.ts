@@ -4,7 +4,6 @@ import * as OrderModel from "../../../src/server/db/models/order.model";
 import * as NoteModel from "../../../src/server/db/models/note.model";
 import * as GroupModel from "../../../src/server/db/models/group.model";
 import * as CategoryModel from "../../../src/server/db/models/category.model";
-import * as AdminActivityModel from "../../../src/server/db/models/admin-activity.model";
 
 vi.mock("../../../src/server/db/models/order.model", () => ({
   Order: {
@@ -34,11 +33,6 @@ vi.mock("../../../src/server/db/models/category.model", () => ({
   },
 }));
 
-vi.mock("../../../src/server/db/models/admin-activity.model", () => ({
-  AdminActivity: {
-    find: vi.fn(),
-  },
-}));
 
 const makeQueryChain = (results: any[]) => {
   let trackedResults = results;
@@ -76,7 +70,6 @@ describe("getDashboardStats", () => {
     vi.mocked(NoteModel.Note.find).mockReturnValue(makeQueryChain([]) as any);
     vi.mocked(NoteModel.Note.aggregate).mockResolvedValue([]);
     vi.mocked(OrderModel.Order.find).mockReturnValue(makeQueryChain([]) as any);
-    vi.mocked(AdminActivityModel.AdminActivity.find).mockReturnValue(makeQueryChain([]) as any);
 
     const result = await getDashboardStats();
 
@@ -112,7 +105,6 @@ describe("getDashboardStats", () => {
       topNotes: expect.any(Array),
       categoryBreakdown: expect.any(Array),
       recentOrders: expect.any(Array),
-      recentActivities: expect.any(Array),
     });
   });
 
@@ -125,7 +117,6 @@ describe("getDashboardStats", () => {
     vi.mocked(NoteModel.Note.find).mockReturnValue(makeQueryChain([]) as any);
     vi.mocked(NoteModel.Note.aggregate).mockResolvedValue([]);
     vi.mocked(OrderModel.Order.find).mockReturnValue(makeQueryChain([]) as any);
-    vi.mocked(AdminActivityModel.AdminActivity.find).mockReturnValue(makeQueryChain([]) as any);
 
     const result = await getDashboardStats();
 
@@ -156,7 +147,6 @@ describe("getDashboardStats", () => {
     vi.mocked(NoteModel.Note.find).mockReturnValue(makeQueryChain([]) as any);
     vi.mocked(NoteModel.Note.aggregate).mockResolvedValue([]);
     vi.mocked(OrderModel.Order.find).mockReturnValue(makeQueryChain([]) as any);
-    vi.mocked(AdminActivityModel.AdminActivity.find).mockReturnValue(makeQueryChain([]) as any);
 
     const result = await getDashboardStats();
 
@@ -186,7 +176,6 @@ describe("getDashboardStats", () => {
     vi.mocked(NoteModel.Note.find).mockReturnValue(makeQueryChain([]) as any);
     vi.mocked(NoteModel.Note.aggregate).mockResolvedValue([]);
     vi.mocked(OrderModel.Order.find).mockReturnValue(makeQueryChain([]) as any);
-    vi.mocked(AdminActivityModel.AdminActivity.find).mockReturnValue(makeQueryChain([]) as any);
 
     const result = await getDashboardStats();
 
@@ -212,7 +201,6 @@ describe("getDashboardStats", () => {
     ]) as any);
     vi.mocked(NoteModel.Note.aggregate).mockResolvedValue([]);
     vi.mocked(OrderModel.Order.find).mockReturnValue(makeQueryChain([]) as any);
-    vi.mocked(AdminActivityModel.AdminActivity.find).mockReturnValue(makeQueryChain([]) as any);
 
     const result = await getDashboardStats();
 
@@ -236,7 +224,6 @@ describe("getDashboardStats", () => {
     ]);
 
     vi.mocked(OrderModel.Order.find).mockReturnValue(makeQueryChain([]) as any);
-    vi.mocked(AdminActivityModel.AdminActivity.find).mockReturnValue(makeQueryChain([]) as any);
 
     const result = await getDashboardStats();
 
@@ -259,32 +246,11 @@ describe("getDashboardStats", () => {
       { _id: "ord1", orderNumber: "NP-001", amount: 50000 },
       { _id: "ord2", orderNumber: "NP-002", amount: 30000 },
     ]) as any);
-    vi.mocked(AdminActivityModel.AdminActivity.find).mockReturnValue(makeQueryChain([]) as any);
 
     const result = await getDashboardStats();
 
     expect(result.recentOrders).toHaveLength(2);
     expect(result.recentOrders[0].orderNumber).toBe("NP-001");
-  });
-
-  it("returns recent activities", async () => {
-    vi.mocked(OrderModel.Order.aggregate).mockResolvedValue([]);
-    vi.mocked(OrderModel.Order.countDocuments).mockReturnValue(makeCountQuery(0) as any);
-    vi.mocked(NoteModel.Note.countDocuments).mockReturnValue(makeCountQuery(0) as any);
-    vi.mocked(GroupModel.Group.countDocuments).mockReturnValue(makeCountQuery(0) as any);
-    vi.mocked(CategoryModel.Category.countDocuments).mockReturnValue(makeCountQuery(0) as any);
-    vi.mocked(NoteModel.Note.find).mockReturnValue(makeQueryChain([]) as any);
-    vi.mocked(NoteModel.Note.aggregate).mockResolvedValue([]);
-    vi.mocked(OrderModel.Order.find).mockReturnValue(makeQueryChain([]) as any);
-
-    vi.mocked(AdminActivityModel.AdminActivity.find).mockReturnValue(makeQueryChain([
-      { action: "note.create", description: "Created note" },
-    ]) as any);
-
-    const result = await getDashboardStats();
-
-    expect(result.recentActivities).toHaveLength(1);
-    expect(result.recentActivities[0].action).toBe("note.create");
   });
 
   it("formats revenue labels correctly", async () => {
@@ -302,7 +268,6 @@ describe("getDashboardStats", () => {
     vi.mocked(NoteModel.Note.find).mockReturnValue(makeQueryChain([]) as any);
     vi.mocked(NoteModel.Note.aggregate).mockResolvedValue([]);
     vi.mocked(OrderModel.Order.find).mockReturnValue(makeQueryChain([]) as any);
-    vi.mocked(AdminActivityModel.AdminActivity.find).mockReturnValue(makeQueryChain([]) as any);
 
     const result = await getDashboardStats();
 
@@ -318,7 +283,6 @@ describe("getDashboardStats", () => {
     vi.mocked(NoteModel.Note.find).mockReturnValue(makeQueryChain([]) as any);
     vi.mocked(NoteModel.Note.aggregate).mockResolvedValue([]);
     vi.mocked(OrderModel.Order.find).mockReturnValue(makeQueryChain([]) as any);
-    vi.mocked(AdminActivityModel.AdminActivity.find).mockReturnValue(makeQueryChain([]) as any);
 
     const result = await getDashboardStats();
     expect(result.leads.total).toBe(8);
@@ -333,7 +297,6 @@ describe("getDashboardStats", () => {
     vi.mocked(NoteModel.Note.find).mockReturnValue(makeQueryChain([]) as any);
     vi.mocked(NoteModel.Note.aggregate).mockResolvedValue([]);
     vi.mocked(OrderModel.Order.find).mockReturnValue(makeQueryChain([]) as any);
-    vi.mocked(AdminActivityModel.AdminActivity.find).mockReturnValue(makeQueryChain([]) as any);
 
     const result = await getDashboardStats();
     expect(result.orders.today).toBe(3);
@@ -357,7 +320,6 @@ describe("getDashboardStats", () => {
     vi.mocked(NoteModel.Note.find).mockReturnValue(makeQueryChain([]) as any);
     vi.mocked(NoteModel.Note.aggregate).mockResolvedValue([]);
     vi.mocked(OrderModel.Order.find).mockReturnValue(makeQueryChain([]) as any);
-    vi.mocked(AdminActivityModel.AdminActivity.find).mockReturnValue(makeQueryChain([]) as any);
 
     const result = await getDashboardStats();
     expect(result.revenue.totalPaise).toBe(0);
@@ -380,7 +342,6 @@ describe("getDashboardStats", () => {
     ]);
 
     vi.mocked(OrderModel.Order.find).mockReturnValue(makeQueryChain([]) as any);
-    vi.mocked(AdminActivityModel.AdminActivity.find).mockReturnValue(makeQueryChain([]) as any);
 
     const result = await getDashboardStats();
     expect(result.categoryBreakdown).toHaveLength(5);
@@ -395,7 +356,6 @@ describe("getDashboardStats", () => {
     vi.mocked(NoteModel.Note.find).mockReturnValue(makeQueryChain([]) as any);
     vi.mocked(NoteModel.Note.aggregate).mockResolvedValue([]);
     vi.mocked(OrderModel.Order.find).mockReturnValue(makeQueryChain([]) as any);
-    vi.mocked(AdminActivityModel.AdminActivity.find).mockReturnValue(makeQueryChain([]) as any);
 
     const result = await getDashboardStats();
 
@@ -418,9 +378,7 @@ describe("getDashboardStats", () => {
     expect(result.revenueSeries.length).toBeGreaterThan(0);
     expect(result.topNotes).toEqual([]);
     expect(result.categoryBreakdown).toEqual([]);
-    expect(result.recentOrders).toEqual([]);
-    expect(result.recentActivities).toEqual([]);
-  });
+    expect(result.recentOrders).toEqual([]);  });
 
   it("returns top notes with valid revenue labels", async () => {
     vi.mocked(OrderModel.Order.aggregate).mockResolvedValue([]);
@@ -434,7 +392,6 @@ describe("getDashboardStats", () => {
     ]) as any);
     vi.mocked(NoteModel.Note.aggregate).mockResolvedValue([]);
     vi.mocked(OrderModel.Order.find).mockReturnValue(makeQueryChain([]) as any);
-    vi.mocked(AdminActivityModel.AdminActivity.find).mockReturnValue(makeQueryChain([]) as any);
 
     const result = await getDashboardStats();
 
@@ -459,35 +416,12 @@ describe("getDashboardStats", () => {
       { _id: "ord2", orderNumber: "NP-LATER", amount: 40000, createdAt: new Date("2024-06-01") },
       { _id: "ord1", orderNumber: "NP-EARLIER", amount: 20000, createdAt: new Date("2024-01-01") },
     ]) as any);
-    vi.mocked(AdminActivityModel.AdminActivity.find).mockReturnValue(makeQueryChain([]) as any);
 
     const result = await getDashboardStats();
 
     expect(result.recentOrders).toHaveLength(2);
     expect(result.recentOrders[0].orderNumber).toBe("NP-LATER");
     expect(result.recentOrders[1].orderNumber).toBe("NP-EARLIER");
-  });
-
-  it("returns recent activities with proper sorting", async () => {
-    vi.mocked(OrderModel.Order.aggregate).mockResolvedValue([]);
-    vi.mocked(OrderModel.Order.countDocuments).mockReturnValue(makeCountQuery(0) as any);
-    vi.mocked(NoteModel.Note.countDocuments).mockReturnValue(makeCountQuery(0) as any);
-    vi.mocked(GroupModel.Group.countDocuments).mockReturnValue(makeCountQuery(0) as any);
-    vi.mocked(CategoryModel.Category.countDocuments).mockReturnValue(makeCountQuery(0) as any);
-    vi.mocked(NoteModel.Note.find).mockReturnValue(makeQueryChain([]) as any);
-    vi.mocked(NoteModel.Note.aggregate).mockResolvedValue([]);
-    vi.mocked(OrderModel.Order.find).mockReturnValue(makeQueryChain([]) as any);
-
-    vi.mocked(AdminActivityModel.AdminActivity.find).mockReturnValue(makeQueryChain([
-      { action: "order.fulfill", description: "Fulfilled order" },
-      { action: "note.create", description: "Created note" },
-    ]) as any);
-
-    const result = await getDashboardStats();
-
-    expect(result.recentActivities).toHaveLength(2);
-    expect(result.recentActivities[0].action).toBe("order.fulfill");
-    expect(result.recentActivities[1].action).toBe("note.create");
   });
 
   it("limits recent orders to 10 items", async () => {
@@ -498,7 +432,6 @@ describe("getDashboardStats", () => {
     vi.mocked(CategoryModel.Category.countDocuments).mockReturnValue(makeCountQuery(0) as any);
     vi.mocked(NoteModel.Note.find).mockReturnValue(makeQueryChain([]) as any);
     vi.mocked(NoteModel.Note.aggregate).mockResolvedValue([]);
-    vi.mocked(AdminActivityModel.AdminActivity.find).mockReturnValue(makeQueryChain([]) as any);
 
     const manyOrders = Array.from({ length: 15 }, (_, i) => ({
       _id: `ord${i}`,
@@ -520,7 +453,6 @@ describe("getDashboardStats", () => {
     vi.mocked(NoteModel.Note.find).mockReturnValue(makeQueryChain([]) as any);
     vi.mocked(NoteModel.Note.aggregate).mockResolvedValue([]);
     vi.mocked(OrderModel.Order.find).mockReturnValue(makeQueryChain([]) as any);
-    vi.mocked(AdminActivityModel.AdminActivity.find).mockReturnValue(makeQueryChain([]) as any);
 
     const result = await getDashboardStats();
     expect(result.catalog.totalNotes).toBe(30);

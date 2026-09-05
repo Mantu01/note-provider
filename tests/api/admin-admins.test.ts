@@ -1,14 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
 import { NextRequest } from 'next/server'
 import { Admin } from '@/server/db/models/admin.model'
-import { toAdminProfile } from '@/server/mappers/activity.mapper'
+import { toAdminProfile } from "@/server/mappers/admin.mapper"
 import { requireAdmin } from '@/server/lib/auth-guard'
 
 vi.mock('@/server/db/connect', () => ({ connectDB: vi.fn().mockResolvedValue(undefined) }))
 vi.mock('@/server/db/models/admin.model', () => ({
   Admin: { find: vi.fn() },
 }))
-vi.mock('@/server/mappers/activity.mapper', () => ({
+vi.mock("@/server/mappers/admin.mapper", () => ({
   toAdminProfile: vi.fn((a: any) => a),
 }))
 vi.mock('@/server/lib/auth-guard', () => ({

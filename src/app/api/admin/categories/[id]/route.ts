@@ -4,7 +4,6 @@ import { AppError } from "@/server/lib/errors";
 import { Category } from "@/server/db/models/category.model";
 import { Note } from "@/server/db/models/note.model";
 import { Group } from "@/server/db/models/group.model";
-import { logActivity } from "@/server/services/activity.service";
 import { toAdminCategory } from "@/server/mappers/category.mapper";
 import { updateCategorySchema } from "@/lib/schemas/category.schema";
 import { slugify } from "@/server/lib/slug";
@@ -56,17 +55,6 @@ export const PATCH = adminHandler(async (ctx) => {
     Group.countDocuments({ category: id }).exec(),
   ]);
 
-  await logActivity({
-    adminId: admin.id,
-    action: "category.update",
-    description: `Updated category "${updated.name}"`,
-    targetType: "category",
-    targetId: id,
-    targetLabel: updated.name,
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
-  });
-
   return ok(toAdminCategory(updated, noteCount, groupCount));
 });
 
@@ -91,33 +79,10 @@ export const DELETE = adminHandler(async (ctx) => {
     if (noteCount > 0) parts.push(`${noteCount} note${noteCount !== 1 ? "s" : ""}`);
     if (groupCount > 0) parts.push(`${groupCount} group${groupCount !== 1 ? "s" : ""}`);
 
-    await logActivity({
-      adminId: admin.id,
-      action: "category.delete",
-      description: `Attempted to delete category "${category.name}" (refused)`,
-      targetType: "category",
-      targetId: id,
-      targetLabel: category.name,
-      metadata: { refused: true, noteCount, groupCount },
-      ip: ctx.ip,
-      userAgent: ctx.userAgent,
-    });
-
     return ok({ refused: true, conflictMessage: `${parts.join(" and ")} still use this category. Reassign them first.` });
   }
 
   await Category.findByIdAndDelete(id).exec();
-
-  await logActivity({
-    adminId: admin.id,
-    action: "category.delete",
-    description: `Deleted category "${category.name}"`,
-    targetType: "category",
-    targetId: id,
-    targetLabel: category.name,
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
-  });
 
   return ok({ deleted: true });
 });

@@ -27,14 +27,6 @@ vi.mock("@/features/admin/components/dashboard/recent-orders", () => ({
   ),
 }));
 
-vi.mock("@/features/admin/components/dashboard/activity-feed", () => ({
-  ActivityFeed: ({ activities }: { activities: any[] }) => (
-    <div data-testid="activity-feed">
-      <span>Activities: {activities?.length}</span>
-    </div>
-  ),
-}));
-
 vi.mock("@/components/shared/error-state", () => ({
   ErrorState: ({ onRetry }: { onRetry: () => void }) => (
     <button onClick={onRetry} data-testid="error-retry">Retry</button>
@@ -86,7 +78,6 @@ describe("AdminDashboard", () => {
         leads: { total: 100, today: 5 },
         revenueSeries: [],
         recentOrders: [],
-        recentActivities: [],
       },
       refetch: vi.fn(),
     } as any);
@@ -96,7 +87,6 @@ describe("AdminDashboard", () => {
       expect(screen.getByTestId("stats-grid")).toBeInTheDocument();
       expect(screen.getByTestId("revenue-chart")).toBeInTheDocument();
       expect(screen.getByTestId("recent-orders")).toBeInTheDocument();
-      expect(screen.getByTestId("activity-feed")).toBeInTheDocument();
     });
   });
 
@@ -111,7 +101,6 @@ describe("AdminDashboard", () => {
         leads: { total: 100, today: 5 },
         revenueSeries: [],
         recentOrders: [],
-        recentActivities: [],
       },
       refetch: vi.fn(),
     } as any);
@@ -134,7 +123,6 @@ describe("AdminDashboard", () => {
         leads: { total: 0, today: 0 },
         revenueSeries: [],
         recentOrders: [],
-        recentActivities: [],
       },
       refetch: vi.fn(),
     } as any);
@@ -161,7 +149,6 @@ describe("AdminDashboard", () => {
         leads: { total: 100, today: 5 },
         revenueSeries,
         recentOrders: [],
-        recentActivities: [],
       },
       refetch: vi.fn(),
     } as any);
@@ -186,7 +173,6 @@ describe("AdminDashboard", () => {
         leads: { total: 1, today: 1 },
         revenueSeries: [],
         recentOrders: orders,
-        recentActivities: [],
       },
       refetch: vi.fn(),
     } as any);
@@ -194,31 +180,6 @@ describe("AdminDashboard", () => {
     render(<AdminDashboard />);
     await waitFor(() => {
       expect(screen.getByTestId("recent-orders")).toBeInTheDocument();
-    });
-  });
-
-  it("passes recent activities to component", async () => {
-    const activities = [
-      { id: "1", description: "Note created", createdAt: "2026-08-15T10:00:00Z", admin: { name: "Admin" } },
-    ];
-    mockUseDashboard.mockReturnValue({
-      isPending: false,
-      isError: false,
-      data: {
-        revenue: { totalLabel: "Rs. 0" },
-        orders: { paid: 0, pendingFulfillment: 0 },
-        catalog: { totalNotes: 0, paidNotes: 0, freeNotes: 0 },
-        leads: { total: 0, today: 0 },
-        revenueSeries: [],
-        recentOrders: [],
-        recentActivities: activities,
-      },
-      refetch: vi.fn(),
-    } as any);
-
-    render(<AdminDashboard />);
-    await waitFor(() => {
-      expect(screen.getByTestId("activity-feed")).toBeInTheDocument();
     });
   });
 });

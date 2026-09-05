@@ -5,25 +5,6 @@ export type PurchaseItemType = "note" | "group";
 export type PaymentStatus = "created" | "paid" | "failed";
 export type FulfillmentStatus = "pending" | "completed" | "cancelled";
 
-export type AdminActivityAction =
-  | "admin.register"
-  | "admin.login"
-  | "admin.logout"
-  | "note.create"
-  | "note.update"
-  | "note.delete"
-  | "group.create"
-  | "group.update"
-  | "group.delete"
-  | "category.create"
-  | "category.update"
-  | "category.delete"
-  | "order.update_fulfillment"
-  | "order.add_note"
-  | "order.delete";
-
-export type ActivityTargetType = "note" | "group" | "category" | "order" | "admin";
-
 export type NoteSort =
   | "newest"
   | "oldest"
@@ -258,18 +239,7 @@ export type AdminProfile = {
   createdAt: string;
 };
 
-export type AdminActivity = {
-  id: string;
-  admin: { id: string; name: string; email: string };
-  action: AdminActivityAction;
-  targetType: ActivityTargetType | null;
-  targetId: string | null;
-  targetLabel: string | null;
-  description: string;
-  metadata: Record<string, unknown> | null;
-  ipAddress: string | null;
-  createdAt: string;
-};
+export type AdminAuthResponse = { admin: AdminProfile; token: string };
 
 export type OrderSummary = {
   totalRevenuePaise: number;
@@ -314,7 +284,6 @@ export type DashboardStats = {
   }[];
   categoryBreakdown: { name: string; noteCount: number; revenuePaise: number }[];
   recentOrders: AdminOrder[];
-  recentActivities: AdminActivity[];
 };
 
 export type NoteDetailResponse = {

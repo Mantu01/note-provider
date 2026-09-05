@@ -1,16 +1,14 @@
-import { z } from "zod";
-import { handler, adminHandler } from "@/server/lib/api-handler";
+import { handler } from "@/server/lib/api-handler";
 import { connectDB } from "@/server/db/connect";
 import { fail, ok } from "@/server/lib/api-response";
 import { AppError } from "@/server/lib/errors";
 import { Admin } from "@/server/db/models/admin.model";
-import { hashPassword, verifyPassword } from "@/server/lib/password";
+import { hashPassword } from "@/server/lib/password";
 import { signAdminToken } from "@/server/lib/jwt";
-import { setAdminSessionCookie, clearAdminSessionCookie } from "@/server/lib/auth-guard";
-import { adminRegisterSchema, adminLoginSchema } from "@/lib/schemas/admin.schema";
-import { logActivity } from "@/server/services/activity.service";
+import { setAdminSessionCookie } from "@/server/lib/auth-guard";
+import { adminRegisterSchema } from "@/lib/schemas/admin.schema";
 import { enforceRateLimit } from "@/server/lib/rate-limit";
-import { toAdminProfile } from "@/server/mappers/activity.mapper";
+import { toAdminProfile } from "@/server/mappers/admin.mapper";
 
 export const runtime = "nodejs";
 
@@ -47,18 +45,15 @@ export const POST = handler(async (ctx) => {
     isHead,
   });
 
-  await logActivity({
-    adminId: admin._id.toString(),
-    action: "admin.register",
-    description: `Registered admin "${admin.name}"`,
-    targetType: "admin",
-    targetId: admin._id.toString(),
-    targetLabel: admin.name,
-    ip: ctx.ip,
-    userAgent: ctx.userAgent,
+  const token = await signAdminToken({
+    sub: admin._id.toString(),
+    email: admin.email,
+    name: admin.name,
+    isHead: Boolean(admin.isHead),
   });
+  await setAdminSessionCookie(token);
 
-  const res = ok(toAdminProfile(admin.toJSON()));
+  const res = ok({ admin: toAdminProfile(admin.toJSON()), token });
   res.headers.set("Cache-Control", "no-store, max-age=0");
   return res;
 });

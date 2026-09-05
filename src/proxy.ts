@@ -3,7 +3,6 @@ import { jwtVerify } from "jose";
 import { ADMIN_SESSION_COOKIE } from "@/lib/constants";
 
 const PUBLIC_ADMIN_PATHS = [
-  "/admin/login",
   "/api/admin/auth/login",
   "/api/admin/auth/register",
 ];
@@ -37,13 +36,10 @@ async function hasValidSession(request: NextRequest): Promise<boolean> {
 }
 
 export async function proxy(request: NextRequest): Promise<NextResponse> {
-  const { pathname, search } = request.nextUrl;
+  const { pathname } = request.nextUrl;
   const isApiRoute = pathname.startsWith("/api/admin");
 
   if (PUBLIC_ADMIN_PATHS.some((path) => pathname === path)) {
-    if (pathname === "/admin/login" && (await hasValidSession(request))) {
-      return NextResponse.redirect(new URL("/admin", request.url));
-    }
     return NextResponse.next();
   }
 
@@ -51,9 +47,9 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
 
   if (isApiRoute) return unauthorizedJson();
 
-  const loginUrl = new URL("/admin/login", request.url);
-  loginUrl.searchParams.set("next", `${pathname}${search}`);
-  return NextResponse.redirect(loginUrl);
+  // There is no login page — admins authenticate by pasting the session token
+  // (returned by the login/register APIs) into the browser as the session cookie.
+  return NextResponse.redirect(new URL("/", request.url));
 }
 
 export const middleware = proxy;
