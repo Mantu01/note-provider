@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import AdminGroupsPage from "@/app/admin/(dashboard)/groups/page";
 
-vi.mock("@/features/admin/components/groups/groups-table", () => ({
+vi.mock("@/components/admin/groups/groups-table", () => ({
   GroupsTable: () => <div data-testid="groups-table">Groups Table</div>,
 }));
 

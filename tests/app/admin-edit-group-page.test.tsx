@@ -2,11 +2,11 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor, act } from "@testing-library/react";
 import EditGroupPage from "@/app/admin/(dashboard)/groups/[id]/edit/page";
 
-vi.mock("@/features/admin/api/use-admin-groups", () => ({
+vi.mock("@/hooks/useAdmin", () => ({
   useAdminGroup: vi.fn(() => ({ data: { id: "1", name: "Test Group" }, isLoading: false })),
 }));
 
-vi.mock("@/features/admin/components/groups/group-form", () => ({
+vi.mock("@/components/admin/groups/group-form", () => ({
   GroupForm: ({ initialData }: { initialData?: any }) => (
     <div data-testid="group-form">
       <span>Editing: {initialData?.name || "new"}</span>

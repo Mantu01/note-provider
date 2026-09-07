@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { NoteForm } from "@/features/admin/components/notes/note-form";
+import { NoteForm } from "@/components/admin/notes/note-form";
 
 vi.mock("nuqs", () => {
   const mockParse = vi.fn((val: any) => val);
@@ -14,18 +14,16 @@ vi.mock("next/navigation", () => ({
   useRouter: vi.fn(() => ({ push: vi.fn(), pathname: "/admin/notes" })),
 }));
 
-vi.mock("@/features/admin/api/use-admin-notes", () => ({
+vi.mock("@/hooks/useAdmin", () => ({
   useCreateNote: vi.fn(() => ({ mutate: vi.fn(), isPending: false, error: null })),
   useUpdateNote: vi.fn(() => ({ mutate: vi.fn(), isPending: false, error: null })),
-}));
-
-vi.mock("@/features/admin/api/use-admin-categories", () => ({
   useAdminCategories: vi.fn(() => ({
     data: { items: [
       { id: "cat-1", name: "Web Development", slug: "web-dev" },
       { id: "cat-2", name: "DSA", slug: "dsa" },
     ] },
   })),
+  useAdminProfile: vi.fn(() => ({ data: { id: "a1", name: "Admin", email: "admin@test.com" } })),
 }));
 
 vi.mock("@/components/ui/input", () => ({
@@ -67,7 +65,7 @@ vi.mock("@/components/shared/file-upload-field", () => ({
   ),
 }));
 
-vi.mock("@/features/admin/components/categories/category-dialog", () => ({
+vi.mock("@/components/admin/categories/category-dialog", () => ({
   CategoryDialog: ({ open }: { open: boolean }) => open ? <div data-testid="category-dialog">Category Dialog</div> : null,
 }));
 

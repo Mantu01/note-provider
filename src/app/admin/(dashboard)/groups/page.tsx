@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { GroupsTable } from "@/features/admin/components/groups/groups-table";
+import { GroupsTable } from "@/components/admin/groups/groups-table";
 
 export default function AdminGroupsPage() {
   return (

@@ -1,13 +1,14 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { NotesCatalogue } from "@/features/notes/components/notes-catalogue";
+import { NotesCatalogue } from "@/components/notes/notes-catalogue";
 
-vi.mock("@/features/notes/api/use-notes", () => ({
+vi.mock("@/hooks/useNotes", () => ({
   useNotes: vi.fn(),
+  useFilters: vi.fn(() => ({ data: { categories: [], levels: [], pricing: [] }, isPending: false, isError: false })),
 }));
 
-vi.mock("@/features/notes/hooks/use-notes-query-state", () => ({
+vi.mock("@/hooks/use-notes-query-state", () => ({
   useNotesQueryState: vi.fn(() => ({
     state: {
       page: 1,
@@ -62,21 +63,18 @@ vi.mock("@/components/shared/pagination-bar", () => ({
   ),
 }));
 
-vi.mock("@/features/notes/hooks/use-categories", () => ({
+vi.mock("@/hooks/notes/use-categories", () => ({
   useCategories: vi.fn(() => ({ data: [], isPending: false, isError: false })),
 }));
 
-vi.mock("@/features/notes/hooks/use-levels", () => ({
+vi.mock("@/hooks/notes/use-levels", () => ({
   useLevels: vi.fn(() => ({ data: [], isPending: false, isError: false })),
 }));
 
-vi.mock("@/features/notes/hooks/use-pricing", () => ({
+vi.mock("@/hooks/notes/use-pricing", () => ({
   usePricing: vi.fn(() => ({ data: [], isPending: false, isError: false })),
 }));
 
-vi.mock("@/features/notes/api/use-filters", () => ({
-  useFilters: vi.fn(() => ({ data: { categories: [], levels: [], pricing: [] }, isPending: false, isError: false })),
-}));
 
 vi.mock("@/components/ui/button", async (importOriginal) => {
   const actual = await importOriginal<typeof import("@/components/ui/button")>();
@@ -98,10 +96,10 @@ vi.mock("@/components/ui/sheet", async (importOriginal) => {
   };
 });
 
-const { useNotes } = await import("@/features/notes/api/use-notes");
+const { useNotes } = await import("@/hooks/useNotes");
 const mockUseNotes = vi.mocked(useNotes);
 
-const { useNotesQueryState } = await import("@/features/notes/hooks/use-notes-query-state");
+const { useNotesQueryState } = await import("@/hooks/use-notes-query-state");
 const mockUseNotesQueryState = vi.mocked(useNotesQueryState);
 
 const queryClient = new QueryClient({ defaultOptions: { queries: { retry: false } } });

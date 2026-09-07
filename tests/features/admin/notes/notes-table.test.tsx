@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { NotesTable } from "@/features/admin/components/notes/notes-table";
+import { NotesTable } from "@/components/admin/notes/notes-table";
 
 vi.mock("nuqs", () => {
   const mockParse = vi.fn((val: any) => val);
@@ -12,12 +12,9 @@ vi.mock("nuqs", () => {
   };
 });
 
-vi.mock("@/features/admin/api/use-admin-notes", () => ({
+vi.mock("@/hooks/useAdmin", () => ({
   useAdminNotes: vi.fn(),
   useDeleteNote: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
-}));
-
-vi.mock("@/features/admin/api/use-admin-auth", () => ({
   useAdminProfile: vi.fn(() => ({
     data: { id: "admin-1", name: "Admin", email: "admin@test.com", isHead: true },
   })),
@@ -88,7 +85,7 @@ vi.mock("@/components/shared/status-badge", () => ({
   ),
 }));
 
-const { useAdminNotes } = await import("@/features/admin/api/use-admin-notes");
+const { useAdminNotes } = await import("@/hooks/useAdmin");
 const mockUseAdminNotes = vi.mocked(useAdminNotes);
 
 describe("NotesTable", () => {

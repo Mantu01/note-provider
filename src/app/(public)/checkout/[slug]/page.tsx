@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
-import CheckoutContent from "@/features/checkout/components/checkout-content";
+import CheckoutContent from "@/components/checkout/checkout-content";
 import { APP_URL, SEO } from "@/lib/constants";
 
 export const metadata: Metadata = {

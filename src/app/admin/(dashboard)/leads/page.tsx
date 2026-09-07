@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { LeadsTable } from "@/features/admin/components/leads/leads-table";
+import { LeadsTable } from "@/components/admin/leads/leads-table";
 
 export default function AdminLeadsPage() {
   return (

@@ -1,9 +1,22 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { HomePage } from "@/features/home/components/home-page";
-import { useHome } from "@/features/home/api/use-home";
+import { HomePage } from "@/components/home/home-page";
+import { useHome } from "@/hooks/useHome";
 
-vi.mock("@/features/home/api/use-home");
+vi.mock("@/hooks/useHome", () => ({
+  useHome: vi.fn(() => ({
+    data: {
+      stats: { totalNotes: 0, totalCategories: 0, totalDownloads: 0, happyLearners: 0 },
+      categories: [],
+      featuredNotes: [],
+      freeNotes: [],
+      featuredGroups: [],
+    },
+    isPending: false,
+    isError: false,
+    refetch: vi.fn(),
+  })),
+}));
 
 vi.mock("@/components/shared/category-card", () => ({
   CategoryCard: ({ category }: { category: { id: string; name: string } }) => (

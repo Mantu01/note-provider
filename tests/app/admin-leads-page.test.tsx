@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import AdminLeadsPage from "@/app/admin/(dashboard)/leads/page";
 
-vi.mock("@/features/admin/components/leads/leads-table", () => ({
+vi.mock("@/components/admin/leads/leads-table", () => ({
   LeadsTable: () => <div data-testid="leads-table">Leads Table</div>,
 }));
 

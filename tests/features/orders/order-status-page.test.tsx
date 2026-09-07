@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { OrderStatusPage } from "@/features/orders/components/order-status-page";
+import { OrderStatusPage } from "@/components/orders/order-status-page";
 
 vi.mock("next/navigation", () => ({
   useRouter: vi.fn(() => ({ push: vi.fn() })),
@@ -8,7 +8,7 @@ vi.mock("next/navigation", () => ({
   useSearchParams: vi.fn(() => new URLSearchParams()),
 }));
 
-vi.mock("@/features/orders/api/use-order", () => ({
+vi.mock("@/hooks/useOrders", () => ({
   useOrder: vi.fn(),
 }));
 
@@ -20,7 +20,7 @@ vi.mock("@/components/shared/copy-button", () => ({
   CopyButton: ({ value }: any) => <button data-testid="copy-btn" onClick={() => navigator.clipboard.writeText(value)}>Copy</button>,
 }));
 
-const { useOrder } = await import("@/features/orders/api/use-order");
+const { useOrder } = await import("@/hooks/useOrders");
 const mockUseOrder = vi.mocked(useOrder);
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

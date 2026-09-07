@@ -6,7 +6,7 @@ vi.mock("next/navigation", () => ({
   useParams: vi.fn(() => ({ orderId: "ord-abc123" })),
 }));
 
-vi.mock("@/features/orders/components/order-status-page", () => ({
+vi.mock("@/components/orders/order-status-page", () => ({
   OrderStatusPage: ({ orderId }: { orderId: string }) => <div data-testid="order-status">{orderId}</div>,
 }));
 

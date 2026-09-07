@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
-import { CategoryDialog } from "@/features/admin/components/categories/category-dialog";
+import { CategoryDialog } from "@/components/admin/categories/category-dialog";
 
-vi.mock("@/features/admin/api/use-admin-categories", () => ({
+vi.mock("@/hooks/useAdmin", () => ({
   useCreateCategory: vi.fn(() => ({ mutate: vi.fn(), isPending: false, error: null })),
   useUpdateCategory: vi.fn(() => ({ mutate: vi.fn(), isPending: false, error: null })),
 }));

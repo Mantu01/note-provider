@@ -3,7 +3,7 @@
 
 import { Suspense } from "react";
 import { use } from "react";
-import { OrderDetailView } from "@/features/admin/components/orders/order-detail-view";
+import { OrderDetailView } from "@/components/admin/orders/order-detail-view";
 
 function OrderDetailContent({ id }: { id: string }) {
   return <OrderDetailView id={id} />;

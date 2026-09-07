@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import { ActiveFilterChips } from "@/features/notes/components/active-filter-chips";
+import { ActiveFilterChips } from "@/components/notes/active-filter-chips";
 
-vi.mock("@/features/notes/hooks/use-notes-query-state", () => ({
+vi.mock("@/hooks/use-notes-query-state", () => ({
   useNotesQueryState: vi.fn(),
 }));
 
-const { useNotesQueryState } = await import("@/features/notes/hooks/use-notes-query-state");
+const { useNotesQueryState } = await import("@/hooks/use-notes-query-state");
 const mockUseNotesQueryState = vi.mocked(useNotesQueryState);
 
 describe("ActiveFilterChips", () => {

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { OrderLookupPage } from "@/features/orders/components/order-lookup-page";
+import { OrderLookupPage } from "@/components/orders/order-lookup-page";
 
 vi.mock("next/navigation", async (importOriginal) => {
   const actual = await importOriginal<typeof import("next/navigation")>();
@@ -12,7 +12,7 @@ vi.mock("next/navigation", async (importOriginal) => {
   };
 });
 
-vi.mock("@/features/orders/api/use-order-lookup", () => ({
+vi.mock("@/hooks/useOrders", () => ({
   useOrderLookup: vi.fn(),
 }));
 
@@ -20,7 +20,7 @@ vi.mock("sonner", () => ({
   toast: { success: vi.fn(), error: vi.fn(), loading: vi.fn() },
 }));
 
-const { useOrderLookup } = await import("@/features/orders/api/use-order-lookup");
+const { useOrderLookup } = await import("@/hooks/useOrders");
 const mockUseOrderLookup = vi.mocked(useOrderLookup);
 
 beforeEach(() => {

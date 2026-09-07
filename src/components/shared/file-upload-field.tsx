@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { UploadCloud, FileText, ImageIcon, X, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useFileUpload, useDeleteUpload } from "@/features/admin/api/use-upload";
+import { useFileUpload, useDeleteUpload } from "@/hooks/useAdmin";
 import type { UploadKind } from "@/lib/types";
 import { toast } from "sonner";
 

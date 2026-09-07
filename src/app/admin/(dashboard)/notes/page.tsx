@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { NotesTable } from "@/features/admin/components/notes/notes-table";
+import { NotesTable } from "@/components/admin/notes/notes-table";
 
 export default function AdminNotesPage() {
   return (

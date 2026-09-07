@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { NoteDetailPage } from "@/features/notes/components/note-detail-page";
+import { NoteDetailPage } from "@/components/notes/note-detail-page";
 
-vi.mock("@/features/notes/api/use-note", () => ({
+vi.mock("@/hooks/useNotes", () => ({
   useNote: vi.fn(),
 }));
 
@@ -58,7 +58,7 @@ vi.mock("next/navigation", async (importOriginal) => {
   };
 });
 
-const { useNote } = await import("@/features/notes/api/use-note");
+const { useNote } = await import("@/hooks/useNotes");
 const mockUseNote = vi.mocked(useNote);
 
 describe("NoteDetailRoute", () => {

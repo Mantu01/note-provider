@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { OrderDetailView } from "@/features/admin/components/orders/order-detail-view";
+import { OrderDetailView } from "@/components/admin/orders/order-detail-view";
 
 vi.mock("nuqs", () => {
   const mockParse = vi.fn((val: any) => val);
@@ -11,11 +11,11 @@ vi.mock("nuqs", () => {
   };
 });
 
-vi.mock("@/features/admin/api/use-admin-orders", () => ({
+vi.mock("@/hooks/useAdmin", () => ({
   useAdminOrder: vi.fn(),
 }));
 
-vi.mock("@/features/admin/components/orders/fulfillment-dialog", () => ({
+vi.mock("@/components/admin/orders/fulfillment-dialog", () => ({
   FulfillmentDialog: ({ open }: { open: boolean }) =>
     open ? <div data-testid="fulfillment-dialog">Fulfillment Dialog</div> : null,
 }));
@@ -49,7 +49,7 @@ vi.mock("@/components/shared/status-badge", () => ({
   ),
 }));
 
-const { useAdminOrder } = await import("@/features/admin/api/use-admin-orders");
+const { useAdminOrder } = await import("@/hooks/useAdmin");
 const mockUseAdminOrder = vi.mocked(useAdminOrder);
 
 describe("OrderDetailView", () => {

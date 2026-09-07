@@ -10,7 +10,7 @@ vi.mock("next/image", () => ({
   },
 }));
 
-vi.mock("@/features/admin/components/admin-shell", () => ({
+vi.mock("@/components/admin/admin-shell", () => ({
   AdminShell: ({ children }: { children: React.ReactNode }) => (
     <div data-testid="admin-shell">{children}</div>
   ),

@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
-import { ExportButton } from "@/features/admin/components/leads/export-button";
+import { ExportButton } from "@/components/admin/leads/export-button";
 
 vi.mock("@/components/ui/button", () => ({
   Button: ({ children, ...props }: any) => <button {...props}>{children}</button>,

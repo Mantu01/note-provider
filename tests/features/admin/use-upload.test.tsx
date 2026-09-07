@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useFileUpload, useDeleteUpload } from "@/features/admin/api/use-upload";
+import { useFileUpload, useDeleteUpload } from "@/hooks/useAdmin";
 
 vi.mock("@/lib/api-client", () => ({
   apiClient: vi.fn(),

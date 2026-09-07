@@ -2,11 +2,11 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import EditNotePage from "@/app/admin/(dashboard)/notes/[id]/edit/page";
 
-vi.mock("@/features/admin/api/use-admin-notes", () => ({
+vi.mock("@/hooks/useAdmin", () => ({
   useAdminNote: vi.fn(() => ({ data: { id: "1", title: "Test Note" }, isLoading: false })),
 }));
 
-vi.mock("@/features/admin/components/notes/note-form", () => ({
+vi.mock("@/components/admin/notes/note-form", () => ({
   NoteForm: ({ initialData }: { initialData?: any }) => (
     <div data-testid="note-form">
       <span>Editing: {initialData?.title || "new"}</span>

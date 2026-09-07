@@ -1,12 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { AdminDashboard } from "@/features/admin/components/admin-dashboard";
+import { AdminDashboard } from "@/components/admin/admin-dashboard";
 
-vi.mock("@/features/admin/api/use-admin-dashboard", () => ({
+vi.mock("@/hooks/useAdmin", () => ({
   useDashboard: vi.fn(),
 }));
 
-vi.mock("@/features/admin/components/dashboard/stats-grid", () => ({
+vi.mock("@/components/admin/dashboard/stats-grid", () => ({
   StatsGrid: ({ stats }: { stats: any }) => (
     <div data-testid="stats-grid">
       <span>Total Revenue: {stats?.revenue?.totalLabel}</span>
@@ -15,11 +15,11 @@ vi.mock("@/features/admin/components/dashboard/stats-grid", () => ({
   ),
 }));
 
-vi.mock("@/features/admin/components/dashboard/revenue-chart", () => ({
+vi.mock("@/components/admin/dashboard/revenue-chart", () => ({
   RevenueChart: () => <div data-testid="revenue-chart">Revenue Chart</div>,
 }));
 
-vi.mock("@/features/admin/components/dashboard/recent-orders", () => ({
+vi.mock("@/components/admin/dashboard/recent-orders", () => ({
   RecentOrders: ({ orders }: { orders: any[] }) => (
     <div data-testid="recent-orders">
       <span>Orders: {orders?.length}</span>
@@ -33,7 +33,7 @@ vi.mock("@/components/shared/error-state", () => ({
   ),
 }));
 
-const { useDashboard } = await import("@/features/admin/api/use-admin-dashboard");
+const { useDashboard } = await import("@/hooks/useAdmin");
 const mockUseDashboard = vi.mocked(useDashboard);
 
 describe("AdminDashboard", () => {

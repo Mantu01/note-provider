@@ -3,8 +3,8 @@
 
 import { Suspense } from "react";
 import { use } from "react";
-import { useAdminNote } from "@/features/admin/api/use-admin-notes";
-import { NoteForm } from "@/features/admin/components/notes/note-form";
+import { useAdminNote } from "@/hooks/useAdmin";
+import { NoteForm } from "@/components/admin/notes/note-form";
 import { ErrorState } from "@/components/shared/error-state";
 import { Loader2 } from "lucide-react";
 

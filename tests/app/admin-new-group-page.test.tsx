@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import NewGroupPage from "@/app/admin/(dashboard)/groups/new/page";
 
-vi.mock("@/features/admin/components/groups/group-form", () => ({
+vi.mock("@/components/admin/groups/group-form", () => ({
   GroupForm: () => <div data-testid="group-form">Group Form</div>,
 }));
 

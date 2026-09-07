@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { OrderLookupPage } from "@/features/orders/components/order-lookup-page";
+import { OrderLookupPage } from "@/components/orders/order-lookup-page";
 import { APP_URL, SEO } from "@/lib/constants";
 
 export const metadata: Metadata = {

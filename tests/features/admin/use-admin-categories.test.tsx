@@ -6,7 +6,7 @@ import {
   useCreateCategory,
   useUpdateCategory,
   useDeleteCategory,
-} from "@/features/admin/api/use-admin-categories";
+} from "@/hooks/useAdmin";
 
 vi.mock("@/lib/api-client", () => ({
   apiClient: vi.fn(),

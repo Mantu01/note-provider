@@ -1,23 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { GroupForm } from "@/features/admin/components/groups/group-form";
+import { GroupForm } from "@/components/admin/groups/group-form";
 
 vi.mock("next/navigation", () => ({
   useRouter: () => ({ push: vi.fn(), pathname: "/admin/groups" }),
 }));
 
-vi.mock("@/features/admin/api/use-admin-groups", () => ({
+vi.mock("@/hooks/useAdmin", () => ({
   useCreateGroup: vi.fn(() => ({ mutate: vi.fn(), isPending: false, error: null })),
   useUpdateGroup: vi.fn(() => ({ mutate: vi.fn(), isPending: false, error: null })),
-}));
-
-vi.mock("@/features/admin/api/use-admin-categories", () => ({
   useAdminCategories: vi.fn(() => ({
     data: { items: [
       { id: "cat-1", name: "Web Development", slug: "web-dev" },
       { id: "cat-2", name: "DSA", slug: "dsa" },
     ] },
   })),
+  useAdminProfile: vi.fn(() => ({ data: { id: "a1", name: "Admin", email: "admin@test.com" } })),
 }));
 
 vi.mock("@/components/ui/input", () => ({
@@ -54,11 +52,11 @@ vi.mock("@/components/shared/file-upload-field", () => ({
   ),
 }));
 
-vi.mock("@/features/admin/components/categories/category-dialog", () => ({
+vi.mock("@/components/admin/categories/category-dialog", () => ({
   CategoryDialog: ({ open }: { open: boolean }) => open ? <div data-testid="category-dialog">Category Dialog</div> : null,
 }));
 
-vi.mock("@/features/admin/components/groups/note-multi-select", () => ({
+vi.mock("@/components/admin/groups/note-multi-select", () => ({
   NoteMultiSelect: () => <div data-testid="note-multi-select">Note Multi Select</div>,
 }));
 
@@ -132,7 +130,6 @@ describe("GroupForm", () => {
   it("renders back button", () => {
     render(<GroupForm />);
     const buttons = document.querySelectorAll("button");
-    // First button should be the back button (icon-only, type="button")
     expect(buttons.length).toBeGreaterThan(0);
   });
 });

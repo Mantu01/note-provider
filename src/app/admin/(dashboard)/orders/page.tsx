@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense } from "react";
-import { OrdersTable } from "@/features/admin/components/orders/orders-table";
+import { OrdersTable } from "@/components/admin/orders/orders-table";
 
 export default function AdminOrdersPage() {
   return (

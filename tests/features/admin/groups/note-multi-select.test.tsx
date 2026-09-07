@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { NoteMultiSelect } from "@/features/admin/components/groups/note-multi-select";
+import { NoteMultiSelect } from "@/components/admin/groups/note-multi-select";
 
 vi.mock("nuqs", () => {
   const mockParse = vi.fn((val: any) => val);
@@ -11,7 +11,7 @@ vi.mock("nuqs", () => {
   };
 });
 
-vi.mock("@/features/admin/api/use-admin-notes", () => ({
+vi.mock("@/hooks/useAdmin", () => ({
   useAdminNotes: vi.fn(),
 }));
 
@@ -25,7 +25,7 @@ vi.mock("@/components/ui/badge", () => ({
   ),
 }));
 
-const { useAdminNotes } = await import("@/features/admin/api/use-admin-notes");
+const { useAdminNotes } = await import("@/hooks/useAdmin");
 const mockUseAdminNotes = vi.mocked(useAdminNotes);
 const { useQueryStates } = await import("nuqs");
 const mockUseQueryStates = vi.mocked(useQueryStates);

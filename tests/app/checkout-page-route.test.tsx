@@ -10,7 +10,7 @@ vi.mock("next/navigation", () => ({
   useSearchParams: (...args: any[]) => mockSearchParams(...args),
 }));
 
-vi.mock("@/features/checkout/components/checkout-page", () => ({
+vi.mock("@/components/checkout/checkout-page", () => ({
   CheckoutPage: ({ slug, itemType }: { slug: string; itemType?: string }) => (
     <div data-testid="checkout">{`${slug}-${itemType || "note"}`}</div>
   ),

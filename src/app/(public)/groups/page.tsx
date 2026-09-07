@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import JsonLd, { webpageJsonLd } from "@/components/seo/json-ld";
-import { GroupsPage } from "@/features/groups/components/groups-catalogue";
+import { GroupsPage } from "@/components/groups/groups-catalogue";
 import { APP_URL, SEO } from "@/lib/constants";
 
 export const metadata: Metadata = {

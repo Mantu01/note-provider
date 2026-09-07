@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook } from "@testing-library/react";
-import { useNotesQueryState } from "@/features/notes/hooks/use-notes-query-state";
+import { useNotesQueryState } from "@/hooks/use-notes-query-state";
 import { DEFAULT_PAGE_LIMIT, NOTE_SORTS } from "@/lib/constants";
 
 vi.mock("nuqs", async (importOriginal) => {

@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, waitFor, act } from "@testing-library/react";
 import AdminOrderPage from "@/app/admin/(dashboard)/orders/[id]/page";
 
-vi.mock("@/features/admin/components/orders/order-detail-view", () => ({
+vi.mock("@/components/admin/orders/order-detail-view", () => ({
   OrderDetailView: ({ id }: { id: string }) => (
     <div data-testid="order-detail-view">{id}</div>
   ),

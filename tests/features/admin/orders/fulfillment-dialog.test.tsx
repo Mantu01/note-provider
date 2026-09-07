@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
-import { FulfillmentDialog } from "@/features/admin/components/orders/fulfillment-dialog";
+import { FulfillmentDialog } from "@/components/admin/orders/fulfillment-dialog";
 
-vi.mock("@/features/admin/api/use-admin-orders", () => ({
+vi.mock("@/hooks/useAdmin", () => ({
   useUpdateOrderFulfillment: vi.fn(() => ({
     mutate: vi.fn(),
     isPending: false,
@@ -36,7 +36,7 @@ vi.mock("@/components/ui/dialog", () => ({
   DialogFooter: ({ children }: any) => <div>{children}</div>,
 }));
 
-const { useUpdateOrderFulfillment } = await import("@/features/admin/api/use-admin-orders");
+const { useUpdateOrderFulfillment } = await import("@/hooks/useAdmin");
 const mockUseUpdateOrderFulfillment = vi.mocked(useUpdateOrderFulfillment);
 
 describe("FulfillmentDialog", () => {

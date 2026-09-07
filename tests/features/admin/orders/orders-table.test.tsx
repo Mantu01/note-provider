@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { OrdersTable } from "@/features/admin/components/orders/orders-table";
+import { OrdersTable } from "@/components/admin/orders/orders-table";
 
 vi.mock("nuqs", () => {
   const mockParse = vi.fn((val: any) => val);
@@ -12,7 +12,7 @@ vi.mock("nuqs", () => {
   };
 });
 
-vi.mock("@/features/admin/api/use-admin-orders", () => ({
+vi.mock("@/hooks/useAdmin", () => ({
   useAdminOrders: vi.fn(),
 }));
 
@@ -66,7 +66,7 @@ vi.mock("@/components/shared/status-badge", () => ({
   ),
 }));
 
-const { useAdminOrders } = await import("@/features/admin/api/use-admin-orders");
+const { useAdminOrders } = await import("@/hooks/useAdmin");
 const mockUseAdminOrders = vi.mocked(useAdminOrders);
 
 describe("OrdersTable", () => {

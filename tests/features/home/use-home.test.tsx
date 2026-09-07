@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useHome } from "@/features/home/api/use-home";
+import { useHome } from "@/hooks/useHome";
 
 vi.mock("@/lib/api-client", () => ({
   apiClient: vi.fn(),

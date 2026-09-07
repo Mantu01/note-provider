@@ -1,4 +1,4 @@
-import { AdminDashboard } from "@/features/admin/components/admin-dashboard";
+import { AdminDashboard } from "@/components/admin/admin-dashboard";
 
 
 export const metadata = { robots: { index: false, follow: false } };

@@ -1,4 +1,4 @@
-import { AdminShell } from "@/features/admin/components/admin-shell";
+import { AdminShell } from "@/components/admin/admin-shell";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

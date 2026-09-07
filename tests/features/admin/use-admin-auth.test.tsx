@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { renderHook, waitFor } from "@testing-library/react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useAdminProfile, useAdminLogin, useAdminLogout } from "@/features/admin/api/use-admin-auth";
+import { useAdminProfile, useAdminLogin, useAdminLogout } from "@/hooks/useAdmin";
 
 vi.mock("@/lib/api-client", () => ({
   apiClient: vi.fn(),

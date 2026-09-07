@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { StatsGrid } from "@/features/admin/components/dashboard/stats-grid";
+import { StatsGrid } from "@/components/admin/dashboard/stats-grid";
 
 vi.mock("@/components/ui/card", () => ({
   Card: ({ children, className }: any) => <div className={className}>{children}</div>,

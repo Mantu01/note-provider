@@ -7,7 +7,7 @@ import JsonLd, {
   articleJsonLd,
 } from "@/components/seo/json-ld";
 import { APP_URL } from "@/lib/constants";
-import { GroupDetailPage } from "@/features/groups/components/group-detail";
+import { GroupDetailPage } from "@/components/groups/group-detail";
 import { Group } from "@/server/db/models/group.model";
 import type { GroupDoc } from "@/server/db/models/group.model";
 import "@/server/db/models/category.model";

@@ -11,3 +11,10 @@ export const checkoutSchema = z.object({
 });
 
 export type CheckoutValues = z.infer<typeof checkoutSchema>;
+
+export type CreateOrderPayload = {
+  itemType: "note" | "group";
+  itemSlug: string;
+  fullName: string;
+  consentAccepted: true;
+};

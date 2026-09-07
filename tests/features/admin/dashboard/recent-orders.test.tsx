@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { RecentOrders } from "@/features/admin/components/dashboard/recent-orders";
+import { RecentOrders } from "@/components/admin/dashboard/recent-orders";
 
 vi.mock("@/components/ui/card", () => ({
   Card: ({ children }: any) => <div data-testid="card">{children}</div>,

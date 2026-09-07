@@ -7,7 +7,7 @@ import {
   useCreateNote,
   useUpdateNote,
   useDeleteNote,
-} from '@/features/admin/api/use-admin-notes';
+} from '@/hooks/useAdmin';
 
 vi.mock('@/lib/api-client', () => ({
   apiClient: vi.fn(),

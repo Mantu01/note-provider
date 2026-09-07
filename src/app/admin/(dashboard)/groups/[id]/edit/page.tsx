@@ -3,8 +3,8 @@
 
 import { Suspense } from "react";
 import { use } from "react";
-import { useAdminGroup } from "@/features/admin/api/use-admin-groups";
-import { GroupForm } from "@/features/admin/components/groups/group-form";
+import { useAdminGroup } from "@/hooks/useAdmin";
+import { GroupForm } from "@/components/admin/groups/group-form";
 import { ErrorState } from "@/components/shared/error-state";
 import { Loader2 } from "lucide-react";
 

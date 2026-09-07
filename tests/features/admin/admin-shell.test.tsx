@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { AdminShell } from "@/features/admin/components/admin-shell";
+import { AdminShell } from "@/components/admin/admin-shell";
 
 const mockMutate = vi.fn((_: unknown, options: any) => {
   options?.onSuccess?.();
 });
 
-vi.mock("@/features/admin/api/use-admin-auth", () => ({
+vi.mock("@/hooks/useAdmin", () => ({
   useAdminProfile: vi.fn(),
   useAdminLogout: vi.fn(() => ({
     mutate: mockMutate,
@@ -30,7 +30,7 @@ vi.mock("sonner", () => ({
   Toaster: () => null,
 }));
 
-const { useAdminProfile } = await import("@/features/admin/api/use-admin-auth");
+const { useAdminProfile } = await import("@/hooks/useAdmin");
 const mockUseAdminProfile = vi.mocked(useAdminProfile);
 
 describe("AdminShell", () => {

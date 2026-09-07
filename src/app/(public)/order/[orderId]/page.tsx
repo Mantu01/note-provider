@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { APP_URL } from "@/lib/constants";
-import { OrderStatusPage } from "@/features/orders/components/order-status-page";
+import { OrderStatusPage } from "@/components/orders/order-status-page";
 import { Order } from "@/server/db/models/order.model";
 
 interface OrderRouteProps {

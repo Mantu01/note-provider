@@ -5,7 +5,7 @@ import {
   useAdminOrders,
   useAdminOrder,
   useUpdateOrderFulfillment,
-} from "@/features/admin/api/use-admin-orders";
+} from "@/hooks/useAdmin";
 
 vi.mock("@/lib/api-client", () => ({
   apiClient: vi.fn(),

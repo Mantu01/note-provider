@@ -7,7 +7,7 @@ import {
   useCreateGroup,
   useUpdateGroup,
   useDeleteGroup,
-} from "@/features/admin/api/use-admin-groups";
+} from "@/hooks/useAdmin";
 
 vi.mock("@/lib/api-client", () => ({
   apiClient: vi.fn(),

@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
-import { GroupsTable } from "@/features/admin/components/groups/groups-table";
+import { GroupsTable } from "@/components/admin/groups/groups-table";
 
 vi.mock("nuqs", () => {
   const mockParse = vi.fn((val: any) => val);
@@ -12,12 +12,9 @@ vi.mock("nuqs", () => {
   };
 });
 
-vi.mock("@/features/admin/api/use-admin-groups", () => ({
+vi.mock("@/hooks/useAdmin", () => ({
   useAdminGroups: vi.fn(),
   useDeleteGroup: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
-}));
-
-vi.mock("@/features/admin/api/use-admin-auth", () => ({
   useAdminProfile: vi.fn(() => ({
     data: { id: "admin-1", name: "Admin", email: "admin@test.com", isHead: true },
   })),
@@ -82,7 +79,7 @@ vi.mock("@/components/shared/pagination-bar", () => ({
   ),
 }));
 
-const { useAdminGroups } = await import("@/features/admin/api/use-admin-groups");
+const { useAdminGroups } = await import("@/hooks/useAdmin");
 const mockUseAdminGroups = vi.mocked(useAdminGroups);
 
 describe("GroupsTable", () => {

@@ -7,7 +7,7 @@ vi.mock("next/navigation", () => ({
   usePathname: vi.fn(() => "/notes"),
 }));
 
-vi.mock("@/features/notes/components/notes-catalogue", () => ({
+vi.mock("@/components/notes/notes-catalogue", () => ({
   NotesCatalogue: () => <div data-testid="notes-catalogue">Notes Catalogue</div>,
 }));
 

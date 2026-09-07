@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen } from "@testing-library/react";
-import { RevenueChart } from "@/features/admin/components/dashboard/revenue-chart";
+import { RevenueChart } from "@/components/admin/dashboard/revenue-chart";
 
 vi.mock("recharts", () => ({
   ResponsiveContainer: ({ children }: any) => <div data-testid="responsive-container">{children}</div>,

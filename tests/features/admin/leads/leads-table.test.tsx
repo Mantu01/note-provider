@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { LeadsTable } from "@/features/admin/components/leads/leads-table";
+import { LeadsTable } from "@/components/admin/leads/leads-table";
 
 vi.mock("nuqs", () => {
   const mockParse = vi.fn((val: any) => val);
@@ -12,11 +12,11 @@ vi.mock("nuqs", () => {
   };
 });
 
-vi.mock("@/features/admin/api/use-admin-leads", () => ({
+vi.mock("@/hooks/useAdmin", () => ({
   useAdminLeads: vi.fn(),
 }));
 
-vi.mock("@/features/admin/components/leads/export-button", () => ({
+vi.mock("@/components/admin/leads/export-button", () => ({
   ExportButton: () => <button data-testid="export-button">Export CSV</button>,
 }));
 
@@ -56,7 +56,7 @@ vi.mock("@/components/shared/status-badge", () => ({
   ),
 }));
 
-const { useAdminLeads } = await import("@/features/admin/api/use-admin-leads");
+const { useAdminLeads } = await import("@/hooks/useAdmin");
 const mockUseAdminLeads = vi.mocked(useAdminLeads);
 
 describe("LeadsTable", () => {

@@ -1,16 +1,16 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { CheckoutPage } from "@/features/checkout/components/checkout-page";
+import { CheckoutPage } from "@/components/checkout/checkout-page";
 
-vi.mock("@/features/notes/api/use-note", () => ({
+vi.mock("@/hooks/useNotes", () => ({
   useNote: vi.fn(),
 }));
 
-vi.mock("@/features/groups/api/use-group", () => ({
+vi.mock("@/hooks/useGroups", () => ({
   useGroup: vi.fn(),
 }));
 
-vi.mock("@/features/checkout/api/use-create-order", () => ({
+vi.mock("@/hooks/useCheckout", () => ({
   useCreateOrder: vi.fn(() => ({
     mutate: vi.fn(),
     isPending: false,
@@ -132,16 +132,16 @@ vi.mock("@/components/ui/label", async (importOriginal) => {
   };
 });
 
-const { useNote } = await import("@/features/notes/api/use-note");
+const { useNote } = await import("@/hooks/useNotes");
 const mockUseNote = vi.mocked(useNote);
 
-const { useGroup } = await import("@/features/groups/api/use-group");
+const { useGroup } = await import("@/hooks/useGroups");
 const mockUseGroup = vi.mocked(useGroup);
 
 const { useRouter } = await import("next/navigation");
 const mockUseRouter = vi.mocked(useRouter);
 
-const { useCreateOrder } = await import("@/features/checkout/api/use-create-order");
+const { useCreateOrder } = await import("@/hooks/useCheckout");
 const mockUseCreateOrder = vi.mocked(useCreateOrder);
 
 describe("CheckoutPage", () => {

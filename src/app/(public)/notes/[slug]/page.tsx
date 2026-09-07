@@ -8,7 +8,7 @@ import JsonLd, {
   articleJsonLd,
 } from "@/components/seo/json-ld";
 import { APP_URL } from "@/lib/constants";
-import { NoteDetailPage } from "@/features/notes/components/note-detail-page";
+import { NoteDetailPage } from "@/components/notes/note-detail-page";
 import { Note } from "@/server/db/models/note.model";
 import type { NoteDoc } from "@/server/db/models/note.model";
 import "@/server/db/models/category.model";

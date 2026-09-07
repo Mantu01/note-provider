@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
 import { userEvent } from "@testing-library/user-event";
-import { CategoriesTable } from "@/features/admin/components/categories/categories-table";
+import { CategoriesTable } from "@/components/admin/categories/categories-table";
 
 vi.mock("nuqs", () => {
   const mockParse = vi.fn((val: any) => val);
@@ -13,12 +13,9 @@ vi.mock("nuqs", () => {
   };
 });
 
-vi.mock("@/features/admin/api/use-admin-categories", () => ({
+vi.mock("@/hooks/useAdmin", () => ({
   useAdminCategories: vi.fn(),
   useDeleteCategory: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
-}));
-
-vi.mock("@/features/admin/api/use-admin-auth", () => ({
   useAdminProfile: vi.fn(() => ({
     data: { id: "admin-1", name: "Admin", email: "admin@test.com", isHead: true },
   })),
@@ -71,12 +68,12 @@ vi.mock("@/components/shared/empty-state", () => ({
   ),
 }));
 
-vi.mock("@/features/admin/components/categories/category-dialog", () => ({
+vi.mock("@/components/admin/categories/category-dialog", () => ({
   CategoryDialog: ({ open, category }: any) =>
     open ? <div data-testid="category-dialog">{category?.name || "New Category"}</div> : null,
 }));
 
-const { useAdminCategories } = await import("@/features/admin/api/use-admin-categories");
+const { useAdminCategories } = await import("@/hooks/useAdmin");
 const mockUseAdminCategories = vi.mocked(useAdminCategories);
 
 describe("CategoriesTable", () => {

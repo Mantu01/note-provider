@@ -8,7 +8,7 @@ vi.mock("next/navigation", () => ({
   useSearchParams: vi.fn(() => new URLSearchParams()),
 }));
 
-vi.mock("@/features/orders/components/order-lookup-page", () => ({
+vi.mock("@/components/orders/order-lookup-page", () => ({
   OrderLookupPage: () => <div data-testid="order-lookup">Order Lookup</div>,
 }));
 

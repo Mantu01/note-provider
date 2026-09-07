@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { FileUploadField } from "@/components/shared/file-upload-field";
 
-vi.mock("@/features/admin/api/use-upload", () => ({
+vi.mock("@/hooks/useAdmin", () => ({
   useFileUpload: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
   useDeleteUpload: vi.fn(() => ({ mutate: vi.fn(), isPending: false })),
 }));

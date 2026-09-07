@@ -1,6 +1,6 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { render, screen, fireEvent } from '@testing-library/react';
-import { FilterPanel } from '@/features/notes/components/filter-panel';
+import { FilterPanel } from '@/components/notes/filter-panel';
 
 const mocks = vi.hoisted(() => ({
   mockSetFilter: vi.fn(),
@@ -20,11 +20,11 @@ vi.mock('@/components/ui/select', () => ({
   SelectValue: ({ children }: any) => <span>{children}</span>,
 }));
 
-vi.mock('@/features/notes/api/use-filters', () => ({
+vi.mock('@/hooks/useNotes', () => ({
   useFilters: vi.fn(),
 }));
 
-vi.mock('@/features/notes/hooks/use-notes-query-state', () => ({
+vi.mock('@/hooks/use-notes-query-state', () => ({
   useNotesQueryState: vi.fn(() => {
     const s = mocks.mockState;
     const activeFilterCount = [s.q, ...s.category, ...s.level, s.pricing, s.minPrice, s.maxPrice].filter((v) => v !== '' && v !== null).length;
@@ -43,7 +43,7 @@ vi.mock('@/components/shared/error-state', () => ({
   ),
 }));
 
-const { useFilters } = await import('@/features/notes/api/use-filters');
+const { useFilters } = await import('@/hooks/useNotes');
 const mockUseFilters = vi.mocked(useFilters);
 
 describe('FilterPanel', () => {

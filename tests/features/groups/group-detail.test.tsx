@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { render, screen, waitFor } from "@testing-library/react";
-import { GroupDetailPage } from "@/features/groups/components/group-detail";
+import { GroupDetailPage } from "@/components/groups/group-detail";
 
-vi.mock("@/features/groups/api/use-group", () => ({
+vi.mock("@/hooks/useGroups", () => ({
   useGroup: vi.fn(),
 }));
 
@@ -33,7 +33,7 @@ vi.mock("@/components/shared/price-tag", () => ({
   ),
 }));
 
-const { useGroup } = await import("@/features/groups/api/use-group");
+const { useGroup } = await import("@/hooks/useGroups");
 const mockUseGroup = vi.mocked(useGroup);
 
 describe("GroupDetailPage", () => {
