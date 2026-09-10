@@ -2,11 +2,13 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { generateOrderNumber } from '@/server/lib/order-number';
 import { Counter } from '@/server/db/models/counter.model';
 
-const mockLean = vi.fn();
+const mockExec = vi.fn();
 
 vi.mock('@/server/db/models/counter.model', () => ({
   Counter: {
-    findOneAndUpdate: vi.fn(() => ({ lean: mockLean })),
+    findOneAndUpdate: vi.fn(() => ({
+      lean: vi.fn(() => ({ exec: mockExec })),
+    })),
   },
 }));
 
@@ -17,7 +19,7 @@ describe('order-number', () => {
 
   it('generates order number with current date', async () => {
     const today = new Date('2026-08-15T10:00:00Z');
-    mockLean.mockResolvedValue({ seq: 1 });
+    mockExec.mockResolvedValue({ seq: 1 });
 
     const result = await generateOrderNumber(today);
     expect(result).toMatch(/^NP-20260815-0001$/);
@@ -25,7 +27,7 @@ describe('order-number', () => {
 
   it('generates order number with sequential sequence', async () => {
     const today = new Date('2026-08-15T10:00:00Z');
-    mockLean.mockResolvedValue({ seq: 42 });
+    mockExec.mockResolvedValue({ seq: 42 });
 
     const result = await generateOrderNumber(today);
     expect(result).toBe('NP-20260815-0042');
@@ -33,7 +35,7 @@ describe('order-number', () => {
 
   it('uses sequence 1 when counter is null', async () => {
     const today = new Date('2026-08-15T10:00:00Z');
-    mockLean.mockResolvedValue(null);
+    mockExec.mockResolvedValue(null);
 
     const result = await generateOrderNumber(today);
     expect(result).toBe('NP-20260815-0001');
@@ -41,7 +43,7 @@ describe('order-number', () => {
 
   it('uses sequence 1 when counter has no seq property', async () => {
     const today = new Date('2026-08-15T10:00:00Z');
-    mockLean.mockResolvedValue({});
+    mockExec.mockResolvedValue({});
 
     const result = await generateOrderNumber(today);
     expect(result).toBe('NP-20260815-0001');
@@ -49,7 +51,7 @@ describe('order-number', () => {
 
   it('formats date correctly for year boundary', async () => {
     const date = new Date('2026-12-31T23:59:59Z');
-    mockLean.mockResolvedValue({ seq: 1 });
+    mockExec.mockResolvedValue({ seq: 1 });
 
     const result = await generateOrderNumber(date);
     expect(result).toBe('NP-20261231-0001');
@@ -57,7 +59,7 @@ describe('order-number', () => {
 
   it('formats date correctly for month boundary', async () => {
     const date = new Date('2026-01-01T00:00:00Z');
-    mockLean.mockResolvedValue({ seq: 5 });
+    mockExec.mockResolvedValue({ seq: 5 });
 
     const result = await generateOrderNumber(date);
     expect(result).toBe('NP-20260101-0005');
@@ -65,7 +67,7 @@ describe('order-number', () => {
 
   it('calls findOneAndUpdate with correct key and upsert', async () => {
     const today = new Date('2026-08-15T10:00:00Z');
-    mockLean.mockResolvedValue({ seq: 1 });
+    mockExec.mockResolvedValue({ seq: 1 });
 
     await generateOrderNumber(today);
 
@@ -78,7 +80,7 @@ describe('order-number', () => {
 
   it('handles large sequence numbers', async () => {
     const today = new Date('2026-08-15T10:00:00Z');
-    mockLean.mockResolvedValue({ seq: 9999 });
+    mockExec.mockResolvedValue({ seq: 9999 });
 
     const result = await generateOrderNumber(today);
     expect(result).toBe('NP-20260815-9999');
@@ -86,7 +88,7 @@ describe('order-number', () => {
 
   it('handles single digit sequence with leading zeros', async () => {
     const today = new Date('2026-08-15T10:00:00Z');
-    mockLean.mockResolvedValue({ seq: 7 });
+    mockExec.mockResolvedValue({ seq: 7 });
 
     const result = await generateOrderNumber(today);
     expect(result).toBe('NP-20260815-0007');
@@ -94,7 +96,7 @@ describe('order-number', () => {
 
   it('handles two digit sequence with leading zeros', async () => {
     const today = new Date('2026-08-15T10:00:00Z');
-    mockLean.mockResolvedValue({ seq: 77 });
+    mockExec.mockResolvedValue({ seq: 77 });
 
     const result = await generateOrderNumber(today);
     expect(result).toBe('NP-20260815-0077');
@@ -102,7 +104,7 @@ describe('order-number', () => {
 
   it('handles three digit sequence with leading zeros', async () => {
     const today = new Date('2026-08-15T10:00:00Z');
-    mockLean.mockResolvedValue({ seq: 777 });
+    mockExec.mockResolvedValue({ seq: 777 });
 
     const result = await generateOrderNumber(today);
     expect(result).toBe('NP-20260815-0777');
@@ -110,14 +112,14 @@ describe('order-number', () => {
 
   it('throws when database query fails', async () => {
     const today = new Date('2026-08-15T10:00:00Z');
-    mockLean.mockRejectedValue(new Error('db error'));
+    mockExec.mockRejectedValue(new Error('db error'));
 
     await expect(generateOrderNumber(today)).rejects.toThrow('db error');
   });
 
   it('uses provided Date and not current time', async () => {
     const fixedDate = new Date('2025-01-01T00:00:00Z');
-    mockLean.mockResolvedValue({ seq: 1 });
+    mockExec.mockResolvedValue({ seq: 1 });
 
     const result = await generateOrderNumber(fixedDate);
     expect(result).toBe('NP-20250101-0001');

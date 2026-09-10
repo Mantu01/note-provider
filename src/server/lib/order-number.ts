@@ -6,7 +6,7 @@ export async function generateOrderNumber(now = new Date()): Promise<string> {
     { key: `order:${datePart}` },
     { $inc: { seq: 1 } },
     { upsert: true, new: true, setDefaultsOnInsert: true },
-  ).lean();
+  ).lean().exec();
 
   const sequence = String(counter?.seq ?? 1).padStart(4, "0");
   return `NP-${datePart}-${sequence}`;

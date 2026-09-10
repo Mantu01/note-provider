@@ -35,6 +35,9 @@ async function connectDB(): Promise<typeof mongoose> {
       socketTimeoutMS: 20000,
     }).then((mongoose) => {
       return mongoose;
+    }).catch((error) => {
+      console.error('[connectDB] connection error:', error?.message ?? error);
+      throw error;
     });
   }
 
