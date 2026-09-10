@@ -1,6 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import mongoose from "mongoose";
 
+// Must run before vi.mock hoists — ensures connect.ts reads the stub URI on import
+vi.stubEnv("MONGODB_URI", "mongodb://localhost:27017/notes-provider-test");
+
 const mockConnect = vi.fn();
 const mockDisconnect = vi.fn();
 
@@ -95,7 +98,8 @@ describe("connectDB — cache lifecycle", () => {
 
     await ConnectModule.connectDB();
     const opts = mockConnect.mock.calls[0][1];
-    expect(opts.bufferCommands).toBe(true);
+    expect(opts.bufferCommands).toBe(false);
+    expect(opts.bufferTimeoutMS).toBe(10000);
     expect(opts.maxPoolSize).toBe(10);
     expect(opts.serverSelectionTimeoutMS).toBe(10000);
     expect(opts.connectTimeoutMS).toBe(10000);
@@ -103,20 +107,19 @@ describe("connectDB — cache lifecycle", () => {
   });
 
   it("falls back to localhost when MONGODB_URI is not set", async () => {
-    const original = process.env.MONGODB_URI;
-    delete (process.env as any).MONGODB_URI;
     mockConnect.mockResolvedValue({ connection: { readyState: 1 } });
     const cached = (globalThis as any).mongoose;
     cached.conn = null;
     cached.promise = null;
 
+    const originalUri = process.env.MONGODB_URI;
+    process.env.MONGODB_URI = "";
     vi.resetModules();
     const mod = await import("../../../src/server/db/connect");
     await mod.connectDB();
     expect(mockConnect).toHaveBeenCalledWith("mongodb://localhost:27017", expect.any(Object));
-
-    if (original !== undefined) {
-      (process.env as any).MONGODB_URI = original;
+    if (originalUri) {
+      process.env.MONGODB_URI = originalUri;
     } else {
       delete (process.env as any).MONGODB_URI;
     }
@@ -171,18 +174,18 @@ describe("connectDB — edge cases", () => {
   });
 
   it("uses custom MONGODB_URI from env", async () => {
-    (process.env as any).MONGODB_URI = "mongodb://custom-host:27017/testdb";
     mockConnect.mockResolvedValue({ connection: { readyState: 1 } });
     const cached = (globalThis as any).mongoose;
     cached.conn = null;
     cached.promise = null;
 
-    // Reset module cache to pick up new env var
+    vi.unstubAllEnvs();
+    vi.stubEnv("MONGODB_URI", "mongodb://custom-host:27017/testdb");
     vi.resetModules();
     const mod = await import("../../../src/server/db/connect");
     await mod.connectDB();
     expect(mockConnect).toHaveBeenCalledWith("mongodb://custom-host:27017/testdb", expect.any(Object));
 
-    delete (process.env as any).MONGODB_URI;
+    vi.stubEnv("MONGODB_URI", "mongodb://localhost:27017/notes-provider-test");
   });
 });

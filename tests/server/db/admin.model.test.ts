@@ -105,4 +105,10 @@ describe("Admin model", () => {
     } as any);
     await expect(admin.validate()).rejects.toThrow();
   });
+
+  it("index options reflect unique on email", () => {
+    const indexes = Admin.schema.indexes();
+    const emailIndex = (indexes as any[]).find(([k]: [Record<string, number>, unknown]) => k.email);
+    expect(emailIndex).toBeDefined();
+  });
 });

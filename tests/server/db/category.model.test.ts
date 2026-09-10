@@ -99,4 +99,21 @@ describe("Category model", () => {
   it("enables timestamps in schema options", async () => {
     expect(Category.schema.options.timestamps).toBe(true);
   });
+
+  it("has index on subjects.slug subfield", () => {
+    const indexes = Category.schema.indexes();
+    const subjIndex = (indexes as any[]).find(
+      ([k]: [Record<string, number>, unknown]) => k["subjects.slug"],
+    );
+    expect(subjIndex).toBeDefined();
+  });
+
+  it("trims subject names", async () => {
+    const cat = new Category({
+      name: "Math",
+      slug: "math",
+      subjects: [{ name: "  Algebra  ", slug: "algebra" }],
+    });
+    expect(cat.subjects[0].name).toBe("Algebra");
+  });
 });

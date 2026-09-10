@@ -40,4 +40,33 @@ describe("Counter model", () => {
   it("does not have timestamps", async () => {
     expect(Counter.schema.options.timestamps).toBeUndefined();
   });
+
+  it("supports order-number style keys", async () => {
+    const counter = new Counter({ key: "order:20240101" });
+    expect(counter.key).toBe("order:20240101");
+  });
+
+  it("increments seq without validation error", async () => {
+    const counter = new Counter({ key: "inc-test", seq: 5 });
+    expect(counter.seq).toBe(5);
+    counter.seq = 6;
+    await expect(counter.validate()).resolves.toBeUndefined();
+  });
+
+  it("allows repeated instantiation without DB error", async () => {
+    const c1 = new Counter({ key: "dup-key" });
+    const c2 = new Counter({ key: "dup-key", seq: 1 });
+    expect(c1.key).toBe(c2.key);
+    expect(c2.seq).toBe(1);
+  });
+
+  it("rejects empty string key", async () => {
+    const counter = new Counter({ key: "", seq: 0 } as any);
+    await expect(counter.validate()).rejects.toThrow();
+  });
+
+  it("has an index defined", () => {
+    const indexes = Counter.schema.indexes();
+    expect(indexes.length).toBeGreaterThan(0);
+  });
 });

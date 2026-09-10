@@ -31,6 +31,8 @@ describe('POST /api/webhooks/razorpay', () => {
       lean: vi.fn().mockReturnThis(),
       exec: vi.fn().mockResolvedValue(null),
     })
+    ;(Note.findByIdAndUpdate as any).mockReturnValue({ exec: vi.fn().mockResolvedValue({}) })
+    ;(Group.findByIdAndUpdate as any).mockReturnValue({ exec: vi.fn().mockResolvedValue({}) })
   })
 
   it('returns 400 when signature header is missing', async () => {
@@ -245,7 +247,7 @@ describe('POST /api/webhooks/razorpay', () => {
     expect(json.data.received).toBe(true)
   })
 
-  it('returns 200 when webhook handler throws an error', async () => {
+  it('returns 500 when webhook handler throws an error', async () => {
     ;(verifyWebhookSignature as any).mockReturnValue(true)
     ;(Order.findOneAndUpdate as any).mockReturnValue({
       lean: vi.fn().mockReturnThis(),
@@ -262,9 +264,10 @@ describe('POST /api/webhooks/razorpay', () => {
     })
     req.text = () => Promise.resolve(body)
     const result = await POST(req as any)
-    expect(result.status).toBe(200)
+    expect(result.status).toBe(500)
     const json = await result.json()
-    expect(json.data.received).toBe(true)
+    expect(json.success).toBe(false)
+    expect(json.error.code).toBe('INTERNAL_ERROR')
   })
 
   it('sets paymentMethod from payment entity', async () => {

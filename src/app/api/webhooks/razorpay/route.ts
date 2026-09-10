@@ -94,6 +94,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ success: true, data: { received: true } });
   } catch (error) {
     console.error("[webhook] error", error);
-    return NextResponse.json({ success: true, data: { received: true } });
+    return NextResponse.json(
+      { success: false, error: { code: "INTERNAL_ERROR", message: "Webhook processing failed" } },
+      { status: 500 },
+    );
   }
 }
