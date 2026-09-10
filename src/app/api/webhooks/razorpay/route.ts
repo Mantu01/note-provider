@@ -26,9 +26,9 @@ export async function POST(req: Request) {
     );
   }
 
-  try {
-    await connectDB();
+  await connectDB();
 
+  try {
     const payload = JSON.parse(rawBody) as {
       event: string;
       payload?: {
