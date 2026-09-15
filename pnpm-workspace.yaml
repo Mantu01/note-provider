@@ -8,6 +8,11 @@ allowBuilds:
 # https://pnpm.io/pnpm-workspace.yaml#reject-options
 minimumReleaseAge: 10080
 trustPolicy: no-downgrade
+trustPolicyExclude:
+  - eslint-import-resolver-typescript
+  - reselect
+  - semver
+  - undici-types
 
 # Only allow prebuilt binaries for known-safe packages; block arbitrary native downloads
 onlyBuiltDependencies:

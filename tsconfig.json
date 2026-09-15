@@ -5,8 +5,6 @@
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
-    "noEmit": true,
-    "types": ["vitest/globals"],
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
