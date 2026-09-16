@@ -18,7 +18,7 @@ import { useGroup } from "@/hooks/useGroups";
 import { useNote } from "@/hooks/useNotes";
 import { useCreateOrder } from "@/hooks/useCheckout";
 import { BRAND } from "@/lib/constants";
-import { checkoutSchema, type CheckoutValues } from "@/lib/schemas/checkout.schema";
+import { checkoutSchema, type CheckoutValues } from "@/schemas/checkout.schema";
 import type { PurchaseItemType } from "@/lib/types";
 
 function CheckoutSkeleton() {

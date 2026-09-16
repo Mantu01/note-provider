@@ -2,7 +2,7 @@ import { prisma } from "../db";
 import { AppError } from "../errors";
 import { generateOrderNumber } from "../order-number";
 import { createRazorpayOrder } from "../razorpay";
-import type { UpdateOrderPayload } from "@/lib/schemas/admin.schema";
+import type { UpdateOrderPayload } from "@/schemas/admin.schema";
 
 export async function createOrder(
   input: { fullName: string; consentAccepted: boolean },
@@ -51,10 +51,6 @@ export async function createOrder(
   });
 
   return { order: doc, razorpayOrderId };
-}
-
-export async function getOrderById(id: string): Promise<import("@prisma/client").Order | null> {
-  return prisma.order.findUnique({ where: { id } });
 }
 
 export async function getOrderByNumber(orderNumber: string): Promise<import("@prisma/client").Order | null> {

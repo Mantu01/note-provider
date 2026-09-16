@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { NOTE_LEVELS, NOTE_PRICING_TYPES, NOTE_VISIBILITIES } from "../constants";
-import { rupeesToPaise } from "../format";
+import { NOTE_LEVELS, NOTE_PRICING_TYPES, NOTE_VISIBILITIES } from "@/lib/constants";
+import { rupeesToPaise } from "@/lib/format";
 
 export const objectIdSchema = z
   .string()

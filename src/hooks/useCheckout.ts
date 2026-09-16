@@ -4,7 +4,7 @@ import { useMutation } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import type { CheckoutOrderResponse, PurchaseItemType } from "@/lib/types";
-import type { CreateOrderPayload } from "@/lib/schemas/checkout.schema";
+import type { CreateOrderPayload } from "@/schemas/checkout.schema";
 import { toast } from "sonner";
 import { useQueryClient } from "@tanstack/react-query";
 

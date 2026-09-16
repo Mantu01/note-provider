@@ -3,7 +3,7 @@ import { fail, ok } from "@/helpers/api-response";
 import { AppError } from "@/helpers/errors";
 import { prisma } from "@/helpers/db";
 import { toAdminCategory } from "@/helpers/mappers/category.mapper";
-import { updateCategorySchema } from "@/lib/schemas/category.schema";
+import { updateCategorySchema } from "@/schemas/category.schema";
 import { slugify } from "@/helpers/slug";
 
 export const runtime = "nodejs";

@@ -5,7 +5,7 @@ import { AppError } from "@/helpers/errors";
 import { prisma } from "@/helpers/db";
 import { destroyAsset } from "@/helpers/cloudinary";
 import { toPublicNote, toAdminNote } from "@/helpers/mappers/note.mapper";
-import { createNoteSchema, updateNoteSchema } from "@/lib/schemas/note.schema";
+import { createNoteSchema, updateNoteSchema } from "@/schemas/note.schema";
 import { rupeesToPaise } from "@/lib/format";
 import { uniqueSlug } from "@/helpers/slug";
 import { MIN_PAID_PRICE_PAISE } from "@/lib/constants";

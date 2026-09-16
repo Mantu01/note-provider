@@ -16,10 +16,10 @@ import type {
   UploadKind,
   UploadResponse,
 } from "@/lib/types";
-import type { CreateCategoryInput, UpdateCategoryInput } from "@/lib/schemas/category.schema";
-import type { CreateGroupInput, UpdateGroupInput } from "@/lib/schemas/group.schema";
-import type { CreateNoteInput, UpdateNoteInput } from "@/lib/schemas/note.schema";
-import type { UpdateOrderPayload } from "@/lib/schemas/admin.schema";
+import type { CreateCategoryInput, UpdateCategoryInput } from "@/schemas/category.schema";
+import type { CreateGroupInput, UpdateGroupInput } from "@/schemas/group.schema";
+import type { CreateNoteInput, UpdateNoteInput } from "@/schemas/note.schema";
+import type { UpdateOrderPayload } from "@/schemas/admin.schema";
 import { toast } from "sonner";
 
 // ─── auth ─────────────────────────────────────────────────────────────────────

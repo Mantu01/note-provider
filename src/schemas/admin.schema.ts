@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { FULFILLMENT_STATUSES } from "../constants";
+import { FULFILLMENT_STATUSES } from "@/lib/constants";
 
 export const adminRegisterSchema = z.object({
   name: z.string().trim().min(2, "Name must be at least 2 characters").max(60),

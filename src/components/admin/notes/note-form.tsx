@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { CategoryDialog } from "@/components/admin/categories/category-dialog";
 import { useAdminCategories } from "@/hooks/useAdmin";
 import { useCreateNote, useUpdateNote } from "@/hooks/useAdmin";
-import { createNoteSchema, type CreateNoteInput, type CreateNotePayload } from "@/lib/schemas/note.schema";
+import { createNoteSchema, type CreateNoteInput, type CreateNotePayload } from "@/schemas/note.schema";
 import type { AdminNote } from "@/lib/types";
 import {
   NoteDetailsSection,

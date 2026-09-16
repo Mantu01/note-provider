@@ -4,7 +4,7 @@ import { AppError } from "@/helpers/errors";
 import { prisma } from "@/helpers/db";
 import { destroyAsset } from "@/helpers/cloudinary";
 import { toAdminNote } from "@/helpers/mappers/note.mapper";
-import { updateNoteSchema } from "@/lib/schemas/note.schema";
+import { updateNoteSchema } from "@/schemas/note.schema";
 import { rupeesToPaise } from "@/lib/format";
 
 export const runtime = "nodejs";

@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 import { ZodError } from "zod";
 import { fail } from "./api-response";
-import { requireAdmin, requireHeadAdmin, type AdminSession } from "./auth-guard";
+import { requireAdmin, type AdminSession } from "./auth-guard";
 import { AppError, duplicateKeyToAppError, isDuplicateKeyError } from "./errors";
 
 export type RouteContext<P extends Record<string, string> = Record<string, string>> = {
@@ -61,20 +61,6 @@ export function adminHandler<P extends Record<string, string> = Record<string, s
     try {
       const ctx = await buildContext<P>(req, args);
       const admin = await requireAdmin();
-      return await fn({ ...ctx, admin });
-    } catch (error) {
-      return fail(toAppError(error));
-    }
-  };
-}
-
-export function headAdminHandler<P extends Record<string, string> = Record<string, string>>(
-  fn: (ctx: AdminRouteContext<P>) => Promise<NextResponse>,
-) {
-  return async (req: NextRequest, args: NextRouteArgs<P>): Promise<NextResponse> => {
-    try {
-      const ctx = await buildContext<P>(req, args);
-      const admin = await requireHeadAdmin();
       return await fn({ ...ctx, admin });
     } catch (error) {
       return fail(toAppError(error));

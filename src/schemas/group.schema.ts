@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { MIN_PAID_PRICE_PAISE, NOTE_VISIBILITIES } from "../constants";
-import { rupeesToPaise } from "../format";
+import { MIN_PAID_PRICE_PAISE, NOTE_VISIBILITIES } from "@/lib/constants";
+import { rupeesToPaise } from "@/lib/format";
 import { objectIdSchema, uploadedImageSchema } from "./note.schema";
 
 const priceRupeesSchema = z

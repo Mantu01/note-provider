@@ -10,7 +10,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { FileUploadField } from "@/components/shared/file-upload-field";
-import { type CreateNoteInput, type CreateNotePayload } from "@/lib/schemas/note.schema";
+import { type CreateNoteInput, type CreateNotePayload } from "@/schemas/note.schema";
 import { NOTE_LEVELS } from "@/lib/constants";
 import type { AdminNote } from "@/lib/types";
 

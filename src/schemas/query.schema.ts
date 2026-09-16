@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { NOTE_LEVELS, NOTE_SORTS, ORDER_SORTS } from "../constants";
-import { DEFAULT_PAGE_LIMIT } from "../constants";
+import { NOTE_LEVELS, NOTE_SORTS, ORDER_SORTS } from "@/lib/constants";
+import { DEFAULT_PAGE_LIMIT } from "@/lib/constants";
 
 export const notesQuerySchema = z.object({
   page: z.coerce.number().int().positive().optional().default(1),

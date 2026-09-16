@@ -4,7 +4,6 @@ import { AppError } from "@/helpers/errors";
 import { prisma } from "@/helpers/db";
 import { buildSignedUrl } from "@/helpers/cloudinary";
 import { enforceRateLimit } from "@/helpers/rate-limit";
-import { incrementDownloadCount } from "@/helpers/services/note.service";
 import { driveToDownloadUrl } from "@/helpers/drive-utils";
 import fs from "fs";
 import path from "path";
@@ -53,7 +52,7 @@ export const GET = handler<{ slug: string }>(async (ctx): Promise<NextResponse<u
 
   if (!buffer) throw AppError.notFound("Note file content");
 
-  await incrementDownloadCount(note.id);
+  await prisma.note.update({ where: { id: note.id }, data: { downloadCount: { increment: 1 } } });
 
   const fileName = `${note.slug}.pdf`;
   const bytes = buffer instanceof Buffer ? buffer : Buffer.from(buffer as ArrayBuffer);

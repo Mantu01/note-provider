@@ -1,4 +1,3 @@
-import type { Prisma } from "@prisma/client";
 import { ERROR_STATUS } from "@/lib/constants";
 import type { ErrorCode } from "@/lib/types";
 

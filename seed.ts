@@ -1,8 +1,8 @@
 import bcrypt from "bcryptjs";
 import { loadEnvFile } from "node:process";
-import { prisma } from "./src/lib/helpers/db";
-import { generateOrderNumber } from "./src/lib/helpers/order-number";
-import { uniqueSlug } from "./src/lib/helpers/slug";
+import { prisma } from "./src/helpers/db";
+import { generateOrderNumber } from "./src/helpers/order-number";
+import { uniqueSlug } from "./src/helpers/slug";
 
 const coverImageUrl = "https://res.cloudinary.com/dqznmhhtv/image/upload/v1787432656/notes-provider/covers/thumbnail_ahs7sg.png";
 const fullFileUrl = "https://res.cloudinary.com/dqznmhhtv/image/upload/v1787432643/notes-provider/notes/full/vs_resume_xqgl3w.pdf";

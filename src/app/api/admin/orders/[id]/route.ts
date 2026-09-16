@@ -4,7 +4,7 @@ import { AppError } from "@/helpers/errors";
 import { prisma } from "@/helpers/db";
 import { toAdminOrder } from "@/helpers/mappers/order.mapper";
 import { fulfillOrder, deleteOrder } from "@/helpers/services/order.service";
-import { updateOrderSchema } from "@/lib/schemas/admin.schema";
+import { updateOrderSchema } from "@/schemas/admin.schema";
 
 export const runtime = "nodejs";
 

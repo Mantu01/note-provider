@@ -3,7 +3,7 @@ import { fail, ok } from "@/helpers/api-response";
 import { AppError } from "@/helpers/errors";
 import { prisma } from "@/helpers/db";
 import { createOrder } from "@/helpers/services/order.service";
-import { checkoutSchema } from "@/lib/schemas/checkout.schema";
+import { checkoutSchema } from "@/schemas/checkout.schema";
 import { enforceRateLimit } from "@/helpers/rate-limit";
 import { getRazorpayKeyId } from "@/helpers/razorpay";
 

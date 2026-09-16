@@ -1,5 +1,4 @@
 import { prisma } from "./db";
-import type { Prisma } from "@prisma/client";
 
 const DIACRITICS = /[̀-ͯ]/g;
 

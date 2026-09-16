@@ -17,7 +17,7 @@ import { CategoryDialog } from "@/components/admin/categories/category-dialog";
 import { NoteMultiSelect } from "@/components/admin/groups/note-multi-select";
 import { useAdminCategories } from "@/hooks/useAdmin";
 import { useCreateGroup, useUpdateGroup } from "@/hooks/useAdmin";
-import { createGroupSchema, type CreateGroupInput } from "@/lib/schemas/group.schema";
+import { createGroupSchema, type CreateGroupInput } from "@/schemas/group.schema";
 import type { AdminGroup } from "@/lib/types";
 
 type GroupFormProps = {

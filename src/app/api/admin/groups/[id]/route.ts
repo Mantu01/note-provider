@@ -3,7 +3,7 @@ import { fail, ok } from "@/helpers/api-response";
 import { AppError } from "@/helpers/errors";
 import { prisma } from "@/helpers/db";
 import { toAdminGroup } from "@/helpers/mappers/group.mapper";
-import { updateGroupSchema } from "@/lib/schemas/group.schema";
+import { updateGroupSchema } from "@/schemas/group.schema";
 import { rupeesToPaise } from "@/lib/format";
 import { validateNoteIdsExist } from "@/helpers/note-validation";
 

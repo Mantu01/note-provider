@@ -26,10 +26,13 @@
         "./src/*"
       ],
       "@/helpers": [
-        "./src/lib/helpers"
+        "./src/helpers"
       ],
       "@/helpers/*": [
-        "./src/lib/helpers/*"
+        "./src/helpers/*"
+      ],
+      "@prisma/client": [
+        "./generated/prisma/client"
       ]
     },
     "noEmit": true

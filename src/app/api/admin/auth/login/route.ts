@@ -5,7 +5,7 @@ import { prisma } from "@/helpers/db";
 import { verifyPassword } from "@/helpers/password";
 import { signAdminToken } from "@/helpers/jwt";
 import { setAdminSessionCookie } from "@/helpers/auth-guard";
-import { adminLoginSchema } from "@/lib/schemas/admin.schema";
+import { adminLoginSchema } from "@/schemas/admin.schema";
 import { enforceRateLimit } from "@/helpers/rate-limit";
 import { toAdminProfile } from "@/helpers/mappers/admin.mapper";
 

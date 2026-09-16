@@ -1,4 +1,4 @@
-import type { NotesQuerySchema, OrdersQuerySchema } from "@/lib/schemas/query.schema";
+import type { NotesQuerySchema, OrdersQuerySchema } from "@/schemas/query.schema";
 import type { Pagination } from "@/lib/types";
 import { DEFAULT_PAGE_LIMIT, MAX_PAGE_LIMIT } from "@/lib/constants";
 import { rupeesToPaise } from "@/lib/format";
