@@ -1,47 +1,63 @@
-import { adminHandler } from "@/server/lib/api-handler";
-import { ok } from "@/server/lib/api-response";
-import { Order } from "@/server/db/models/order.model";
-import { toAdminOrder } from "@/server/mappers/order.mapper";
-import { parsePagination, buildPagination, buildOrderFilter, buildOrderSort } from "@/server/lib/query";
+import { adminHandler } from "@/helpers/api-handler";
+import { ok, fail } from "@/helpers/api-response";
+import { prisma } from "@/helpers/db";
+import { AppError } from "@/helpers/errors";
+import { generateOrderNumber } from "@/helpers/order-number";
+import { createRazorpayOrder } from "@/helpers/razorpay";
+import { z } from "zod";
+
+const createOrderSchema = z.object({
+  fullName: z.string().min(2).max(100),
+  consentAccepted: z.literal(true),
+  noteSlug: z.string().optional(),
+  groupSlug: z.string().optional(),
+});
 
 export const runtime = "nodejs";
 
-export const GET = adminHandler(async (ctx) => {
-  const { page, limit, skip } = parsePagination(ctx.searchParams, 20);
-  const query = {
-    q: ctx.searchParams.get("q") || undefined,
-    paymentStatus: (ctx.searchParams.get("paymentStatus") as "created" | "paid" | "failed") || undefined,
-    fulfillmentStatus: (ctx.searchParams.get("fulfillmentStatus") as "pending" | "completed" | "cancelled") || undefined,
-    itemType: (ctx.searchParams.get("itemType") as "note" | "group") || undefined,
-    from: ctx.searchParams.get("from") || undefined,
-    to: ctx.searchParams.get("to") || undefined,
-    sort: (ctx.searchParams.get("sort") as "newest" | "oldest" | "amount_desc" | "amount_asc") || "newest",
-  };
+export const POST = adminHandler(async (ctx) => {
+  const body = await ctx.req.json();
+  const parsed = createOrderSchema.safeParse(body);
+  if (!parsed.success) {
+    return fail(AppError.validation({ fullName: parsed.error.flatten().fieldErrors.fullName?.[0] ?? "Invalid name" }));
+  }
 
-  const filter = buildOrderFilter(query);
-  const sort = buildOrderSort(query.sort);
+  const input = parsed.data;
+  const itemSlug = input.noteSlug || input.groupSlug;
+  const itemType = input.noteSlug ? "note" : "group";
 
-  const [items, total] = await Promise.all([
-    Order.find(filter).sort(sort).skip(skip).limit(limit).lean().exec(),
-    Order.countDocuments(filter).exec(),
-  ]);
+  if (!itemSlug) throw new Error("Invalid item");
 
-  const paidOrders = items.filter((o) => o.paymentStatus === "paid");
-  const pendingFulfillment = paidOrders.filter((o) => o.fulfillmentStatus === "pending");
-  const failedOrders = items.filter((o) => o.paymentStatus === "failed");
+  const orderNumber = await generateOrderNumber();
 
-  const summary = {
-    totalRevenuePaise: paidOrders.reduce((sum, o) => sum + o.amount, 0),
-    paidCount: paidOrders.length,
-    pendingFulfillmentCount: pendingFulfillment.length,
-    failedCount: failedOrders.length,
-  };
+  const note = itemSlug ? await prisma.note.findFirst({ where: { slug: itemSlug }, select: { id: true, price: true, title: true } }) : null;
+  const group = itemSlug ? await prisma.group.findFirst({ where: { slug: itemSlug }, select: { id: true, price: true, name: true } }) : null;
+  const itemDoc = note ?? group;
 
-  const res = ok({
-    items: items.map(toAdminOrder),
-    pagination: buildPagination(total, page, limit),
-    summary,
+  if (!itemDoc) throw new Error("Item not found");
+
+  const price = (itemDoc as any).price;
+
+  const { id: razorpayOrderId } = await createRazorpayOrder({
+    amount: price,
+    receipt: orderNumber,
+    notes: { orderNumber, itemType, itemSlug, buyerName: input.fullName },
   });
-  res.headers.set("Cache-Control", "public, max-age=30, s-maxage=30");
-  return res;
+
+  const doc = await prisma.order.create({
+    data: {
+      orderNumber,
+      itemType,
+      noteId: itemType === "note" ? itemDoc.id : null,
+      groupId: itemType === "group" ? itemDoc.id : null,
+      amount: price,
+      razorpayOrderId,
+      paymentStatus: "created",
+      fulfillmentStatus: "pending",
+      itemSnapshot: { title: (itemDoc as any).title || (itemDoc as any).name, slug: itemSlug, price },
+      buyer: { fullName: input.fullName, consentAccepted: input.consentAccepted, ipAddress: ctx.ip, userAgent: ctx.userAgent },
+    },
+  });
+
+  return ok({ orderNumber, razorpayOrderId });
 });

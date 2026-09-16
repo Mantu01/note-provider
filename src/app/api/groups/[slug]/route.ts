@@ -1,11 +1,8 @@
-import { handler } from "@/server/lib/api-handler";
-import { ok } from "@/server/lib/api-response";
-import { AppError } from "@/server/lib/errors";
-import { Group } from "@/server/db/models/group.model";
-import { Note } from "@/server/db/models/note.model";
-import { toPublicGroup } from "@/server/mappers/group.mapper";
-import { toPublicNote } from "@/server/mappers/note.mapper";
-import { Types } from "mongoose";
+import { handler } from "@/helpers/api-handler";
+import { ok } from "@/helpers/api-response";
+import { AppError } from "@/helpers/errors";
+import { prisma } from "@/helpers/db";
+import { toPublicGroup } from "@/helpers/mappers/group.mapper";
 
 export const runtime = "nodejs";
 export const revalidate = 600;
@@ -13,27 +10,19 @@ export const revalidate = 600;
 export const GET = handler(async (ctx) => {
   const { slug } = await ctx.params;
 
-  const group = await Group.findOne({ slug, visibility: "public" }).lean().exec();
+  const group = await prisma.group.findFirst({ where: { slug, visibility: "public" }, include: { category: true } } as any);
   if (!group) throw AppError.notFound("Group");
 
-  const categoryId = String((group.category as { _id?: string | Types.ObjectId } | null | undefined)?._id ?? group.category ?? "");
+  const categoryId = group.categoryId;
+  const groupId = group.id;
 
-  const groupId = group._id.toString();
-
-  const [notes, relatedGroups] = await Promise.all([
-    Note.find({ _id: { $in: group.notes.map((n: { toString: () => string }) => n.toString()) }, visibility: "public" })
-      .populate("category")
-      .lean()
-      .exec(),
-    Group.find({ _id: { $ne: groupId }, category: categoryId, visibility: "public" })
-      .sort({ createdAt: -1 })
-      .limit(3)
-      .lean()
-      .exec(),
+  const [relatedGroups, noteIds] = await Promise.all([
+    prisma.group.findMany({ where: { id: { not: groupId }, categoryId, visibility: "public" }, include: { category: true }, orderBy: { createdAt: "desc" }, take: 4 }),
+    prisma.noteGroup.findMany({ where: { groupId }, select: { noteId: true } }),
   ]);
+  const note = noteIds.length
+    ? await prisma.note.findFirst({ where: { id: noteIds[0].noteId } })
+    : null;
 
-  return ok({
-    group: toPublicGroup(group as unknown as Record<string, unknown>, notes.map(toPublicNote)),
-    relatedGroups: relatedGroups.map((g: Record<string, unknown>) => toPublicGroup(g)),
-  });
+  return ok({ group: toPublicGroup(group), relatedGroups: relatedGroups.map(toPublicGroup), note: note ? { id: note.id, title: note.title, slug: note.slug } : null });
 });

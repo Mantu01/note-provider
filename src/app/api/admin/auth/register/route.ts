@@ -1,19 +1,17 @@
-import { handler } from "@/server/lib/api-handler";
-import { connectDB } from "@/server/db/connect";
-import { fail, ok } from "@/server/lib/api-response";
-import { AppError } from "@/server/lib/errors";
-import { Admin } from "@/server/db/models/admin.model";
-import { hashPassword } from "@/server/lib/password";
-import { signAdminToken } from "@/server/lib/jwt";
-import { setAdminSessionCookie } from "@/server/lib/auth-guard";
+import { handler } from "@/helpers/api-handler";
+import { fail, ok } from "@/helpers/api-response";
+import { AppError } from "@/helpers/errors";
+import { prisma } from "@/helpers/db";
+import { hashPassword } from "@/helpers/password";
+import { signAdminToken } from "@/helpers/jwt";
+import { setAdminSessionCookie } from "@/helpers/auth-guard";
 import { adminRegisterSchema } from "@/lib/schemas/admin.schema";
-import { enforceRateLimit } from "@/server/lib/rate-limit";
-import { toAdminProfile } from "@/server/mappers/admin.mapper";
+import { enforceRateLimit } from "@/helpers/rate-limit";
+import { toAdminProfile } from "@/helpers/mappers/admin.mapper";
 
 export const runtime = "nodejs";
 
 export const POST = handler(async (ctx) => {
-  await connectDB();
   enforceRateLimit("adminRegister", ctx.ip, { limit: 10, windowMs: 3600000 });
 
   const secret = ctx.req.headers.get("x-admin-register-secret");
@@ -32,28 +30,20 @@ export const POST = handler(async (ctx) => {
     return fail(AppError.validation(fields, parsed.error.issues[0]?.message ?? "Invalid input"));
   }
 
-  const existing = await Admin.findOne({ email: parsed.data.email.toLowerCase() }).lean().exec();
+  const existing = await prisma.admin.findUnique({ where: { email: parsed.data.email.toLowerCase() } });
   if (existing) throw AppError.conflict("An account with this email already exists");
 
   const isHead = parsed.data.isHead ?? false;
-
   const passwordHash = await hashPassword(parsed.data.password);
-  const admin = await Admin.create({
-    name: parsed.data.name,
-    email: parsed.data.email.toLowerCase(),
-    passwordHash,
-    isHead,
+
+  const admin = await prisma.admin.create({
+    data: { name: parsed.data.name, email: parsed.data.email.toLowerCase(), passwordHash, isHead },
   });
 
-  const token = await signAdminToken({
-    sub: admin._id.toString(),
-    email: admin.email,
-    name: admin.name,
-    isHead: Boolean(admin.isHead),
-  });
+  const token = await signAdminToken({ sub: admin.id, email: admin.email, name: admin.name, isHead: Boolean(admin.isHead) });
   await setAdminSessionCookie(token);
 
-  const res = ok({ admin: toAdminProfile(admin.toJSON()), token });
+  const res = ok({ admin: toAdminProfile({ ...admin, passwordHash: undefined }), token });
   res.headers.set("Cache-Control", "no-store, max-age=0");
   return res;
 });

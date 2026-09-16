@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { APP_URL } from "@/lib/constants";
 import { OrderStatusPage } from "@/components/orders/order-status-page";
-import { Order } from "@/server/db/models/order.model";
+import { prisma } from "@/helpers/db";
 
 interface OrderSuccessRouteProps {
   params: Promise<{ orderId: string }>;
@@ -21,15 +21,15 @@ export async function generateMetadata({ params }: OrderSuccessRouteProps): Prom
 export default async function OrderSuccessRoute({ params }: OrderSuccessRouteProps) {
   const { orderId } = await params;
 
-  let order = await Order.findById(orderId).lean().exec();
+  let order = await prisma.order.findUnique({ where: { id: orderId } });
 
   if (!order) {
-    order = await Order.findOne({ orderNumber: orderId.toUpperCase() }).lean().exec();
+    order = await prisma.order.findFirst({ where: { orderNumber: orderId.toUpperCase() } });
   }
 
   if (!order) {
     notFound();
   }
 
-  return <OrderStatusPage orderId={String(order._id)} />;
+  return <OrderStatusPage orderId={String(order.id)} />;
 }

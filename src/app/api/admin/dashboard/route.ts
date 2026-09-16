@@ -1,6 +1,6 @@
-import { adminHandler } from "@/server/lib/api-handler";
-import { ok } from "@/server/lib/api-response";
-import { getDashboardStats } from "@/server/services/dashboard.service";
+import { adminHandler } from "@/helpers/api-handler";
+import { getDashboardStats } from "@/helpers/services/dashboard.service";
+import { ok } from "@/helpers/api-response";
 
 export const runtime = "nodejs";
 

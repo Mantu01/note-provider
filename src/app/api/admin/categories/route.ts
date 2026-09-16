@@ -1,56 +1,51 @@
-import { adminHandler } from "@/server/lib/api-handler";
-import { fail, ok } from "@/server/lib/api-response";
-import { Category } from "@/server/db/models/category.model";
-import { Note } from "@/server/db/models/note.model";
-import { Group } from "@/server/db/models/group.model";
-import { toAdminCategory } from "@/server/mappers/category.mapper";
+import { adminHandler } from "@/helpers/api-handler";
+import { ok } from "@/helpers/api-response";
+import { prisma } from "@/helpers/db";
+import { AppError } from "@/helpers/errors";
+import { toAdminCategory } from "@/helpers/mappers/category.mapper";
 import { createCategorySchema } from "@/lib/schemas/category.schema";
-import { uniqueSlug } from "@/server/lib/slug";
-import { AppError } from "@/server/lib/errors";
+import { uniqueSlug } from "@/helpers/slug";
 
 export const runtime = "nodejs";
 
-export const GET = adminHandler(async (ctx) => {
-  const [items, total] = await Promise.all([
-    Category.find({}).sort({ order: 1, name: 1 }).lean().exec(),
-    Category.countDocuments().exec(),
-  ]);
+export const GET = adminHandler(async () => {
+  const items = await prisma.category.findMany({ orderBy: { order: "asc", name: "asc" } });
 
   const categoriesWithCounts = await Promise.all(
     items.map(async (cat) => {
       const [noteCount, groupCount] = await Promise.all([
-        Note.countDocuments({ category: cat._id.toString() }).exec(),
-        Group.countDocuments({ category: cat._id.toString() }).exec(),
+        prisma.note.count({ where: { categoryId: cat.id } }),
+        prisma.group.count({ where: { categoryId: cat.id } }),
       ]);
       return toAdminCategory({ ...cat, noteCount, groupCount }, noteCount, groupCount);
     }),
   );
 
-  const res = ok({
-    items: categoriesWithCounts,
-  });
-  res.headers.set("Cache-Control", "public, max-age=60, s-maxage=60");
-  return res;
+  return ok({ items: categoriesWithCounts });
 });
 
 export const POST = adminHandler(async (ctx) => {
   const body = await ctx.req.json();
   const parsed = createCategorySchema.safeParse(body);
   if (!parsed.success) {
-    return fail(AppError.validation(parsed.error.flatten().fieldErrors as Record<string, string>, parsed.error.issues[0]?.message ?? "Invalid input"));
+    const fields: Record<string, string> = {};
+    for (const issue of parsed.error.issues) {
+      const key = issue.path.join(".");
+      fields[key] = issue.message;
+    }
+    throw AppError.validation(fields);
   }
 
-  const { admin } = ctx;
-  const input = parsed.data;
+  const slug = await uniqueSlug("category", parsed.data.name);
 
-  const slug = await uniqueSlug(Category, input.name);
-
-  const doc = await Category.create({
-    ...input,
-    slug,
-    createdBy: admin.id,
-    updatedBy: admin.id,
+  const doc = await prisma.category.create({
+    data: {
+      ...parsed.data,
+      slug,
+      createdBy: ctx.admin.id,
+      updatedBy: ctx.admin.id,
+    },
   });
 
-  return ok(toAdminCategory(doc.toJSON(), 0, 0));
+  return ok(toAdminCategory(doc, 0, 0));
 });

@@ -1,15 +1,13 @@
 import { z } from "zod";
-import { handler, adminHandler } from "@/server/lib/api-handler";
-import { connectDB } from "@/server/db/connect";
-import { fail, ok } from "@/server/lib/api-response";
-import { AppError } from "@/server/lib/errors";
-import { Note } from "@/server/db/models/note.model";
-import { Category } from "@/server/db/models/category.model";
-import { destroyAsset } from "@/server/lib/cloudinary";
-import { toPublicNote, toAdminNote } from "@/server/mappers/note.mapper";
+import { handler, adminHandler } from "@/helpers/api-handler";
+import { fail, ok } from "@/helpers/api-response";
+import { AppError } from "@/helpers/errors";
+import { prisma } from "@/helpers/db";
+import { destroyAsset } from "@/helpers/cloudinary";
+import { toPublicNote, toAdminNote } from "@/helpers/mappers/note.mapper";
 import { createNoteSchema, updateNoteSchema } from "@/lib/schemas/note.schema";
 import { rupeesToPaise } from "@/lib/format";
-import { uniqueSlug } from "@/server/lib/slug";
+import { uniqueSlug } from "@/helpers/slug";
 import { MIN_PAID_PRICE_PAISE } from "@/lib/constants";
 
 export const runtime = "nodejs";
@@ -20,8 +18,8 @@ export const GET = adminHandler(async (ctx) => {
   const skip = (page - 1) * limit;
 
   const [items, total] = await Promise.all([
-    Note.find({}).sort({ createdAt: -1 }).skip(skip).limit(limit).populate("category").populate("createdBy", "_id name").lean().exec(),
-    Note.countDocuments().exec(),
+    prisma.note.findMany({ include: { category: true }, orderBy: { createdAt: "desc" }, skip, take: limit }),
+    prisma.note.count(),
   ]);
 
   return ok({
@@ -49,43 +47,43 @@ export const POST = adminHandler(async (ctx) => {
   const compareAtPricePaise = input.compareAtPrice ? rupeesToPaise(input.compareAtPrice) : null;
 
   if (input.pricingType === "paid" && pricePaise < MIN_PAID_PRICE_PAISE) {
-    throw AppError.validation({ price: "Paid notes must cost at least ₹1" });
+    throw AppError.validation({ price: `Paid notes must cost at least ₹${(MIN_PAID_PRICE_PAISE / 100).toFixed(2)}` });
   }
 
-  const categoryDoc = await Category.findById(input.categoryId).lean().exec();
+  const categoryDoc = await prisma.category.findUnique({ where: { id: input.categoryId } });
   if (!categoryDoc) throw AppError.notFound("Category");
 
-  const baseSlug = uniqueSlug(Note, input.title);
-  const slug = await baseSlug;
+  const slug = await uniqueSlug("note", input.title);
 
-  const createdDoc = await Note.create({
-    title: input.title,
-    description: input.description,
-    category: input.categoryId,
-    level: input.level,
-    visibility: input.visibility,
-    pricingType: input.pricingType,
-    price: pricePaise,
-    compareAtPrice: compareAtPricePaise,
-    tags: input.tags,
-    isFeatured: input.isFeatured,
-    pageCount: input.pageCount,
-    fullFileUrl: input.fullFile.url,
-    fullFilePublicId: input.fullFile.source === "upload" ? input.fullFile.publicId : null,
-    fullFileBytes: input.fullFile.source === "upload" ? input.fullFile.bytes : 0,
-    pdfSource: input.fullFile.source,
-    drivePdfUrl: input.fullFile.source === "drive" ? input.fullFile.url : null,
-    previewFileUrl: input.previewFile?.url ?? null,
-    previewFilePublicId: input.previewFile && input.previewFile.source === "upload" ? input.previewFile.publicId : null,
-    previewFileBytes: input.previewFile && input.previewFile.source === "upload" ? input.previewFile.bytes : null,
-    coverImageUrl: input.coverImage?.url ?? null,
-    coverImagePublicId: input.coverImage?.publicId ?? null,
-    slug,
-    createdBy: admin.id,
-    updatedBy: admin.id,
+  const createdDoc = await prisma.note.create({
+    data: {
+      title: input.title,
+      description: input.description,
+      categoryId: input.categoryId,
+      level: input.level,
+      visibility: input.visibility,
+      pricingType: input.pricingType,
+      price: pricePaise,
+      compareAtPrice: compareAtPricePaise,
+      tags: input.tags,
+      isFeatured: input.isFeatured,
+      pageCount: input.pageCount,
+      fullFileUrl: input.fullFile.url,
+      fullFilePublicId: input.fullFile.source === "upload" ? input.fullFile.publicId : null,
+      fullFileBytes: input.fullFile.source === "upload" ? input.fullFile.bytes : 0,
+      pdfSource: input.fullFile.source,
+      drivePdfUrl: input.fullFile.source === "drive" ? input.fullFile.url : null,
+      previewFileUrl: input.previewFile?.url ?? null,
+      previewFilePublicId: input.previewFile && input.previewFile.source === "upload" ? input.previewFile.publicId : null,
+      previewFileBytes: input.previewFile && input.previewFile.source === "upload" ? input.previewFile.bytes : null,
+      coverImageUrl: input.coverImage?.url ?? null,
+      coverImagePublicId: input.coverImage?.publicId ?? null,
+      slug,
+      createdBy: admin.id,
+      updatedBy: admin.id,
+    },
+    include: { category: true },
   });
 
-  const doc = await Note.findById(createdDoc._id).populate("category").populate("createdBy", "_id name").lean().exec();
-
-  return ok(toAdminNote(doc ?? createdDoc.toJSON()));
+  return ok(toAdminNote(createdDoc));
 });

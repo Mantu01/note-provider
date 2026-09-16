@@ -5,7 +5,7 @@ import { rupeesToPaise } from "../format";
 export const objectIdSchema = z
   .string()
   .trim()
-  .regex(/^[a-f\d]{24}$/i, "Invalid identifier");
+  .regex(/^[a-f\d]{24}$|^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, "Invalid identifier");
 
 export const uploadedFileSchema = z.object({
   url: z.url("Invalid file URL"),

@@ -1,19 +1,17 @@
-import { handler } from "@/server/lib/api-handler";
-import { connectDB } from "@/server/db/connect";
-import { fail, ok } from "@/server/lib/api-response";
-import { AppError } from "@/server/lib/errors";
-import { Admin } from "@/server/db/models/admin.model";
-import { verifyPassword } from "@/server/lib/password";
-import { signAdminToken } from "@/server/lib/jwt";
-import { setAdminSessionCookie } from "@/server/lib/auth-guard";
+import { handler } from "@/helpers/api-handler";
+import { fail, ok } from "@/helpers/api-response";
+import { AppError } from "@/helpers/errors";
+import { prisma } from "@/helpers/db";
+import { verifyPassword } from "@/helpers/password";
+import { signAdminToken } from "@/helpers/jwt";
+import { setAdminSessionCookie } from "@/helpers/auth-guard";
 import { adminLoginSchema } from "@/lib/schemas/admin.schema";
-import { enforceRateLimit } from "@/server/lib/rate-limit";
-import { toAdminProfile } from "@/server/mappers/admin.mapper";
+import { enforceRateLimit } from "@/helpers/rate-limit";
+import { toAdminProfile } from "@/helpers/mappers/admin.mapper";
 
 export const runtime = "nodejs";
 
 export const POST = handler(async (ctx) => {
-  await connectDB();
   enforceRateLimit("adminLogin", ctx.ip, { limit: 5, windowMs: 600000 });
 
   const body = await ctx.req.json();
@@ -27,15 +25,15 @@ export const POST = handler(async (ctx) => {
     return fail(AppError.validation(fields, parsed.error.issues[0]?.message ?? "Invalid input"));
   }
 
-  const admin = await Admin.findOne({ email: parsed.data.email.toLowerCase() }).select("+passwordHash").lean().exec();
+  const admin = await prisma.admin.findUnique({ where: { email: parsed.data.email.toLowerCase() } });
   if (!admin) throw AppError.unauthorized("Invalid email or password");
 
   const valid = await verifyPassword(parsed.data.password, admin.passwordHash);
   if (!valid) throw AppError.unauthorized("Invalid email or password");
 
-  await Admin.findByIdAndUpdate(admin._id, { lastLoginAt: new Date() }).exec();
+  await prisma.admin.update({ where: { id: admin.id }, data: { lastLoginAt: new Date() } });
 
-  const token = await signAdminToken({ sub: admin._id.toString(), email: admin.email, name: admin.name, isHead: Boolean(admin.isHead) });
+  const token = await signAdminToken({ sub: admin.id, email: admin.email, name: admin.name, isHead: Boolean(admin.isHead) });
   await setAdminSessionCookie(token);
 
   const adminProfile = toAdminProfile({ ...admin, passwordHash: undefined });

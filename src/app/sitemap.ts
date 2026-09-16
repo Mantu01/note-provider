@@ -1,8 +1,6 @@
 import type { MetadataRoute } from "next";
 import { APP_URL } from "@/lib/constants";
-import { Note } from "@/server/db/models/note.model";
-import { Group } from "@/server/db/models/group.model";
-import { Category } from "@/server/db/models/category.model";
+import { prisma } from "@/helpers/db";
 
 const STATIC_PAGES = [
   { path: "", priority: 1.0, changeFrequency: "daily" as const },
@@ -37,34 +35,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   const [notes, groups, categories] = await Promise.all([
-    safeQuery(async () =>
-      Note.find({ visibility: "public" })
-        .select("slug updatedAt")
-        .sort({ updatedAt: -1 })
-        .lean()
-        .exec(),
-    ),
-    safeQuery(async () =>
-      Group.find({ visibility: "public" })
-        .select("slug updatedAt")
-        .sort({ updatedAt: -1 })
-        .lean()
-        .exec(),
-    ),
-    safeQuery(async () =>
-      Category.find({ isActive: true })
-        .select("slug updatedAt")
-        .sort({ order: 1 })
-        .lean()
-        .exec(),
-    ),
+    safeQuery(() => prisma.note.findMany({ where: { visibility: "public" }, select: { slug: true, updatedAt: true }, orderBy: { updatedAt: "desc" } })),
+    safeQuery(() => prisma.group.findMany({ where: { visibility: "public" }, select: { slug: true, updatedAt: true }, orderBy: { updatedAt: "desc" } })),
+    safeQuery(() => prisma.category.findMany({ where: { isActive: true }, select: { slug: true, updatedAt: true }, orderBy: { order: "asc" } })),
   ]);
 
   if (notes) {
     for (const note of notes) {
       entries.push({
         url: `${APP_URL}/notes/${note.slug}`,
-        lastModified: note.updatedAt ? new Date(note.updatedAt) : now,
+        lastModified: note.updatedAt,
         changeFrequency: "weekly",
         priority: 0.8,
       });
@@ -75,7 +55,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const group of groups) {
       entries.push({
         url: `${APP_URL}/groups/${group.slug}`,
-        lastModified: group.updatedAt ? new Date(group.updatedAt) : now,
+        lastModified: group.updatedAt,
         changeFrequency: "weekly",
         priority: 0.8,
       });
@@ -86,13 +66,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     for (const category of categories) {
       entries.push({
         url: `${APP_URL}/notes?category=${category.slug}`,
-        lastModified: category.updatedAt ? new Date(category.updatedAt) : now,
+        lastModified: category.updatedAt,
         changeFrequency: "weekly",
         priority: 0.6,
       });
       entries.push({
         url: `${APP_URL}/groups?category=${category.slug}`,
-        lastModified: category.updatedAt ? new Date(category.updatedAt) : now,
+        lastModified: category.updatedAt,
         changeFrequency: "weekly",
         priority: 0.6,
       });

@@ -1,8 +1,8 @@
-import { handler } from "@/server/lib/api-handler";
+import { handler } from "@/helpers/api-handler";
 import { NextResponse } from "next/server";
-import { AppError } from "@/server/lib/errors";
-import { Note } from "@/server/db/models/note.model";
-import { driveToDownloadUrl } from "@/server/lib/drive-utils";
+import { AppError } from "@/helpers/errors";
+import { prisma } from "@/helpers/db";
+import { driveToDownloadUrl } from "@/helpers/drive-utils";
 
 export const runtime = "nodejs";
 export const revalidate = 0;
@@ -12,7 +12,7 @@ export const GET = handler<{ slug: string }>(async (ctx): Promise<NextResponse> 
   const { slug } = ctx.params;
   const mode = ctx.searchParams.get("mode");
 
-  const note = await Note.findOne({ slug, visibility: "public" }).lean().exec();
+  const note = await prisma.note.findFirst({ where: { slug, visibility: "public" } });
   if (!note) throw AppError.notFound("Preview not found for this note");
 
   let pdfUrl: string | null = null;

@@ -1,18 +1,8 @@
-import { handler } from "@/server/lib/api-handler";
-import { ok } from "@/server/lib/api-response";
-import { Note } from "@/server/db/models/note.model";
-import { Category } from "@/server/db/models/category.model";
-import { toPublicNote } from "@/server/mappers/note.mapper";
-import {
-  parsePagination,
-  buildPagination,
-  buildNoteFilter,
-  buildNoteSort,
-  parseArrayParam,
-  parseBooleanParam,
-  parseNumberParam,
-  resolveCategoryIds,
-} from "@/server/lib/query";
+import { handler } from "@/helpers/api-handler";
+import { ok } from "@/helpers/api-response";
+import { prisma } from "@/helpers/db";
+import { toPublicNote } from "@/helpers/mappers/note.mapper";
+import { parsePagination, buildPagination, buildNoteFilter, buildNoteSort, parseArrayParam, parseBooleanParam, parseNumberParam } from "@/helpers/query";
 import type { NoteSort } from "@/lib/types";
 
 export const revalidate = 300;
@@ -35,22 +25,15 @@ export const GET = handler(async (ctx) => {
     featured: parseBooleanParam(ctx.searchParams, "featured"),
   };
 
-  const categoryIds = query.category.length > 0
-    ? await resolveCategoryIds(Category as unknown as import("mongoose").Model<Record<string, unknown>>, query.category)
-    : undefined;
-
-  const filter = buildNoteFilter(query, { publicOnly: true, categoryIds });
+  const filter = buildNoteFilter(query, { publicOnly: true });
   const sortSpec = buildNoteSort(sort);
 
   const [items, total] = await Promise.all([
-    Note.find(filter).populate("category").sort(sortSpec).skip(skip).limit(limit).lean().exec(),
-    Note.countDocuments(filter).exec(),
+    prisma.note.findMany({ where: filter.where as any, include: { category: true }, orderBy: sortSpec as any, skip, take: limit }),
+    prisma.note.count({ where: filter.where as any }),
   ]);
 
-  const res = ok({
-    items: items.map(toPublicNote),
-    pagination: buildPagination(total, page, limit),
-  });
+  const res = ok({ items: items.map(toPublicNote), pagination: buildPagination(total, page, limit) });
   res.headers.set("Cache-Control", "public, max-age=300, s-maxage=300");
   return res;
 });

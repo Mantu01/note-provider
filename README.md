@@ -149,7 +149,7 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 Copy `.env.example` to `.env` and fill in these required values:
 
 - `NEXT_PUBLIC_APP_URL` — Your website URL (e.g., `https://notesprovider.com`)
-- `MONGODB_URI` — MongoDB connection string
+- `DATABASE_URL` — PostgreSQL connection string
 - `JWT_SECRET` — Secret key for signing admin session tokens
 - `RAZORPAY_KEY_ID` / `RAZORPAY_KEY_SECRET` — Razorpay payment keys
 - `CLOUDINARY_CLOUD_NAME` / `CLOUDINARY_API_KEY` / `CLOUDINARY_API_SECRET` — Cloudinary storage credentials

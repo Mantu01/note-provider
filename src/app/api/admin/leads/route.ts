@@ -1,8 +1,8 @@
-import { adminHandler } from "@/server/lib/api-handler";
-import { ok } from "@/server/lib/api-response";
-import { Order } from "@/server/db/models/order.model";
-import { toAdminLead } from "@/server/mappers/order.mapper";
-import { parsePagination, buildPagination, buildOrderFilter, buildOrderSort } from "@/server/lib/query";
+import { adminHandler } from "@/helpers/api-handler";
+import { ok } from "@/helpers/api-response";
+import { prisma } from "@/helpers/db";
+import { toAdminLead } from "@/helpers/mappers/order.mapper";
+import { parsePagination, buildPagination, buildOrderFilter, buildOrderSort } from "@/helpers/query";
 
 export const runtime = "nodejs";
 
@@ -22,14 +22,11 @@ export const GET = adminHandler(async (ctx) => {
   const sort = buildOrderSort(query.sort);
 
   const [items, total] = await Promise.all([
-    Order.find(filter).sort(sort).skip(skip).limit(limit).lean().exec(),
-    Order.countDocuments(filter).exec(),
+    prisma.order.findMany({ where: filter.where as any, orderBy: sort as any, skip, take: limit }),
+    prisma.order.count({ where: filter.where as any }),
   ]);
 
-  const res = ok({
-    items: items.map(toAdminLead),
-    pagination: buildPagination(total, page, limit),
-  });
+  const res = ok({ items: items.map(toAdminLead), pagination: buildPagination(total, page, limit) });
   res.headers.set("Cache-Control", "public, max-age=30, s-maxage=30");
   return res;
 });

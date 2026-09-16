@@ -1,7 +1,8 @@
-import { adminHandler } from "@/server/lib/api-handler";
-import { Order } from "@/server/db/models/order.model";
-import { toCsv } from "@/server/lib/csv";
-import { buildOrderFilter, buildOrderSort } from "@/server/lib/query";
+import { NextResponse } from "next/server";
+import { adminHandler } from "@/helpers/api-handler";
+import { prisma } from "@/helpers/db";
+import { buildOrderFilter, buildOrderSort } from "@/helpers/query";
+import { toCsv } from "@/helpers/csv";
 
 export const runtime = "nodejs";
 
@@ -19,27 +20,27 @@ export const GET = adminHandler(async (ctx) => {
   const filter = buildOrderFilter(query);
   const sort = buildOrderSort(query.sort);
 
-  const items = await Order.find(filter).sort(sort).limit(10000).lean().exec();
+  const items = await prisma.order.findMany({ where: filter.where as any, orderBy: sort as any, take: 10000 });
 
   const rows = items.map((o) => ({
     "Order Number": o.orderNumber,
     Date: new Date(o.createdAt).toISOString(),
-    "Full Name": o.buyer.fullName,
+    "Full Name": (o.buyer as any)?.fullName,
     "Item Type": o.itemType,
-    "Item Title": o.itemSnapshot.title,
+    "Item Title": (o.itemSnapshot as any)?.title,
     "Amount (INR)": (o.amount / 100).toFixed(2),
     "Payment Status": o.paymentStatus,
     "Fulfillment Status": o.fulfillmentStatus,
   }));
 
-  const csv = toCsv(rows.map((r) => r as Record<string, unknown>));
+  const csv = toCsv(rows as unknown as Array<Record<string, unknown>>);
   const date = new Date().toISOString().split("T")[0];
 
-  return new Response(csv, {
+  return new NextResponse(csv, {
     headers: {
       "Content-Type": "text/csv; charset=utf-8",
       "Content-Disposition": `attachment; filename="notes-provider-leads-${date}.csv"`,
       "Cache-Control": "no-store, max-age=0",
     },
-  }) as unknown as ReturnType<typeof import("@/server/lib/api-response").ok>;
+  });
 });

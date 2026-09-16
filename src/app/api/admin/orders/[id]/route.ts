@@ -1,35 +1,31 @@
-import { Order } from "@/server/db/models/order.model";
-import { adminHandler, type AdminRouteContext } from "@/server/lib/api-handler";
-import { fail, ok } from "@/server/lib/api-response";
-import { AppError } from "@/server/lib/errors";
-import { toAdminOrder } from "@/server/mappers/order.mapper";
-import { fulfillOrder, deleteOrder } from "@/server/services/order.service";
+import { adminHandler } from "@/helpers/api-handler";
+import { fail, ok } from "@/helpers/api-response";
+import { AppError } from "@/helpers/errors";
+import { prisma } from "@/helpers/db";
+import { toAdminOrder } from "@/helpers/mappers/order.mapper";
+import { fulfillOrder, deleteOrder } from "@/helpers/services/order.service";
 import { updateOrderSchema } from "@/lib/schemas/admin.schema";
-import { Types } from "mongoose";
 
 export const runtime = "nodejs";
 
-function toServiceContext(ctx: AdminRouteContext): Parameters<typeof fulfillOrder>[2] {
+export function toServiceContext(ctx: any) {
   return {
     ip: ctx.ip,
     userAgent: ctx.userAgent,
-    admin: { _id: ctx.admin.id, name: ctx.admin.name, email: ctx.admin.email, isHead: ctx.admin.isHead } as unknown as Parameters<typeof fulfillOrder>[2]["admin"],
-  } as Parameters<typeof fulfillOrder>[2];
+    admin: { id: ctx.admin.id, name: ctx.admin.name, email: ctx.admin.email, isHead: ctx.admin.isHead },
+  };
 }
 
 export const GET = adminHandler(async (ctx) => {
   const { id } = await ctx.params;
-  const order = await Order.findById(id).lean().exec();
-  if (!order) {
-    throw AppError.notFound("Order not found");
-  }
+  const order = await prisma.order.findUnique({ where: { id } });
+  if (!order) throw AppError.notFound("Order not found");
   return ok(toAdminOrder(order));
 });
 
 export const PATCH = adminHandler(async (ctx) => {
-  const { id } = await ctx.params;
-  const [bodyPromise, orderPromise] = [ctx.req.json(), Order.findById(id).lean().exec()];
-  const [body, order] = await Promise.all([bodyPromise, orderPromise]);
+  const [{ id }, body] = await Promise.all([ctx.params, ctx.req.json()]);
+  const order = await prisma.order.findUnique({ where: { id } });
   if (!order) throw AppError.notFound("Order not found");
   const parsed = updateOrderSchema.safeParse(body);
   if (!parsed.success) {
@@ -41,16 +37,13 @@ export const PATCH = adminHandler(async (ctx) => {
     return fail(AppError.validation(fields, parsed.error.issues[0]?.message ?? "Invalid input"));
   }
 
-  const updated = await fulfillOrder(id, parsed.data, toServiceContext(ctx));
+  const updated = await fulfillOrder(id, parsed.data, toServiceContext(ctx as any));
   return ok(toAdminOrder(updated));
 });
 
 export const DELETE = adminHandler(async (ctx) => {
-  if (!ctx.admin.isHead) {
-    throw AppError.forbidden("Only head admin can perform delete operations");
-  }
-
+  if (!ctx.admin.isHead) throw AppError.forbidden("Only head admin can perform delete operations");
   const { id } = await ctx.params;
-  await deleteOrder(id, toServiceContext(ctx));
+  await deleteOrder(id, toServiceContext(ctx as any));
   return ok({ deleted: true });
 });

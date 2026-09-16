@@ -1,11 +1,9 @@
-import { adminHandler } from "@/server/lib/api-handler";
-import { fail, ok } from "@/server/lib/api-response";
-import { AppError } from "@/server/lib/errors";
-import { Note } from "@/server/db/models/note.model";
-import { Group } from "@/server/db/models/group.model";
-import { Category } from "@/server/db/models/category.model";
-import { destroyAsset } from "@/server/lib/cloudinary";
-import { toAdminNote } from "@/server/mappers/note.mapper";
+import { adminHandler } from "@/helpers/api-handler";
+import { fail, ok } from "@/helpers/api-response";
+import { AppError } from "@/helpers/errors";
+import { prisma } from "@/helpers/db";
+import { destroyAsset } from "@/helpers/cloudinary";
+import { toAdminNote } from "@/helpers/mappers/note.mapper";
 import { updateNoteSchema } from "@/lib/schemas/note.schema";
 import { rupeesToPaise } from "@/lib/format";
 
@@ -13,7 +11,7 @@ export const runtime = "nodejs";
 
 export const GET = adminHandler(async (ctx) => {
   const { id } = await ctx.params;
-  const note = await Note.findById(id).populate("category").populate("createdBy", "_id name").lean().exec();
+  const note = await prisma.note.findUnique({ where: { id }, include: { category: true } });
   if (!note) throw AppError.notFound("Note");
   return ok(toAdminNote(note));
 });
@@ -29,7 +27,7 @@ export const PATCH = adminHandler(async (ctx) => {
     }
     return fail(AppError.validation(fields, parsed.error.issues[0]?.message ?? "Invalid input"));
   }
-  const existing = await Note.findById(id).lean().exec();
+  const existing = await prisma.note.findUnique({ where: { id } });
   if (!existing) throw AppError.notFound("Note");
 
   const input = parsed.data;
@@ -40,10 +38,9 @@ export const PATCH = adminHandler(async (ctx) => {
   if (input.description !== undefined) updates.description = input.description;
 
   if (input.categoryId !== undefined) {
-    const targetCategory = input.categoryId;
-    const categoryDoc = await Category.findById(targetCategory).lean().exec();
+    const categoryDoc = await prisma.category.findUnique({ where: { id: input.categoryId } });
     if (!categoryDoc) throw AppError.notFound("Category");
-    updates.category = targetCategory;
+    updates.categoryId = input.categoryId;
   }
   if (input.level !== undefined) updates.level = input.level;
   if (input.visibility !== undefined) updates.visibility = input.visibility;
@@ -102,9 +99,7 @@ export const PATCH = adminHandler(async (ctx) => {
     }
   }
 
-  await Note.findByIdAndUpdate(id, updates, { new: true }).exec();
-  const updated = await Note.findById(id).populate("category").populate("createdBy", "_id name").lean().exec();
-  if (!updated) throw AppError.internal("Failed to update note");
+  const updated = await prisma.note.update({ where: { id }, data: updates as any, include: { category: true } });
 
   if (input.fullFile?.source === "upload" && input.fullFile.publicId && input.fullFile.publicId !== existing.fullFilePublicId) {
     if (existing.fullFilePublicId) await destroyAsset(existing.fullFilePublicId, "raw", "authenticated");
@@ -116,50 +111,41 @@ export const PATCH = adminHandler(async (ctx) => {
     await destroyAsset(String(existing.coverImagePublicId), "image", "upload");
   }
 
-  const changedFields = Object.keys(input).filter((key) => {
-    const oldVal = (existing as Record<string, unknown>)[key];
-    const newVal = (input as Record<string, unknown>)[key];
-    return JSON.stringify(oldVal) !== JSON.stringify(newVal);
-  });
-
   return ok(toAdminNote(updated));
 });
 
 export const DELETE = adminHandler(async (ctx) => {
   const { admin } = ctx;
   const { id } = await ctx.params;
-  const note = await Note.findById(id).lean().exec();
+  const note = await prisma.note.findUnique({ where: { id } });
   if (!note) throw AppError.notFound("Note");
 
-  const creatorId = note.createdBy ? note.createdBy.toString() : null;
+  const creatorId = note.createdBy;
   const isCreator = Boolean(creatorId && creatorId === admin.id);
   const canDelete = admin.isHead || isCreator;
 
-  if (!canDelete) {
-    throw AppError.forbidden("Only the Head Admin or the creator of this note can delete it.");
-  }
+  if (!canDelete) throw AppError.forbidden("Only the Head Admin or the creator of this note can delete it.");
 
-  const groupIds = await Group.distinct("_id", { notes: id });
+  const groupsWithNote = await prisma.group.findMany({ where: { noteGroups: { some: { noteId: id } } } });
+
   const affectedGroups: Array<{ id: string; name: string; slug: string; hiddenBecauseEmpty: boolean }> = [];
 
-  for (const groupId of groupIds) {
-    const group = await Group.findById(groupId).lean().exec();
-    if (!group) continue;
-
-    const updatedNotes = (group.notes as unknown[]).flatMap((n) => n === id ? [] : [String(n)]);
-    if (updatedNotes.length === 0) {
-      await Group.findByIdAndUpdate(groupId, { visibility: "private" }).exec();
-      affectedGroups.push({ id: group._id.toString(), name: group.name, slug: group.slug, hiddenBecauseEmpty: true });
+  await Promise.all(groupsWithNote.map(async (group) => {
+    const remainingNotes = await prisma.note.findMany({ where: { noteGroups: { some: { groupId: group.id } }, NOT: { id } } });
+    if (remainingNotes.length === 0) {
+      await prisma.group.update({ where: { id: group.id }, data: { visibility: "private" } });
+      affectedGroups.push({ id: group.id, name: group.name, slug: group.slug, hiddenBecauseEmpty: true });
     } else {
-      await Group.findByIdAndUpdate(groupId, { notes: updatedNotes }).exec();
+      await prisma.noteGroup.deleteMany({ where: { groupId: group.id } });
+      await prisma.noteGroup.createMany({ data: remainingNotes.map((n) => ({ groupId: group.id, noteId: n.id })) });
     }
-  }
+  }));
 
   if (note.fullFilePublicId) await destroyAsset(note.fullFilePublicId, "raw", "authenticated");
   if (note.previewFilePublicId) await destroyAsset(note.previewFilePublicId, "raw", "upload");
   if (note.coverImagePublicId) await destroyAsset(note.coverImagePublicId, "image", "upload");
 
-  await Note.findByIdAndDelete(id).exec();
+  await prisma.note.delete({ where: { id } });
 
   return ok({ deleted: true, affectedGroups });
 });

@@ -1,25 +1,10 @@
-import { handler } from "@/server/lib/api-handler";
-import { ok } from "@/server/lib/api-response";
-import { Category } from "@/server/db/models/category.model";
-import { Note } from "@/server/db/models/note.model";
-import { toPublicCategory } from "@/server/mappers/category.mapper";
+import { handler } from "@/helpers/api-handler";
+import { ok } from "@/helpers/api-response";
+import { prisma } from "@/helpers/db";
 
-export const revalidate = 60;
-export const dynamic = "force-dynamic";
+export const runtime = "nodejs";
 
 export const GET = handler(async () => {
-  const categories = await Category.find({ isActive: true }).sort({ order: 1, name: 1 }).lean().exec();
-
-  const counts = await Note.aggregate([
-    { $match: { visibility: "public" } },
-    { $group: { _id: "$category", count: { $sum: 1 } } },
-  ]);
-
-  const countMap = new Map(counts.map((c) => [c._id.toString(), c.count]));
-
-  const res = ok(
-    categories.map((cat) => toPublicCategory({ ...cat, noteCount: countMap.get(cat._id.toString()) ?? 0 }, countMap.get(cat._id.toString()) ?? 0)),
-  );
-  res.headers.set("Cache-Control", "public, max-age=60, s-maxage=60");
-  return res;
+  const categories = await prisma.category.findMany({ where: { isActive: true }, orderBy: { order: "asc", name: "asc" } });
+  return ok(categories);
 });
