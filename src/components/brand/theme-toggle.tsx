@@ -9,7 +9,6 @@ export function ThemeToggle() {
   const { resolvedTheme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps, react-hooks/set-state-in-effect
   useEffect(() => setMounted(true), []);
 
   if (!mounted) {
@@ -34,10 +33,10 @@ export function ThemeToggle() {
       size="icon"
       aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="border border-border/80 bg-card/80"
+      className="border border-border/80 bg-card/80 size-9 rounded-xl"
     >
-      <Sun aria-hidden="true" className={isDark ? "block size-4" : "hidden size-4"} />
-      <Moon aria-hidden="true" className={isDark ? "hidden size-4" : "block size-4"} />
+      <Sun aria-hidden="true" className={isDark ? "block size-4.5" : "hidden size-4.5"} />
+      <Moon aria-hidden="true" className={isDark ? "hidden size-4.5" : "block size-4.5"} />
     </Button>
   );
 }
