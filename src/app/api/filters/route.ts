@@ -2,8 +2,6 @@ import { handler } from "@/helpers/api-handler";
 import { ok } from "@/helpers/api-response";
 import { prisma } from "@/helpers/db";
 
-export const revalidate = 300;
-export const dynamic = "force-dynamic";
 
 export const GET = handler(async () => {
   const [categories, notes] = await Promise.all([

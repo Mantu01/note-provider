@@ -1,9 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BookOpen, Download, ShieldCheck, Sparkles } from "lucide-react";
+import { ArrowRight, BookOpen, Download, ShieldCheck, Sparkles, Code2, Layers3, FileText, TrendingUp, Eye, ShoppingBag } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
 import { CategoryCard } from "@/components/shared/category-card";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
@@ -241,8 +243,8 @@ function NoteGrid({
       {isLoading
         ? Array.from({ length: 4 }, (_, i) => <ShimmerNoteCard key={i} />)
         : items.length
-          ? items.slice(0, 4).map((n) => <NoteCard key={n.id} note={n} variant="featured" />)
-          : (
+        ? items.slice(0, 4).map((n) => <NoteCard key={n.id} note={n} variant="featured" />)
+        : (
             <div className="col-span-full">
               <EmptyState icon={BookOpen} title={emptyTitle} description={emptyDesc} />
             </div>
@@ -263,10 +265,10 @@ function GroupGrid({
       {isLoading
         ? Array.from({ length: 3 }, (_, i) => <ShimmerGroupCard key={i} />)
         : groups.length
-          ? groups.slice(0, 3).map((g) => <GroupCard key={g.id} group={g} variant="featured" />)
-          : (
+        ? groups.slice(0, 3).map((g) => <GroupCard key={g.id} group={g} variant="featured" />)
+        : (
             <div className="col-span-full">
-              <EmptyState icon={BookOpen} title="Bundles coming soon" description="Value-packed collections are being assembled." />
+              <EmptyState icon={Layers3} title="Bundles coming soon" description="Value-packed collections are being assembled." />
             </div>
           )}
     </div>

@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Inter, Outfit, Caveat, Instrument_Sans } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import { APP_URL, BRAND, SEO } from "@/lib/constants";
 import { AppProviders } from "@/providers/app-providers";
@@ -9,6 +10,7 @@ import JsonLd, {
   websiteJsonLd,
 } from "@/components/seo/json-ld";
 import { GoogleAnalytics } from '@next/third-parties/google';
+import { ShimmerLoader } from "@/components/shared/shimmer-loader";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -151,7 +153,11 @@ export default function RootLayout({
       </head>
       <body suppressHydrationWarning className="font-sans antialiased">
         {measurementId && <GoogleAnalytics gaId={measurementId} />}
-        <AppProviders>{children}</AppProviders>
+        <AppProviders>
+          <Suspense fallback={<ShimmerLoader className="h-14 w-full" />}>
+            {children}
+          </Suspense>
+        </AppProviders>
       </body>
     </html>
   );

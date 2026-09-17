@@ -10,7 +10,6 @@ import { rupeesToPaise } from "@/lib/format";
 import { uniqueSlug } from "@/helpers/slug";
 import { MIN_PAID_PRICE_PAISE } from "@/lib/constants";
 
-export const runtime = "nodejs";
 
 export const GET = adminHandler(async (ctx) => {
   const page = Number(ctx.searchParams.get("page")) || 1;

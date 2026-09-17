@@ -4,7 +4,6 @@ import { AppError } from "@/helpers/errors";
 import { prisma } from "@/helpers/db";
 import { toPublicOrder } from "@/helpers/mappers/order.mapper";
 
-export const runtime = "nodejs";
 
 export const GET = handler(async (ctx) => {
   const { orderId } = await ctx.params;

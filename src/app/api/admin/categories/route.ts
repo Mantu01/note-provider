@@ -6,7 +6,6 @@ import { toAdminCategory } from "@/helpers/mappers/category.mapper";
 import { createCategorySchema } from "@/schemas/category.schema";
 import { uniqueSlug } from "@/helpers/slug";
 
-export const runtime = "nodejs";
 
 export const GET = adminHandler(async () => {
   const items = await prisma.category.findMany({ orderBy: { order: "asc", name: "asc" } });

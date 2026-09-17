@@ -7,7 +7,6 @@ import { checkoutSchema } from "@/schemas/checkout.schema";
 import { enforceRateLimit } from "@/helpers/rate-limit";
 import { getRazorpayKeyId } from "@/helpers/razorpay";
 
-export const runtime = "nodejs";
 
 export const POST = handler(async (ctx) => {
   const body = await ctx.req.json();

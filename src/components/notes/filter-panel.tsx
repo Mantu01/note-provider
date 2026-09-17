@@ -1,4 +1,6 @@
-import { Grid2X2, List, Search, X } from "lucide-react";
+"use client";
+
+import { Search, X, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -14,11 +16,7 @@ import { useFilters } from "@/hooks/useNotes";
 import { useNotesQueryState } from "@/hooks/use-notes-query-state";
 import { cn } from "@/lib/utils";
 
-interface FilterPanelProps {
-  className?: string;
-}
-
-export function FilterPanel({ className }: FilterPanelProps) {
+export function FilterPanel({ className }: { className?: string } = {}) {
   const filters = useFilters();
   const { state, setFilter, clearFilters, activeFilterCount } =
     useNotesQueryState();
@@ -97,7 +95,12 @@ export function FilterPanel({ className }: FilterPanelProps) {
               aria-label="Grid view"
               onClick={() => setFilter({ view: "grid" })}
             >
-              <Grid2X2 aria-hidden="true" className="size-3" />
+              <svg aria-hidden="true" className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+              </svg>
             </Button>
             <Button
               type="button"
@@ -106,7 +109,11 @@ export function FilterPanel({ className }: FilterPanelProps) {
               aria-label="List view"
               onClick={() => setFilter({ view: "list" })}
             >
-              <List aria-hidden="true" className="size-3" />
+              <svg aria-hidden="true" className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="3" y1="6" x2="21" y2="6" />
+                <line x1="3" y1="12" x2="21" y2="12" />
+                <line x1="3" y1="18" x2="21" y2="18" />
+              </svg>
             </Button>
           </div>
         </div>

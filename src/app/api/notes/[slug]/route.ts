@@ -5,8 +5,6 @@ import { prisma } from "@/helpers/db";
 import { toPublicNote } from "@/helpers/mappers/note.mapper";
 import { toPublicGroup } from "@/helpers/mappers/group.mapper";
 
-export const runtime = "nodejs";
-export const revalidate = 600;
 
 export const GET = handler(async (ctx) => {
   const { slug } = await ctx.params;

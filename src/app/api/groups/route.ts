@@ -4,8 +4,6 @@ import { prisma } from "@/helpers/db";
 import { toPublicGroup } from "@/helpers/mappers/group.mapper";
 import { parsePagination, buildPagination } from "@/helpers/query";
 
-export const revalidate = 300;
-export const dynamic = "force-dynamic";
 
 export const GET = handler(async (ctx) => {
   const { page, limit, skip } = parsePagination(ctx.searchParams);

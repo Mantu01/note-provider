@@ -8,7 +8,6 @@ import { driveToDownloadUrl } from "@/helpers/drive-utils";
 import fs from "fs";
 import path from "path";
 
-export const runtime = "nodejs";
 
 export const GET = handler<{ slug: string }>(async (ctx): Promise<NextResponse<unknown>> => {
   const { slug } = ctx.params;

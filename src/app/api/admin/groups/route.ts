@@ -3,7 +3,6 @@ import { ok } from "@/helpers/api-response";
 import { prisma } from "@/helpers/db";
 import { toAdminGroup } from "@/helpers/mappers/group.mapper";
 
-export const runtime = "nodejs";
 
 export const GET = adminHandler(async (ctx) => {
   const page = Number(ctx.searchParams.get("page")) || 1;

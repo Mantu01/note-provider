@@ -13,7 +13,6 @@ const createOrderSchema = z.object({
   groupSlug: z.string().optional(),
 });
 
-export const runtime = "nodejs";
 
 export const POST = adminHandler(async (ctx) => {
   const body = await ctx.req.json();

@@ -4,9 +4,6 @@ import { AppError } from "@/helpers/errors";
 import { prisma } from "@/helpers/db";
 import { driveToDownloadUrl } from "@/helpers/drive-utils";
 
-export const runtime = "nodejs";
-export const revalidate = 0;
-export const dynamic = "force-dynamic";
 
 export const GET = handler<{ slug: string }>(async (ctx): Promise<NextResponse> => {
   const { slug } = ctx.params;

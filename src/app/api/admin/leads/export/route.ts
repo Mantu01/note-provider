@@ -4,7 +4,6 @@ import { prisma } from "@/helpers/db";
 import { buildOrderFilter, buildOrderSort } from "@/helpers/query";
 import { toCsv } from "@/helpers/csv";
 
-export const runtime = "nodejs";
 
 export const GET = adminHandler(async (ctx) => {
   const query = {

@@ -9,7 +9,6 @@ import { adminLoginSchema } from "@/schemas/admin.schema";
 import { enforceRateLimit } from "@/helpers/rate-limit";
 import { toAdminProfile } from "@/helpers/mappers/admin.mapper";
 
-export const runtime = "nodejs";
 
 export const POST = handler(async (ctx) => {
   enforceRateLimit("adminLogin", ctx.ip, { limit: 5, windowMs: 600000 });

@@ -6,7 +6,6 @@ import { toAdminCategory } from "@/helpers/mappers/category.mapper";
 import { updateCategorySchema } from "@/schemas/category.schema";
 import { slugify } from "@/helpers/slug";
 
-export const runtime = "nodejs";
 
 export const PATCH = adminHandler(async (ctx) => {
   const [{ id }, body] = await Promise.all([ctx.params, ctx.req.json()]);

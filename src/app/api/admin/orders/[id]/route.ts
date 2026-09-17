@@ -6,7 +6,6 @@ import { toAdminOrder } from "@/helpers/mappers/order.mapper";
 import { fulfillOrder, deleteOrder } from "@/helpers/services/order.service";
 import { updateOrderSchema } from "@/schemas/admin.schema";
 
-export const runtime = "nodejs";
 
 export function toServiceContext(ctx: any) {
   return {

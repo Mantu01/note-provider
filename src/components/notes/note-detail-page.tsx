@@ -50,7 +50,7 @@ export function NoteDetailPage({ slug }: { slug: string }) {
   const { note, groups, relatedNotes } = query.data;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 paper-bg">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 paper-bg" data-testid="note-content">
       <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-1.5 text-xs text-muted-foreground">
         <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
         <span aria-hidden="true" className="text-muted-foreground/40">/</span>

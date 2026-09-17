@@ -5,8 +5,6 @@ import { toPublicNote } from "@/helpers/mappers/note.mapper";
 import { parsePagination, buildPagination, buildNoteFilter, buildNoteSort, parseArrayParam, parseBooleanParam, parseNumberParam } from "@/helpers/query";
 import type { NoteSort } from "@/lib/types";
 
-export const revalidate = 300;
-export const dynamic = "force-dynamic";
 
 export const GET = handler(async (ctx) => {
   const { page, limit, skip } = parsePagination(ctx.searchParams);

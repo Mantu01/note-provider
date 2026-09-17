@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import JsonLd, {
   productJsonLd,
   breadcrumbJsonLd,
@@ -27,59 +28,28 @@ type GroupWithRelations = {
   updatedAt: Date;
 };
 
-export async function generateMetadata({ params }: GroupRouteProps): Promise<Metadata> {
-  const { slug } = await params;
-
-  const groupDoc = await prisma.group.findFirst({
-    where: { slug, visibility: "public" },
-    include: { category: true, noteGroups: true },
-  }) as GroupWithRelations | null;
-
-  if (!groupDoc) {
-    return {
-      title: "Bundle Not Found — Notes Provider",
-      description: "This study note bundle could not be found or may have been removed.",
-      openGraph: { url: `${APP_URL}/groups/${slug}`, type: "website" },
-    };
-  }
-
-  const title = `${groupDoc.name} — Complete ${groupDoc.category?.name || "Developer"} Bundle | Notes Provider`;
-  const noteCount = groupDoc.noteGroups?.length || 0;
-  const desc = groupDoc.description?.slice(0, 160) || `Get the complete ${groupDoc.name} bundle with ${noteCount} coding notes for ${groupDoc.category?.name || "developer topics"}.`;
-  const imageUrl = groupDoc.coverImageUrl ?? `${APP_URL}/og/group/${slug}`;
-  const pageUrl = `${APP_URL}/groups/${slug}`;
-
-  return {
-    title,
-    description: desc,
-    alternates: { canonical: pageUrl },
-    openGraph: {
-      title,
-      description: desc,
-      url: pageUrl,
-      siteName: "Notes Provider",
-      images: [{ url: imageUrl, width: 1200, height: 630, alt: groupDoc.name, type: "image/png" }],
-      type: "article",
-      publishedTime: groupDoc.createdAt.toISOString(),
-      modifiedTime: groupDoc.updatedAt.toISOString(),
-      authors: ["Notes Provider"],
-      section: groupDoc.category?.name || "Study Bundles",
-    },
-    twitter: {
-      card: "summary_large_image",
-      title,
-      description: desc,
-      images: [imageUrl],
-    },
-    other: {
-      "article:published_time": groupDoc.createdAt.toISOString(),
-      "article:modified_time": groupDoc.updatedAt.toISOString(),
-      "article:section": groupDoc.category?.name || "Study Bundles",
-    },
-  };
+export default function GroupRoute({ params }: GroupRouteProps) {
+  return (
+    <>
+      <nav
+        aria-label="Breadcrumb"
+        className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8 mb-5 flex items-center gap-1.5 text-xs text-muted-foreground"
+        data-testid="group-detail-shell"
+      >
+        <a href="/">Home</a>
+        <span aria-hidden="true" className="text-muted-foreground/40">/</span>
+        <a href="/groups" className="hover:text-foreground">Bundles</a>
+        <span aria-hidden="true" className="text-muted-foreground/40">/</span>
+        <span className="font-medium text-foreground truncate">Loading…</span>
+      </nav>
+      <Suspense fallback={null}>
+        <GroupDetail params={params} />
+      </Suspense>
+    </>
+  );
 }
 
-export default async function GroupRoute({ params }: GroupRouteProps) {
+async function GroupDetail({ params }: GroupRouteProps) {
   const { slug } = await params;
 
   const groupDoc = await prisma.group.findFirst({

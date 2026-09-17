@@ -2,8 +2,6 @@ import { NextResponse } from "next/server";
 import { verifyWebhookSignature } from "@/helpers/razorpay";
 import { prisma } from "@/helpers/db";
 
-export const runtime = "nodejs";
-export const dynamic = "force-dynamic";
 
 export async function POST(req: Request) {
   const rawBody = await req.text();

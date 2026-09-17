@@ -61,5 +61,4 @@ export function GET(_request: NextRequest) {
   );
 }
 
-export const runtime = "edge";
 export const contentType = "image/png";

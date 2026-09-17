@@ -5,8 +5,6 @@ import { toPublicNote } from "@/helpers/mappers/note.mapper";
 import { toPublicGroup } from "@/helpers/mappers/group.mapper";
 import { toPublicCategory } from "@/helpers/mappers/category.mapper";
 
-export const revalidate = 60;
-export const dynamic = "force-dynamic";
 
 const EMPTY_HOME = {
   featuredNotes: [],

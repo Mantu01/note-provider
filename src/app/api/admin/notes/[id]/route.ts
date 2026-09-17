@@ -7,7 +7,6 @@ import { toAdminNote } from "@/helpers/mappers/note.mapper";
 import { updateNoteSchema } from "@/schemas/note.schema";
 import { rupeesToPaise } from "@/lib/format";
 
-export const runtime = "nodejs";
 
 export const GET = adminHandler(async (ctx) => {
   const { id } = await ctx.params;

@@ -4,7 +4,6 @@ import { prisma } from "@/helpers/db";
 import { toAdminLead } from "@/helpers/mappers/order.mapper";
 import { parsePagination, buildPagination, buildOrderFilter, buildOrderSort } from "@/helpers/query";
 
-export const runtime = "nodejs";
 
 export const GET = adminHandler(async (ctx) => {
   const { page, limit, skip } = parsePagination(ctx.searchParams, 20);

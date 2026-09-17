@@ -6,7 +6,6 @@ import { UPLOAD_LIMITS } from "@/lib/constants";
 import type { UploadKind } from "@/lib/types";
 import { AppError } from "@/helpers/errors";
 
-export const runtime = "nodejs";
 
 export const POST = adminHandler(async (ctx) => {
   const formData = await ctx.req.formData();

@@ -4,7 +4,6 @@ import { AppError } from "@/helpers/errors";
 import { getOrderByNumber } from "@/helpers/services/order.service";
 import { enforceRateLimit } from "@/helpers/rate-limit";
 
-export const runtime = "nodejs";
 
 export const GET = handler(async (ctx) => {
   enforceRateLimit("orderLookup", ctx.ip, { limit: 20, windowMs: 60000 });

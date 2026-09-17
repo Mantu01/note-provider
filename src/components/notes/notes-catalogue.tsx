@@ -1,7 +1,8 @@
 "use client";
 
-import { Search, SlidersHorizontal, LayoutGrid, List } from "lucide-react";
+import { Search, SlidersHorizontal, LayoutGrid, List, Filter, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Sheet,
   SheetContent,
@@ -9,6 +10,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { NoteCard } from "@/components/shared/note-card";
@@ -55,30 +58,30 @@ export function NotesCatalogue() {
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="hidden sm:inline-flex items-center rounded-full border border-border bg-card p-0.5 shadow-sm paper-card">
+          <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-border bg-card p-0.5 shadow-sm paper-card">
             <Button
               variant={state.view === "grid" ? "default" : "ghost"}
               size="icon"
               className={cn(
-                "size-7 rounded-full transition-all",
+                "size-8 rounded-full transition-all",
                 state.view === "grid" && "bg-primary text-primary-foreground shadow-none"
               )}
               onClick={() => setFilter({ view: "grid" })}
               aria-label="Grid view"
             >
-              <LayoutGrid aria-hidden="true" className="size-3.5" />
+              <LayoutGrid aria-hidden="true" className="size-4" />
             </Button>
             <Button
               variant={state.view === "list" ? "default" : "ghost"}
               size="icon"
               className={cn(
-                "size-7 rounded-full transition-all",
+                "size-8 rounded-full transition-all",
                 state.view === "list" && "bg-primary text-primary-foreground shadow-none"
               )}
               onClick={() => setFilter({ view: "list" })}
               aria-label="List view"
             >
-              <List aria-hidden="true" className="size-3.5" />
+              <List aria-hidden="true" className="size-4" />
             </Button>
           </div>
 

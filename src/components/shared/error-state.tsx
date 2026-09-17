@@ -15,13 +15,13 @@ export function ErrorState({ message = "We could not load this right now.", onRe
       title="Something went wrong"
       description={message}
       action={
-        <div className="flex items-center gap-2">
-          <Button onClick={onRetry} size="sm">
-            <RefreshCw aria-hidden="true" className="mr-1.5 size-3.5" />
+        <div className="flex items-center justify-center gap-2">
+          <Button onClick={onRetry} size="sm" className="gap-1.5">
+            <RefreshCw aria-hidden="true" className="size-3.5" />
             Try again
           </Button>
-          <Button render={<Link href="/contact" />} variant="outline" size="sm">
-            <HelpCircle aria-hidden="true" className="mr-1.5 size-3.5" />
+          <Button render={<Link href="/contact" />} variant="outline" size="sm" className="gap-1.5">
+            <HelpCircle aria-hidden="true" className="size-3.5" />
             Contact Support
           </Button>
         </div>

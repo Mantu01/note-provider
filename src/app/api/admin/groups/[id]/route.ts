@@ -7,7 +7,6 @@ import { updateGroupSchema } from "@/schemas/group.schema";
 import { rupeesToPaise } from "@/lib/format";
 import { validateNoteIdsExist } from "@/helpers/note-validation";
 
-export const runtime = "nodejs";
 
 export const GET = adminHandler(async (ctx) => {
   const { id } = await ctx.params;
