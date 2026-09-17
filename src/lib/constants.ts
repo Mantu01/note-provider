@@ -20,6 +20,9 @@ import type {
 } from "./types";
 
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+// ponytail: bake year at module load so the footer has no runtime date call.
+// Upgrade: swap back to new Date().getFullYear() when Next.js allows dynamic values in Cache Components.
+export const CURRENT_YEAR = new Date().getFullYear();
 
 export const BRAND = {
   name: "Notes Provider",

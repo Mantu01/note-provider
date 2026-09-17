@@ -2,7 +2,7 @@ import Link from "next/link";
 import { Mail } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { GithubIcon, XIcon, InstagramIcon, YouTubeIcon } from "@/components/shared/social-icons";
-import { BRAND, SEO } from "@/lib/constants";
+import { BRAND, SEO, CURRENT_YEAR } from "@/lib/constants";
 
 const FOOTER_LINKS = [
   {
@@ -93,7 +93,7 @@ export function Footer() {
 
         <div className="mt-8 border-t border-border/40 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-center text-[10px] text-muted-foreground">
-            &copy; {new Date().getFullYear()} {BRAND.name}. All rights reserved.
+            &copy; {CURRENT_YEAR} {BRAND.name}. All rights reserved.
           </p>
           <p className="text-[10px] text-muted-foreground">
             Built with care for developers who want notes that ship.
