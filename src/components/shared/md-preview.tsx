@@ -11,6 +11,7 @@ import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 //@ts-expect-error: unknown
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { Clipboard, ClipboardCheck, Expand, Shrink, Code2 } from "lucide-react";
+import type { Components } from "react-markdown";
 import "katex/dist/katex.min.css";
 
 interface MarkdownPreviewProps {

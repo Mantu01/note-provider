@@ -102,7 +102,7 @@ export const DEFAULT_PAGE_LIMIT = 12;
 export const ADMIN_PAGE_LIMIT = 20;
 export const MAX_PAGE_LIMIT = 48;
 
-export const ADMIN_SESSION_COOKIE = "np_admin_session";
+export const ADMIN_SESSION_COOKIE = "admin_session";
 export const ADMIN_SESSION_MAX_AGE_SECONDS = 604800;
 
 export const LEADS_EXPORT_MAX_ROWS = 10000;
@@ -169,7 +169,7 @@ export const CONTACT_CHANNELS = [
   { title: "X (Twitter)", description: "Follow for updates, tips, and quick replies.", href: "https://x.com/Mantu_kumar91", icon: "MessageSquareText", label: "Follow on X" },
   { title: "GitHub", description: "Explore code references and open-source resources.", href: "https://github.com/Mantu01", icon: "Code2", label: "Explore GitHub" },
   { title: "YouTube", description: "Video tutorials and walkthroughs for notes topics.", href: "https://www.youtube.com/channel/UCgkZ2cdrKLz7dhnXnkDOAgQ", icon: "PlayCircle", label: "Watch on YouTube" },
-  { title: "Instagram", description: "Behind-the-scenes, study tips, and new releases.", href: "https://www.instagram.com/programmer_area", icon: "Mail", label: "Follow on Instagram" },
+  { title: "Instagram", description: "Behind-the-scenes, study tips, and new releases.", href: "https://www.instagram.com/programmer_area", icon: "Instagram", label: "Follow on Instagram" },
   { title: "Email", description: "For order help, delivery questions, and support requests.", href: `mailto:${SEO.contactEmail}`, icon: "Mail", label: "Send an email" },
 ] as const;
 

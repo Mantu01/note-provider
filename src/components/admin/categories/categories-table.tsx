@@ -114,7 +114,7 @@ export function CategoriesTable() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <Button variant="outline" size="icon" onClick={() => handleEdit(cat)}>
+                      <Button variant="outline" size="icon" onClick={() => handleEdit(cat)} aria-label="Edit category">
                         <Edit3 className="h-4 w-4" />
                       </Button>
                       <Button
@@ -124,6 +124,7 @@ export function CategoriesTable() {
                         disabled={!isHeadAdmin}
                         className={isHeadAdmin ? "text-muted-foreground" : "opacity-40 cursor-not-allowed"}
                         title={isHeadAdmin ? "Delete category" : "Only Head Admin can delete"}
+                        aria-label="Delete category"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

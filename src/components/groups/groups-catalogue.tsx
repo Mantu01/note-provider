@@ -6,6 +6,8 @@ import { ErrorState } from "@/components/shared/error-state";
 import { GroupCard } from "@/components/shared/group-card";
 import { ShimmerNoteCard } from "@/components/shared/shimmer-loader";
 import { useGroups } from "@/hooks/useGroups";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 export function GroupsPage() {
   const query = useGroups({ limit: 12 });
@@ -29,23 +31,35 @@ export function GroupsPage() {
           <ErrorState onRetry={() => query.refetch()} />
         </div>
       ) : (
-        <div className="mt-2 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-          {query.isPending ? (
-            Array.from({ length: 6 }, (_, i) => <ShimmerNoteCard key={i} />)
-          ) : query.data?.items.length ? (
-            query.data.items.map((group) => (
-              <GroupCard key={group.id} group={group} />
-            ))
-          ) : (
-            <div className="md:col-span-2 lg:col-span-3">
-              <EmptyState
-                icon={Layers3}
-                title="Bundles are coming soon"
-                description="We are assembling our first value-packed note collections."
-              />
+        <>
+          <div className="mt-2 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            {query.isPending ? (
+              Array.from({ length: 6 }, (_, i) => <ShimmerNoteCard key={i} />)
+            ) : query.data?.items.length ? (
+              query.data.items.map((group) => (
+                <GroupCard key={group.id} group={group} />
+              ))
+            ) : (
+              <div className="md:col-span-2 lg:col-span-3">
+                <EmptyState
+                  icon={Layers3}
+                  title="Bundles are coming soon"
+                  description="We are assembling our first value-packed note collections."
+                />
+              </div>
+            )}
+          </div>
+          {query.data && query.data.pagination.totalPages > 1 && (
+            <div className="mt-8 flex justify-center">
+              <Link
+                href="/notes"
+                className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-4 py-2 text-sm font-medium text-muted-foreground shadow-sm hover:bg-muted/50 hover:text-foreground"
+              >
+                Browse individual notes instead
+              </Link>
             </div>
           )}
-        </div>
+        </>
       )}
     </div>
   );

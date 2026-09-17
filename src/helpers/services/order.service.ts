@@ -3,6 +3,20 @@ import { AppError } from "../errors";
 import { generateOrderNumber } from "../order-number";
 import { createRazorpayOrder } from "../razorpay";
 import type { UpdateOrderPayload } from "@/schemas/admin.schema";
+import type { Prisma } from "@prisma/client";
+
+interface NoteDoc {
+  id: string;
+  title: string;
+}
+
+interface GroupDoc {
+  id: string;
+  name: string;
+  coverImageUrl: string | null;
+}
+
+type ItemDoc = NoteDoc | GroupDoc;
 
 export async function createOrder(
   input: { fullName: string; consentAccepted: boolean },
@@ -13,7 +27,7 @@ export async function createOrder(
 ): Promise<{ order: import("@prisma/client").Order; razorpayOrderId: string }> {
   const orderNumber = await generateOrderNumber();
 
-  const itemDoc =
+  const itemDoc: ItemDoc | null =
     itemType === "note"
       ? await prisma.note.findFirst({ where: { slug: itemSlug }, select: { id: true, title: true } })
       : await prisma.group.findFirst({ where: { slug: itemSlug }, select: { id: true, name: true, coverImageUrl: true } });
@@ -26,9 +40,9 @@ export async function createOrder(
     notes: { orderNumber, itemType, itemSlug, buyerName: input.fullName },
   });
 
-  const snapshot = itemType === "group"
-    ? ({ title: (itemDoc as any).name, slug: itemSlug, price: amount, noteIds: [], coverImageUrl: (itemDoc as any)?.coverImageUrl ?? null } as Record<string, unknown>)
-    : ({ title: (itemDoc as any).title, slug: itemSlug, price: amount } as Record<string, unknown>);
+  const snapshot: Prisma.InputJsonValue = (itemType === "group"
+    ? ({ title: (itemDoc as GroupDoc).name, slug: itemSlug, price: amount, noteIds: [], coverImageUrl: (itemDoc as GroupDoc).coverImageUrl ?? null } as Record<string, unknown>)
+    : ({ title: (itemDoc as NoteDoc).title, slug: itemSlug, price: amount } as Record<string, unknown>)) as Prisma.InputJsonValue;
 
   const doc = await prisma.order.create({
     data: {
@@ -40,7 +54,7 @@ export async function createOrder(
       razorpayOrderId,
       paymentStatus: "created",
       fulfillmentStatus: "pending",
-      itemSnapshot: snapshot as any,
+      itemSnapshot: snapshot,
       buyer: {
         fullName: input.fullName,
         consentAccepted: input.consentAccepted,

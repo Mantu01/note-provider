@@ -13,6 +13,7 @@ import { ShimmerLoader } from "@/components/shared/shimmer-loader";
 import { PriceTag } from "@/components/shared/price-tag";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { PdfPreviewDialog } from "@/components/shared/pdf-preview-dialog";
+import MarkdownPreview from "@/components/shared/md-preview";
 import { LevelBadge, PricingBadge } from "@/components/shared/badges";
 import { useDownloadFile } from "@/hooks/use-download-file";
 import { useNote } from "@/hooks/useNotes";
@@ -113,9 +114,9 @@ export function NoteDetailPage({ slug }: { slug: string }) {
               </span>
             </div>
 
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              {note.description}
-            </p>
+            {note.description ? (
+              <MarkdownPreview markdown={note.description} className="text-sm leading-relaxed" />
+            ) : null}
 
             {note.tags.length > 0 && (
               <div className="flex flex-wrap gap-1.5 pt-1">

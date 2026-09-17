@@ -5,7 +5,12 @@ import { TriangleAlert, HelpCircle } from "lucide-react";
 import { Logo } from "@/components/brand/logo";
 import { Button } from "@/components/ui/button";
 
-export default function GlobalError({ reset }: { error: Error & { digest?: string }; reset: () => void }) {
+type GlobalErrorProps = {
+  error: Error & { digest?: string };
+  reset: () => void;
+};
+
+export default function GlobalError({ reset }: GlobalErrorProps) {
   return (
     <main className="relative grid min-h-screen place-items-center px-4 paper-bg">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,var(--brand-orange-soft),transparent_60%)] opacity-40" />

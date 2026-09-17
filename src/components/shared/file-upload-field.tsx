@@ -107,6 +107,7 @@ export function FileUploadField({
             onClick={handleRemove}
             disabled={disabled || deleteMutation.isPending}
             className="text-muted-foreground"
+            aria-label="Remove file"
           >
             <X className="h-4 w-4" />
           </Button>

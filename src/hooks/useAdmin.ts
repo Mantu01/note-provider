@@ -4,7 +4,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient, buildQueryString } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import type {
-  AdminAuthResponse,
   AdminCategory,
   AdminGroup,
   AdminLead,
@@ -26,18 +25,6 @@ import { toast } from "sonner";
 
 export function useAdminProfile() {
   return useQuery({ queryKey: queryKeys.admin.me, queryFn: () => apiClient<AdminProfile>("/admin/auth/me") });
-}
-
-export function useAdminLogin() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ email, password }: { email: string; password: string }) =>
-      apiClient<AdminAuthResponse>("/admin/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: queryKeys.admin.me });
-      qc.invalidateQueries({ queryKey: queryKeys.admin.dashboard });
-    },
-  });
 }
 
 export function useAdminLogout() {

@@ -8,20 +8,13 @@ export const metadata: Metadata = {
   title: "Terms of Service — Legal Agreement | Notes Provider",
   description:
     "Terms and conditions governing the use of Notes Provider and purchase of developer notes and digital resources. Please read carefully before using our services.",
-  keywords: [
-    "terms of service",
-    "terms and conditions",
-    "legal agreement",
-    "Notes Provider",
-    "digital notes terms",
-  ],
   alternates: { canonical: `${APP_URL}/terms` },
   openGraph: {
     title: "Terms of Service — Notes Provider",
     description: "Terms and conditions governing the use of Notes Provider and purchase of developer notes and digital resources.",
     url: `${APP_URL}/terms`,
     siteName: SEO.siteName,
-    images: [{ url: `${APP_URL}/og/home.png`, width: SEO.ogImageWidth, height: SEO.ogImageHeight, alt: "Terms of Service" }],
+    images: [{ url: `${APP_URL}/og/home`, width: SEO.ogImageWidth, height: SEO.ogImageHeight, alt: "Terms of Service" }],
     type: "website",
     locale: SEO.locale,
   },
@@ -29,7 +22,7 @@ export const metadata: Metadata = {
     card: SEO.twitterCard,
     title: "Terms of Service — Notes Provider",
     description: "Terms and conditions for using Notes Provider.",
-    images: [`${APP_URL}/og/home.png`],
+    images: [`${APP_URL}/og/home`],
   },
 };
 

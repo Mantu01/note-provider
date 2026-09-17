@@ -9,7 +9,7 @@ export function ok<T>(data: T, status = 200): NextResponse<ApiSuccess<T>> {
 
 export function fail(error: AppError): NextResponse<ApiFailure> {
   const body: ApiFailure = {
-    success: false as false,
+    success: false,
     error: {
       code: error.code,
       message: error.message,

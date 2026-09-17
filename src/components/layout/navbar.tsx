@@ -12,6 +12,13 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { BRAND, NAV_LINKS } from "@/lib/constants";
 
+type NavLink = { href: string; label: string };
+
+function isActive(pathname: string, link: NavLink): boolean {
+  if (link.href === "/") return pathname === link.href;
+  return pathname.startsWith(link.href);
+}
+
 export function Navbar() {
   const pathname = usePathname();
   const isPublic = !pathname.startsWith("/admin");
@@ -22,35 +29,28 @@ export function Navbar() {
     <>
       <header className="sticky top-0 z-50 border-b border-border/30 glass-panel torn-edge">
         <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
-          <Link href="/" aria-label="Notes Provider home">
-            <div className="flex items-center gap-2.5">
-              <Logo variant="icon" size="sm" />
-              <span className="font-heading text-sm font-bold tracking-tight text-foreground hidden sm:inline-block">
-                {BRAND.name}
-              </span>
-            </div>
+          <Link href="/" aria-label="Notes Provider home" className="flex items-center gap-2.5">
+            <Logo variant="icon" size="sm" />
+            <span className="font-heading text-sm font-bold tracking-tight text-foreground hidden sm:inline-block">
+              {BRAND.name}
+            </span>
           </Link>
 
           <nav aria-label="Primary navigation" className="hidden md:flex items-center gap-1">
-            {NAV_LINKS.map((link) => {
-              const isActive = link.href === "/"
-                ? pathname === link.href
-                : pathname.startsWith(link.href);
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className={cn(
-                    "rounded-full px-3.5 py-1.5 text-xs font-medium",
-                    isActive
-                      ? "bg-primary/12 text-primary shadow-sm"
-                      : "text-muted-foreground"
-                  )}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
+            {NAV_LINKS.map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                className={cn(
+                  "rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors",
+                  isActive(pathname, link)
+                    ? "bg-primary/12 text-primary shadow-sm"
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                {link.label}
+              </Link>
+            ))}
           </nav>
 
           <div className="flex items-center gap-1.5">
@@ -99,7 +99,7 @@ function SearchButton() {
       <Button
         variant="ghost"
         size="icon"
-        aria-label="Search notes (Ctrl+K)"
+        aria-label="Search notes"
         className="size-8 rounded-full text-muted-foreground"
         onClick={() => {
           setOpen(true);
@@ -173,8 +173,10 @@ function SearchButton() {
                   <Search aria-hidden="true" className="size-4" />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold truncate">{label}</p>
-                  <p className="text-[10px] text-muted-foreground truncate">{sublabel}</p>
+                  <p className="text-sm font-medium truncate">{label}</p>
+                  {sublabel && (
+                    <p className="text-[10px] text-muted-foreground truncate">{sublabel}</p>
+                  )}
                 </div>
               </Link>
             ))}

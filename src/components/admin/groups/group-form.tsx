@@ -95,6 +95,7 @@ export function GroupForm({ initialData }: GroupFormProps) {
             variant="outline"
             size="icon"
             onClick={() => router.push("/admin/groups")}
+            aria-label="Back to groups list"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>

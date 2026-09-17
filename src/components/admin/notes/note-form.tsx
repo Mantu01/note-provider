@@ -132,6 +132,7 @@ export function NoteForm({ initialData }: NoteFormProps) {
             variant="outline"
             size="icon"
             onClick={() => router.push("/admin/notes")}
+            aria-label="Back to notes list"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>

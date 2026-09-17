@@ -42,7 +42,7 @@ export function OrderDetailView({ id }: { id: string }) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <Button variant="outline" size="icon" render={<Link href="/admin/orders" />}>
+          <Button variant="outline" size="icon" render={<Link href="/admin/orders" />} aria-label="Back to orders list">
             <ArrowLeft className="h-4 w-4" />
           </Button>
           <div>

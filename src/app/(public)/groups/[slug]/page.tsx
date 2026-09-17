@@ -14,10 +14,26 @@ interface GroupRouteProps {
   params: Promise<{ slug: string }>;
 }
 
+type GroupWithRelations = {
+  id: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  price: number;
+  coverImageUrl: string | null;
+  category: { id: string; name: string; slug: string } | null;
+  noteGroups: Array<{ id: string; noteId: string }>;
+  createdAt: Date;
+  updatedAt: Date;
+};
+
 export async function generateMetadata({ params }: GroupRouteProps): Promise<Metadata> {
   const { slug } = await params;
 
-  const groupDoc = (await prisma.group.findFirst({ where: { slug, visibility: "public" }, include: { category: true, noteGroups: true } })) as any;
+  const groupDoc = await prisma.group.findFirst({
+    where: { slug, visibility: "public" },
+    include: { category: true, noteGroups: true },
+  }) as GroupWithRelations | null;
 
   if (!groupDoc) {
     return {
@@ -30,20 +46,12 @@ export async function generateMetadata({ params }: GroupRouteProps): Promise<Met
   const title = `${groupDoc.name} — Complete ${groupDoc.category?.name || "Developer"} Bundle | Notes Provider`;
   const noteCount = groupDoc.noteGroups?.length || 0;
   const desc = groupDoc.description?.slice(0, 160) || `Get the complete ${groupDoc.name} bundle with ${noteCount} coding notes for ${groupDoc.category?.name || "developer topics"}.`;
-  const imageUrl = groupDoc.coverImageUrl ?? `${APP_URL}/og/group/${slug}.png`;
+  const imageUrl = groupDoc.coverImageUrl ?? `${APP_URL}/og/group/${slug}`;
   const pageUrl = `${APP_URL}/groups/${slug}`;
 
   return {
     title,
     description: desc,
-    keywords: [
-      groupDoc.name.toLowerCase(),
-      `${groupDoc.category?.name} bundle`,
-      "developer bundle",
-      "coding bundle",
-      "web dev bundle",
-      ...(groupDoc.noteGroups?.length ? [` ${noteCount} notes bundle`, ` ${groupDoc.category?.name} bundle`] : []),
-    ],
     alternates: { canonical: pageUrl },
     openGraph: {
       title,
@@ -74,7 +82,10 @@ export async function generateMetadata({ params }: GroupRouteProps): Promise<Met
 export default async function GroupRoute({ params }: GroupRouteProps) {
   const { slug } = await params;
 
-  const groupDoc = (await prisma.group.findFirst({ where: { slug, visibility: "public" }, include: { category: true, noteGroups: true } })) as any;
+  const groupDoc = await prisma.group.findFirst({
+    where: { slug, visibility: "public" },
+    include: { category: true, noteGroups: true },
+  }) as GroupWithRelations | null;
 
   if (!groupDoc) {
     notFound();
@@ -82,7 +93,7 @@ export default async function GroupRoute({ params }: GroupRouteProps) {
 
   const noteCount = groupDoc.noteGroups?.length || 0;
   const pageUrl = `${APP_URL}/groups/${groupDoc.slug}`;
-  const imageUrl = groupDoc.coverImageUrl ?? `${APP_URL}/og/group/${groupDoc.slug}.png`;
+  const imageUrl = groupDoc.coverImageUrl ?? `${APP_URL}/og/group/${groupDoc.slug}`;
 
   const jsonLd = [
     productJsonLd({

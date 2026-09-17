@@ -6,7 +6,6 @@ import { APP_URL, SEO } from "@/lib/constants";
 export const metadata: Metadata = {
   title: `Coding Notes — Web Dev, DSA, DBMS & System Design | ${SEO.siteName}`,
   description: "Browse coding notes for web development, frontend, backend, DSA, DBMS, system design, and interview preparation. Free and premium developer resources.",
-  keywords: ["web development notes", "DSA notes", "DBMS notes", "backend notes", "frontend notes", "system design notes", "coding notes"],
   alternates: { canonical: `${APP_URL}/notes` },
   openGraph: {
     title: "Coding Notes — Web Dev, DSA, DBMS & System Design",
@@ -15,7 +14,7 @@ export const metadata: Metadata = {
     siteName: SEO.siteName,
     images: [
       {
-        url: `${APP_URL}/og/home.png`,
+        url: `${APP_URL}/og/home`,
         width: SEO.ogImageWidth,
         height: SEO.ogImageHeight,
         alt: "Coding notes collection at Notes Provider",
@@ -28,7 +27,7 @@ export const metadata: Metadata = {
     card: SEO.twitterCard,
     title: "Coding Notes — Web Dev, DSA, DBMS & System Design",
     description: "Browse coding notes for web development, backend, DSA, and system design.",
-    images: [`${APP_URL}/og/home.png`],
+    images: [`${APP_URL}/og/home`],
   },
 };
 
@@ -42,7 +41,7 @@ export default function NotesPage() {
             description:
               "Browse coding notes for web development, frontend, backend, DSA, DBMS, and system design. Free and paid developer resources.",
             url: `${APP_URL}/notes`,
-            image: `${APP_URL}/og/home.png`,
+            image: `${APP_URL}/og/home`,
             itemCount: 0,
           }),
         ]}

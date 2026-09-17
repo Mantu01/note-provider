@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import JsonLd, { webpageJsonLd, collectionPageJsonLd } from "@/components/seo/json-ld";
+import JsonLd, { webpageJsonLd } from "@/components/seo/json-ld";
 import { StaticPage } from "@/components/layout/static-page";
 import { Card, CardContent } from "@/components/ui/card";
 import { APP_URL, BRAND, SEO, ABOUT_VALUES } from "@/lib/constants";
@@ -8,13 +8,6 @@ export const metadata: Metadata = {
   title: "About Us — Notes Provider | Mission & Values",
   description:
     "Learn about Notes Provider — our mission to help developers discover clear, practical notes on frontend, backend, DSA, DBMS, and system design.",
-  keywords: [
-    "about notes provider",
-    "developer notes company",
-    "coding notes platform",
-    "web dev notes",
-    "programming resources",
-  ],
   alternates: { canonical: `${APP_URL}/about` },
   openGraph: {
     title: "About Us — Notes Provider",
@@ -22,7 +15,7 @@ export const metadata: Metadata = {
       "Learn about Notes Provider — our mission to make developer-focused learning resources easier to discover and use.",
     url: `${APP_URL}/about`,
     siteName: SEO.siteName,
-    images: [{ url: `${APP_URL}/og/home.png`, width: SEO.ogImageWidth, height: SEO.ogImageHeight, alt: "About Notes Provider" }],
+    images: [{ url: `${APP_URL}/og/home`, width: SEO.ogImageWidth, height: SEO.ogImageHeight, alt: "About Notes Provider" }],
     type: "website",
     locale: SEO.locale,
   },
@@ -30,7 +23,7 @@ export const metadata: Metadata = {
     card: SEO.twitterCard,
     title: "About Us — Notes Provider",
     description: "Learn about Notes Provider — our mission and values.",
-    images: [`${APP_URL}/og/home.png`],
+    images: [`${APP_URL}/og/home`],
   },
 };
 
@@ -43,7 +36,7 @@ export default function AboutPage() {
             title: "About Us — Notes Provider",
             description: "Learn about Notes Provider — our mission to make developer-focused learning resources easier to discover.",
             url: `${APP_URL}/about`,
-            image: `${APP_URL}/og/home.png`,
+            image: `${APP_URL}/og/home`,
           }),
         ]}
       />

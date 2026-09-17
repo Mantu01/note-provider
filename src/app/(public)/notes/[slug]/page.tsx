@@ -30,23 +30,12 @@ export async function generateMetadata({ params }: NotePageProps): Promise<Metad
 
   const title = `${noteDoc.title} — ${noteDoc.level.charAt(0).toUpperCase() + noteDoc.level.slice(1)} Notes | ${noteDoc.category?.name || "Coding Notes"}`;
   const desc = noteDoc.description?.slice(0, 160) || `Download ${noteDoc.title} — ${noteDoc.level} developer notes for ${noteDoc.category?.name || "coding"}. ${noteDoc.pricingType === "free" ? "Completely free." : `Priced at affordable rate.`}`;
-  const imageUrl = noteDoc.coverImageUrl ?? `${APP_URL}/og/note/${slug}.png`;
+  const imageUrl = noteDoc.coverImageUrl ?? `${APP_URL}/og/note/${slug}`;
   const pageUrl = `${APP_URL}/notes/${slug}`;
 
   return {
     title,
     description: desc,
-    keywords: [
-      noteDoc.title.toLowerCase(),
-      `${noteDoc.level} notes`,
-      `${noteDoc.category?.name} notes`,
-      "coding notes",
-      "developer notes",
-      "web dev notes",
-      ...(noteDoc.tags as string[] | undefined) || [],
-      "programming notes",
-      "download notes",
-    ],
     alternates: { canonical: pageUrl },
     openGraph: {
       title,
@@ -85,7 +74,7 @@ export default async function NoteRoute({ params }: NotePageProps) {
   }
 
   const pageUrl = `${APP_URL}/notes/${noteDoc.slug}`;
-  const imageUrl = noteDoc.coverImageUrl ?? `${APP_URL}/og/note/${noteDoc.slug}.png`;
+  const imageUrl = noteDoc.coverImageUrl ?? `${APP_URL}/og/note/${noteDoc.slug}`;
 
   const jsonLd = [
     productJsonLd({

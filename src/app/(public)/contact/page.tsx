@@ -1,31 +1,25 @@
-import Link from "next/link";
-import { ArrowUpRight, Clock3, Code2, HelpCircle, Mail, MessageSquareText, PlayCircle, ShieldCheck, type LucideIcon } from "lucide-react";
+import type { Metadata } from "next";
+import JsonLd, { webpageJsonLd } from "@/components/seo/json-ld";
 import { StaticPage } from "@/components/layout/static-page";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import type { Metadata } from "next";
+import Link from "next/link";
+import { ArrowUpRight, Code2, HelpCircle, Mail, MessageSquareText, PlayCircle, ShieldCheck } from "lucide-react";
 import { APP_URL, SEO, CONTACT_CHANNELS } from "@/lib/constants";
-import JsonLd, { webpageJsonLd } from "@/components/seo/json-ld";
+import { InstagramIcon } from "@/components/shared/social-icons";
 
-const ICON_MAP: Record<string, LucideIcon> = {
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
   MessageSquareText,
   PlayCircle,
   Mail,
   Code2,
+  Instagram: InstagramIcon,
 };
 
 export const metadata: Metadata = {
   title: "Contact Support — Get Help with Developer Notes | Notes Provider",
   description:
     "Need help with a note purchase, delivery, or preview? Contact the Notes Provider support team via GitHub, X, or email. Fast responses for all your developer note queries.",
-  keywords: [
-    "contact notes provider",
-    "support",
-    "developer notes help",
-    "customer service",
-    "notes delivery support",
-  ],
   alternates: { canonical: `${APP_URL}/contact` },
   openGraph: {
     title: "Contact Support — Notes Provider",
@@ -33,7 +27,7 @@ export const metadata: Metadata = {
       "Get in touch with the Notes Provider support team for purchase or delivery help on developer notes and coding resources.",
     url: `${APP_URL}/contact`,
     siteName: SEO.siteName,
-    images: [{ url: `${APP_URL}/og/home.png`, width: SEO.ogImageWidth, height: SEO.ogImageHeight, alt: "Contact Notes Provider" }],
+    images: [{ url: `${APP_URL}/og/home`, width: SEO.ogImageWidth, height: SEO.ogImageHeight, alt: "Contact Notes Provider" }],
     type: "website",
     locale: SEO.locale,
   },
@@ -41,9 +35,11 @@ export const metadata: Metadata = {
     card: SEO.twitterCard,
     title: "Contact Support — Notes Provider",
     description: "Get in touch with the Notes Provider support team.",
-    images: [`${APP_URL}/og/home.png`],
+    images: [`${APP_URL}/og/home`],
   },
 };
+
+type ContactChannel = (typeof CONTACT_CHANNELS)[number];
 
 export default function ContactPage() {
   return (
@@ -54,34 +50,38 @@ export default function ContactPage() {
             title: "Contact Support — Notes Provider",
             description: "Get in touch with the Notes Provider support team for purchase or delivery help on developer notes and coding resources.",
             url: `${APP_URL}/contact`,
-            image: `${APP_URL}/og/home.png`,
+            image: `${APP_URL}/og/home`,
           }),
         ]}
       />
       <StaticPage
         title="Contact Support"
-        description="Need help with a note, preview, or delivery? We're here to assist."
+        description="Need help with a note, preview, or delivery? We are here to assist."
       >
-        <div className="not-prose grid gap-4 md:grid-cols-3">
-          {CONTACT_CHANNELS.map(({ title, description, href, icon, label }) => {
-            const Icon = ICON_MAP[icon];
+        <div className="not-prose grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {CONTACT_CHANNELS.map((channel: ContactChannel) => {
+            const Icon = ICON_MAP[channel.icon];
+            const external = channel.href.startsWith("http");
             return (
-              <Card key={title} className="rounded-2xl border border-border/80 bg-card">
+              <Card key={channel.title} className="rounded-2xl border border-border/80 bg-card">
                 <CardContent className="flex flex-col gap-4 p-5">
-                  <span className="inline-flex size-11 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                  <span className="inline-flex size-11 items-center justify-center rounded-xl bg-brand-orange/10 text-brand-orange">
                     <Icon aria-hidden="true" className="size-5" />
                   </span>
                   <div>
-                    <h3 className="text-base font-semibold text-foreground">{title}</h3>
-                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{description}</p>
+                    <h3 className="text-base font-semibold text-foreground">{channel.title}</h3>
+                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{channel.description}</p>
                   </div>
                   <Button
-                    render={<a href={href} target={href.startsWith("http") ? "_blank" : undefined} rel={href.startsWith("http") ? "noreferrer" : undefined} className="w-full">{label} <ArrowUpRight aria-hidden="true" className="ml-1 size-3.5" /></a>}
                     variant="outline"
                     className="mt-auto w-full justify-center gap-2"
+                    render={
+                      <Link href={channel.href} target={external ? "_blank" : undefined} rel={external ? "noreferrer" : undefined}>
+                        {channel.label} <ArrowUpRight aria-hidden="true" className="ml-1 size-3.5" />
+                      </Link>
+                    }
                   >
-                    <span className="sr-only">Visit {label}</span>
-                    <ArrowUpRight aria-hidden="true" className="size-4" />
+                    <span className="sr-only">{channel.label}</span>
                   </Button>
                 </CardContent>
               </Card>
@@ -91,7 +91,7 @@ export default function ContactPage() {
 
         <div className="mt-8 grid gap-4 md:grid-cols-2">
           <div className="flex items-start gap-4 rounded-2xl border border-border/60 bg-muted/20 p-5">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-orange/10 text-brand-orange">
               <ShieldCheck aria-hidden="true" className="size-5" />
             </div>
             <div>
@@ -103,7 +103,7 @@ export default function ContactPage() {
           </div>
 
           <div className="flex items-start gap-4 rounded-2xl border border-border/60 bg-muted/20 p-5">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-orange/10 text-brand-orange">
               <HelpCircle aria-hidden="true" className="size-5" />
             </div>
             <div>
@@ -113,7 +113,7 @@ export default function ContactPage() {
               </p>
               <div className="mt-3">
                 <Button render={<Link href="/" />} variant="link" className="h-auto p-0 text-sm font-medium">
-                  Visit home page →
+                  Visit home page
                 </Button>
               </div>
             </div>

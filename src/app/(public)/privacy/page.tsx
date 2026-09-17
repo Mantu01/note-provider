@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { Metadata } from "next";
 import JsonLd, { webpageJsonLd } from "@/components/seo/json-ld";
 import { StaticPage } from "@/components/layout/static-page";
@@ -9,20 +8,13 @@ export const metadata: Metadata = {
   title: "Privacy Policy — How We Protect Your Data | Notes Provider",
   description:
     "Information on how Notes Provider collects, uses, and protects your personal data. Read our complete privacy policy for study notes purchases.",
-  keywords: [
-    "privacy policy",
-    "data protection",
-    "personal data",
-    "Notes Provider privacy",
-    "student data privacy",
-  ],
   alternates: { canonical: `${APP_URL}/privacy` },
   openGraph: {
     title: "Privacy Policy — Notes Provider",
     description: "Information on how Notes Provider collects, uses, and protects your personal data.",
     url: `${APP_URL}/privacy`,
     siteName: SEO.siteName,
-    images: [{ url: `${APP_URL}/og/home.png`, width: SEO.ogImageWidth, height: SEO.ogImageHeight, alt: "Privacy Policy" }],
+    images: [{ url: `${APP_URL}/og/home`, width: SEO.ogImageWidth, height: SEO.ogImageHeight, alt: "Privacy Policy" }],
     type: "website",
     locale: SEO.locale,
   },
@@ -30,7 +22,7 @@ export const metadata: Metadata = {
     card: SEO.twitterCard,
     title: "Privacy Policy — Notes Provider",
     description: "How we collect, use, and protect your personal data.",
-    images: [`${APP_URL}/og/home.png`],
+    images: [`${APP_URL}/og/home`],
   },
 };
 

@@ -9,6 +9,7 @@ import { ErrorState } from "@/components/shared/error-state";
 import { GroupCard } from "@/components/shared/group-card";
 import { NoteCard } from "@/components/shared/note-card";
 import { ShimmerLoader } from "@/components/shared/shimmer-loader";
+import MarkdownPreview from "@/components/shared/md-preview";
 import { PriceTag } from "@/components/shared/price-tag";
 import { useGroup } from "@/hooks/useGroups";
 import { formatPrice } from "@/lib/format";
@@ -84,9 +85,9 @@ export function GroupDetailPage({ slug }: { slug: string }) {
             <h1 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">
               {group.name}
             </h1>
-            <p className="text-sm leading-relaxed text-muted-foreground">
-              {group.description}
-            </p>
+            {group.description ? (
+              <MarkdownPreview markdown={group.description} className="text-sm leading-relaxed" />
+            ) : null}
           </div>
 
           <div className="border-t border-border/40 pt-5">
