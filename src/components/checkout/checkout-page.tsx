@@ -76,6 +76,7 @@ function OrderSummaryCard({
             <Image
               src={coverImageUrl}
               alt={title}
+              loading="eager"
               fill
               sizes="(max-width: 768px) 100vw, 300px"
               className="object-cover"

@@ -13,7 +13,7 @@ import { ShimmerLoader } from "@/components/shared/shimmer-loader";
 import { PriceTag } from "@/components/shared/price-tag";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { PdfPreviewDialog } from "@/components/shared/pdf-preview-dialog";
-import MarkdownPreview from "@/components/shared/md-preview";
+import { MarkdownPreview } from "@/components/shared/md-preview";
 import { LevelBadge, PricingBadge } from "@/components/shared/badges";
 import { useDownloadFile } from "@/hooks/use-download-file";
 import { useNote } from "@/hooks/useNotes";
@@ -69,6 +69,7 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                 fill
                 sizes="(max-width: 1024px) 100vw, 66vw"
                 className="object-cover"
+                loading="eager"
               />
             ) : (
               <div className="flex h-full flex-col items-center justify-center gap-2 text-primary/20 bg-gradient-to-br from-primary/5 to-transparent">

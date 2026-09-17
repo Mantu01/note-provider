@@ -9,7 +9,7 @@ import { ErrorState } from "@/components/shared/error-state";
 import { GroupCard } from "@/components/shared/group-card";
 import { NoteCard } from "@/components/shared/note-card";
 import { ShimmerLoader } from "@/components/shared/shimmer-loader";
-import MarkdownPreview from "@/components/shared/md-preview";
+import { MarkdownPreview } from "@/components/shared/md-preview";
 import { PriceTag } from "@/components/shared/price-tag";
 import { useGroup } from "@/hooks/useGroups";
 import { formatPrice } from "@/lib/format";
@@ -65,6 +65,7 @@ export function GroupDetailPage({ slug }: { slug: string }) {
             {group.coverImageUrl ? (
               <Image
                 src={group.coverImageUrl}
+                loading="eager"
                 alt=""
                 fill
                 sizes="(max-width: 1024px) 100vw, 66vw"

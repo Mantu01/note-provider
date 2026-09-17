@@ -15,6 +15,10 @@ interface NotePageProps {
   params: Promise<{ slug: string }>;
 }
 
+// Route reads per-request DB data (prisma.note.findFirst) and has no generateStaticParams.
+// Mark as intentionally non-instant so Next.js stops logging the prerender-warning.
+export const instant = false;
+
 export async function generateMetadata({ params }: NotePageProps): Promise<Metadata> {
   const { slug } = await params;
 
