@@ -22,6 +22,28 @@ function unauthorizedJson(): NextResponse {
   return res;
 }
 
+function setSecurityHeaders(response: NextResponse): void {
+  response.headers.set("X-Frame-Options", "DENY");
+  response.headers.set("X-Content-Type-Options", "nosniff");
+  response.headers.set("Referrer-Policy", "strict-origin-when-cross-origin");
+  response.headers.set("X-XSS-Protection", "1; mode=block");
+  response.headers.set(
+    "Content-Security-Policy",
+    [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' https://checkout.razorpay.com https://cdn.jsdelivr.net",
+      "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
+      "font-src 'self' https://fonts.gstatic.com",
+      "img-src 'self' data: https: res.cloudinary.com yt3.ggpht.com",
+      "connect-src 'self' https://api.razorpay.com https://eapi.razorpay.com",
+      "frame-src https://checkout.razorpay.com",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
+    ].join("; "),
+  );
+}
+
 async function hasValidSession(request: NextRequest): Promise<boolean> {
   const token = request.cookies.get(ADMIN_SESSION_COOKIE)?.value;
   const secret = process.env.JWT_SECRET;
@@ -43,13 +65,11 @@ export async function proxy(request: NextRequest): Promise<NextResponse> {
     return NextResponse.next();
   }
 
-  if (await hasValidSession(request)) return NextResponse.next();
+  const response = await hasValidSession(request) ? NextResponse.next() : isApiRoute ? unauthorizedJson() : NextResponse.redirect(new URL("/", request.url));
 
-  if (isApiRoute) return unauthorizedJson();
+  setSecurityHeaders(response);
 
-  // There is no login page — admins authenticate by pasting the session token
-  // (returned by the login/register APIs) into the browser as the session cookie.
-  return NextResponse.redirect(new URL("/", request.url));
+  return response;
 }
 
 export const middleware = proxy;
