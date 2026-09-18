@@ -43,8 +43,8 @@ type SocialLink = (typeof SOCIAL_LINKS)[number];
 
 export function Footer() {
   return (
-    <footer className="border-t border-border/40 bg-card torn-edge mt-8">
-      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 paper-bg">
+    <footer className="mt-8 border-t border-border/40 bg-card">
+      <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-6">
           <div className="space-y-4 sm:col-span-2">
             <Logo size="sm" />
@@ -72,7 +72,7 @@ export function Footer() {
 
           {FOOTER_LINKS.map((column) => (
             <div key={column.title}>
-              <h2 className="mb-3 text-[10px] font-bold uppercase tracking-widest text-brand-orange">
+              <h2 className="mb-3 text-[10px] font-bold uppercase tracking-widest text-accent">
                 {column.title}
               </h2>
               <ul className="space-y-2">

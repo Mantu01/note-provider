@@ -1,32 +1,29 @@
 "use client";
 
-import { Search, SlidersHorizontal, LayoutGrid, List, Filter, X } from "lucide-react";
+import { Search, SlidersHorizontal, LayoutGrid, List, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import {
   Sheet,
+  SheetClose,
   SheetContent,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
-import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { NoteCard } from "@/components/shared/note-card";
-import { ShimmerNoteCard } from "@/components/shared/shimmer-loader";
+import { NotesCatalogueSkeleton } from "@/components/shared/shimmer-loader";
 import { PaginationBar } from "@/components/shared/pagination-bar";
 import { useNotes } from "@/hooks/useNotes";
 import { useNotesQueryState } from "@/hooks/use-notes-query-state";
 import { cn } from "@/lib/utils";
-
-import { FilterPanel } from "./filter-panel";
+import { FilterPanel, NoteSearchField } from "./filter-panel";
 import { ActiveFilterChips } from "./active-filter-chips";
 
 export function NotesCatalogue() {
-  const { state, setFilter, clearFilters, activeFilterCount } =
-    useNotesQueryState();
+  const { state, setFilter, clearFilters, activeFilterCount, hasQuery } = useNotesQueryState();
 
   const notes = useNotes({
     page: state.page,
@@ -40,92 +37,114 @@ export function NotesCatalogue() {
     sort: state.sort,
   });
 
+  const total = notes.data?.pagination.total;
+  const resultsLabel =
+    total === undefined ? "results" : `${total} note${total !== 1 ? "s" : ""}`;
+  const isFiltered = activeFilterCount > 0 || hasQuery;
+
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 paper-bg">
-      <div className="mt-4 mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div>
-          <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-brand-orange">
-            Catalogue
-          </p>
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+      <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="space-y-1.5">
           <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground md:text-3xl">
             All Notes
           </h1>
-          <p className="mt-1 text-xs text-muted-foreground">
-            {notes.data
-              ? `${notes.data.pagination.total} note${notes.data.pagination.total !== 1 ? "s" : ""} available`
-              : "Loading…"}
+          <p className="text-sm text-muted-foreground">
+            {total === undefined
+              ? "Browse the full catalogue of study notes."
+              : `${resultsLabel} available`}
           </p>
         </div>
 
+        <div className="flex items-center gap-1 rounded-xl border border-border bg-card p-1">
+          <Button
+            variant={state.view === "grid" ? "secondary" : "ghost"}
+            size="icon-sm"
+            onClick={() => setFilter({ view: "grid" })}
+            aria-label="Grid view"
+            aria-pressed={state.view === "grid"}
+          >
+            <LayoutGrid aria-hidden="true" className="size-4" />
+          </Button>
+          <Button
+            variant={state.view === "list" ? "secondary" : "ghost"}
+            size="icon-sm"
+            onClick={() => setFilter({ view: "list" })}
+            aria-label="List view"
+            aria-pressed={state.view === "list"}
+          >
+            <List aria-hidden="true" className="size-4" />
+          </Button>
+        </div>
+      </div>
+
+      <div className="sticky top-14 z-30 -mx-4 mb-5 border-b border-border/50 bg-background/85 px-4 py-2.5 backdrop-blur-md sm:-mx-6 sm:px-6 lg:hidden">
         <div className="flex items-center gap-2">
-          <div className="hidden sm:flex items-center gap-1.5 rounded-full border border-border bg-card p-0.5 shadow-sm paper-card">
-            <Button
-              variant={state.view === "grid" ? "default" : "ghost"}
-              size="icon"
-              className={cn(
-                "size-8 rounded-full transition-all",
-                state.view === "grid" && "bg-primary text-primary-foreground shadow-none"
-              )}
-              onClick={() => setFilter({ view: "grid" })}
-              aria-label="Grid view"
-            >
-              <LayoutGrid aria-hidden="true" className="size-4" />
-            </Button>
-            <Button
-              variant={state.view === "list" ? "default" : "ghost"}
-              size="icon"
-              className={cn(
-                "size-8 rounded-full transition-all",
-                state.view === "list" && "bg-primary text-primary-foreground shadow-none"
-              )}
-              onClick={() => setFilter({ view: "list" })}
-              aria-label="List view"
-            >
-              <List aria-hidden="true" className="size-4" />
-            </Button>
-          </div>
+          <NoteSearchField className="h-10 flex-1" />
 
           <Sheet>
-            <SheetTrigger render={
-              <Button
-                variant="outline"
-                size="sm"
-                className="h-9 rounded-full px-3 text-xs shadow-sm lg:hidden paper-card transition-shadow hover:shadow-md"
-              >
-                <SlidersHorizontal aria-hidden="true" className="mr-1.5 size-3.5" />
-                Filters{activeFilterCount ? ` · ${activeFilterCount}` : ""}
-              </Button>
-            } />
-            <SheetContent side="left" className="w-[85vw] max-w-sm overflow-y-auto paper-bg paper-margin">
-              <SheetHeader>
-                <SheetTitle>Filters</SheetTitle>
+            <SheetTrigger
+              render={
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="relative size-10 shrink-0 rounded-xl"
+                  aria-label={
+                    activeFilterCount > 0 ? `Filters, ${activeFilterCount} active` : "Filters"
+                  }
+                />
+              }
+            >
+              <SlidersHorizontal aria-hidden="true" className="size-4" />
+              {activeFilterCount > 0 && (
+                <Badge className="absolute -top-1.5 -right-1.5 h-4.5 min-w-4.5 rounded-full px-1 text-[10px] tabular-nums">
+                  {activeFilterCount}
+                </Badge>
+              )}
+            </SheetTrigger>
+
+            <SheetContent side="bottom" className="h-[85dvh] gap-0 rounded-t-2xl p-0">
+              <SheetHeader className="border-b px-5 py-4">
+                <SheetTitle className="text-base font-semibold">Filters</SheetTitle>
               </SheetHeader>
-              <div className="py-4">
-                <FilterPanel />
+
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5">
+                <FilterPanel showSearch={false} />
+              </div>
+
+              <div className="border-t bg-popover px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+                <SheetClose
+                  render={
+                    <Button size="lg" className="h-12 w-full rounded-xl text-sm font-semibold" />
+                  }
+                >
+                  Show {resultsLabel}
+                </SheetClose>
               </div>
             </SheetContent>
           </Sheet>
         </div>
       </div>
 
-      {activeFilterCount > 0 && (
-        <div className="mb-5 flex flex-wrap items-center gap-2">
+      {isFiltered && (
+        <div className="mb-4 flex flex-wrap items-center gap-2">
           <ActiveFilterChips state={state} setFilter={setFilter} />
           <Button
             type="button"
             variant="ghost"
             size="sm"
             onClick={clearFilters}
-            className="h-6 text-[10px] text-muted-foreground hover:text-foreground"
+            className="h-8 text-xs text-muted-foreground hover:text-foreground"
           >
-            Clear all
+            <X aria-hidden="true" className="size-3.5" />
+            {activeFilterCount > 0 ? "Clear all" : "Clear search"}
           </Button>
         </div>
       )}
 
-      <div className="mt-3 grid gap-6 lg:grid-cols-[20rem_minmax(0,1fr)]">
+      <div className="grid gap-6 lg:grid-cols-[17rem_minmax(0,1fr)]">
         <div className="hidden lg:block">
-          <div className="sticky top-20 rounded-xl border border-border bg-card p-4 shadow-sm notebook-lines torn-paper paper-card">
+          <div className="sticky top-20 rounded-2xl border border-border bg-card p-5">
             <FilterPanel />
           </div>
         </div>
@@ -133,18 +152,16 @@ export function NotesCatalogue() {
         <div id="results" className="min-w-0">
           <div
             className={cn(
-              "mt-4 grid gap-4",
-              state.view === "grid"
-                ? "sm:grid-cols-2 xl:grid-cols-3"
-                : "grid-cols-1"
+              "grid gap-4",
+              state.view === "grid" ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3" : "grid-cols-1",
             )}
           >
             {notes.isPending ? (
-              Array.from({ length: 12 }, (_, index) => (
-                <ShimmerNoteCard key={index} />
-              ))
+              <div className="col-span-full">
+                <NotesCatalogueSkeleton />
+              </div>
             ) : notes.isError ? (
-              <div className={state.view === "grid" ? "sm:col-span-2 xl:col-span-3" : "col-span-full"}>
+              <div className="col-span-full">
                 <ErrorState onRetry={() => notes.refetch()} />
               </div>
             ) : notes.data?.items.length ? (
@@ -156,7 +173,7 @@ export function NotesCatalogue() {
                 />
               ))
             ) : (
-              <div className={state.view === "grid" ? "sm:col-span-2 xl:col-span-3" : "col-span-full"}>
+              <div className="col-span-full">
                 <EmptyState
                   icon={Search}
                   title="No notes match these filters"
@@ -174,7 +191,8 @@ export function NotesCatalogue() {
           {notes.data && notes.data.pagination.totalPages > 1 && (
             <div className="mt-8">
               <PaginationBar
-                pagination={notes.data.pagination}
+                page={notes.data.pagination.page}
+                totalPages={notes.data.pagination.totalPages}
                 onPageChange={(page) => setFilter({ page })}
               />
             </div>

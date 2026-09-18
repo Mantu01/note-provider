@@ -65,7 +65,7 @@ export default function ContactPage() {
             return (
               <Card key={channel.title} className="rounded-2xl border border-border/80 bg-card">
                 <CardContent className="flex flex-col gap-4 p-5">
-                  <span className="inline-flex size-11 items-center justify-center rounded-xl bg-brand-orange/10 text-brand-orange">
+                  <span className="inline-flex size-11 items-center justify-center rounded-xl bg-accent/10 text-accent">
                     <Icon aria-hidden="true" className="size-5" />
                   </span>
                   <div>
@@ -91,7 +91,7 @@ export default function ContactPage() {
 
         <div className="mt-8 grid gap-4 md:grid-cols-2">
           <div className="flex items-start gap-4 rounded-2xl border border-border/60 bg-muted/20 p-5">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-orange/10 text-brand-orange">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent">
               <ShieldCheck aria-hidden="true" className="size-5" />
             </div>
             <div>
@@ -103,7 +103,7 @@ export default function ContactPage() {
           </div>
 
           <div className="flex items-start gap-4 rounded-2xl border border-border/60 bg-muted/20 p-5">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-orange/10 text-brand-orange">
+            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent">
               <HelpCircle aria-hidden="true" className="size-5" />
             </div>
             <div>

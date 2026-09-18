@@ -13,6 +13,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ErrorState } from "@/components/shared/error-state";
+import { CheckoutSkeleton } from "@/components/shared/shimmer-loader";
 import { PriceTag } from "@/components/shared/price-tag";
 import { useGroup } from "@/hooks/useGroups";
 import { useNote } from "@/hooks/useNotes";
@@ -21,23 +22,15 @@ import { BRAND } from "@/lib/constants";
 import { checkoutSchema, type CheckoutValues } from "@/schemas/checkout.schema";
 import type { PurchaseItemType } from "@/lib/types";
 
-function CheckoutSkeleton() {
-  return (
-    <div className="mx-auto max-w-5xl px-4 py-8">
-      <div className="h-80 shimmer-premium rounded-2xl" />
-    </div>
-  );
-}
-
 function FreeNoteGuard({ slug }: { slug: string }) {
   return (
     <div className="mx-auto max-w-xl px-4 py-20">
-      <div className="text-center space-y-4 paper-card torn-edge p-8">
+      <div className="space-y-4 rounded-2xl border border-border bg-card p-8 text-center">
         <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-success/10 border border-success/20">
           <PackageCheck aria-hidden="true" className="size-8 text-success" />
         </div>
         <div>
-          <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-brand-orange">Completely free</p>
+          <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-accent">Completely free</p>
           <h1 className="mt-2 text-xl font-bold tracking-tight">This note is free to download</h1>
           <p className="mt-2 text-sm text-muted-foreground">
             No payment needed — head back to the note page to get it instantly.
@@ -69,8 +62,7 @@ function OrderSummaryCard({
 }) {
   return (
     <aside className="order-first lg:order-last">
-      <div className="rounded-xl border border-border bg-card shadow-lg torn-paper paper-card-orange lg:sticky lg:top-20">
-        {/* Cover image */}
+      <div className="rounded-xl border border-border bg-card shadow-lg lg:sticky lg:top-20">
         <div className="relative aspect-[16/9] overflow-hidden rounded-t-xl bg-muted/20">
           {coverImageUrl ? (
             <Image
@@ -84,7 +76,7 @@ function OrderSummaryCard({
           ) : (
             <div className="flex h-full flex-col items-center justify-center gap-2 text-primary/30 bg-gradient-to-br from-primary/5 to-transparent">
               <FileText className="size-10" />
-              <span className="text-xs font-medium uppercase tracking-widest">PDF Document</span>
+              <span className="text-xs font-medium uppercase tracking-widest">PDF document</span>
             </div>
           )}
         </div>
@@ -106,7 +98,7 @@ function OrderSummaryCard({
           </div>
 
           <p className="text-xs leading-relaxed text-muted-foreground flex items-center gap-1.5">
-            <ShieldCheck aria-hidden="true" className="size-3.5 shrink-0 text-brand-green" />
+            <ShieldCheck aria-hidden="true" className="size-3.5 shrink-0 text-success" />
             Instant download after payment.
           </p>
         </div>
@@ -151,7 +143,7 @@ export function CheckoutPage({
       {
         onSuccess: (order) => {
           const themeColor = getComputedStyle(document.documentElement)
-            .getPropertyValue("--brand-green")
+            .getPropertyValue("--primary")
             .trim();
 
           const checkout = new Razorpay({
@@ -202,8 +194,7 @@ export function CheckoutPage({
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 paper-bg">
-      {/* Back link */}
+    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
       <Link
         href={itemType === "group" ? `/groups/${slug}` : `/notes/${slug}`}
         className="inline-flex items-center gap-1.5 text-xs text-muted-foreground mb-6"
@@ -213,10 +204,9 @@ export function CheckoutPage({
       </Link>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        {/* Form */}
         <form onSubmit={form.handleSubmit(submit)} className="space-y-5">
-          <div className="paper-card-orange torn-edge p-5">
-            <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-brand-orange">
+          <div className="rounded-2xl border border-border bg-muted/30 p-5">
+            <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-accent">
               Secure checkout
             </p>
             <h1 className="mt-1.5 text-2xl font-bold tracking-tight md:text-3xl">
@@ -227,8 +217,7 @@ export function CheckoutPage({
             </p>
           </div>
 
-          <div className="rounded-xl border border-border bg-card p-5 shadow-sm space-y-4 paper-card">
-            {/* Full name field */}
+          <div className="space-y-4 rounded-xl border border-border bg-card p-5 shadow-sm">
             <div className="space-y-1.5">
               <Label htmlFor="fullName" className="text-sm font-medium">
                 Full name
@@ -245,7 +234,6 @@ export function CheckoutPage({
               )}
             </div>
 
-            {/* Consent checkbox */}
             <Controller
               name="consentAccepted"
               control={form.control}
@@ -275,11 +263,10 @@ export function CheckoutPage({
               <p className="text-xs text-destructive">{form.formState.errors.consentAccepted.message}</p>
             )}
 
-            {/* Pay button */}
             <Button
               type="submit"
               size="lg"
-              className="w-full rounded-xl font-semibold shadow-lg bg-brand-orange text-white"
+              className="w-full rounded-xl bg-accent font-semibold text-accent-foreground shadow-lg"
               disabled={submitting || !form.formState.isValid}
             >
               {submitting ? (
@@ -290,14 +277,12 @@ export function CheckoutPage({
             </Button>
           </div>
 
-          {/* Security notice */}
           <p className="text-center text-[10px] text-muted-foreground flex items-center justify-center gap-1.5">
-            <ShieldCheck aria-hidden="true" className="size-3 text-brand-green" />
+            <ShieldCheck aria-hidden="true" className="size-3 text-success" />
             Payments are securely processed by Razorpay. We never store your payment details.
           </p>
         </form>
 
-        {/* Order summary */}
         <OrderSummaryCard
           title={"name" in item ? item.name : item.title}
           categoryName={item.category.name}

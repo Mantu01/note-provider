@@ -1,6 +1,5 @@
 "use client";
 
-import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 import Link from "next/link";
 import { Search, Edit3, Trash2, ShieldAlert, FilePlus2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,30 +9,21 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PaginationBar } from "@/components/shared/pagination-bar";
 import { StatusBadge } from "@/components/shared/status-badge";
-import { EmptyState } from "@/components/shared/empty-state";
-import { useAdminNotes, useDeleteNote } from "@/hooks/useAdmin";
-import { useAdminProfile } from "@/hooks/useAdmin";
+import { useAdminNotes, useAdminProfile, useDeleteNote } from "@/hooks/useAdmin";
+import { useAdminListState } from "@/hooks/use-admin-table-state";
 import type { AdminNote } from "@/lib/types";
 
 export function NotesTable() {
-  const [{ page, search, deleteId }, setParams] = useQueryStates({
-    page: parseAsInteger.withDefault(1),
-    search: parseAsString.withDefault(""),
-    deleteId: parseAsString,
-  });
-
+  const { page, search, deleteId, setPage, setSearch, setDeleteId } = useAdminListState();
   const { data: profile } = useAdminProfile();
   const { data, isLoading } = useAdminNotes({ page, limit: 12, q: search });
   const deleteMutation = useDeleteNote();
 
   const notes = data?.items ?? [];
   const pagination = data?.pagination;
-  const isHeadAdmin = Boolean(profile?.isHead);
   const deletingNote = notes.find((n) => n.id === deleteId) ?? null;
 
-  const setPage = (p: number) => setParams({ page: p });
-  const setSearch = (q: string) => setParams({ search: q, page: 1 });
-  const setDeletingNote = (n: AdminNote | null) => setParams({ deleteId: n?.id ?? null });
+  const setDeletingNote = (note: AdminNote | null) => setDeleteId(note?.id ?? null);
 
   const canDeleteNote = (note: AdminNote | null) => {
     if (!note || !profile) return false;
@@ -55,12 +45,9 @@ export function NotesTable() {
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search notes catalog..."
+            placeholder="Search notes catalogue..."
             value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
+            onChange={(event) => setSearch(event.target.value)}
             className="pl-9"
           />
         </div>
@@ -94,16 +81,14 @@ export function NotesTable() {
               ))
             ) : notes.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7}>
-                  <EmptyState
-                    title="No notes found"
-                    description="Create your first note to populate the catalog."
-                    action={
-                      <Button render={<Link href="/admin/notes/new" />}>
-                        Create Note
-                      </Button>
-                    }
-                  />
+                <TableCell colSpan={7} className="py-12 text-center">
+                  <p className="text-sm font-medium text-foreground">No notes found</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Create your first note to populate the catalogue.
+                  </p>
+                  <Button className="mt-4" render={<Link href="/admin/notes/new" />}>
+                    Create Note
+                  </Button>
                 </TableCell>
               </TableRow>
             ) : (
@@ -131,8 +116,8 @@ export function NotesTable() {
                       {note.visibility}
                     </Badge>
                   </TableCell>
-                  <TableCell className="text-sm text-muted-foreground">
-                    {note.downloadCount + note.purchaseCount}
+                  <TableCell className="text-sm tabular-nums text-muted-foreground">
+                    {note.downloadCount}
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">

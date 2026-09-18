@@ -1,76 +1,81 @@
 "use client";
 
-import { Suspense } from "react";
-import { ResponsiveContainer, AreaChart, Area, XAxis, YAxis, Tooltip } from "recharts";
+import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DashboardStats } from "@/lib/types";
 
-type RevenueChartProps = {
-  data: DashboardStats["revenueSeries"];
-};
-
-function RevenueAreaChartInner({ data }: RevenueChartProps) {
-  const formattedData = data.map((item) => ({
+export function RevenueChart({ data }: { data: DashboardStats["revenueSeries"] }) {
+  const points = data.map((item) => ({
     date: item.date.slice(5),
     revenue: item.revenuePaise / 100,
     orders: item.orders,
   }));
+  const hasRevenue = data.some((item) => item.revenuePaise > 0);
 
   return (
-    <ResponsiveContainer width="100%" height={280}>
-      <AreaChart data={formattedData} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
-        <defs>
-          <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.4} />
-            <stop offset="95%" stopColor="var(--primary)" stopOpacity={0.0} />
-          </linearGradient>
-        </defs>
-        <XAxis dataKey="date" stroke="var(--muted-foreground)" fontSize={12} tickLine={false} axisLine={false} />
-        <YAxis
-          stroke="var(--muted-foreground)"
-          fontSize={12}
-          tickLine={false}
-          axisLine={false}
-          tickFormatter={(val) => `₹${val}`}
-        />
-        <Tooltip
-          content={({ active, payload }) => {
-            if (active && payload && payload.length) {
-              const item = payload[0].payload;
-              return (
-                <div className="rounded-lg border border-border bg-card p-3 shadow-lg">
-                  <p className="text-xs font-semibold text-muted-foreground">{item.date}</p>
-                  <p className="text-sm font-bold text-primary">₹{item.revenue}</p>
-                  <p className="text-xs text-muted-foreground">{item.orders} orders</p>
-                </div>
-              );
-            }
-            return null;
-          }}
-        />
-        <Area
-          type="monotone"
-          dataKey="revenue"
-          stroke="var(--primary)"
-          strokeWidth={2}
-          fillOpacity={1}
-          fill="url(#revenueGradient)"
-        />
-      </AreaChart>
-    </ResponsiveContainer>
-  );
-}
-
-export function RevenueChart({ data }: RevenueChartProps) {
-  return (
-    <Card className="rounded-2xl border-border bg-card/60 backdrop-blur-sm">
+    <Card className="rounded-2xl border border-border">
       <CardHeader>
-        <CardTitle className="text-base font-bold">Revenue Trend (30 Days)</CardTitle>
+        <CardTitle className="text-base font-bold">Revenue (last 30 days)</CardTitle>
       </CardHeader>
-      <CardContent className="h-[280px] w-full pt-0">
-        <Suspense fallback={<div className="h-[280px] animate-pulse rounded-lg bg-muted" />}>
-          <RevenueAreaChartInner data={data} />
-        </Suspense>
+      <CardContent className="w-full">
+        {hasRevenue ? (
+          <ResponsiveContainer width="100%" height={280}>
+            <AreaChart data={points} margin={{ top: 10, right: 10, left: 0, bottom: 0 }}>
+              <defs>
+                <linearGradient id="revenueGradient" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="var(--primary)" stopOpacity={0.35} />
+                  <stop offset="95%" stopColor="var(--primary)" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <XAxis
+                dataKey="date"
+                stroke="var(--muted-foreground)"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+                minTickGap={24}
+              />
+              <YAxis
+                stroke="var(--muted-foreground)"
+                fontSize={12}
+                tickLine={false}
+                axisLine={false}
+                width={56}
+                tickFormatter={(value: number) => `₹${value}`}
+              />
+              <Tooltip
+                cursor={{ stroke: "var(--border)" }}
+                content={({ active, payload }) => {
+                  if (!active || !payload?.length) return null;
+                  const point = payload[0].payload as { date: string; revenue: number; orders: number };
+                  return (
+                    <div className="rounded-lg border border-border bg-card px-3 py-2 shadow-lg">
+                      <p className="text-xs font-semibold text-muted-foreground">{point.date}</p>
+                      <p className="text-sm font-bold text-primary tabular-nums">
+                        ₹{point.revenue.toLocaleString("en-IN")}
+                      </p>
+                      <p className="text-xs text-muted-foreground">
+                        {point.orders} order{point.orders === 1 ? "" : "s"}
+                      </p>
+                    </div>
+                  );
+                }}
+              />
+              <Area
+                type="monotone"
+                dataKey="revenue"
+                stroke="var(--primary)"
+                strokeWidth={2}
+                fillOpacity={1}
+                fill="url(#revenueGradient)"
+              />
+            </AreaChart>
+          </ResponsiveContainer>
+        ) : (
+          <div className="flex h-[280px] items-center justify-center rounded-xl border border-dashed border-border text-sm text-muted-foreground">
+            No paid orders in the last 30 days.
+          </div>
+        )}
       </CardContent>
     </Card>
   );

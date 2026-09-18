@@ -1,20 +1,15 @@
-import { z } from "zod";
-import { handler, adminHandler } from "@/helpers/api-handler";
+import { adminHandler } from "@/helpers/api-handler";
 import { fail, ok } from "@/helpers/api-response";
 import { AppError } from "@/helpers/errors";
 import { prisma } from "@/helpers/db";
-import { destroyAsset } from "@/helpers/cloudinary";
-import { toPublicNote, toAdminNote } from "@/helpers/mappers/note.mapper";
-import { createNoteSchema, updateNoteSchema } from "@/schemas/note.schema";
+import { toAdminNote } from "@/helpers/mappers/note.mapper";
+import { createNoteSchema } from "@/schemas/note.schema";
 import { rupeesToPaise } from "@/lib/format";
 import { uniqueSlug } from "@/helpers/slug";
-import { MIN_PAID_PRICE_PAISE } from "@/lib/constants";
-
+import { parsePagination, buildPagination } from "@/helpers/query";
 
 export const GET = adminHandler(async (ctx) => {
-  const page = Number(ctx.searchParams.get("page")) || 1;
-  const limit = Number(ctx.searchParams.get("limit")) || 20;
-  const skip = (page - 1) * limit;
+  const { page, limit, skip } = parsePagination(ctx.searchParams, 20);
 
   const [items, total] = await Promise.all([
     prisma.note.findMany({ include: { category: true }, orderBy: { createdAt: "desc" }, skip, take: limit }),
@@ -23,34 +18,19 @@ export const GET = adminHandler(async (ctx) => {
 
   return ok({
     items: items.map(toAdminNote),
-    pagination: { page, limit, total, totalPages: Math.ceil(total / limit), hasNext: page < Math.ceil(total / limit), hasPrev: page > 1 },
+    pagination: buildPagination(total, page, limit),
   });
 });
 
 export const POST = adminHandler(async (ctx) => {
   const body = await ctx.req.json();
   const parsed = createNoteSchema.safeParse(body);
-  if (!parsed.success) {
-    const fields: Record<string, string> = {};
-    for (const issue of parsed.error.issues) {
-      const key = issue.path.join(".") || "form";
-      if (!fields[key]) fields[key] = issue.message;
-    }
-    return fail(AppError.validation(fields, parsed.error.issues[0]?.message ?? "Invalid input"));
-  }
+  if (!parsed.success) return fail(AppError.validation());
 
   const { admin } = ctx;
   const input = parsed.data;
 
-  const pricePaise = rupeesToPaise(input.price);
   const compareAtPricePaise = input.compareAtPrice ? rupeesToPaise(input.compareAtPrice) : null;
-
-  if (input.pricingType === "paid" && pricePaise < MIN_PAID_PRICE_PAISE) {
-    throw AppError.validation({ price: `Paid notes must cost at least ₹${(MIN_PAID_PRICE_PAISE / 100).toFixed(2)}` });
-  }
-
-  const categoryDoc = await prisma.category.findUnique({ where: { id: input.categoryId } });
-  if (!categoryDoc) throw AppError.notFound("Category");
 
   const slug = await uniqueSlug("note", input.title);
 
@@ -62,7 +42,7 @@ export const POST = adminHandler(async (ctx) => {
       level: input.level,
       visibility: input.visibility,
       pricingType: input.pricingType,
-      price: pricePaise,
+      price: rupeesToPaise(input.price),
       compareAtPrice: compareAtPricePaise,
       tags: input.tags,
       isFeatured: input.isFeatured,

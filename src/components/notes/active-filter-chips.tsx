@@ -1,7 +1,12 @@
 "use client";
 
+import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useFilters } from "@/hooks/useNotes";
 import { useNotesQueryState } from "@/hooks/use-notes-query-state";
+import { NOTE_LEVEL_LABELS } from "@/lib/constants";
+import { formatPrice } from "@/lib/format";
+import type { NoteLevel } from "@/lib/types";
 
 export function ActiveFilterChips({
   state,
@@ -10,31 +15,59 @@ export function ActiveFilterChips({
   state: ReturnType<typeof useNotesQueryState>["state"];
   setFilter: ReturnType<typeof useNotesQueryState>["setFilter"];
 }) {
-  const chips = [...state.category, ...state.level];
+  const filters = useFilters();
+
+  const categoryName = (slug: string) =>
+    filters.data?.categories.find((category) => category.slug === slug)?.name ?? slug;
+
+  const chips = [
+    ...state.category.map((slug) => ({
+      key: `category-${slug}`,
+      label: categoryName(slug),
+      clear: () => setFilter({ category: state.category.filter((item) => item !== slug) }),
+    })),
+    ...state.level.map((value) => ({
+      key: `level-${value}`,
+      label: NOTE_LEVEL_LABELS[value as NoteLevel] ?? value,
+      clear: () => setFilter({ level: state.level.filter((item) => item !== value) }),
+    })),
+    ...(state.pricing
+      ? [
+          {
+            key: `pricing-${state.pricing}`,
+            label: state.pricing === "free" ? "Free only" : "Paid only",
+            clear: () => setFilter({ pricing: "" }),
+          },
+        ]
+      : []),
+    ...(state.minPrice !== null || state.maxPrice !== null
+      ? [
+          {
+            key: "price-range",
+            label: `${state.minPrice !== null ? formatPrice(state.minPrice * 100) : "₹0"} – ${
+              state.maxPrice !== null ? formatPrice(state.maxPrice * 100) : "Any"
+            }`,
+            clear: () => setFilter({ minPrice: null, maxPrice: null }),
+          },
+        ]
+      : []),
+  ];
+
   if (!chips.length) return null;
 
   return (
-    <div className="mt-2 flex flex-wrap gap-1.5">
-      {chips.map((value) => (
+    <div className="flex flex-wrap gap-1.5">
+      {chips.map((chip) => (
         <Button
-          key={value}
+          key={chip.key}
           type="button"
           variant="secondary"
           size="sm"
-          className="h-6 rounded-full px-2 text-[10px]"
-          onClick={() => {
-            const key = (["category", "level"] as const).find((name) =>
-              state[name].includes(value),
-            );
-            if (key)
-              setFilter({ [key]: state[key].filter((item) => item !== value) });
-          }}
+          className="h-8 rounded-full px-3 text-xs"
+          onClick={chip.clear}
         >
-          {value}
-          <svg aria-hidden="true" className="ml-1 size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
+          {chip.label}
+          <X aria-hidden="true" className="ml-1 size-3" />
         </Button>
       ))}
     </div>

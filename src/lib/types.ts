@@ -141,8 +141,9 @@ export type PublicOrder = {
   currency: "INR";
   paymentStatus: PaymentStatus;
   fulfillmentStatus: FulfillmentStatus;
-  buyer: { fullName: string };
+  isDownloaded: boolean;
   coverImageUrl: string | null;
+  buyer: { fullName: string };
   createdAt: string;
   paidAt: string | null;
   completedAt: string | null;
@@ -196,12 +197,12 @@ export type AdminCategory = PublicCategory & {
 export type AdminOrder = PublicOrder & {
   razorpayOrderId: string;
   razorpayPaymentId: string | null;
-  razorpaySignature: string | null;
+
   paymentMethod: string | null;
   failureReason: string | null;
   buyerFull: {
     fullName: string;
-    consentAccepted: true;
+    consentAccepted: boolean;
     ipAddress: string | null;
     userAgent: string | null;
   };
@@ -215,19 +216,6 @@ export type AdminOrder = PublicOrder & {
   adminNote: string | null;
   completedBy: AdminRef | null;
   updatedAt: string;
-};
-
-export type AdminLead = {
-  id: string;
-  orderId: string;
-  orderNumber: string;
-  fullName: string;
-  itemTitle: string;
-  amount: number;
-  amountLabel: string;
-  paymentStatus: PaymentStatus;
-  fulfillmentStatus: FulfillmentStatus;
-  createdAt: string;
 };
 
 export type AdminProfile = {
@@ -254,35 +242,18 @@ export type DashboardStats = {
     totalLabel: string;
     todayPaise: number;
     todayLabel: string;
-    last30DaysPaise: number;
-    last30DaysLabel: string;
   };
   orders: {
-    total: number;
     paid: number;
-    failed: number;
-    pendingFulfillment: number;
-    completed: number;
     today: number;
+    pendingFulfillment: number;
   };
   catalog: {
     totalNotes: number;
     freeNotes: number;
     paidNotes: number;
-    totalGroups: number;
-    totalCategories: number;
   };
-  leads: { total: number; today: number };
   revenueSeries: { date: string; revenuePaise: number; orders: number }[];
-  topNotes: {
-    id: string;
-    title: string;
-    slug: string;
-    purchaseCount: number;
-    revenuePaise: number;
-    revenueLabel: string;
-  }[];
-  categoryBreakdown: { name: string; noteCount: number; revenuePaise: number }[];
   recentOrders: AdminOrder[];
 };
 

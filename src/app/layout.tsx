@@ -1,6 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Inter, Outfit, Caveat, Instrument_Sans } from "next/font/google";
+import { Inter, Outfit } from "next/font/google";
 import { Suspense } from "react";
 import "./globals.css";
 import { APP_URL, BRAND, SEO } from "@/lib/constants";
@@ -20,18 +20,6 @@ const inter = Inter({
 const outfit = Outfit({
   subsets: ["latin"],
   variable: "--font-outfit",
-  display: "swap",
-});
-const caveat = Caveat({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-caveat",
-  display: "swap",
-});
-const instrumentSans = Instrument_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-instrument",
   display: "swap",
 });
 
@@ -122,7 +110,7 @@ export default function RootLayout({
       lang="en"
       dir="ltr"
       suppressHydrationWarning
-      className={`${inter.variable} ${outfit.variable} ${caveat.variable} ${instrumentSans.variable}`}
+      className={`${inter.variable} ${outfit.variable}`}
       data-scroll-behavior="smooth"
     >
       <head>

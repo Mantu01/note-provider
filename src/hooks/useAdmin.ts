@@ -1,12 +1,11 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient, buildQueryString } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import type {
   AdminCategory,
   AdminGroup,
-  AdminLead,
   AdminNote,
   AdminOrder,
   AdminProfile,
@@ -20,8 +19,6 @@ import type { CreateGroupInput, UpdateGroupInput } from "@/schemas/group.schema"
 import type { CreateNoteInput, UpdateNoteInput } from "@/schemas/note.schema";
 import type { UpdateOrderPayload } from "@/schemas/admin.schema";
 import { toast } from "sonner";
-
-// ─── auth ─────────────────────────────────────────────────────────────────────
 
 export function useAdminProfile() {
   return useQuery({ queryKey: queryKeys.admin.me, queryFn: () => apiClient<AdminProfile>("/admin/auth/me") });
@@ -37,13 +34,9 @@ export function useAdminLogout() {
   });
 }
 
-// ─── dashboard ────────────────────────────────────────────────────────────────
-
 export function useDashboard() {
   return useQuery({ queryKey: queryKeys.admin.dashboard, queryFn: () => apiClient<DashboardStats>("/admin/dashboard") });
 }
-
-// ─── categories ───────────────────────────────────────────────────────────────
 
 export function useAdminCategories() {
   return useQuery({
@@ -76,7 +69,7 @@ export function useUpdateCategory(id: string) {
       qc.invalidateQueries({ queryKey: queryKeys.admin.categories });
       qc.invalidateQueries({ queryKey: queryKeys.categories });
     },
-    onError: (error: Error) => toast.error(error.message || "Failed to update category"),
+    onError: (error: Error) => toast.error(error.message || "Failed to create category"),
   });
 }
 
@@ -100,12 +93,11 @@ export function useDeleteCategory() {
   });
 }
 
-// ─── groups ───────────────────────────────────────────────────────────────────
-
 export function useAdminGroups(params: { page?: number; limit?: number; q?: string } = {}) {
   return useQuery({
     queryKey: queryKeys.admin.groups.list(params),
     queryFn: () => apiClient<PaginatedData<AdminGroup>>(`/admin/groups${buildQueryString(params)}`),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -163,12 +155,11 @@ export function useDeleteGroup() {
   });
 }
 
-// ─── notes ────────────────────────────────────────────────────────────────────
-
 export function useAdminNotes(params: { page?: number; limit?: number; q?: string } = {}) {
   return useQuery({
     queryKey: queryKeys.admin.notes.list(params),
     queryFn: () => apiClient<PaginatedData<AdminNote>>(`/admin/notes${buildQueryString(params)}`),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -227,8 +218,6 @@ export function useDeleteNote() {
   });
 }
 
-// ─── orders ───────────────────────────────────────────────────────────────────
-
 export function useAdminOrders(params: {
   page?: number;
   limit?: number;
@@ -243,6 +232,7 @@ export function useAdminOrders(params: {
   return useQuery({
     queryKey: queryKeys.admin.orders.list(params),
     queryFn: () => apiClient<PaginatedData<AdminOrder>>(`/admin/orders${buildQueryString(params)}`),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -268,26 +258,6 @@ export function useUpdateOrderFulfillment(id: string) {
     onError: (error: Error) => toast.error(error.message || "Failed to update order"),
   });
 }
-
-// ─── leads ────────────────────────────────────────────────────────────────────
-
-export function useAdminLeads(params: {
-  page?: number;
-  limit?: number;
-  q?: string;
-  paymentStatus?: string;
-  fulfillmentStatus?: string;
-  from?: string;
-  to?: string;
-} = {}) {
-  return useQuery({
-    queryKey: queryKeys.admin.leads(params),
-    queryFn: () => apiClient<PaginatedData<AdminLead>>(`/admin/leads${buildQueryString(params)}`),
-    staleTime: 1000 * 60 * 2,
-  });
-}
-
-// ─── uploads ──────────────────────────────────────────────────────────────────
 
 export function useFileUpload() {
   const qc = useQueryClient();

@@ -1,8 +1,8 @@
 import { ORDER_CURRENCY } from "@/lib/constants";
 import { formatPrice, toIsoString, toIsoStringRequired } from "@/lib/format";
-import type { AdminLead, AdminOrder, PublicOrder } from "@/lib/types";
+import type { AdminOrder, PublicOrder } from "@/lib/types";
 import { toAdminRef } from "./category.mapper";
-import { id, isPopulated, nullableStr, num, str, toIdList } from "./primitives";
+import { id, isPopulated, nullableStr, num, str, toIdList, bool } from "./primitives";
 
 function buyerOf(doc: Record<string, unknown>): Record<string, unknown> {
   return (doc.buyer as Record<string, unknown>) ?? {};
@@ -29,10 +29,9 @@ export function toPublicOrder(raw: unknown): PublicOrder {
     currency: ORDER_CURRENCY,
     paymentStatus: str(doc.paymentStatus) as PublicOrder["paymentStatus"],
     fulfillmentStatus: str(doc.fulfillmentStatus) as PublicOrder["fulfillmentStatus"],
-    buyer: {
-      fullName: str(buyer.fullName),
-    },
+    isDownloaded: bool(doc.isDownloaded),
     coverImageUrl: nullableStr(doc.coverImageUrl),
+    buyer: { fullName: str(buyer.fullName) },
     createdAt: toIsoStringRequired(doc.createdAt as Date),
     paidAt: toIsoString(doc.paidAt as Date | null),
     completedAt: toIsoString(doc.completedAt as Date | null),
@@ -50,12 +49,11 @@ export function toAdminOrder(raw: unknown): AdminOrder {
     ...toPublicOrder(doc),
     razorpayOrderId: str(doc.razorpayOrderId),
     razorpayPaymentId: nullableStr(doc.razorpayPaymentId),
-    razorpaySignature: nullableStr(doc.razorpaySignature),
     paymentMethod: nullableStr(doc.paymentMethod),
     failureReason: nullableStr(doc.failureReason),
     buyerFull: {
       fullName: str(buyer.fullName),
-      consentAccepted: true,
+      consentAccepted: buyer.consentAccepted === true,
       ipAddress: nullableStr(buyer.ipAddress),
       userAgent: nullableStr(buyer.userAgent),
     },
@@ -69,25 +67,5 @@ export function toAdminOrder(raw: unknown): AdminOrder {
     adminNote: nullableStr(doc.adminNote),
     completedBy: toAdminRef(doc.completedBy),
     updatedAt: toIsoStringRequired(doc.updatedAt as Date),
-  };
-}
-
-export function toAdminLead(raw: unknown): AdminLead {
-  const doc = (raw && typeof raw === "object" ? raw : {}) as Record<string, unknown>;
-  const buyer = buyerOf(doc);
-  const snapshot = snapshotOf(doc);
-  const amount = num(doc.amount);
-
-  return {
-    id: id(doc.id),
-    orderId: id(doc.id),
-    orderNumber: str(doc.orderNumber),
-    fullName: str(buyer.fullName),
-    itemTitle: str(snapshot.title),
-    amount,
-    amountLabel: formatPrice(amount),
-    paymentStatus: str(doc.paymentStatus) as AdminLead["paymentStatus"],
-    fulfillmentStatus: str(doc.fulfillmentStatus) as AdminLead["fulfillmentStatus"],
-    createdAt: toIsoStringRequired(doc.createdAt as Date),
   };
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, X, ChevronDown } from "lucide-react";
+import { Search, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -14,23 +14,64 @@ import {
 } from "@/components/ui/select";
 import { useFilters } from "@/hooks/useNotes";
 import { useNotesQueryState } from "@/hooks/use-notes-query-state";
+import { NOTE_SORTS, NOTE_SORT_LABELS } from "@/lib/constants";
 import { cn } from "@/lib/utils";
 
-export function FilterPanel({ className }: { className?: string } = {}) {
-  const filters = useFilters();
-  const { state, setFilter, clearFilters, activeFilterCount } =
-    useNotesQueryState();
+type ToggleKey = "category" | "level";
 
-  const toggle = (key: "category" | "level", value: string) =>
+const PRICING_OPTIONS = [
+  { value: "", label: "All" },
+  { value: "free", label: "Free" },
+  { value: "paid", label: "Paid" },
+] as const;
+
+export function NoteSearchField({ className }: { className?: string } = {}) {
+  const { state, setFilter } = useNotesQueryState();
+
+  return (
+    <div className={cn("relative", className)}>
+      <Search
+        aria-hidden="true"
+        className="pointer-events-none absolute top-1/2 left-3 size-4 -translate-y-1/2 text-muted-foreground"
+      />
+      <Input
+        type="search"
+        inputMode="search"
+        value={state.q}
+        onChange={(event) => setFilter({ q: event.target.value })}
+        placeholder="Search notes or tags"
+        aria-label="Search notes"
+        className="h-full rounded-xl pr-3 pl-9 text-base sm:text-sm"
+      />
+    </div>
+  );
+}
+
+export function FilterPanel({
+  className,
+  showSearch = true,
+}: { className?: string; showSearch?: boolean } = {}) {
+  const filters = useFilters();
+  const { state, setFilter, clearFilters, activeFilterCount } = useNotesQueryState();
+
+  const toggle = (key: ToggleKey, value: string) =>
     setFilter({
-      [key]: new Set(state[key]).has(value)
+      [key]: state[key].includes(value)
         ? state[key].filter((item) => item !== value)
         : [...state[key], value],
     });
 
+  const setPrice = (key: "minPrice" | "maxPrice", raw: string) =>
+    setFilter({ [key]: raw.trim() === "" ? null : Math.max(0, Math.floor(Number(raw) || 0)) });
+
   if (filters.isError) {
     return (
-      <div className={cn("rounded-lg border border-destructive/20 bg-destructive/5 p-3 text-xs text-destructive", className)}>
+      <div
+        className={cn(
+          "rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-destructive",
+          className,
+        )}
+      >
         Could not load filter options.
       </div>
     );
@@ -39,165 +80,164 @@ export function FilterPanel({ className }: { className?: string } = {}) {
   const data = filters.data;
 
   return (
-    <aside className={cn("space-y-4", className)}>
-      <div className="space-y-2.5">
-        <div className="relative">
-          <Search
-            aria-hidden="true"
-            className="pointer-events-none absolute top-1/2 left-2.5 size-3 -translate-y-1/2 text-muted-foreground"
-          />
-          <Input
-            value={state.q}
-            onChange={(event) => setFilter({ q: event.target.value })}
-            placeholder="Search notes or tags"
-            className="h-8 pl-7 rounded-lg text-xs"
-          />
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon-sm"
-            aria-label="Clear search"
-            onClick={() => setFilter({ q: "" })}
-            className={cn(
-              "absolute top-1/2 right-1 -translate-y-1/2",
-              !state.q && "hidden",
-            )}
-          >
-            <X aria-hidden="true" className="size-3" />
-          </Button>
-        </div>
+    <div className={cn("@container flex flex-col gap-6", className)}>
+      <div className="flex flex-col gap-3">
+        {showSearch && <NoteSearchField className="h-11" />}
 
-        <div className="flex gap-1.5">
-          <Select
-            value={state.sort}
-            onValueChange={(value) =>
-              setFilter({ sort: value as typeof state.sort })
-            }
-          >
-            <SelectTrigger className="rounded-lg flex-1 h-8 text-xs">
+        <div className="grid grid-cols-1 gap-2">
+          <Label htmlFor="notes-sort" className="sr-only">
+            Sort notes
+          </Label>
+          <Select value={state.sort} onValueChange={(value) => setFilter({ sort: value as typeof state.sort })}>
+            <SelectTrigger id="notes-sort" className="h-11 w-full rounded-xl text-sm">
               <SelectValue placeholder="Sort by" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="newest">Newest</SelectItem>
-              <SelectItem value="oldest">Oldest</SelectItem>
-              <SelectItem value="price_asc">Price: low to high</SelectItem>
-              <SelectItem value="price_desc">Price: high to low</SelectItem>
-              <SelectItem value="popular">Most popular</SelectItem>
-              <SelectItem value="title_asc">A–Z</SelectItem>
+              {NOTE_SORTS.map((value) => (
+                <SelectItem key={value} value={value}>
+                  {NOTE_SORT_LABELS[value]}
+                </SelectItem>
+              ))}
             </SelectContent>
           </Select>
-
-          <div className="flex rounded-lg border bg-muted/20 p-0.5">
-            <Button
-              type="button"
-              size="icon-sm"
-              variant={state.view === "grid" ? "secondary" : "ghost"}
-              aria-label="Grid view"
-              onClick={() => setFilter({ view: "grid" })}
-            >
-              <svg aria-hidden="true" className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="3" width="7" height="7" rx="1" />
-                <rect x="14" y="3" width="7" height="7" rx="1" />
-                <rect x="3" y="14" width="7" height="7" rx="1" />
-                <rect x="14" y="14" width="7" height="7" rx="1" />
-              </svg>
-            </Button>
-            <Button
-              type="button"
-              size="icon-sm"
-              variant={state.view === "list" ? "secondary" : "ghost"}
-              aria-label="List view"
-              onClick={() => setFilter({ view: "list" })}
-            >
-              <svg aria-hidden="true" className="size-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="3" y1="6" x2="21" y2="6" />
-                <line x1="3" y1="12" x2="21" y2="12" />
-                <line x1="3" y1="18" x2="21" y2="18" />
-              </svg>
-            </Button>
-          </div>
         </div>
       </div>
 
       {activeFilterCount > 0 && (
-        <div className="flex items-center justify-between">
-          <h2 className="text-xs font-semibold">Filters</h2>
-          <Button
-            type="button"
-            variant="ghost"
-            size="sm"
-            onClick={clearFilters}
-            className="h-6 text-[10px] text-muted-foreground"
-          >
-            Clear all
-          </Button>
-        </div>
+        <Button
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={clearFilters}
+          className="h-10 w-full rounded-xl text-sm"
+        >
+          <X aria-hidden="true" className="size-3.5" />
+          Clear all filters
+        </Button>
       )}
 
-      <div className="space-y-1.5 border-t pt-3">
-        <h3 className="text-[9px] font-semibold tracking-wide uppercase text-muted-foreground">
-          Categories
-        </h3>
-        {data?.categories.map((category) => (
-          <Label
-            key={category.slug}
-            className="flex cursor-pointer items-center justify-between gap-2 p-1 rounded-md text-xs"
-          >
-            <span className="flex items-center gap-1.5">
-              <Checkbox
-                checked={new Set(state.category).has(category.slug)}
-                onCheckedChange={() => toggle("category", category.slug)}
-              />
-              <span className="truncate">{category.name}</span>
-            </span>
-            <span className="text-[9px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">
-              {category.count}
-            </span>
-          </Label>
-        ))}
-      </div>
+      <div className="grid grid-cols-1 gap-6 @md:grid-cols-2">
+        <div className="flex flex-col gap-6">
+          <FilterGroup title="Pricing">
+            <div className="grid grid-cols-3 gap-1.5 rounded-xl bg-muted/60 p-1">
+              {PRICING_OPTIONS.map((option) => {
+                const count = data?.pricing.find((entry) => entry.value === option.value)?.count;
+                return (
+                  <button
+                    key={option.label}
+                    type="button"
+                    aria-pressed={state.pricing === option.value}
+                    onClick={() => setFilter({ pricing: option.value })}
+                    className={cn(
+                      "flex h-11 flex-col items-center justify-center rounded-lg text-xs font-semibold transition-colors sm:h-9",
+                      state.pricing === option.value
+                        ? "bg-card text-foreground shadow-sm"
+                        : "text-muted-foreground hover:text-foreground",
+                    )}
+                  >
+                    <span>{option.label}</span>
+                    {count !== undefined && (
+                      <span className="text-[10px] font-medium tabular-nums opacity-70">{count}</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
 
-      <div className="space-y-1.5 border-t pt-3">
-        <h3 className="text-[9px] font-semibold tracking-wide uppercase text-muted-foreground">
-          Level
-        </h3>
-        {data?.levels.map((level) => (
-          <Label
-            key={level.value}
-            className="flex cursor-pointer items-center justify-between gap-2 p-1 rounded-md text-xs"
-          >
-            <span className="flex items-center gap-1.5">
-              <Checkbox
-                checked={new Set(state.level).has(level.value)}
-                onCheckedChange={() => toggle("level", level.value)}
-              />
-              {level.label}
-            </span>
-            <span className="text-[9px] text-muted-foreground bg-muted px-1.5 py-0.5 rounded-full">{level.count}</span>
-          </Label>
-        ))}
-      </div>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <div className="space-y-1.5">
+                <Label htmlFor="min-price" className="text-[11px] text-muted-foreground">
+                  Min ₹
+                </Label>
+                <Input
+                  id="min-price"
+                  type="number"
+                  inputMode="numeric"
+                  min={0}
+                  value={state.minPrice ?? ""}
+                  onChange={(event) => setPrice("minPrice", event.target.value)}
+                  placeholder="0"
+                  className="h-10 rounded-xl text-sm tabular-nums"
+                />
+              </div>
+              <div className="space-y-1.5">
+                <Label htmlFor="max-price" className="text-[11px] text-muted-foreground">
+                  Max ₹
+                </Label>
+                <Input
+                  id="max-price"
+                  type="number"
+                  inputMode="numeric"
+                  min={0}
+                  value={state.maxPrice ?? ""}
+                  onChange={(event) => setPrice("maxPrice", event.target.value)}
+                  placeholder="Any"
+                  className="h-10 rounded-xl text-sm tabular-nums"
+                />
+              </div>
+            </div>
+          </FilterGroup>
 
-      <div className="space-y-1.5 border-t pt-3">
-        <h3 className="text-[9px] font-semibold tracking-wide uppercase text-muted-foreground">
-          Pricing
-        </h3>
-        <Select
-          value={state.pricing || "all"}
-          onValueChange={(value) =>
-            setFilter({ pricing: value === "all" || !value ? "" : value })
-          }
-        >
-          <SelectTrigger className="w-full rounded-lg h-8 text-xs">
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All notes</SelectItem>
-            <SelectItem value="free">Free</SelectItem>
-            <SelectItem value="paid">Paid</SelectItem>
-          </SelectContent>
-        </Select>
+          <FilterGroup title="Level">
+            {data?.levels.map((level) => (
+              <FilterOption
+                key={level.value}
+                label={level.label}
+                count={level.count}
+                checked={state.level.includes(level.value)}
+                onToggle={() => toggle("level", level.value)}
+              />
+            ))}
+          </FilterGroup>
+        </div>
+
+        <FilterGroup title="Category">
+          {data?.categories.map((category) => (
+            <FilterOption
+              key={category.slug}
+              label={category.name}
+              count={category.count}
+              checked={state.category.includes(category.slug)}
+              onToggle={() => toggle("category", category.slug)}
+            />
+          ))}
+        </FilterGroup>
       </div>
-    </aside>
+    </div>
+  );
+}
+
+function FilterGroup({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <fieldset className="space-y-1">
+      <legend className="pb-2 text-xs font-semibold tracking-widest text-muted-foreground uppercase">
+        {title}
+      </legend>
+      <div className="space-y-0.5">{children}</div>
+    </fieldset>
+  );
+}
+
+function FilterOption({
+  label,
+  count,
+  checked,
+  onToggle,
+}: {
+  label: string;
+  count: number;
+  checked: boolean;
+  onToggle: () => void;
+}) {
+  return (
+    <Label className="flex min-h-11 cursor-pointer items-center justify-between gap-3 rounded-lg px-2 py-2 text-sm transition-colors hover:bg-muted/50">
+      <span className="flex min-w-0 items-center gap-2.5">
+        <Checkbox checked={checked} onCheckedChange={onToggle} className="size-4.5" />
+        <span className="truncate">{label}</span>
+      </span>
+      <span className="shrink-0 rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium tabular-nums text-muted-foreground">
+        {count}
+      </span>
+    </Label>
   );
 }

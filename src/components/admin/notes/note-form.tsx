@@ -1,16 +1,13 @@
 "use client";
 
-import { parseAsBoolean, useQueryStates } from "nuqs";
-import Link from "next/link";
+import { parseAsBoolean, parseAsStringLiteral, useQueryStates } from "nuqs";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader2, Save, ArrowLeft, AlertCircle } from "lucide-react";
-import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { CategoryDialog } from "@/components/admin/categories/category-dialog";
-import { useAdminCategories } from "@/hooks/useAdmin";
-import { useCreateNote, useUpdateNote } from "@/hooks/useAdmin";
+import { useAdminCategories, useCreateNote, useUpdateNote } from "@/hooks/useAdmin";
 import { createNoteSchema, type CreateNoteInput, type CreateNotePayload } from "@/schemas/note.schema";
 import type { AdminNote } from "@/lib/types";
 import {
@@ -38,12 +35,26 @@ export function NoteForm({ initialData }: NoteFormProps) {
   const { data: categoriesData } = useAdminCategories();
   const categories = categoriesData?.items ?? [];
 
-  const [{ categoryDialog: categoryDialogOpen }, setParams] = useQueryStates({
+  const initialPdfSource: FileSource = initialData?.pdfSource === "drive" ? "drive" : "upload";
+  const initialPreviewSource: FileSource =
+    initialData?.previewFileUrl && !initialData.previewFilePublicId ? "drive" : "upload";
+
+  const [{
+    categoryDialog: categoryDialogOpen,
+    fullFileSource,
+    previewFileSource,
+  }, setParams] = useQueryStates({
     categoryDialog: parseAsBoolean.withDefault(false),
+    fullFileSource: parseAsStringLiteral(["upload", "drive"] as const).withDefault(
+      initialPdfSource,
+    ),
+    previewFileSource: parseAsStringLiteral(["upload", "drive"] as const).withDefault(
+      initialPreviewSource,
+    ),
   });
   const setCategoryDialogOpen = (open: boolean) => setParams({ categoryDialog: open });
-
-  const initialPdfSource: FileSource = initialData?.pdfSource === "drive" ? "drive" : "upload";
+  const setFullFileSource = (value: "upload" | "drive") => setParams({ fullFileSource: value });
+  const setPreviewFileSource = (value: "upload" | "drive") => setParams({ previewFileSource: value });
 
   const defaultFullFile: FileFieldSource | undefined = (() => {
     if (initialData?.pdfSource === "drive" && initialData.drivePdfUrl) {
@@ -89,8 +100,6 @@ export function NoteForm({ initialData }: NoteFormProps) {
   const pricingType = form.watch("pricingType");
   const fullFile = form.watch("fullFile");
   const previewFile = form.watch("previewFile");
-  const [fullFileSource, setFullFileSource] = useState<FileSource>(initialPdfSource);
-  const [previewFileSource, setPreviewFileSource] = useState<FileSource>("upload");
 
   const onSubmit = (values: CreateNoteInput) => {
     if (isEditing) {

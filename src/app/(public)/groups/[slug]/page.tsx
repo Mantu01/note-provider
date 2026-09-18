@@ -3,12 +3,12 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import JsonLd, {
   productJsonLd,
-  breadcrumbJsonLd,
   webpageJsonLd,
   articleJsonLd,
 } from "@/components/seo/json-ld";
 import { APP_URL } from "@/lib/constants";
 import { GroupDetailPage } from "@/components/groups/group-detail";
+import { GroupDetailSkeleton } from "@/components/shared/shimmer-loader";
 import { prisma } from "@/helpers/db";
 
 interface GroupRouteProps {
@@ -30,22 +30,9 @@ type GroupWithRelations = {
 
 export default function GroupRoute({ params }: GroupRouteProps) {
   return (
-    <>
-      <nav
-        aria-label="Breadcrumb"
-        className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8 mb-5 flex items-center gap-1.5 text-xs text-muted-foreground"
-        data-testid="group-detail-shell"
-      >
-        <a href="/">Home</a>
-        <span aria-hidden="true" className="text-muted-foreground/40">/</span>
-        <a href="/groups" className="hover:text-foreground">Bundles</a>
-        <span aria-hidden="true" className="text-muted-foreground/40">/</span>
-        <span className="font-medium text-foreground truncate">Loading…</span>
-      </nav>
-      <Suspense fallback={null}>
-        <GroupDetail params={params} />
-      </Suspense>
-    </>
+    <Suspense fallback={<GroupDetailSkeleton />}>
+      <GroupDetail params={params} />
+    </Suspense>
   );
 }
 
@@ -88,11 +75,6 @@ async function GroupDetail({ params }: GroupRouteProps) {
       createdAt: groupDoc.createdAt.toISOString(),
       updatedAt: groupDoc.updatedAt.toISOString(),
     }),
-    breadcrumbJsonLd([
-      { name: "Home", url: APP_URL },
-      { name: "Bundles", url: `${APP_URL}/groups` },
-      { name: groupDoc.name, url: pageUrl },
-    ]),
     webpageJsonLd({
       title: groupDoc.name,
       description: groupDoc.description?.slice(0, 160) || "",

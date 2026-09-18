@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import { OrderLookupPage } from "@/components/orders/order-lookup-page";
 import { APP_URL, SEO } from "@/lib/constants";
-import { ShimmerLoader } from "@/components/shared/shimmer-loader";
+import { OrderLookupSkeleton } from "@/components/shared/shimmer-loader";
 
 export const metadata: Metadata = {
   title: "Track Your Order — Check Note Delivery Status | Notes Provider",
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 
 export default function TrackOrderRoute() {
   return (
-    <Suspense fallback={<ShimmerLoader className="mx-auto max-w-xl h-64 w-full rounded-2xl" />}>
+    <Suspense fallback={<OrderLookupSkeleton />}>
       <OrderLookupPage />
     </Suspense>
   );

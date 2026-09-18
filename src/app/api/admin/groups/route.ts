@@ -2,12 +2,11 @@ import { adminHandler } from "@/helpers/api-handler";
 import { ok } from "@/helpers/api-response";
 import { prisma } from "@/helpers/db";
 import { toAdminGroup } from "@/helpers/mappers/group.mapper";
+import { parsePagination, buildPagination } from "@/helpers/query";
 
 
 export const GET = adminHandler(async (ctx) => {
-  const page = Number(ctx.searchParams.get("page")) || 1;
-  const limit = Number(ctx.searchParams.get("limit")) || 20;
-  const skip = (page - 1) * limit;
+  const { page, limit, skip } = parsePagination(ctx.searchParams, 20);
 
   const [items, total] = await Promise.all([
     prisma.group.findMany({
@@ -21,6 +20,6 @@ export const GET = adminHandler(async (ctx) => {
 
   return ok({
     items: items.map(toAdminGroup),
-    pagination: { page, limit, total, totalPages: Math.ceil(total / limit), hasNext: page < Math.ceil(total / limit), hasPrev: page > 1 },
+    pagination: buildPagination(total, page, limit),
   });
 });

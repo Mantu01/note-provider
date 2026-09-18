@@ -7,7 +7,6 @@ import { toAdminNote } from "@/helpers/mappers/note.mapper";
 import { updateNoteSchema } from "@/schemas/note.schema";
 import { rupeesToPaise } from "@/lib/format";
 
-
 export const GET = adminHandler(async (ctx) => {
   const { id } = await ctx.params;
   const note = await prisma.note.findUnique({ where: { id }, include: { category: true } });
@@ -18,24 +17,15 @@ export const GET = adminHandler(async (ctx) => {
 export const PATCH = adminHandler(async (ctx) => {
   const [{ id }, body] = await Promise.all([ctx.params, ctx.req.json()]);
   const parsed = updateNoteSchema.safeParse(body);
-  if (!parsed.success) {
-    const fields: Record<string, string> = {};
-    for (const issue of parsed.error.issues) {
-      const key = issue.path.join(".") || "form";
-      if (!fields[key]) fields[key] = issue.message;
-    }
-    return fail(AppError.validation(fields, parsed.error.issues[0]?.message ?? "Invalid input"));
-  }
+  if (!parsed.success) return fail(AppError.validation());
   const existing = await prisma.note.findUnique({ where: { id } });
   if (!existing) throw AppError.notFound("Note");
 
   const input = parsed.data;
-  const { admin } = ctx;
-  const updates: Record<string, unknown> = { updatedBy: admin.id };
+  const updates: Record<string, unknown> = { updatedBy: ctx.admin.id };
 
   if (input.title !== undefined) updates.title = input.title;
   if (input.description !== undefined) updates.description = input.description;
-
   if (input.categoryId !== undefined) {
     const categoryDoc = await prisma.category.findUnique({ where: { id: input.categoryId } });
     if (!categoryDoc) throw AppError.notFound("Category");
@@ -114,21 +104,16 @@ export const PATCH = adminHandler(async (ctx) => {
 });
 
 export const DELETE = adminHandler(async (ctx) => {
-  const { admin } = ctx;
   const { id } = await ctx.params;
   const note = await prisma.note.findUnique({ where: { id } });
   if (!note) throw AppError.notFound("Note");
 
-  const creatorId = note.createdBy;
-  const isCreator = Boolean(creatorId && creatorId === admin.id);
-  const canDelete = admin.isHead || isCreator;
-
-  if (!canDelete) throw AppError.forbidden("Only the Head Admin or the creator of this note can delete it.");
+  const isCreator = Boolean(note.createdBy && note.createdBy === ctx.admin.id);
+  if (!ctx.admin.isHead && !isCreator) throw AppError.forbidden("Only the Head Admin or creator can delete this note.");
 
   const groupsWithNote = await prisma.group.findMany({ where: { noteGroups: { some: { noteId: id } } } });
 
   const affectedGroups: Array<{ id: string; name: string; slug: string; hiddenBecauseEmpty: boolean }> = [];
-
   await Promise.all(groupsWithNote.map(async (group) => {
     const remainingNotes = await prisma.note.findMany({ where: { noteGroups: { some: { groupId: group.id } }, NOT: { id } } });
     if (remainingNotes.length === 0) {

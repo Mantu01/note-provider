@@ -49,10 +49,4 @@ export async function clearAdminSessionCookie(): Promise<void> {
   });
 }
 
-export async function getOptionalAdmin(): Promise<AdminSession | null> {
-  try {
-    return await requireAdmin();
-  } catch {
-    return null;
-  }
-}
+

@@ -19,26 +19,6 @@ export function parsePagination(
   return { page, limit, skip: (page - 1) * limit };
 }
 
-export function parseArrayParam(searchParams: URLSearchParams, key: string): string[] {
-  const values = searchParams
-    .getAll(key)
-    .flatMap((value) => value.split(",").map((v) => v.trim()).filter(Boolean));
-  return Array.from(new Set(values));
-}
-
-export function parseBooleanParam(searchParams: URLSearchParams, key: string): boolean | undefined {
-  const value = searchParams.get(key);
-  if (value === null) return undefined;
-  return value === "true" || value === "1";
-}
-
-export function parseNumberParam(searchParams: URLSearchParams, key: string): number | undefined {
-  const raw = searchParams.get(key);
-  if (raw === null || raw.trim() === "") return undefined;
-  const value = Number(raw);
-  return Number.isFinite(value) ? value : undefined;
-}
-
 export function buildPagination(total: number, page: number, limit: number): Pagination {
   const totalPages = Math.max(Math.ceil(total / limit), 1);
   return {

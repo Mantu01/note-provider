@@ -1,3 +1,4 @@
+import crypto from "node:crypto";
 import { prisma } from "./db";
 
 export async function generateOrderNumber(now = new Date()): Promise<string> {
@@ -8,5 +9,6 @@ export async function generateOrderNumber(now = new Date()): Promise<string> {
     update: { seq: { increment: 1 } },
   });
   const sequence = String(counter.seq).padStart(4, "0");
-  return `NP-${datePart}-${sequence}`;
+  const suffix = crypto.randomBytes(2).toString("hex");
+  return `${datePart}-${sequence}${suffix}`.toUpperCase();
 }

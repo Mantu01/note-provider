@@ -6,18 +6,10 @@ import { toAdminCategory } from "@/helpers/mappers/category.mapper";
 import { updateCategorySchema } from "@/schemas/category.schema";
 import { slugify } from "@/helpers/slug";
 
-
 export const PATCH = adminHandler(async (ctx) => {
   const [{ id }, body] = await Promise.all([ctx.params, ctx.req.json()]);
   const parsed = updateCategorySchema.safeParse(body);
-  if (!parsed.success) {
-    const fields: Record<string, string> = {};
-    for (const issue of parsed.error.issues) {
-      const key = issue.path.join(".") || "form";
-      if (!fields[key]) fields[key] = issue.message;
-    }
-    return fail(AppError.validation(fields, parsed.error.issues[0]?.message ?? "Invalid input"));
-  }
+  if (!parsed.success) return fail(AppError.validation());
 
   const existing = await prisma.category.findUnique({ where: { id } });
   if (!existing) throw AppError.notFound("Category");

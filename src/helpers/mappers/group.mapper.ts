@@ -1,4 +1,4 @@
-import { formatPriceLabel, toIsoStringRequired } from "@/lib/format";
+import { formatPriceLabel } from "@/lib/format";
 import type { AdminGroup, PublicGroup, PublicNote } from "@/lib/types";
 
 type CategoryShape = { id: unknown; name: unknown; slug: unknown; icon: unknown };

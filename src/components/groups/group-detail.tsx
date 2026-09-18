@@ -2,13 +2,13 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { ArrowLeft, FileText, Layers, TrendingUp } from "lucide-react";
+import { ArrowRight, FileText, Layers, TrendingUp } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ErrorState } from "@/components/shared/error-state";
 import { GroupCard } from "@/components/shared/group-card";
 import { NoteCard } from "@/components/shared/note-card";
-import { ShimmerLoader } from "@/components/shared/shimmer-loader";
+import { GroupDetailSkeleton } from "@/components/shared/shimmer-loader";
 import { MarkdownPreview } from "@/components/shared/md-preview";
 import { PriceTag } from "@/components/shared/price-tag";
 import { useGroup } from "@/hooks/useGroups";
@@ -18,16 +18,7 @@ export function GroupDetailPage({ slug }: { slug: string }) {
   const query = useGroup(slug);
 
   if (query.isPending) {
-    return (
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="space-y-4">
-          <ShimmerLoader className="h-3 w-32 rounded" />
-          <ShimmerLoader className="h-56 w-full rounded-2xl" />
-          <ShimmerLoader className="h-5 w-3/4 rounded" />
-          <ShimmerLoader className="h-3 w-full rounded" />
-        </div>
-      </div>
-    );
+    return <GroupDetailSkeleton />;
   }
 
   if (query.isError || !query.data) {
@@ -50,7 +41,7 @@ export function GroupDetailPage({ slug }: { slug: string }) {
   const savingsPercent = individualValue > 0 ? Math.round((savings / individualValue) * 100) : 0;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8 paper-bg" data-testid="group-content">
+    <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8" data-testid="group-content">
       <nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-1.5 text-xs text-muted-foreground">
         <Link href="/" className="hover:text-foreground">Home</Link>
         <span aria-hidden="true" className="text-muted-foreground/40">/</span>
@@ -61,7 +52,7 @@ export function GroupDetailPage({ slug }: { slug: string }) {
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
         <article className="space-y-5">
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-border/50 bg-muted/20 shadow-sm torn-paper paper-card-green">
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-border/50 bg-muted/20 shadow-sm">
             {group.coverImageUrl ? (
               <Image
                 src={group.coverImageUrl}
@@ -74,13 +65,13 @@ export function GroupDetailPage({ slug }: { slug: string }) {
             ) : (
               <div className="flex h-full flex-col items-center justify-center gap-2 text-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
                 <FileText aria-hidden="true" className="size-12" />
-                <span className="text-xs font-medium uppercase tracking-widest">Bundle Cover</span>
+                <span className="text-xs font-medium uppercase tracking-widest">Bundle cover</span>
               </div>
             )}
           </div>
 
           <div className="space-y-2">
-            <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-brand-orange">
+            <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-accent">
               {group.category.name} bundle
             </p>
             <h1 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">
@@ -110,7 +101,7 @@ export function GroupDetailPage({ slug }: { slug: string }) {
         </article>
 
         <aside className="lg:sticky lg:top-20 lg:self-start space-y-4">
-          <Card className="rounded-xl border border-border bg-card torn-paper shadow-lg paper-card-orange">
+          <Card className="rounded-xl border border-border bg-card shadow-lg">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-bold">Get this bundle</CardTitle>
               <CardDescription className="text-xs">
@@ -134,11 +125,11 @@ export function GroupDetailPage({ slug }: { slug: string }) {
 
               <Button
                 render={<Link href={`/checkout/${group.slug}?itemType=group`} />}
-                className="w-full rounded-xl font-semibold shadow-md bg-brand-orange text-white"
+                className="w-full rounded-xl bg-accent font-semibold text-accent-foreground shadow-md"
                 size="lg"
               >
                 Buy this bundle
-                <ArrowLeft aria-hidden="true" className="ml-1 size-3.5 rotate-180" />
+                <ArrowRight aria-hidden="true" className="size-3.5" />
               </Button>
 
               <p className="text-center text-[10px] leading-relaxed text-muted-foreground">
@@ -147,9 +138,9 @@ export function GroupDetailPage({ slug }: { slug: string }) {
 
               <div className="flex items-center justify-center gap-2 border-t border-border/50 pt-4 text-[10px] text-muted-foreground">
                 <span>Secure payment</span>
-                <span className="text-muted-foreground/30">\</span>
+                <span aria-hidden="true" className="text-muted-foreground/30">·</span>
                 <span>Original content</span>
-                <span className="text-muted-foreground/30">\</span>
+                <span aria-hidden="true" className="text-muted-foreground/30">·</span>
                 <span>No spam</span>
               </div>
             </CardContent>

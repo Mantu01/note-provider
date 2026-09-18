@@ -1,62 +1,30 @@
 import { adminHandler } from "@/helpers/api-handler";
-import { ok, fail } from "@/helpers/api-response";
+import { ok } from "@/helpers/api-response";
 import { prisma } from "@/helpers/db";
-import { AppError } from "@/helpers/errors";
-import { generateOrderNumber } from "@/helpers/order-number";
-import { createRazorpayOrder } from "@/helpers/razorpay";
-import { z } from "zod";
+import { toAdminOrder } from "@/helpers/mappers/order.mapper";
+import { parsePagination, buildPagination, buildOrderFilter, buildOrderSort } from "@/helpers/query";
 
-const createOrderSchema = z.object({
-  fullName: z.string().min(2).max(100),
-  consentAccepted: z.literal(true),
-  noteSlug: z.string().optional(),
-  groupSlug: z.string().optional(),
-});
+export const GET = adminHandler(async (ctx) => {
+  const { page, limit, skip } = parsePagination(ctx.searchParams, 15);
+  const query = {
+    q: ctx.searchParams.get("q") || undefined,
+    paymentStatus: (ctx.searchParams.get("paymentStatus") as "created" | "paid" | "failed") || undefined,
+    fulfillmentStatus: (ctx.searchParams.get("fulfillmentStatus") as "pending" | "completed" | "cancelled") || undefined,
+    itemType: (ctx.searchParams.get("itemType") as "note" | "group") || undefined,
+    from: ctx.searchParams.get("from") || undefined,
+    to: ctx.searchParams.get("to") || undefined,
+    sort: (ctx.searchParams.get("sort") as "newest" | "oldest" | "amount_desc" | "amount_asc") || "newest",
+  };
 
+  const filter = buildOrderFilter(query);
+  const sort = buildOrderSort(query.sort);
 
-export const POST = adminHandler(async (ctx) => {
-  const body = await ctx.req.json();
-  const parsed = createOrderSchema.safeParse(body);
-  if (!parsed.success) {
-    return fail(AppError.validation({ fullName: parsed.error.flatten().fieldErrors.fullName?.[0] ?? "Invalid name" }));
-  }
+  const [items, total] = await Promise.all([
+    prisma.order.findMany({ where: filter.where as any, orderBy: sort as any, skip, take: limit }),
+    prisma.order.count({ where: filter.where as any }),
+  ]);
 
-  const input = parsed.data;
-  const itemSlug = input.noteSlug || input.groupSlug;
-  const itemType = input.noteSlug ? "note" : "group";
-
-  if (!itemSlug) throw new Error("Invalid item");
-
-  const orderNumber = await generateOrderNumber();
-
-  const note = itemSlug ? await prisma.note.findFirst({ where: { slug: itemSlug }, select: { id: true, price: true, title: true } }) : null;
-  const group = itemSlug ? await prisma.group.findFirst({ where: { slug: itemSlug }, select: { id: true, price: true, name: true } }) : null;
-  const itemDoc = note ?? group;
-
-  if (!itemDoc) throw new Error("Item not found");
-
-  const price = (itemDoc as any).price;
-
-  const { id: razorpayOrderId } = await createRazorpayOrder({
-    amount: price,
-    receipt: orderNumber,
-    notes: { orderNumber, itemType, itemSlug, buyerName: input.fullName },
-  });
-
-  const doc = await prisma.order.create({
-    data: {
-      orderNumber,
-      itemType,
-      noteId: itemType === "note" ? itemDoc.id : null,
-      groupId: itemType === "group" ? itemDoc.id : null,
-      amount: price,
-      razorpayOrderId,
-      paymentStatus: "created",
-      fulfillmentStatus: "pending",
-      itemSnapshot: { title: (itemDoc as any).title || (itemDoc as any).name, slug: itemSlug, price },
-      buyer: { fullName: input.fullName, consentAccepted: input.consentAccepted, ipAddress: ctx.ip, userAgent: ctx.userAgent },
-    },
-  });
-
-  return ok({ orderNumber, razorpayOrderId });
+  const res = ok({ items: items.map(toAdminOrder), pagination: buildPagination(total, page, limit) });
+  res.headers.set("Cache-Control", "private, no-store");
+  return res;
 });

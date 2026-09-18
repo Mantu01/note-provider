@@ -12,7 +12,6 @@ import { Switch } from "@/components/ui/switch";
 import { FileUploadField } from "@/components/shared/file-upload-field";
 import { type CreateNoteInput, type CreateNotePayload } from "@/schemas/note.schema";
 import { NOTE_LEVELS } from "@/lib/constants";
-import type { AdminNote } from "@/lib/types";
 
 type FileSource = "upload" | "drive";
 
@@ -161,7 +160,7 @@ export function FileAttachmentsSection({
         <CardTitle className="text-lg">File Attachments</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-        {/* Full PDF section */}
+
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <span className="text-sm font-medium">
@@ -230,12 +229,12 @@ export function FileAttachmentsSection({
                 maxSizeMB={100}
                 value={fullFile?.source === "upload" ? fullFile : null}
                 onChange={(val) => {
-                  if (val) {
-                    form.setValue("fullFile", { ...val, source: "upload" as const } as CreateNoteInput["fullFile"]);
-                  } else {
-                    form.setValue("fullFile", undefined as unknown as CreateNoteInput["fullFile"]);
-                  }
-                  form.setValue("previewFile", null);
+                  form.setValue(
+                    "fullFile",
+                    val
+                      ? ({ ...val, source: "upload" as const } as CreateNoteInput["fullFile"])
+                      : (undefined as unknown as CreateNoteInput["fullFile"]),
+                  );
                 }}
               />
               {form.formState.errors.fullFile && (
@@ -245,7 +244,7 @@ export function FileAttachmentsSection({
           )}
         </div>
 
-        {/* Preview PDF section (paid only) */}
+
         {pricingType === "paid" && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">

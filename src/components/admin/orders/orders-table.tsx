@@ -1,29 +1,23 @@
 "use client";
 
-import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
+import Link from "next/link";
+import Image from "next/image";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PaginationBar } from "@/components/shared/pagination-bar";
 import { StatusBadge } from "@/components/shared/status-badge";
-import { EmptyState } from "@/components/shared/empty-state";
 import { useAdminOrders } from "@/hooks/useAdmin";
+import { useAdminListState } from "@/hooks/use-admin-table-state";
 import { useRouter } from "next/navigation";
 
 export function OrdersTable() {
-  const [{ page, search }, setParams] = useQueryStates({
-    page: parseAsInteger.withDefault(1),
-    search: parseAsString.withDefault(""),
-  });
-
+  const { page, search, setPage, setSearch } = useAdminListState();
   const { data, isLoading } = useAdminOrders({ page, limit: 15, q: search });
   const router = useRouter();
 
   const orders = data?.items ?? [];
   const pagination = data?.pagination;
-
-  const setPage = (p: number) => setParams({ page: p });
-  const setSearch = (q: string) => setParams({ search: q, page: 1 });
 
   return (
     <div className="space-y-6">
@@ -33,10 +27,7 @@ export function OrdersTable() {
           <Input
             placeholder="Search order # or buyer name..."
             value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
+            onChange={(event) => setSearch(event.target.value)}
             className="pl-9"
           />
         </div>
@@ -52,24 +43,25 @@ export function OrdersTable() {
               <TableHead>Amount</TableHead>
               <TableHead>Payment</TableHead>
               <TableHead>Fulfillment</TableHead>
+              <TableHead>Downloaded</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {isLoading ? (
               Array.from({ length: 5 }, (_, i) => (
                 <TableRow key={i}>
-                  <TableCell colSpan={6}>
+                  <TableCell colSpan={7}>
                     <div className="h-10 animate-pulse rounded bg-muted/50" />
                   </TableCell>
                 </TableRow>
               ))
             ) : orders.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6}>
-                  <EmptyState
-                    title="No orders found"
-                    description="Submitted checkout orders will appear here."
-                  />
+                <TableCell colSpan={7} className="py-12 text-center">
+                  <p className="text-sm font-medium text-foreground">No orders found</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Submitted checkout orders will appear here.
+                  </p>
                 </TableCell>
               </TableRow>
             ) : (
@@ -96,6 +88,13 @@ export function OrdersTable() {
                   </TableCell>
                   <TableCell>
                     <StatusBadge status={order.fulfillmentStatus} type="fulfillment" />
+                  </TableCell>
+                  <TableCell>
+                    {order.isDownloaded ? (
+                      <span className="text-xs font-medium text-success">Yes</span>
+                    ) : (
+                      <span className="text-xs text-muted-foreground">No</span>
+                    )}
                   </TableCell>
                 </TableRow>
               ))

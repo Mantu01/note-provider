@@ -1,23 +1,22 @@
 "use client";
 
-import { parseAsBoolean, parseAsString, useQueryStates } from "nuqs";
+import { parseAsString, useQueryStates } from "nuqs";
 import { Plus, Edit3, Trash2, ShieldAlert } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { EmptyState } from "@/components/shared/empty-state";
 import { CategoryDialog } from "@/components/admin/categories/category-dialog";
-import { useAdminCategories, useDeleteCategory } from "@/hooks/useAdmin";
-import { useAdminProfile } from "@/hooks/useAdmin";
+import { useAdminCategories, useAdminProfile, useDeleteCategory } from "@/hooks/useAdmin";
+import { useCategoryDialogState } from "@/hooks/use-admin-table-state";
 import type { AdminCategory } from "@/lib/types";
 
 export function CategoriesTable() {
-  const [{ dialog, editId, deleteId }, setParams] = useQueryStates({
-    dialog: parseAsBoolean.withDefault(false),
-    editId: parseAsString,
-    deleteId: parseAsString,
-  });
+  const [{ deleteId }, setParams] = useQueryStates(
+    { deleteId: parseAsString },
+    { clearOnDefault: true },
+  );
+  const { dialogOpen, editingId, openCreate, openEdit, closeDialog } = useCategoryDialogState();
 
   const { data: profile } = useAdminProfile();
   const { data, isLoading } = useAdminCategories();
@@ -25,22 +24,10 @@ export function CategoriesTable() {
 
   const categories = data?.items ?? [];
   const isHeadAdmin = Boolean(profile?.isHead);
-  const editingCategory = categories.find((c) => c.id === editId) ?? null;
+  const editingCategory = categories.find((c) => c.id === editingId) ?? null;
   const deletingCategory = categories.find((c) => c.id === deleteId) ?? null;
-
-  const setDialogOpen = (open: boolean) => setParams({ dialog: open, editId: open ? editId : null });
-  const setEditingCategory = (c: AdminCategory | null) => setParams({ editId: c?.id ?? null, dialog: Boolean(c) });
-  const setDeletingCategory = (c: AdminCategory | null) => setParams({ deleteId: c?.id ?? null });
-
-  const handleEdit = (cat: AdminCategory) => {
-    setEditingCategory(cat);
-    setDialogOpen(true);
-  };
-
-  const handleCreate = () => {
-    setEditingCategory(null);
-    setDialogOpen(true);
-  };
+  const setDeletingCategory = (category: AdminCategory | null) =>
+    setParams({ deleteId: category?.id ?? null });
 
   const handleDelete = () => {
     if (!deletingCategory || !isHeadAdmin) return;
@@ -53,10 +40,10 @@ export function CategoriesTable() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-xl font-bold tracking-tight">Study Categories</h2>
-          <p className="text-sm text-muted-foreground">Manage topic categories used to organize notes.</p>
+          <h1 className="text-2xl font-bold tracking-tight">Study Categories</h1>
+          <p className="text-sm text-muted-foreground">Manage the topics used to organize notes.</p>
         </div>
-        <Button onClick={handleCreate}>
+        <Button onClick={openCreate}>
           <Plus className="mr-2 h-4 w-4" />
           Add Category
         </Button>
@@ -84,12 +71,14 @@ export function CategoriesTable() {
               ))
             ) : categories.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5}>
-                  <EmptyState
-                    title="No categories created"
-                    description="Create your first study topic category."
-                    action={<Button onClick={handleCreate}>Add Category</Button>}
-                  />
+                <TableCell colSpan={5} className="py-12 text-center">
+                  <p className="text-sm font-medium text-foreground">No categories created</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Create your first study topic category.
+                  </p>
+                  <Button className="mt-4" onClick={openCreate}>
+                    Add Category
+                  </Button>
                 </TableCell>
               </TableRow>
             ) : (
@@ -114,7 +103,7 @@ export function CategoriesTable() {
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <Button variant="outline" size="icon" onClick={() => handleEdit(cat)} aria-label="Edit category">
+                      <Button variant="outline" size="icon" onClick={() => openEdit(cat.id)} aria-label="Edit category">
                         <Edit3 className="h-4 w-4" />
                       </Button>
                       <Button
@@ -138,8 +127,10 @@ export function CategoriesTable() {
       </div>
 
       <CategoryDialog
-        open={dialog}
-        onOpenChange={setDialogOpen}
+        open={dialogOpen}
+        onOpenChange={(open) => {
+          if (!open) closeDialog();
+        }}
         category={editingCategory}
       />
 

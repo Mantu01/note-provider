@@ -4,12 +4,12 @@ import { Suspense } from "react";
 import JsonLd, {
   productJsonLd,
   courseJsonLd,
-  breadcrumbJsonLd,
   webpageJsonLd,
   articleJsonLd,
 } from "@/components/seo/json-ld";
 import { APP_URL } from "@/lib/constants";
 import { NoteDetailPage } from "@/components/notes/note-detail-page";
+import { NoteDetailSkeleton } from "@/components/shared/shimmer-loader";
 import { prisma } from "@/helpers/db";
 
 interface NotePageProps {
@@ -18,24 +18,9 @@ interface NotePageProps {
 
 export default function NoteRoute({ params }: NotePageProps) {
   return (
-    <>
-      <nav
-        aria-label="Breadcrumb"
-        className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 mb-6 flex items-center gap-1.5 text-xs text-muted-foreground"
-        data-testid="note-detail-shell"
-      >
-        <a href="/">Home</a>
-        <span aria-hidden="true" className="text-muted-foreground/40">/</span>
-        <a href="/notes" className="hover:text-foreground transition-colors">
-          Notes
-        </a>
-        <span aria-hidden="true" className="text-muted-foreground/40">/</span>
-        <span className="font-medium text-foreground truncate">Loading…</span>
-      </nav>
-      <Suspense fallback={null}>
-        <NoteDetail params={params} />
-      </Suspense>
-    </>
+    <Suspense fallback={<NoteDetailSkeleton />}>
+      <NoteDetail params={params} />
+    </Suspense>
   );
 }
 
@@ -86,11 +71,6 @@ async function NoteDetail({ params }: NotePageProps) {
       updatedAt: noteDoc.updatedAt.toISOString(),
       tags: noteDoc.tags as string[] | undefined,
     }),
-    breadcrumbJsonLd([
-      { name: "Home", url: APP_URL },
-      { name: "Notes", url: `${APP_URL}/notes` },
-      { name: noteDoc.title, url: pageUrl },
-    ]),
     webpageJsonLd({
       title: noteDoc.title,
       description: noteDoc.description?.slice(0, 160) || "",

@@ -9,9 +9,8 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/com
 import { ErrorState } from "@/components/shared/error-state";
 import { GroupCard } from "@/components/shared/group-card";
 import { NoteCard } from "@/components/shared/note-card";
-import { ShimmerLoader } from "@/components/shared/shimmer-loader";
+import { NoteDetailSkeleton } from "@/components/shared/shimmer-loader";
 import { PriceTag } from "@/components/shared/price-tag";
-import { StatusBadge } from "@/components/shared/status-badge";
 import { PdfPreviewDialog } from "@/components/shared/pdf-preview-dialog";
 import { MarkdownPreview } from "@/components/shared/md-preview";
 import { LevelBadge, PricingBadge } from "@/components/shared/badges";
@@ -23,17 +22,7 @@ export function NoteDetailPage({ slug }: { slug: string }) {
   const { download, isDownloading } = useDownloadFile();
 
   if (query.isPending) {
-    return (
-      <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-        <div className="space-y-4">
-          <ShimmerLoader className="h-3 w-32 rounded" />
-          <ShimmerLoader className="h-56 w-full rounded-2xl" />
-          <ShimmerLoader className="h-5 w-3/4 rounded" />
-          <ShimmerLoader className="h-3 w-full rounded" />
-          <ShimmerLoader className="h-3 w-2/3 rounded" />
-        </div>
-      </div>
-    );
+    return <NoteDetailSkeleton />;
   }
 
   if (query.isError || !query.data) {
@@ -50,18 +39,18 @@ export function NoteDetailPage({ slug }: { slug: string }) {
   const { note, groups, relatedNotes } = query.data;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8 paper-bg" data-testid="note-content">
+    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8" data-testid="note-content">
       <nav aria-label="Breadcrumb" className="mb-6 flex items-center gap-1.5 text-xs text-muted-foreground">
-        <Link href="/" className="hover:text-foreground transition-colors">Home</Link>
+        <Link href="/" className="transition-colors hover:text-foreground">Home</Link>
         <span aria-hidden="true" className="text-muted-foreground/40">/</span>
-        <Link href="/notes" className="hover:text-foreground transition-colors">Notes</Link>
+        <Link href="/notes" className="transition-colors hover:text-foreground">Notes</Link>
         <span aria-hidden="true" className="text-muted-foreground/40">/</span>
-        <span className="font-medium text-foreground truncate">{note.title}</span>
+        <span className="truncate font-medium text-foreground">{note.title}</span>
       </nav>
 
       <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <article className="space-y-6">
-          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-border/50 bg-muted/20 shadow-sm torn-paper paper-card-green">
+          <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-border/50 bg-muted/20 shadow-sm">
             {note.coverImageUrl ? (
               <Image
                 src={note.coverImageUrl}
@@ -72,16 +61,16 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                 loading="eager"
               />
             ) : (
-              <div className="flex h-full flex-col items-center justify-center gap-2 text-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
+              <div className="flex h-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-primary/5 to-transparent text-primary/20">
                 <FileText aria-hidden="true" className="size-12" />
-                <span className="text-xs font-medium uppercase tracking-widest">Study Note Document</span>
+                <span className="text-xs font-medium uppercase tracking-widest">Study note document</span>
               </div>
             )}
           </div>
 
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex h-5 items-center rounded-full bg-secondary px-2.5 text-xs font-semibold text-secondary-foreground border border-border/50">
+              <span className="inline-flex h-5 items-center rounded-full border border-border/50 bg-secondary px-2.5 text-xs font-semibold text-secondary-foreground">
                 {note.category.name}
               </span>
               <LevelBadge level={note.level} />
@@ -100,7 +89,7 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                 </span>
               )}
               {note.pageCount && note.fileSizeLabel && (
-                <span className="text-muted-foreground/40">\</span>
+                <span aria-hidden="true" className="text-muted-foreground/40">·</span>
               )}
               {note.fileSizeLabel && (
                 <span className="inline-flex items-center gap-1">
@@ -108,7 +97,7 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                   {note.fileSizeLabel}
                 </span>
               )}
-              <span className="text-muted-foreground/40">\</span>
+              <span aria-hidden="true" className="text-muted-foreground/40">·</span>
               <span className="inline-flex items-center gap-1">
                 <Clock aria-hidden="true" className="size-3.5" />
                 {note.downloadCount} downloads
@@ -131,8 +120,8 @@ export function NoteDetailPage({ slug }: { slug: string }) {
           </div>
         </article>
 
-        <aside className="lg:sticky lg:top-20 lg:self-start space-y-4">
-          <Card className="rounded-xl border border-border bg-card torn-paper shadow-lg paper-card-orange">
+        <aside className="space-y-4 lg:sticky lg:top-20 lg:self-start">
+          <Card className="rounded-xl border border-border bg-card shadow-lg">
             <CardHeader className="pb-3">
               <CardTitle className="text-base font-bold">Get this note</CardTitle>
               <CardDescription className="text-xs">
@@ -149,7 +138,7 @@ export function NoteDetailPage({ slug }: { slug: string }) {
 
               {note.pricingType === "free" ? (
                 <Button
-                  className="w-full rounded-xl font-semibold shadow-md hover:shadow-lg transition-shadow"
+                  className="w-full rounded-xl font-semibold shadow-md transition-shadow hover:shadow-lg"
                   size="lg"
                   disabled={isDownloading}
                   onClick={() =>
@@ -167,10 +156,10 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                 </Button>
               ) : (
                 <>
-                  <div className="rounded-xl border border-brand-orange/20 bg-brand-orange/5 p-3.5">
-                    <Lock aria-hidden="true" className="mb-2 size-4 text-brand-orange" />
+                  <div className="rounded-xl border border-accent/20 bg-accent/5 p-3.5">
+                    <Lock aria-hidden="true" className="mb-2 size-4 text-accent" />
                     <p className="text-xs font-bold text-foreground">Full notes locked</p>
-                    <p className="mt-0.5 text-[11px] text-muted-foreground leading-relaxed">
+                    <p className="mt-0.5 text-[11px] leading-relaxed text-muted-foreground">
                       Preview below, then buy for instant access.
                     </p>
                   </div>
@@ -178,7 +167,7 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                   <Button
                     render={<Link href={`/checkout/${note.slug}`} />}
                     size="lg"
-                    className="w-full rounded-xl font-semibold shadow-md bg-brand-orange text-white hover:bg-brand-orange/90 transition-colors"
+                    className="w-full rounded-xl bg-accent font-semibold text-accent-foreground shadow-md transition-colors hover:bg-accent/90"
                   >
                     Buy now — {note.priceLabel}
                   </Button>
@@ -194,9 +183,9 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                     <ShieldCheck aria-hidden="true" className="size-3 text-success" />
                     Secure payment
                   </span>
-                  <span className="text-muted-foreground/30">\</span>
+                  <span aria-hidden="true" className="text-muted-foreground/30">·</span>
                   <span className="inline-flex items-center gap-1">
-                    <Lock aria-hidden="true" className="size-3 text-brand-orange" />
+                    <Lock aria-hidden="true" className="size-3 text-accent" />
                     Original content
                   </span>
                 </div>
@@ -205,6 +194,16 @@ export function NoteDetailPage({ slug }: { slug: string }) {
           </Card>
         </aside>
       </div>
+
+      <Button
+        render={<Link href="/notes" />}
+        variant="outline"
+        size="sm"
+        className="mt-8 rounded-full lg:hidden"
+      >
+        <ArrowLeft aria-hidden="true" className="size-3.5" />
+        Back to notes
+      </Button>
 
       {groups.length > 0 && (
         <section className="mt-12 border-t border-border/40 pt-10">

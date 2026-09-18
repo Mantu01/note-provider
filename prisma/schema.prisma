@@ -153,6 +153,7 @@ model Order {
   paymentMethod     String?
   paymentStatus     PaymentStatus    @default(created)
   fulfillmentStatus FulfillmentStatus @default(pending)
+  isDownloaded      Boolean          @default(false)
   failureReason     String?
   adminNote         String?          @db.VarChar(1000)
   paidAt            DateTime?
@@ -168,6 +169,7 @@ model Order {
   @@index([paymentStatus, fulfillmentStatus, createdAt])
   @@index([createdAt])
   @@index([razorpayOrderId])
+  @@index([orderNumber])
 }
 
 model Counter {

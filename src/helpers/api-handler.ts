@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { unstable_rethrow } from "next/navigation";
 import { ZodError } from "zod";
 import { fail } from "./api-response";
 import { requireAdmin, type AdminSession } from "./auth-guard";
@@ -23,16 +24,24 @@ export function getClientIp(req: NextRequest): string | null {
   return req.headers.get("x-real-ip");
 }
 
-function toAppError(error: unknown): AppError {
+/** Parses a ZodError into a flat { field: message } map, deduplicating on first occurrence. */
+export function parseZodError(err: ZodError): Record<string, string> {
+  const fields: Record<string, string> = {};
+  for (const issue of err.issues) {
+    const key = issue.path.join(".") || "form";
+    if (!fields[key]) fields[key] = issue.message;
+  }
+  return fields;
+}
+
+function toAppError(error: unknown, defaultMessage = "Invalid input"): AppError {
+  unstable_rethrow(error);
+
   if (error instanceof AppError) return error;
 
   if (error instanceof ZodError) {
-    const fields: Record<string, string> = {};
-    for (const issue of error.issues) {
-      const key = issue.path.join(".") || "form";
-      if (!fields[key]) fields[key] = issue.message;
-    }
-    const firstMessage = error.issues[0]?.message ?? "Please check the highlighted fields";
+    const fields = parseZodError(error);
+    const firstMessage = error.issues[0]?.message ?? defaultMessage;
     return AppError.validation(fields, firstMessage);
   }
 
@@ -44,18 +53,20 @@ function toAppError(error: unknown): AppError {
 
 export function handler<P extends Record<string, string> = Record<string, string>>(
   fn: (ctx: RouteContext<P>) => Promise<NextResponse>,
+  defaultMessage = "Invalid input",
 ) {
   return async (req: NextRequest, args: NextRouteArgs<P>): Promise<NextResponse> => {
     try {
       return await fn(await buildContext(req, args));
     } catch (error) {
-      return fail(toAppError(error));
+      return fail(toAppError(error, defaultMessage));
     }
   };
 }
 
 export function adminHandler<P extends Record<string, string> = Record<string, string>>(
   fn: (ctx: AdminRouteContext<P>) => Promise<NextResponse>,
+  defaultMessage = "Invalid input",
 ) {
   return async (req: NextRequest, args: NextRouteArgs<P>): Promise<NextResponse> => {
     try {
@@ -63,7 +74,7 @@ export function adminHandler<P extends Record<string, string> = Record<string, s
       const admin = await requireAdmin();
       return await fn({ ...ctx, admin });
     } catch (error) {
-      return fail(toAppError(error));
+      return fail(toAppError(error, defaultMessage));
     }
   };
 }

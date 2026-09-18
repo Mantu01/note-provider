@@ -1,321 +1,279 @@
-# Graph Report - notes-provider  (2026-09-16)
+# Graph Report - src  (2026-09-18)
 
 ## Corpus Check
-- 211 files · ~55,851 words
-- Verdict: corpus is large enough that graph structure adds value.
+- Corpus is ~45,423 words - fits in a single context window. You may not need a graph.
 
 ## Summary
-- 1060 nodes · 2932 edges · 86 communities (44 shown, 42 thin omitted)
-- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 17 edges (avg confidence: 0.85)
+- 805 nodes · 2620 edges · 44 communities (43 shown, 1 thin omitted)
+- Extraction: 99% EXTRACTED · 1% INFERRED · 0% AMBIGUOUS · INFERRED: 18 edges (avg confidence: 0.85)
 - Token cost: 0 input · 0 output
 
 ## Community Hubs (Navigation)
-- Mappers & API Home
-- Note/Group Form Schemas
-- Admin Data Tables
-- Public Notes/Groups API
-- package.json Config
-- Upload & Error Helpers
-- Admin CRUD Routes
-- UI Utils & Shared States
-- tsconfig Config
-- Admin Auth & JWT
-- API Handler & Response
-- DB & Prisma Layer
-- Admin Hooks & API Client
-- Home Page & Shimmer
-- Admin Dialogs & Inputs
-- Button, Navbar & Logo
-- Types & Catalogue Hooks
-- Constants & Checkout
-- Card, Dashboard & Orders
-- Components Alias Config
-- Legal & SEO Pages
-- Notes Catalogue & Filters
-- JSON-LD & Public Lists
-- Order Status & Lookup
-- JSON-LD Helpers
-- Checkout Page & Schema
-- PWA Manifest
-- Note Detail & Cards
-- Layout, Providers & API Error
-- Footer & Social Icons
-- Order Lookup & Rate Limit
-- Item Detail Pages & JSON-LD
-- Pagination UI
-- Razorpay & Webhook
-- Sitemap, Robots & Track
-- Category Schema
-- package Dependencies Core
-- Dashboard Service
-- Item Slug Routes
-- Groups Catalogue & Error
-- Proxy & Admin Session
-- File Upload Hook & Field
-- React Doctor Config
-- Admin Group Edit
-- Admin Note Edit
-- Admin Order Detail
-- Admin Dashboard Page
-- OG Group Route
-- OG Home Route
-- OG Logo Route
-- OG Note Route
-- next.config
-- Markdown Preview
-- bcryptjs
-- class-variance-authority
-- cloudinary
-- clsx
-- date-fns
-- dotenv
-- eslint config
-- react-hook-form resolvers
-- jose
-- lucide-react
-- next
-- next-themes
-- pg
-- prisma adapter pg
-- razorpay
-- react
-- react-dom
-- react-hook-form
-- react-markdown
-- react-razorpay
-- react-syntax-highlighter
-- recharts
-- rehype-katex
-- rehype-raw
-- remark-gfm
-- remark-math
-- shadcn
-- sonner
-- tailwind-merge
-- tw-animate-css
-- zod
-- postcss config
+- Admin Note Forms
+- Group Detail Page
+- API Routes — Admin
+- Admin Dashboard Pages
+- Public API Handlers
+- Admin Dialogs & Forms
+- Order API Routes
+- Homepage Components
+- Data Hooks & Query Keys
+- Loading & Layout Skeletons
+- Root Layout & Group Routes
+- Category API Routes
+- Filter & Search UI
+- Admin Layout & Error Boundaries
+- Admin Home Page
+- Detail & Catalogue Views
+- Note API Routes
+- Admin Order Management
+- Static Public Pages
+- Status & Level Badges
+- Note Edit Pages
+- Payment & Checkout APIs
+- App Constants
+- Home Page Route
+- Contact Page
+- Checkout Page
+- Fonts & Root Font Config
+- Navigation Bar
+- API Client Library
+- Admin Data Hooks
+- Multi-Select & Status Badges
+- Auth Schemas & Config
+- Category Schemas
+- Group Edit Pages
+- Razorpay Payment Integration
+- Admin Auth Middleware
+- Group Mapper
+- OG Image — Note
+- OG Image — Group
+- Checkout Route
+- OG Image — Logo
+- Order Tracking Page
+- CSV Utilities
+- OG Image — Home
 
 ## God Nodes (most connected - your core abstractions)
-1. `cn()` - 106 edges
+1. `cn()` - 84 edges
 2. `ok()` - 64 edges
-3. `AppError` - 41 edges
-4. `prisma` - 40 edges
-5. `apiClient()` - 40 edges
-6. `Button()` - 38 edges
-7. `webpageJsonLd` - 23 edges
-8. `fail()` - 23 edges
-9. `handler()` - 20 edges
-10. `adminHandler()` - 18 edges
+3. `AppError` - 43 edges
+4. `prisma` - 39 edges
+5. `apiClient()` - 38 edges
+6. `Button()` - 35 edges
+7. `fail()` - 25 edges
+8. `webpageJsonLd` - 23 edges
+9. `handler()` - 21 edges
+10. `APP_URL` - 18 edges
 
 ## Surprising Connections (you probably didn't know these)
-- `GET` --indirect_call--> `toAdminLead()`  [INFERRED]
-  src/app/api/admin/leads/route.ts → src/helpers/mappers/order.mapper.ts
-- `GET` --calls--> `ok()`  [EXTRACTED]
-  src/app/api/categories/route.ts → src/helpers/api-response.ts
-- `GET` --calls--> `ok()`  [EXTRACTED]
-  src/app/api/filters/route.ts → src/helpers/api-response.ts
-- `GET` --indirect_call--> `toPublicGroup()`  [INFERRED]
-  src/app/api/groups/route.ts → src/helpers/mappers/group.mapper.ts
-- `GET` --indirect_call--> `toPublicNote()`  [INFERRED]
-  src/app/api/notes/[slug]/route.ts → src/helpers/mappers/note.mapper.ts
+- `AboutPage()` --calls--> `webpageJsonLd`  [EXTRACTED]
+  src/app/(public)/about/page.tsx → src/components/seo/json-ld-helpers.ts
+- `ContactPage()` --calls--> `webpageJsonLd`  [EXTRACTED]
+  src/app/(public)/contact/page.tsx → src/components/seo/json-ld-helpers.ts
+- `GET` --indirect_call--> `toAdminGroup()`  [INFERRED]
+  src/app/api/admin/groups/route.ts → src/helpers/mappers/group.mapper.ts
+- `GET` --indirect_call--> `toAdminNote()`  [INFERRED]
+  src/app/api/admin/notes/route.ts → src/helpers/mappers/note.mapper.ts
+- `GET` --indirect_call--> `toAdminOrder()`  [INFERRED]
+  src/app/api/admin/orders/route.ts → src/helpers/mappers/order.mapper.ts
 
 ## Import Cycles
 - None detected.
 
-## Communities (86 total, 42 thin omitted)
+## Communities (44 total, 1 thin omitted)
 
-### Community 0 - "Mappers & API Home"
-Cohesion: 0.09
-Nodes (43): GET, GET, dynamic, EMPTY_HOME, GET, revalidate, GroupDetailPage(), toAdminProfile() (+35 more)
-
-### Community 1 - "Note/Group Form Schemas"
-Cohesion: 0.06
-Nodes (43): DynamicNoteForm, FileFieldSource, FileSource, NoteFormProps, FileAttachmentsSection(), FileAttachmentsSectionProps, FileFieldSource, FileSource (+35 more)
-
-### Community 2 - "Admin Data Tables"
-Cohesion: 0.13
-Nodes (21): LeadsTable(), OrdersTable(), EmptyState(), PaginationBar(), StatusBadge(), StatusBadgeProps, Badge(), badgeVariants (+13 more)
-
-### Community 3 - "Public Notes/Groups API"
-Cohesion: 0.10
-Nodes (31): GET, runtime, GET, runtime, dynamic, GET, revalidate, dynamic (+23 more)
-
-### Community 4 - "package.json Config"
+### Community 0 - "Admin Note Forms"
 Cohesion: 0.05
-Nodes (38): eslint, eslint-config-next, devDependencies, eslint, eslint-config-next, prisma, @prisma/client, react-doctor (+30 more)
+Nodes (46): DynamicNoteForm, FileFieldSource, FileSource, NoteFormProps, FileAttachmentsSection(), FileAttachmentsSectionProps, FileFieldSource, FileSource (+38 more)
 
-### Community 5 - "Upload & Error Helpers"
-Cohesion: 0.10
-Nodes (23): DELETE, POST, runtime, GET, runtime, dynamic, GET, revalidate (+15 more)
-
-### Community 6 - "Admin CRUD Routes"
-Cohesion: 0.15
-Nodes (28): DELETE, PATCH, DELETE, GET, PATCH, runtime, GET, runtime (+20 more)
-
-### Community 7 - "UI Utils & Shared States"
-Cohesion: 0.10
-Nodes (26): Container(), PageHeader(), Section(), EmptyStateProps, CardAction(), CardFooter(), Checkbox(), DialogOverlay() (+18 more)
-
-### Community 8 - "tsconfig Config"
-Cohesion: 0.06
-Nodes (32): dom, dom.iterable, esnext, ./generated/prisma/client, **/*.mts, .next/dev/types/**/*.ts, next-env.d.ts, .next/types/**/*.ts (+24 more)
-
-### Community 9 - "Admin Auth & JWT"
+### Community 1 - "Group Detail Page"
 Cohesion: 0.12
-Nodes (25): POST, runtime, POST, runtime, AdminSession, getOptionalAdmin(), requireAdmin(), requireHeadAdmin() (+17 more)
+Nodes (38): GET, GroupDetailPage(), PriceTag(), toAdminProfile(), toAdminCategory(), toAdminRef(), toCategoryRef(), toPublicCategory() (+30 more)
 
-### Community 10 - "API Handler & Response"
-Cohesion: 0.11
-Nodes (22): runtime, POST, runtime, GET, runtime, GET, runtime, dynamic (+14 more)
-
-### Community 11 - "DB & Prisma Layer"
-Cohesion: 0.15
-Nodes (18): seedDate, runtime, GET, POST, runtime, createOrderSchema, POST, runtime (+10 more)
-
-### Community 12 - "Admin Hooks & API Client"
-Cohesion: 0.15
-Nodes (26): AdminShell(), CategoriesTable(), GroupForm(), GroupsTable(), NoteMultiSelect(), NoteForm(), NotesTable(), useAdminCategories() (+18 more)
-
-### Community 13 - "Home Page & Shimmer"
-Cohesion: 0.09
-Nodes (14): HeroSection(), HomePage(), CategoryCard(), ShimmerGroupCard(), ShimmerLoader(), ShimmerNoteCard(), ShimmerStatCard(), useHome() (+6 more)
-
-### Community 14 - "Admin Dialogs & Inputs"
+### Community 2 - "API Routes — Admin"
 Cohesion: 0.17
-Nodes (19): CATEGORY_ICON_PRESETS, CategoryDialog(), CategoryDialogProps, GroupFormProps, NoteMultiSelectProps, FulfillmentDialog(), FulfillmentDialogProps, FilterPanelProps (+11 more)
+Nodes (20): PATCH, POST, POST, EMPTY_HOME, adminHandler(), AdminRouteContext, buildContext(), getClientIp() (+12 more)
 
-### Community 15 - "Button, Navbar & Logo"
-Cohesion: 0.14
-Nodes (11): metadata, navItems, ExportButton(), Logo(), LogoProps, sizes, ThemeToggle(), CopyButton() (+3 more)
-
-### Community 16 - "Types & Catalogue Hooks"
-Cohesion: 0.14
-Nodes (20): useGroups(), useFilters(), queryKeys, AdminAuthResponse, ApiFailure, ApiResult, ApiSuccess, FiltersResponse (+12 more)
-
-### Community 17 - "Constants & Checkout"
-Cohesion: 0.08
-Nodes (21): metadata, CheckoutContent(), ADMIN_PAGE_LIMIT, ERROR_STATUS, FULFILLMENT_STATUS_LABELS, FULL_NAME_PATTERN, LEADS_EXPORT_MAX_ROWS, NOTE_LEVEL_LABELS (+13 more)
-
-### Community 18 - "Card, Dashboard & Orders"
-Cohesion: 0.20
-Nodes (16): RecentOrders(), RevenueChart(), RevenueChartProps, STAT_CARDS, StatsGrid(), StatsGridProps, lookupSchema, LookupValues (+8 more)
-
-### Community 19 - "Components Alias Config"
-Cohesion: 0.09
-Nodes (21): aliases, components, hooks, lib, ui, utils, iconLibrary, menuAccent (+13 more)
-
-### Community 20 - "Legal & SEO Pages"
-Cohesion: 0.21
-Nodes (15): metadata, metadata, metadata, metadata, StaticPage(), Accordion(), AccordionContent(), AccordionItem() (+7 more)
-
-### Community 21 - "Notes Catalogue & Filters"
-Cohesion: 0.17
-Nodes (15): MobileNav(), ActiveFilterChips(), FilterPanel(), NotesCatalogue(), Sheet(), SheetContent(), SheetDescription(), SheetFooter() (+7 more)
-
-### Community 22 - "JSON-LD & Public Lists"
-Cohesion: 0.13
-Nodes (16): AboutPage(), ContactPage(), ICON_MAP, metadata, GroupsPageRoute(), metadata, metadata, NotesPage() (+8 more)
-
-### Community 23 - "Order Status & Lookup"
+### Community 3 - "Admin Dashboard Pages"
 Cohesion: 0.16
-Nodes (9): OrderRouteProps, OrderSuccessRouteProps, OrderStatusPage(), PdfPreviewDialog(), downloadFile(), useDownloadFile(), OrderLookupResponse, useOrder() (+1 more)
+Nodes (19): CategoriesTable(), GroupsTable(), NotesTable(), OrdersTable(), PaginationBar(), StatusBadge(), DialogFooter(), Table() (+11 more)
 
-### Community 24 - "JSON-LD Helpers"
-Cohesion: 0.31
-Nodes (13): RootLayout(), HomePageRoute(), metadata, collectionPageJsonLd(), faqJsonLd(), getAppUrl(), howToJsonLd(), JsonLdReturn (+5 more)
+### Community 4 - "Public API Handlers"
+Cohesion: 0.14
+Nodes (25): GET, DELETE, GET, GET, DELETE, GET, PATCH, DELETE (+17 more)
 
-### Community 25 - "Checkout Page & Schema"
-Cohesion: 0.20
-Nodes (10): CheckoutPage(), NoteDetailPage(), useCreateOrder(), useGroup(), useNote(), CheckoutOrderResponse, PurchaseItemType, checkoutSchema (+2 more)
+### Community 5 - "Admin Dialogs & Forms"
+Cohesion: 0.14
+Nodes (18): CategoryDialog(), CategoryDialogProps, GroupFormProps, PRICING_OPTIONS, ToggleKey, Checkbox(), Input(), Label() (+10 more)
 
-### Community 26 - "PWA Manifest"
-Cohesion: 0.13
-Nodes (14): background_color, categories, description, display, icons, lang, name, orientation (+6 more)
+### Community 6 - "Order API Routes"
+Cohesion: 0.15
+Nodes (16): DELETE, POST, GET, GET, buildSignedUrl(), CloudinaryDeliveryType, CloudinaryResourceType, uploadBuffer() (+8 more)
 
-### Community 27 - "Note Detail & Cards"
-Cohesion: 0.24
-Nodes (11): LEVEL_BADGE, LevelBadge(), LevelBadgeProps, PRICING_BADGE, PricingBadge(), PricingBadgeProps, NoteCard(), NoteCardProps (+3 more)
+### Community 7 - "Homepage Components"
+Cohesion: 0.09
+Nodes (14): HeroSection(), HomePage(), CategoryCard(), CATEGORY_ICON_OPTIONS, CATEGORY_ICONS, CategoryIcon(), useHome(), HOME_FAQS (+6 more)
 
-### Community 28 - "Layout, Providers & API Error"
+### Community 8 - "Data Hooks & Query Keys"
+Cohesion: 0.12
+Nodes (22): NoteCardProps, queryKeys, AdminAuthResponse, AdminRef, ApiFailure, ApiSuccess, CategoryRef, FiltersResponse (+14 more)
+
+### Community 9 - "Loading & Layout Skeletons"
+Cohesion: 0.10
+Nodes (11): Footer(), AdminDashboardSkeleton(), GroupDetailSkeleton(), GroupsCatalogueSkeleton(), NoteDetailSkeleton(), NotesCatalogueSkeleton(), OrderStatusSkeleton(), ShimmerGroupCard() (+3 more)
+
+### Community 10 - "Root Layout & Group Routes"
 Cohesion: 0.18
-Nodes (10): caveat, instrumentSans, inter, metadata, outfit, ApiError, AppProviders(), getErrorMessage() (+2 more)
+Nodes (20): RootLayout(), GroupDetail(), GroupRouteProps, GroupWithRelations, NoteDetail(), NotePageProps, articleJsonLd(), breadcrumbJsonLd() (+12 more)
 
-### Community 29 - "Footer & Social Icons"
+### Community 11 - "Category API Routes"
+Cohesion: 0.17
+Nodes (17): POST, POST, GET, POST, AdminSession, clearAdminSessionCookie(), requireAdmin(), requireHeadAdmin() (+9 more)
+
+### Community 12 - "Filter & Search UI"
+Cohesion: 0.14
+Nodes (19): ActiveFilterChips(), FilterPanel(), NoteSearchField(), NotesCatalogue(), Sheet(), SheetClose(), SheetContent(), SheetDescription() (+11 more)
+
+### Community 13 - "Admin Layout & Error Boundaries"
+Cohesion: 0.15
+Nodes (12): metadata, GlobalErrorProps, AdminShell(), isActiveLink(), NAV_ITEMS, Logo(), LogoProps, sizes (+4 more)
+
+### Community 14 - "Admin Home Page"
+Cohesion: 0.16
+Nodes (15): metadata, AdminDashboard(), RecentOrders(), RevenueChart(), STAT_CARDS, StatsGrid(), lookupSchema, LookupValues (+7 more)
+
+### Community 15 - "Detail & Catalogue Views"
+Cohesion: 0.16
+Nodes (16): NoteDetailPage(), EmptyState(), ErrorState(), ErrorStateProps, GroupCard(), codeComponents, codeTheme, MarkdownPreview() (+8 more)
+
+### Community 16 - "Note API Routes"
+Cohesion: 0.23
+Nodes (15): GET, GET, GET, GET, GET, parseArrayParam(), parseBooleanParam(), parseNumberParam() (+7 more)
+
+### Community 17 - "Admin Order Management"
+Cohesion: 0.15
+Nodes (9): OrderRouteProps, OrderSuccessRouteProps, OrderDetailView(), OrderStatusPage(), CopyButton(), AdminOrderDetailSkeleton(), useAdminOrder(), useUpdateOrderFulfillment() (+1 more)
+
+### Community 18 - "Static Public Pages"
+Cohesion: 0.25
+Nodes (13): AboutPage(), metadata, metadata, metadata, metadata, StaticPage(), Accordion(), AccordionContent() (+5 more)
+
+### Community 19 - "Status & Level Badges"
+Cohesion: 0.20
+Nodes (15): LEVEL_CLASS, LEVEL_LABEL, LevelBadge(), PRICING_CLASS, PricingBadge(), EmptyStateProps, Empty(), EmptyContent() (+7 more)
+
+### Community 20 - "Note Edit Pages"
+Cohesion: 0.18
+Nodes (14): NoteFormContent(), NoteForm(), FileUploadField(), FileUploadFieldProps, useAdminCategories(), useAdminNote(), useCreateNote(), useDeleteUpload() (+6 more)
+
+### Community 21 - "Payment & Checkout APIs"
 Cohesion: 0.22
-Nodes (9): Footer(), FOOTER_LINKS, SOCIAL_LINKS, SocialLink, Navbar(), GithubIcon(), InstagramIcon(), XIcon() (+1 more)
+Nodes (10): GET, POST, POST, generateOrderNumber(), Bucket, enforceRateLimit(), globalStore, createRazorpayOrder() (+2 more)
 
-### Community 30 - "Order Lookup & Rate Limit"
-Cohesion: 0.26
-Nodes (8): GET, POST, runtime, Bucket, enforceRateLimit(), globalStore, prune(), getOrderByNumber()
+### Community 22 - "App Constants"
+Cohesion: 0.12
+Nodes (16): ERROR_STATUS, LEADS_EXPORT_MAX_ROWS, MAX_PAGE_LIMIT, MOBILE_NAV_LINKS, NAV_LINKS, NOTE_LEVEL_LABELS, NOTE_SORT_LABELS, ORDER_CURRENCY (+8 more)
 
-### Community 31 - "Item Detail Pages & JSON-LD"
-Cohesion: 0.30
-Nodes (8): GroupRoute(), GroupRouteProps, NotePageProps, NoteRoute(), articleJsonLd(), breadcrumbJsonLd(), courseJsonLd(), productJsonLd()
+### Community 23 - "Home Page Route"
+Cohesion: 0.17
+Nodes (13): HomePageRoute(), metadata, GroupsPageRoute(), metadata, metadata, NotesPage(), PrivacyPage(), RefundPolicyPage() (+5 more)
 
-### Community 32 - "Pagination UI"
+### Community 24 - "Contact Page"
+Cohesion: 0.17
+Nodes (13): ContactChannel, ContactPage(), ICON_MAP, metadata, FOOTER_LINKS, SOCIAL_LINKS, SocialLink, GithubIcon() (+5 more)
+
+### Community 25 - "Checkout Page"
 Cohesion: 0.24
-Nodes (10): PaginationBarProps, Pagination(), PaginationContent(), PaginationEllipsis(), PaginationItem(), PaginationLink(), PaginationLinkProps, PaginationNext() (+2 more)
+Nodes (9): CheckoutPage(), useCreateOrder(), useGroup(), useNote(), CheckoutOrderResponse, PurchaseItemType, checkoutSchema, CheckoutValues (+1 more)
 
-### Community 33 - "Razorpay & Webhook"
+### Community 26 - "Fonts & Root Font Config"
+Cohesion: 0.18
+Nodes (8): inter, metadata, outfit, viewport, safeQuery(), sitemap(), STATIC_PAGES, APP_URL
+
+### Community 27 - "Navigation Bar"
+Cohesion: 0.35
+Nodes (8): isActive(), Navbar(), Dialog(), DialogContent(), DialogDescription(), DialogHeader(), DialogTitle(), DialogTrigger()
+
+### Community 28 - "API Client Library"
+Cohesion: 0.23
+Nodes (7): ApiError, ApiResult, ErrorCode, AppProviders(), getErrorMessage(), QueryProvider(), ThemeProvider()
+
+### Community 29 - "Admin Data Hooks"
+Cohesion: 0.27
+Nodes (10): useAdminGroups(), useAdminOrders(), useGroups(), useNotes(), OrderLookupResponse, useOrder(), useOrderLookup(), apiClient() (+2 more)
+
+### Community 30 - "Multi-Select & Status Badges"
 Cohesion: 0.31
-Nodes (9): dynamic, POST(), runtime, getRazorpayKeyId(), razorpay, requireEnv(), timingSafeCompare(), verifyPaymentSignature() (+1 more)
+Nodes (6): NoteMultiSelect(), NoteMultiSelectProps, StatusBadgeProps, Badge(), badgeVariants, useAdminNotes()
 
-### Community 34 - "Sitemap, Robots & Track"
-Cohesion: 0.22
-Nodes (5): metadata, safeQuery(), sitemap(), STATIC_PAGES, APP_URL
+### Community 31 - "Auth Schemas & Config"
+Cohesion: 0.20
+Nodes (9): FULFILLMENT_STATUSES, AdminLoginInput, AdminLoginPayload, adminLoginSchema, AdminRegisterInput, AdminRegisterPayload, adminRegisterSchema, UpdateOrderPayload (+1 more)
 
-### Community 35 - "Category Schema"
+### Community 32 - "Category Schemas"
 Cohesion: 0.20
 Nodes (9): categoryBaseSchema, CreateCategoryInput, CreateCategoryPayload, createCategorySchema, SubjectInput, subjectSchema, UpdateCategoryInput, UpdateCategoryPayload (+1 more)
 
-### Community 36 - "package Dependencies Core"
-Cohesion: 0.22
-Nodes (9): @base-ui/react, @next/third-parties, nuqs, dependencies, @base-ui/react, @next/third-parties, nuqs, @tanstack/react-query (+1 more)
+### Community 33 - "Group Edit Pages"
+Cohesion: 0.25
+Nodes (5): GroupFormContent(), GroupForm(), useAdminGroup(), useCreateGroup(), useUpdateGroup()
 
-### Community 37 - "Dashboard Service"
-Cohesion: 0.39
-Nodes (7): GET, runtime, generateRevenueSeries(), getCategoryBreakdown(), getDashboardStats(), getTopNotes(), toDateKey()
+### Community 34 - "Razorpay Payment Integration"
+Cohesion: 0.42
+Nodes (7): POST(), getRazorpayKeyId(), razorpay, requireEnv(), timingSafeCompare(), verifyPaymentSignature(), verifyWebhookSignature()
 
-### Community 38 - "Item Slug Routes"
-Cohesion: 0.28
-Nodes (7): GET, revalidate, runtime, GET, revalidate, runtime, toPublicGroup()
-
-### Community 39 - "Groups Catalogue & Error"
+### Community 35 - "Admin Auth Middleware"
 Cohesion: 0.36
-Nodes (5): ErrorState(), ErrorStateProps, GroupCard(), GroupCardProps, PublicGroup
+Nodes (7): config, hasValidSession(), middleware, proxy(), PUBLIC_ADMIN_PATHS, setSecurityHeaders(), unauthorizedJson()
 
-### Community 40 - "Proxy & Admin Session"
-Cohesion: 0.32
-Nodes (7): ADMIN_SESSION_COOKIE, config, hasValidSession(), middleware, proxy(), PUBLIC_ADMIN_PATHS, unauthorizedJson()
+### Community 36 - "Group Mapper"
+Cohesion: 0.38
+Nodes (5): GET, GET, CategoryShape, NoteGroupShape, toPublicGroup()
 
-### Community 41 - "File Upload Hook & Field"
-Cohesion: 0.47
-Nodes (5): FileUploadField(), FileUploadFieldProps, useDeleteUpload(), useFileUpload(), UploadKind
+### Community 37 - "OG Image — Note"
+Cohesion: 0.33
+Nodes (4): contentType, height, Props, width
 
-### Community 42 - "React Doctor Config"
-Cohesion: 0.50
-Nodes (3): rules, react-doctor/prefer-dynamic-import, $schema
+### Community 38 - "OG Image — Group"
+Cohesion: 0.33
+Nodes (4): contentType, height, Props, width
+
+### Community 39 - "Checkout Route"
+Cohesion: 0.40
+Nodes (3): metadata, CheckoutContent(), CheckoutSkeleton()
+
+### Community 40 - "OG Image — Logo"
+Cohesion: 0.40
+Nodes (3): contentType, height, width
+
+### Community 41 - "Order Tracking Page"
+Cohesion: 0.40
+Nodes (3): metadata, OrderLookupPage(), OrderLookupSkeleton()
+
+### Community 42 - "CSV Utilities"
+Cohesion: 0.67
+Nodes (3): escapeCell(), FORMULA_PREFIXES, toCsv()
 
 ## Knowledge Gaps
-- **287 isolated node(s):** `$schema`, `style`, `rsc`, `tsx`, `config` (+282 more)
+- **123 isolated node(s):** `metadata`, `metadata`, `ICON_MAP`, `metadata`, `ContactChannel` (+118 more)
   These have ≤1 connection - possible missing edges or undocumented components.
-- **42 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
+- **1 thin communities (<3 nodes) omitted from report** — run `graphify query` to explore isolated nodes.
 
 ## Suggested Questions
 _Questions this graph is uniquely positioned to answer:_
 
-- **Why does `cn()` connect `UI Utils & Shared States` to `Pagination UI`, `Admin Data Tables`, `Groups Catalogue & Error`, `Admin Hooks & API Client`, `Home Page & Shimmer`, `Admin Dialogs & Inputs`, `Button, Navbar & Logo`, `Card, Dashboard & Orders`, `Legal & SEO Pages`, `Notes Catalogue & Filters`, `Note Detail & Cards`, `Footer & Social Icons`?**
-  _High betweenness centrality (0.055) - this node is a cross-community bridge._
-- **Why does `ok()` connect `Admin CRUD Routes` to `Mappers & API Home`, `Public Notes/Groups API`, `Dashboard Service`, `Upload & Error Helpers`, `Item Slug Routes`, `Admin Auth & JWT`, `API Handler & Response`, `DB & Prisma Layer`, `Order Lookup & Rate Limit`?**
-  _High betweenness centrality (0.022) - this node is a cross-community bridge._
-- **Why does `Button()` connect `Button, Navbar & Logo` to `Pagination UI`, `Note/Group Form Schemas`, `Admin Data Tables`, `Groups Catalogue & Error`, `UI Utils & Shared States`, `File Upload Hook & Field`, `Home Page & Shimmer`, `Admin Dialogs & Inputs`, `Card, Dashboard & Orders`, `Notes Catalogue & Filters`, `JSON-LD & Public Lists`, `Order Status & Lookup`, `Checkout Page & Schema`, `Note Detail & Cards`?**
-  _High betweenness centrality (0.020) - this node is a cross-community bridge._
-- **What connects `$schema`, `style`, `rsc` to the rest of the system?**
-  _287 weakly-connected nodes found - possible documentation gaps or missing edges._
-- **Should `Mappers & API Home` be split into smaller, more focused modules?**
-  _Cohesion score 0.09090909090909091 - nodes in this community are weakly interconnected._
-- **Should `Note/Group Form Schemas` be split into smaller, more focused modules?**
-  _Cohesion score 0.055272108843537414 - nodes in this community are weakly interconnected._
-- **Should `Admin Data Tables` be split into smaller, more focused modules?**
-  _Cohesion score 0.12896405919661733 - nodes in this community are weakly interconnected._
+- **Why does `cn()` connect `Status & Level Badges` to `Admin Dashboard Pages`, `Admin Dialogs & Forms`, `Loading & Layout Skeletons`, `Filter & Search UI`, `Admin Layout & Error Boundaries`, `Admin Home Page`, `Detail & Catalogue Views`, `Static Public Pages`, `Navigation Bar`, `Multi-Select & Status Badges`?**
+  _High betweenness centrality (0.061) - this node is a cross-community bridge._
+- **Why does `ok()` connect `Public API Handlers` to `Group Detail Page`, `API Routes — Admin`, `Group Mapper`, `Order API Routes`, `Category API Routes`, `Note API Routes`, `Payment & Checkout APIs`?**
+  _High betweenness centrality (0.037) - this node is a cross-community bridge._
+- **Why does `Button()` connect `Admin Layout & Error Boundaries` to `Admin Note Forms`, `Admin Dashboard Pages`, `Admin Dialogs & Forms`, `Homepage Components`, `Filter & Search UI`, `Admin Home Page`, `Detail & Catalogue Views`, `Admin Order Management`, `Status & Level Badges`, `Note Edit Pages`, `Contact Page`, `Checkout Page`, `Navigation Bar`?**
+  _High betweenness centrality (0.030) - this node is a cross-community bridge._
+- **What connects `metadata`, `metadata`, `ICON_MAP` to the rest of the system?**
+  _123 weakly-connected nodes found - possible documentation gaps or missing edges._
+- **Should `Admin Note Forms` be split into smaller, more focused modules?**
+  _Cohesion score 0.05079825834542816 - nodes in this community are weakly interconnected._
+- **Should `Group Detail Page` be split into smaller, more focused modules?**
+  _Cohesion score 0.1246376811594203 - nodes in this community are weakly interconnected._
+- **Should `Public API Handlers` be split into smaller, more focused modules?**
+  _Cohesion score 0.14015151515151514 - nodes in this community are weakly interconnected._

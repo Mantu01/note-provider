@@ -5,6 +5,7 @@ import {
   parseAsInteger,
   parseAsString,
   parseAsStringLiteral,
+  throttle,
   useQueryStates,
 } from "nuqs";
 import { DEFAULT_PAGE_LIMIT, NOTE_SORTS } from "@/lib/constants";
@@ -22,7 +23,7 @@ const parsers = {
   view: parseAsStringLiteral(["grid", "list"] as const).withDefault("grid"),
 };
 
-type NotesUrlState = {
+export type NotesUrlState = {
   q: string;
   page: number;
   limit: number;
@@ -40,6 +41,7 @@ export function useNotesQueryState() {
     history: "push",
     shallow: true,
     clearOnDefault: true,
+    limitUrlUpdates: throttle(300),
   });
 
   const setFilter = (values: Partial<NotesUrlState>) =>
@@ -58,13 +60,14 @@ export function useNotesQueryState() {
     });
 
   const activeFilterCount = [
-    state.q,
     ...state.category,
     ...state.level,
     state.pricing,
     state.minPrice,
     state.maxPrice,
-  ].filter((value) => value !== "" && value !== null).length;
+  ].filter((value) => value !== "" && value !== null && value !== undefined).length;
 
-  return { state, setFilter, clearFilters, activeFilterCount };
+  const hasQuery = state.q.trim() !== "";
+
+  return { state, setFilter, clearFilters, activeFilterCount, hasQuery };
 }

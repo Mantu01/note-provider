@@ -7,8 +7,6 @@ import { signAdminToken } from "@/helpers/jwt";
 import { setAdminSessionCookie } from "@/helpers/auth-guard";
 import { adminRegisterSchema } from "@/schemas/admin.schema";
 import { enforceRateLimit } from "@/helpers/rate-limit";
-import { toAdminProfile } from "@/helpers/mappers/admin.mapper";
-
 
 export const POST = handler(async (ctx) => {
   enforceRateLimit("adminRegister", ctx.ip, { limit: 10, windowMs: 3600000 });
@@ -20,14 +18,7 @@ export const POST = handler(async (ctx) => {
 
   const body = await ctx.req.json();
   const parsed = adminRegisterSchema.safeParse(body);
-  if (!parsed.success) {
-    const fields: Record<string, string> = {};
-    for (const issue of parsed.error.issues) {
-      const key = issue.path.join(".") || "form";
-      if (!fields[key]) fields[key] = issue.message;
-    }
-    return fail(AppError.validation(fields, parsed.error.issues[0]?.message ?? "Invalid input"));
-  }
+  if (!parsed.success) return fail(AppError.validation());
 
   const existing = await prisma.admin.findUnique({ where: { email: parsed.data.email.toLowerCase() } });
   if (existing) throw AppError.conflict("An account with this email already exists");
@@ -42,7 +33,7 @@ export const POST = handler(async (ctx) => {
   const token = await signAdminToken({ sub: admin.id, email: admin.email, name: admin.name, isHead: Boolean(admin.isHead) });
   await setAdminSessionCookie(token);
 
-  const res = ok({ admin: toAdminProfile({ ...admin, passwordHash: undefined }), token });
+  const res = ok({ admin: { id: admin.id, name: admin.name, email: admin.email, isHead: Boolean(admin.isHead), lastLoginAt: admin.lastLoginAt?.toISOString() ?? null, createdAt: admin.createdAt.toISOString() }, token });
   res.headers.set("Cache-Control", "no-store, max-age=0");
   return res;
-});
+}, "Invalid registration data");

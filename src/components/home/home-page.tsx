@@ -1,11 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, BookOpen, Download, ShieldCheck, Sparkles, Code2, Layers3, FileText, TrendingUp, Eye, ShoppingBag } from "lucide-react";
+import { ArrowRight, BookOpen, Layers3, Sparkles } from "lucide-react";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import { CategoryCard } from "@/components/shared/category-card";
 import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
@@ -92,8 +90,8 @@ function HeroSection({
 }) {
   return (
     <section className="relative overflow-hidden pt-16 pb-14 md:pt-28 md:pb-24 lg:pt-36 lg:pb-32 paper-bg">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,var(--brand-green-soft),transparent_55%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,var(--brand-orange-soft),transparent_55%)]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,var(--primary),transparent_55%)] opacity-[0.07]" />
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,var(--accent),transparent_55%)] opacity-[0.06]" />
       <div className="pointer-events-none absolute inset-0 page-dot-pattern opacity-30" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -140,7 +138,7 @@ function HeroSection({
             : HOME_STATS_CONFIG.map((s, i) => (
                 <div
                   key={s.key}
-                  className="rounded-2xl border border-border/50 bg-card/80 px-4 py-3.5 text-center backdrop-blur-md shadow-sm animate-fade-in-up paper-card"
+                  className="animate-fade-in-up rounded-2xl border border-border/60 bg-card px-4 py-3.5 text-center"
                   style={{ animationDelay: `${0.3 + i * 0.05}s` }}
                 >
                   <p className="text-2xl font-black tracking-tight text-foreground md:text-3xl">
@@ -243,7 +241,7 @@ function NoteGrid({
       {isLoading
         ? Array.from({ length: 4 }, (_, i) => <ShimmerNoteCard key={i} />)
         : items.length
-        ? items.slice(0, 4).map((n) => <NoteCard key={n.id} note={n} variant="featured" />)
+        ? items.slice(0, 4).map((n) => <NoteCard key={n.id} note={n} />)
         : (
             <div className="col-span-full">
               <EmptyState icon={BookOpen} title={emptyTitle} description={emptyDesc} />
@@ -265,7 +263,7 @@ function GroupGrid({
       {isLoading
         ? Array.from({ length: 3 }, (_, i) => <ShimmerGroupCard key={i} />)
         : groups.length
-        ? groups.slice(0, 3).map((g) => <GroupCard key={g.id} group={g} variant="featured" />)
+        ? groups.slice(0, 3).map((g) => <GroupCard key={g.id} group={g} />)
         : (
             <div className="col-span-full">
               <EmptyState icon={Layers3} title="Bundles coming soon" description="Value-packed collections are being assembled." />
@@ -283,7 +281,7 @@ function StepsRow() {
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4 lg:gap-4">
         {HOME_STEPS.map(({ num, title, desc, Icon }, index) => (
           <div key={num} className="relative flex flex-col items-center text-center">
-            <div className="relative z-10 mb-4 flex size-16 items-center justify-center rounded-2xl border border-border/60 bg-card shadow-sm torn-paper paper-card transition-shadow hover:shadow-md">
+            <div className="relative z-10 mb-4 flex size-16 items-center justify-center rounded-2xl border border-border/60 bg-card transition-shadow hover:shadow-md">
               <Icon aria-hidden="true" className="size-6 text-primary" />
             </div>
 
@@ -321,7 +319,7 @@ function CTABanner() {
   return (
     <section className="py-16 md:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-3xl border border-border/40 bg-linear-to-br from-primary/8 via-card to-accent/6 px-6 py-16 text-center md:px-16 md:py-24 shadow-xl torn-paper paper-card">
+        <div className="relative overflow-hidden rounded-3xl border border-border/50 bg-linear-to-br from-primary/8 via-card to-accent/6 px-6 py-16 text-center shadow-sm md:px-16 md:py-24">
           <div className="pointer-events-none absolute -top-40 -right-40 size-96 rounded-full bg-primary/8 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-40 -left-40 size-96 rounded-full bg-accent/8 blur-3xl" />
 
@@ -360,7 +358,7 @@ function CTABanner() {
 
 function FAQAccordion() {
   return (
-    <Accordion defaultValue={["faq-0"]} className="rounded-2xl border border-border bg-card shadow-sm torn-paper paper-card">
+    <Accordion defaultValue={["faq-0"]} className="rounded-2xl border border-border bg-card">
       {HOME_FAQS.map(([q, a], i) => (
         <AccordionItem key={q} value={`faq-${i}`} className="border-b-0">
           <AccordionTrigger className="text-sm font-semibold py-4 px-6">

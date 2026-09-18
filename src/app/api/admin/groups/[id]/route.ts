@@ -7,13 +7,9 @@ import { updateGroupSchema } from "@/schemas/group.schema";
 import { rupeesToPaise } from "@/lib/format";
 import { validateNoteIdsExist } from "@/helpers/note-validation";
 
-
 export const GET = adminHandler(async (ctx) => {
   const { id } = await ctx.params;
-  const group = await prisma.group.findUnique({
-    where: { id },
-    include: { category: true } as any,
-  });
+  const group = await prisma.group.findUnique({ where: { id }, include: { category: true } as any });
   if (!group) throw AppError.notFound("Group");
   return ok(toAdminGroup(group));
 });
@@ -21,14 +17,7 @@ export const GET = adminHandler(async (ctx) => {
 export const PATCH = adminHandler(async (ctx) => {
   const [{ id }, body] = await Promise.all([ctx.params, ctx.req.json()]);
   const parsed = updateGroupSchema.safeParse(body);
-  if (!parsed.success) {
-    const fields: Record<string, string> = {};
-    for (const issue of parsed.error.issues) {
-      const key = issue.path.join(".") || "form";
-      if (!fields[key]) fields[key] = issue.message;
-    }
-    return fail(AppError.validation(fields, parsed.error.issues[0]?.message ?? "Invalid input"));
-  }
+  if (!parsed.success) return fail(AppError.validation());
 
   const { admin } = ctx;
   const existing = await prisma.group.findUnique({ where: { id } });
@@ -62,28 +51,18 @@ export const PATCH = adminHandler(async (ctx) => {
     updates.noteGroups = { create: uniqueIds.map((noteId: string) => ({ noteId })) };
   }
 
-  const updated = await prisma.group.update({
-    where: { id },
-    data: updates as any,
-    include: { category: true } as any,
-  });
-
+  const updated = await prisma.group.update({ where: { id }, data: updates as any, include: { category: true } as any });
   return ok(toAdminGroup(updated));
 });
 
 export const DELETE = adminHandler(async (ctx) => {
-  const { admin } = ctx;
   const { id } = await ctx.params;
   const group = await prisma.group.findUnique({ where: { id } });
   if (!group) throw AppError.notFound("Group");
 
-  const creatorId = group.createdBy;
-  const isCreator = Boolean(creatorId && creatorId === admin.id);
-  const canDelete = admin.isHead || isCreator;
-
-  if (!canDelete) throw AppError.forbidden("Only the Head Admin or creator of this bundle can delete it.");
+  const isCreator = Boolean(group.createdBy && group.createdBy === ctx.admin.id);
+  if (!ctx.admin.isHead && !isCreator) throw AppError.forbidden("Only the Head Admin or creator can delete this bundle.");
 
   await prisma.group.delete({ where: { id } });
-
   return ok({ deleted: true });
 });

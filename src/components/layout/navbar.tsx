@@ -1,13 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { parseAsString, useQueryState } from "nuqs";
 import { Search, X, Menu } from "lucide-react";
-import { usePathname, useSearchParams } from "next/navigation";
-import { useRef, useCallback, useEffect } from "react";
 import { Logo } from "@/components/brand/logo";
 import { ThemeToggle } from "@/components/brand/theme-toggle";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import {
   Sheet,
   SheetContent,
@@ -23,167 +30,188 @@ function isActive(pathname: string, link: { href: string }): boolean {
   return pathname.startsWith(link.href);
 }
 
-function SearchPanel({ searchParams, onClose }: { searchParams: URLSearchParams; onClose: () => void }) {
-  const inputRef = useRef<HTMLInputElement>(null);
-  const panelRef = useRef<HTMLDivElement>(null);
-
-  const closePanel = useCallback(() => {
-    onClose();
-    inputRef.current?.blur();
-  }, [onClose]);
-
-  const handleKeyDown = (e: KeyboardEvent) => {
-    if (e.key === "Escape") closePanel();
-  };
-
-  const handleClickOutside = (e: MouseEvent) => {
-    if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
-      closePanel();
-    }
-  };
-
-  useEffect(() => {
-    document.addEventListener("keydown", handleKeyDown);
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => {
-      document.removeEventListener("keydown", handleKeyDown);
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [handleKeyDown, handleClickOutside]);
-
-  const searchParam = searchParams.get("search") || "";
-
-  return (
-    <>
-      <div className="fixed inset-0 z-60 bg-background/70 backdrop-blur-sm animate-scale-in" aria-hidden="true" onClick={closePanel} />
-      <div className="fixed inset-0 z-60 flex items-start justify-center pt-24">
-        <div ref={panelRef} className="w-full max-w-lg overflow-hidden rounded-2xl border border-border bg-card shadow-2xl paper-card">
-          <div className="flex items-center gap-3 border-b border-border px-4 py-3">
-            <Search aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
-            <Input
-              ref={inputRef}
-              defaultValue={searchParam}
-              placeholder="Search notes, bundles…"
-              onKeyDown={(e) => {
-                if (e.key === "Enter" && inputRef.current?.value?.trim()) {
-                  const query = inputRef.current.value.trim();
-                  window.location.href = `/notes?q=${encodeURIComponent(query)}`;
-                }
-              }}
-              className="h-9 border-0 bg-transparent p-0 text-sm focus-visible:ring-0"
-            />
-            <button type="button" className="rounded-md p-1 text-muted-foreground" onClick={closePanel} aria-label="Close search">
-              <X aria-hidden="true" className="size-4" />
-            </button>
-          </div>
-          <div className="max-h-[60vh] overflow-y-auto p-2">
-            <div className="px-3 py-2">
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Quick links</p>
-            </div>
-            {[
-              { href: "/notes", label: "All Notes", sublabel: "Browse the full catalogue" },
-              { href: "/notes?pricing=free", label: "Free Notes", sublabel: "Start learning at zero cost" },
-              ...NAV_LINKS.map((l) => ({ href: l.href, label: l.label, sublabel: "" })),
-            ].map(({ href, label, sublabel }) => (
-              <Link key={href} href={href} onClick={closePanel} className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-foreground hover:bg-accent/30 transition-colors">
-                <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
-                  <Search aria-hidden="true" className="size-4" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-medium truncate">{label}</p>
-                  {sublabel && <p className="text-[10px] text-muted-foreground truncate">{sublabel}</p>}
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </div>
-    </>
-  );
-}
-
-function SearchTrigger({ searchParams }: { searchParams: URLSearchParams }) {
-  const isOpen = searchParams.has("search");
-
-  return (
-    <>
-      {isOpen && <SearchPanel searchParams={searchParams} onClose={() => { const url = new URL(window.location.href); url.searchParams.delete("search"); window.history.replaceState({}, "", url.toString()); }} />}
-      <Button variant="ghost" size="icon" aria-label="Search notes" className={cn("size-8 rounded-full text-muted-foreground transition-colors", isOpen && "text-primary bg-primary/10")} onClick={() => { const url = new URL(window.location.href); url.searchParams.set("search", "open"); window.history.pushState({}, "", url.toString()); }}>
-        <Search aria-hidden="true" className="size-3.5" />
-        <kbd className="pointer-events-none ml-1 hidden font-sans text-[9px] text-muted-foreground/50 sm:inline">⌘K</kbd>
-      </Button>
-    </>
-  );
-}
-
-function SearchWrapper() {
+function SearchDialog({
+  open,
+  onOpenChange,
+}: {
+  open: boolean;
+  onOpenChange: (open: boolean) => void;
+}) {
+  const router = useRouter();
   const searchParams = useSearchParams();
-  return <SearchTrigger searchParams={searchParams} />;
-}
+  const initialQuery = searchParams.get("q") ?? "";
 
-function NavLinks({ links }: { links: typeof NAV_LINKS }) {
-  const pathname = usePathname();
-
-  return (
-    <nav aria-label="Primary navigation" className="hidden md:flex items-center gap-1">
-      {links.map((link) => (
-        <Link key={link.href} href={link.href} className={cn("rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors", isActive(pathname, link) ? "bg-primary/12 text-primary shadow-sm" : "text-muted-foreground hover:text-foreground hover:bg-accent/30")}>
-          {link.label}
-        </Link>
-      ))}
-    </nav>
-  );
-}
-
-function MobileNavigation() {
-  const pathname = usePathname();
+  const submit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    const value = new FormData(event.currentTarget).get("q");
+    const query = typeof value === "string" ? value.trim() : "";
+    router.push(query ? `/notes?q=${encodeURIComponent(query)}` : "/notes");
+  };
 
   return (
-    <Sheet>
-      <SheetTrigger render={<Button variant="ghost" size="icon" aria-label="Open navigation menu" className="size-7 md:hidden" />}>
-        <Menu aria-hidden="true" className="size-4" />
-      </SheetTrigger>
-      <SheetContent side="right" className="w-[min(18rem,88vw)] p-0">
-        <SheetHeader className="border-b px-4 py-3">
-          <SheetTitle><Logo size="sm" /></SheetTitle>
-        </SheetHeader>
-        <nav aria-label="Mobile navigation" className="flex flex-1 flex-col gap-0.5 p-2.5">
-          {MOBILE_NAV_LINKS.map((link) => (
-            <Link key={link.href} href={link.href} className={cn("rounded-lg px-3 py-2 text-sm font-medium", isActive(pathname, link) ? "bg-primary/12 text-primary" : "text-muted-foreground hover:bg-accent/30")}>
-              {link.label}
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      <DialogContent
+        showCloseButton={false}
+        className="top-20 max-w-lg translate-y-0 gap-0 overflow-hidden rounded-2xl p-0 sm:max-w-lg"
+      >
+        <DialogHeader className="sr-only">
+          <DialogTitle>Search notes</DialogTitle>
+          <DialogDescription>Search the notes catalogue by keyword.</DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={submit} className="flex items-center gap-3 border-b border-border px-4 py-3">
+          <Search aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
+          <Input
+            name="q"
+            defaultValue={initialQuery}
+            placeholder="Search notes, bundles…"
+            aria-label="Search query"
+            className="h-9 border-0 bg-transparent p-0 text-sm focus-visible:ring-0"
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            aria-label="Close search"
+            onClick={() => onOpenChange(false)}
+          >
+            <X aria-hidden="true" className="size-4" />
+          </Button>
+        </form>
+
+        <div className="max-h-[60vh] overflow-y-auto p-2">
+          <p className="px-3 py-2 text-[10px] font-semibold tracking-widest text-muted-foreground uppercase">
+            Quick links
+          </p>
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-foreground transition-colors hover:bg-accent/30"
+            >
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                <Search aria-hidden="true" className="size-4" />
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate text-sm font-medium">{link.label}</span>
+                <span className="block truncate text-[10px] text-muted-foreground">
+                  {link.href === "/"
+                    ? "Browse featured notes and bundles"
+                    : `Open ${link.label.toLowerCase()}`}
+                </span>
+              </span>
             </Link>
           ))}
-        </nav>
-        <div className="border-t p-2.5">
-          <Link href="/notes" className="block rounded-xl bg-primary px-4 py-2 text-center text-xs font-semibold text-primary-foreground">Browse notes</Link>
         </div>
-      </SheetContent>
-    </Sheet>
+      </DialogContent>
+    </Dialog>
   );
 }
 
 export function Navbar() {
   const pathname = usePathname();
-  const isPublic = !pathname.startsWith("/admin");
+  const [search, setSearch] = useQueryState("search", parseAsString);
 
-  if (!isPublic) return null;
+  if (pathname.startsWith("/admin")) return null;
+
+  const searchOpen = search !== null;
+
+  const openSearch = () => setSearch("1", { history: "push", shallow: true });
+  const closeSearch = () => setSearch(null, { history: "replace", shallow: true });
 
   return (
-    <>
-      <header className="sticky top-0 z-50 border-b border-border/30 glass-panel torn-edge">
-        <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
-          <Link href="/" aria-label="Notes Provider home" className="flex items-center gap-2.5">
-            <Logo variant="icon" size="sm" />
-            <span className="font-heading text-sm font-bold tracking-tight text-foreground hidden sm:inline-block">{BRAND.name}</span>
-          </Link>
-          <NavLinks links={NAV_LINKS} />
-          <div className="flex items-center gap-1.5">
-            <SearchWrapper />
-            <ThemeToggle />
-            <MobileNavigation />
-          </div>
+    <header className="sticky top-0 z-50 border-b border-border/40 glass-panel">
+      <div className="mx-auto flex h-14 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+        <Link href="/" aria-label={`${BRAND.name} home`} className="flex items-center gap-2.5">
+          <Logo variant="icon" size="sm" />
+          <span className="hidden font-heading text-sm font-bold tracking-tight text-foreground sm:inline-block">
+            {BRAND.name}
+          </span>
+        </Link>
+
+        <nav aria-label="Primary navigation" className="hidden items-center gap-1 md:flex">
+          {NAV_LINKS.map((link) => (
+            <Link
+              key={link.href}
+              href={link.href}
+              className={cn(
+                "rounded-full px-3.5 py-1.5 text-xs font-medium transition-colors",
+                isActive(pathname, link)
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-accent/30 hover:text-foreground",
+              )}
+            >
+              {link.label}
+            </Link>
+          ))}
+        </nav>
+
+        <div className="flex items-center gap-1.5">
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Search notes"
+            aria-expanded={searchOpen}
+            className={cn(
+              "size-8 rounded-full text-muted-foreground transition-colors",
+              searchOpen && "bg-primary/10 text-primary",
+            )}
+            onClick={openSearch}
+          >
+            <Search aria-hidden="true" className="size-3.5" />
+          </Button>
+
+          <ThemeToggle />
+
+          <Sheet>
+            <SheetTrigger
+              render={
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label="Open navigation menu"
+                  className="size-9 rounded-xl md:hidden"
+                />
+              }
+            >
+              <Menu aria-hidden="true" className="size-4" />
+            </SheetTrigger>
+            <SheetContent side="right" className="w-[min(18rem,88vw)] gap-0 p-0">
+              <SheetHeader className="border-b px-4 py-3">
+                <SheetTitle>
+                  <Logo size="sm" />
+                </SheetTitle>
+              </SheetHeader>
+              <nav aria-label="Mobile navigation" className="flex flex-1 flex-col gap-0.5 overflow-y-auto p-2.5">
+                {MOBILE_NAV_LINKS.map((link) => (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={cn(
+                      "rounded-lg px-3 py-2.5 text-sm font-medium",
+                      isActive(pathname, link)
+                        ? "bg-primary/10 text-primary"
+                        : "text-muted-foreground hover:bg-accent/30",
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                ))}
+              </nav>
+              <div className="border-t p-2.5">
+                <Link
+                  href="/notes"
+                  className="block rounded-xl bg-primary px-4 py-2.5 text-center text-xs font-semibold text-primary-foreground"
+                >
+                  Browse notes
+                </Link>
+              </div>
+            </SheetContent>
+          </Sheet>
         </div>
-      </header>
-    </>
+      </div>
+
+      <SearchDialog open={searchOpen} onOpenChange={(next) => (next ? openSearch() : closeSearch())} />
+    </header>
   );
 }

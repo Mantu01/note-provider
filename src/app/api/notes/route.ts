@@ -2,8 +2,27 @@ import { handler } from "@/helpers/api-handler";
 import { ok } from "@/helpers/api-response";
 import { prisma } from "@/helpers/db";
 import { toPublicNote } from "@/helpers/mappers/note.mapper";
-import { parsePagination, buildPagination, buildNoteFilter, buildNoteSort, parseArrayParam, parseBooleanParam, parseNumberParam } from "@/helpers/query";
+import { parsePagination, buildPagination, buildNoteFilter, buildNoteSort } from "@/helpers/query";
 import type { NoteSort } from "@/lib/types";
+
+function parseArrayParam(searchParams: URLSearchParams, key: string): string[] {
+  return Array.from(new Set(
+    searchParams.getAll(key).flatMap((v) => v.split(",").map((s) => s.trim()).filter(Boolean)),
+  ));
+}
+
+function parseBooleanParam(searchParams: URLSearchParams, key: string): boolean | undefined {
+  const value = searchParams.get(key);
+  if (value === null) return undefined;
+  return value === "true" || value === "1";
+}
+
+function parseNumberParam(searchParams: URLSearchParams, key: string): number | undefined {
+  const raw = searchParams.get(key);
+  if (raw === null || raw.trim() === "") return undefined;
+  const value = Number(raw);
+  return Number.isFinite(value) ? value : undefined;
+}
 
 
 export const GET = handler(async (ctx) => {

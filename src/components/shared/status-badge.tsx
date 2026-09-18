@@ -4,7 +4,7 @@ import { cn } from "@/lib/utils";
 import type { StatusType } from "@/lib/types";
 
 type StatusBadgeProps = {
-  type: StatusType;
+  type?: StatusType;
   value?: string;
   status?: string;
   className?: string;
@@ -12,10 +12,11 @@ type StatusBadgeProps = {
 
 export function StatusBadge({ type, value, status, className }: StatusBadgeProps) {
   const targetValue = (value ?? status ?? "").toString();
-  const config = STATUS_CONFIG[type]?.[targetValue] ?? {
+  const config = type ? STATUS_CONFIG[type]?.[targetValue] : undefined;
+  const resolved = config ?? {
     label: targetValue || "Unknown",
     className: "bg-muted/80 text-muted-foreground border border-border",
   };
 
-  return <Badge className={cn(config.className, className)}>{config.label}</Badge>;
+  return <Badge className={cn(resolved.className, className)}>{resolved.label}</Badge>;
 }
