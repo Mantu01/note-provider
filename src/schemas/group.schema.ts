@@ -1,12 +1,7 @@
 import { z } from "zod";
 import { MIN_PAID_PRICE_PAISE, NOTE_VISIBILITIES } from "@/lib/constants";
 import { rupeesToPaise } from "@/lib/format";
-import { objectIdSchema, uploadedImageSchema } from "./note.schema";
-
-const priceRupeesSchema = z
-  .number({ message: "Price is required" })
-  .min(0, "Price cannot be negative")
-  .max(1000000, "Price is too high");
+import { objectIdSchema, uploadedImageSchema, priceRupeesSchema } from "./note.schema";
 
 export const groupBaseSchema = z.object({
   name: z.string().trim().min(3, "Name must be at least 3 characters").max(160),

@@ -1,4 +1,3 @@
-import { format, formatDistanceToNow } from "date-fns";
 import type { NotePricingType } from "./types";
 
 const INR_PRICE_FORMAT = new Intl.NumberFormat("en-IN", { style: "currency", currency: "INR", maximumFractionDigits: 0 });
@@ -6,22 +5,6 @@ const COMPACT_NUMBER_FORMAT = new Intl.NumberFormat("en-IN", { notation: "compac
 
 export function formatPrice(paise: number): string {
   return INR_PRICE_FORMAT.format(paise / 100);
-}
-
-export function formatDate(iso: string): string {
-  return format(new Date(iso), "dd MMM yyyy");
-}
-
-export function formatDateTime(iso: string): string {
-  return format(new Date(iso), "dd MMM yyyy, h:mm a");
-}
-
-export function formatRelative(iso: string): string {
-  return formatDistanceToNow(new Date(iso), { addSuffix: true });
-}
-
-export function formatRelativeTime(iso: string): string {
-  return formatRelative(iso);
 }
 
 export function formatCompactNumber(value: number): string {
@@ -44,10 +27,6 @@ export function rupeesToPaise(rupees: number): number {
   return Math.round(rupees * 100);
 }
 
-export function paiseToRupees(paise: number): number {
-  return paise / 100;
-}
-
 export function formatPriceLabel(paise: number, pricingType?: NotePricingType): string {
   if (pricingType === "free" || paise === 0) return "Free";
   return formatPrice(paise);
@@ -58,6 +37,11 @@ export function formatFileSizeLabel(bytes: number | null | undefined): string | 
   return formatFileSize(bytes);
 }
 
+export function formatDateTime(value: Date | string): string {
+  const date = value instanceof Date ? value : new Date(value);
+  return date.toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short" });
+}
+
 export function toIsoString(value: Date | string | null | undefined): string | null {
   if (!value) return null;
   const date = value instanceof Date ? value : new Date(value);
@@ -66,8 +50,4 @@ export function toIsoString(value: Date | string | null | undefined): string | n
 
 export function toIsoStringRequired(value: Date | string): string {
   return toIsoString(value) ?? new Date(0).toISOString();
-}
-
-export function toDateKey(value: Date): string {
-  return value.toISOString().slice(0, 10);
 }

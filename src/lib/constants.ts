@@ -20,8 +20,6 @@ import type {
 } from "./types";
 
 export const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
-// ponytail: bake year at module load so the footer has no runtime date call.
-// Upgrade: swap back to new Date().getFullYear() when Next.js allows dynamic values in Cache Components.
 export const CURRENT_YEAR = new Date().getFullYear();
 
 export const BRAND = {
@@ -54,17 +52,9 @@ export const SEO = {
 export const NOTE_VISIBILITIES = ["public", "private"] as const satisfies readonly NoteVisibility[];
 export const NOTE_LEVELS = ["basics", "intermediate", "advance"] as const satisfies readonly NoteLevel[];
 export const NOTE_PRICING_TYPES = ["free", "paid"] as const satisfies readonly NotePricingType[];
-export const PURCHASE_ITEM_TYPES = ["note", "group"] as const;
-export const PAYMENT_STATUSES = ["created", "paid", "failed"] as const satisfies readonly PaymentStatus[];
 export const FULFILLMENT_STATUSES = ["pending", "completed", "cancelled"] as const satisfies readonly FulfillmentStatus[];
 export const NOTE_SORTS = ["newest", "oldest", "price_asc", "price_desc", "popular", "title_asc"] as const satisfies readonly NoteSort[];
 export const ORDER_SORTS = ["newest", "oldest", "amount_desc", "amount_asc"] as const satisfies readonly OrderSort[];
-export const UPLOAD_KINDS = ["note_full", "note_preview", "cover"] as const satisfies readonly UploadKind[];
-
-export const NOTE_LEVEL_LABELS: Record<NoteLevel, string> = { basics: "Basics", intermediate: "Intermediate", advance: "Advanced" };
-export const PRICING_TYPE_LABELS: Record<NotePricingType, string> = { free: "Free", paid: "Paid" };
-export const PAYMENT_STATUS_LABELS: Record<PaymentStatus, string> = { created: "Awaiting payment", paid: "Paid", failed: "Failed" };
-export const FULFILLMENT_STATUS_LABELS: Record<FulfillmentStatus, string> = { pending: "Pending", completed: "Completed", cancelled: "Cancelled" };
 
 export const STATUS_CONFIG: Record<StatusType, Record<string, { label: string; className: string }>> = {
   payment: {
@@ -88,45 +78,19 @@ export const STATUS_CONFIG: Record<StatusType, Record<string, { label: string; c
   },
 };
 
-export const ERROR_STATUS: Record<ErrorCode, number> = {
-  VALIDATION_ERROR: 400,
-  PAYMENT_ERROR: 402,
-  UNAUTHORIZED: 401,
-  FORBIDDEN: 403,
-  NOT_FOUND: 404,
-  CONFLICT: 409,
-  PAYLOAD_TOO_LARGE: 413,
-  UNSUPPORTED_MEDIA_TYPE: 415,
-  RATE_LIMITED: 429,
-  INTERNAL_ERROR: 500,
-};
+export const ABOUT_VALUES = [
+  { title: "Focused learning", text: "We curate the developer notes that help you learn faster without wasting time on fluff." },
+  { title: "Clear structure", text: "Every note is designed to reduce confusion and make complex topics easier to revisit and retain." },
+  { title: "Practical value", text: "We keep the experience useful, readable, and tailored to how real engineers study and build." },
+] as const;
 
-export const DEFAULT_PAGE_LIMIT = 12;
-export const ADMIN_PAGE_LIMIT = 20;
-export const MAX_PAGE_LIMIT = 48;
-
-export const ADMIN_SESSION_COOKIE = "admin_session";
-export const ADMIN_SESSION_MAX_AGE_SECONDS = 604800;
-
-export const LEADS_EXPORT_MAX_ROWS = 10000;
-export const MIN_PAID_PRICE_PAISE = 100;
-export const ORDER_CURRENCY = "INR" as const;
-export const SIGNED_URL_TTL_SECONDS = 60;
-
-export const UPLOAD_LIMITS: Record<UploadKind, { maxBytes: number; mimeTypes: readonly string[]; folder: string }> = {
-  note_full: { maxBytes: 50 * 1024 * 1024, mimeTypes: ["application/pdf"], folder: "notes-provider/notes/full" },
-  note_preview: { maxBytes: 20 * 1024 * 1024, mimeTypes: ["application/pdf"], folder: "notes-provider/notes/preview" },
-  cover: { maxBytes: 5 * 1024 * 1024, mimeTypes: ["image/png", "image/jpeg", "image/webp"], folder: "notes-provider/covers" },
-};
-
-export const RATE_LIMITS = {
-  adminLogin: { limit: 5, windowMs: 10 * 60 * 1000 },
-  adminRegister: { limit: 3, windowMs: 60 * 60 * 1000 },
-  createOrder: { limit: 10, windowMs: 10 * 60 * 1000 },
-  noteDownload: { limit: 30, windowMs: 10 * 60 * 1000 },
-} as const;
-
-export const FULL_NAME_PATTERN = /^[\p{L}\s.'-]+$/u;
+export const CONTACT_CHANNELS = [
+  { title: "X (Twitter)", description: "Follow for updates, tips, and quick replies.", href: "https://x.com/Mantu_kumar91", icon: "MessageSquareText", label: "Follow on X" },
+  { title: "GitHub", description: "Explore code references and open-source resources.", href: "https://github.com/Mantu01", icon: "Code2", label: "Explore GitHub" },
+  { title: "YouTube", description: "Video tutorials and walkthroughs for notes topics.", href: "https://www.youtube.com/channel/UCgkZ2cdrKLz7dhnXnkDOAgQ", icon: "PlayCircle", label: "Watch on YouTube" },
+  { title: "Instagram", description: "Behind-the-scenes, study tips, and new releases.", href: "https://www.instagram.com/programmer_area", icon: "Instagram", label: "Follow on Instagram" },
+  { title: "Email", description: "For order help, delivery questions, and support requests.", href: `mailto:${SEO.contactEmail}`, icon: "Mail", label: "Send an email" },
+] as const;
 
 export const TERMS_OF_SERVICE_SECTIONS = [
   { id: "item-1", title: "1. Acceptance of Terms", content: `By creating an account or purchasing notes from ${BRAND.name}, you agree to be bound by these Terms. If you do not accept these terms, please do not use our services.` },
@@ -160,20 +124,6 @@ export const REFUND_POLICY_SECTIONS = [
   { id: "item-5", title: "5. Cancellation Requests", content: `You may cancel an order before it has been fulfilled by contacting support. Once fulfillment is complete, cancellation is no longer possible and standard refund policy applies.` },
   { id: "item-6", title: "6. Intellectual Property", content: `All notes remain the intellectual property of Notes Provider. Purchasing grants you a personal license to use the content, not ownership of the copyright.` },
   { id: "item-7", title: "7. How to Request Support", content: `For any payment or delivery issues, contact us at <a href="mailto:support@notesprovider.com" style="color:var(--primary);text-decoration:underline">support@notesprovider.com</a> with your order number and transaction proof. Response time is typically within 24 hours.` },
-] as const;
-
-export const ABOUT_VALUES = [
-  { title: "Focused learning", text: "We curate the developer notes that help you learn faster without wasting time on fluff." },
-  { title: "Clear structure", text: "Every note is designed to reduce confusion and make complex topics easier to revisit and retain." },
-  { title: "Practical value", text: "We keep the experience useful, readable, and tailored to how real engineers study and build." },
-] as const;
-
-export const CONTACT_CHANNELS = [
-  { title: "X (Twitter)", description: "Follow for updates, tips, and quick replies.", href: "https://x.com/Mantu_kumar91", icon: "MessageSquareText", label: "Follow on X" },
-  { title: "GitHub", description: "Explore code references and open-source resources.", href: "https://github.com/Mantu01", icon: "Code2", label: "Explore GitHub" },
-  { title: "YouTube", description: "Video tutorials and walkthroughs for notes topics.", href: "https://www.youtube.com/channel/UCgkZ2cdrKLz7dhnXnkDOAgQ", icon: "PlayCircle", label: "Watch on YouTube" },
-  { title: "Instagram", description: "Behind-the-scenes, study tips, and new releases.", href: "https://www.instagram.com/programmer_area", icon: "Instagram", label: "Follow on Instagram" },
-  { title: "Email", description: "For order help, delivery questions, and support requests.", href: `mailto:${SEO.contactEmail}`, icon: "Mail", label: "Send an email" },
 ] as const;
 
 export const HOME_TRUST_ITEMS = [
@@ -220,3 +170,32 @@ export const MOBILE_NAV_LINKS = [
   { href: "/about", label: "About" },
   { href: "/contact", label: "Contact" },
 ] as const;
+export const NOTE_LEVEL_LABELS: Record<NoteLevel, string> = { basics: "Basics", intermediate: "Intermediate", advance: "Advanced" };
+export const NOTE_SORT_LABELS: Record<NoteSort, string> = {
+  newest: "Newest first",
+  oldest: "Oldest first",
+  price_asc: "Price: low to high",
+  price_desc: "Price: high to low",
+  popular: "Most popular",
+  title_asc: "Title: A–Z",
+};
+
+export const ERROR_STATUS: Record<ErrorCode, number> = {
+  VALIDATION_ERROR: 400, PAYMENT_ERROR: 402, UNAUTHORIZED: 401, FORBIDDEN: 403,
+  NOT_FOUND: 404, CONFLICT: 409, PAYLOAD_TOO_LARGE: 413, UNSUPPORTED_MEDIA_TYPE: 415,
+  RATE_LIMITED: 429, INTERNAL_ERROR: 500,
+};
+
+export const DEFAULT_PAGE_LIMIT = 12;
+export const MAX_PAGE_LIMIT = 48;
+export const ADMIN_SESSION_COOKIE = "admin_session";
+export const ADMIN_SESSION_MAX_AGE_SECONDS = 604800;
+export const LEADS_EXPORT_MAX_ROWS = 10000;
+export const MIN_PAID_PRICE_PAISE = 100;
+export const ORDER_CURRENCY = "INR" as const;
+export const SIGNED_URL_TTL_SECONDS = 60;
+export const UPLOAD_LIMITS: Record<UploadKind, { maxBytes: number; mimeTypes: readonly string[]; folder: string }> = {
+  note_full: { maxBytes: 50 * 1024 * 1024, mimeTypes: ["application/pdf"], folder: "notes-provider/notes/full" },
+  note_preview: { maxBytes: 20 * 1024 * 1024, mimeTypes: ["application/pdf"], folder: "notes-provider/notes/preview" },
+  cover: { maxBytes: 5 * 1024 * 1024, mimeTypes: ["image/png", "image/jpeg", "image/webp"], folder: "notes-provider/covers" },
+};

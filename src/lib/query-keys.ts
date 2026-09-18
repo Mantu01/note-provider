@@ -15,7 +15,6 @@ export const queryKeys = {
     detail: (slug: string) => ["groups", "detail", slug] as const,
   },
   order: (id: string) => ["order", id] as const,
-  orderLookup: (orderNumber: string) => ["order", "lookup", orderNumber] as const,
   admin: {
     me: ["admin", "me"] as const,
     dashboard: ["admin", "dashboard"] as const,
@@ -35,7 +34,5 @@ export const queryKeys = {
       list: (params: unknown) => ["admin", "orders", "list", params] as const,
       detail: (id: string) => ["admin", "orders", "detail", id] as const,
     },
-    leads: (params: unknown) => ["admin", "leads", params] as const,
-    admins: ["admin", "admins"] as const,
   },
 } as const;

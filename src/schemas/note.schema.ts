@@ -47,7 +47,7 @@ const tagsSchema = z
   .max(20, "At most 20 tags are allowed")
   .transform((tags) => Array.from(new Set(tags.map((tag) => tag.toLowerCase()))));
 
-const priceRupeesSchema = z
+export const priceRupeesSchema = z
   .number({ message: "Price is required" })
   .min(0, "Price cannot be negative")
   .max(1000000, "Price is too high");
