@@ -17,7 +17,7 @@ import { FileUploadField } from "@/components/shared/file-upload-field";
 import { CategoryDialog } from "@/components/admin/categories/category-dialog";
 import { useAdminCategories } from "@/hooks/useAdmin";
 import { useCreateGroup, useUpdateGroup } from "@/hooks/useAdmin";
-import { createGroupSchema, type CreateGroupInput } from "@/schemas/group.schema";
+import { createGroupSchema, updateGroupSchema, type CreateGroupInput, type UpdateGroupInput } from "@/schemas/group.schema";
 import type { AdminGroup } from "@/lib/types";
 import { NoteMultiSelect } from "./note-multi-select";
 
@@ -38,8 +38,8 @@ export function GroupForm({ initialData }: GroupFormProps) {
   });
   const setCategoryDialogOpen = (open: boolean) => setParams({ categoryDialog: open });
 
-  const form = useForm<CreateGroupInput>({
-    resolver: zodResolver(createGroupSchema),
+  const form = useForm<CreateGroupInput | UpdateGroupInput>({
+    resolver: zodResolver(isEditing ? updateGroupSchema : createGroupSchema),
     defaultValues: {
       name: initialData?.name ?? "",
       description: initialData?.description ?? "",
@@ -86,13 +86,13 @@ export function GroupForm({ initialData }: GroupFormProps) {
     }
   }, [createMutation.error, updateMutation.error, form]);
 
-  const onSubmit = (values: CreateGroupInput) => {
+  const onSubmit = (values: CreateGroupInput | UpdateGroupInput) => {
     if (isEditing) {
-      updateMutation.mutate(values, {
+      updateMutation.mutate(values as UpdateGroupInput, {
         onSuccess: () => router.push("/admin/groups"),
       });
     } else {
-      createMutation.mutate(values, {
+      createMutation.mutate(values as CreateGroupInput, {
         onSuccess: () => router.push("/admin/groups"),
       });
     }

@@ -12,13 +12,13 @@ export function GroupsPage() {
   const query = useGroups({ limit: 12 });
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mt-4 mb-8">
-        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-accent">Curated collections</p>
-        <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+    <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-6 lg:px-8">
+      <div className="mt-3 mb-5 sm:mt-4 sm:mb-8">
+        <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-accent">Curated collections</p>
+        <h1 className="font-heading text-xl font-bold tracking-tight text-foreground sm:text-2xl md:text-3xl">
           Bundles
         </h1>
-        <p className="mt-1 text-xs text-muted-foreground">
+        <p className="mt-0.5 text-[11px] text-muted-foreground sm:mt-1 sm:text-xs">
           {query.data
             ? `${query.data.pagination.total} bundle${query.data.pagination.total !== 1 ? "s" : ""} available`
             : "Loading…"}
@@ -33,13 +33,13 @@ export function GroupsPage() {
         <GroupsCatalogueSkeleton />
       ) : (
         <>
-          <div className="mt-2 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-2 grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
             {query.data?.items.length ? (
               query.data.items.map((group) => (
                 <GroupCard key={group.id} group={group} />
               ))
             ) : (
-              <div className="md:col-span-2 lg:col-span-3">
+                <div className="md:col-span-2 lg:col-span-3">
                 <EmptyState
                   icon={Layers3}
                   title="Bundles are coming soon"

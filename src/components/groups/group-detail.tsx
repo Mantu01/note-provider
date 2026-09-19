@@ -41,8 +41,8 @@ export function GroupDetailPage({ slug }: { slug: string }) {
   const savingsPercent = individualValue > 0 ? Math.round((savings / individualValue) * 100) : 0;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8" data-testid="group-content">
-      <nav aria-label="Breadcrumb" className="mb-5 flex items-center gap-1.5 text-xs text-muted-foreground">
+    <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-5 lg:px-8" data-testid="group-content">
+      <nav aria-label="Breadcrumb" className="mb-3 flex items-center gap-1.5 text-[11px] text-muted-foreground sm:mb-5 sm:text-xs">
         <Link href="/" className="hover:text-foreground">Home</Link>
         <span aria-hidden="true" className="text-muted-foreground/40">/</span>
         <Link href="/groups" className="hover:text-foreground">Bundles</Link>
@@ -50,8 +50,8 @@ export function GroupDetailPage({ slug }: { slug: string }) {
         <span className="font-medium text-foreground truncate">{group.name}</span>
       </nav>
 
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <article className="space-y-5">
+      <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_18rem] sm:gap-6">
+        <article className="space-y-4 sm:space-y-5">
           <div className="relative aspect-[16/9] w-full overflow-hidden rounded-xl border border-border/50 bg-muted/20 shadow-sm">
             {group.coverImageUrl ? (
               <Image
@@ -70,29 +70,29 @@ export function GroupDetailPage({ slug }: { slug: string }) {
             )}
           </div>
 
-          <div className="space-y-2">
-            <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-accent">
+          <div className="space-y-1.5 sm:space-y-2">
+            <p className="text-[9px] font-bold tracking-[0.15em] uppercase text-accent sm:text-[10px]">
               {group.category.name} bundle
             </p>
-            <h1 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">
+            <h1 className="font-heading text-xl font-bold tracking-tight text-foreground sm:text-2xl md:text-3xl">
               {group.name}
             </h1>
             {group.description ? (
-              <MarkdownPreview markdown={group.description} className="text-sm leading-relaxed" />
+              <MarkdownPreview markdown={group.description} className="text-xs leading-relaxed sm:text-sm" />
             ) : null}
           </div>
 
-          <div className="border-t border-border/40 pt-5">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="font-heading text-base font-bold tracking-tight">
+          <div className="border-t border-border/40 pt-4 sm:pt-5">
+            <div className="mb-3 flex items-center justify-between sm:mb-4">
+              <h2 className="font-heading text-sm font-bold tracking-tight sm:text-base">
                 {group.noteCount} notes included
               </h2>
-              <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-3 py-0.5 text-xs font-semibold text-secondary-foreground border border-border/50">
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold text-secondary-foreground border border-border/50 sm:px-3 sm:text-xs">
                 <Layers aria-hidden="true" className="size-3" />
                 Complete pack
               </span>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-2 sm:gap-3 sm:grid-cols-2">
               {group.notes.map((note) => (
                 <NoteCard key={note.id} note={note} variant="compact" />
               ))}
@@ -100,22 +100,22 @@ export function GroupDetailPage({ slug }: { slug: string }) {
           </div>
         </article>
 
-        <aside className="lg:sticky lg:top-20 lg:self-start space-y-4">
+        <aside className="lg:sticky lg:top-16 lg:self-start space-y-3 sm:space-y-4">
           <Card className="rounded-xl border border-border bg-card shadow-lg">
-            <CardHeader className="pb-3">
-              <CardTitle className="text-base font-bold">Get this bundle</CardTitle>
-              <CardDescription className="text-xs">
+            <CardHeader className="pb-2 sm:pb-3">
+              <CardTitle className="text-sm font-bold sm:text-base">Get this bundle</CardTitle>
+              <CardDescription className="text-[11px] sm:text-xs">
                 {group.noteCount} notes · {group.category.name}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-3 sm:space-y-4">
               <PriceTag price={group.price} priceLabel={group.priceLabel} compareAtPrice={group.compareAtPrice} size="large" />
 
               {savings > 0 && (
-                <div className="rounded-xl border border-success/20 bg-success/5 p-3 flex items-center gap-2">
-                  <TrendingUp aria-hidden="true" className="size-4 shrink-0 text-success" />
+                <div className="rounded-xl border border-success/20 bg-success/5 p-2.5 flex items-center gap-2 sm:p-3">
+                  <TrendingUp aria-hidden="true" className="size-3.5 shrink-0 text-success sm:size-4" />
                   <div>
-                    <p className="text-xs font-bold text-success">Save {savingsPercent}%</p>
+                    <p className="text-xs font-bold text-success sm:text-sm">Save {savingsPercent}%</p>
                     <p className="text-[10px] text-muted-foreground">
                       Individual value: <span className="line-through text-muted-foreground">{formatPrice(individualValue)}</span>
                     </p>
@@ -136,7 +136,7 @@ export function GroupDetailPage({ slug }: { slug: string }) {
                 Delivered within 4–6 hours after payment confirmation.
               </p>
 
-              <div className="flex items-center justify-center gap-2 border-t border-border/50 pt-4 text-[10px] text-muted-foreground">
+              <div className="flex items-center justify-center gap-2 border-t border-border/50 pt-3 text-[10px] text-muted-foreground sm:pt-4">
                 <span>Secure payment</span>
                 <span aria-hidden="true" className="text-muted-foreground/30">·</span>
                 <span>Original content</span>
@@ -149,9 +149,9 @@ export function GroupDetailPage({ slug }: { slug: string }) {
       </div>
 
       {relatedGroups.length > 0 && (
-        <section className="mt-10 border-t border-border/40 pt-8">
-          <h2 className="mb-4 font-heading text-lg font-bold tracking-tight">More bundles you might like</h2>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <section className="mt-8 border-t border-border/40 pt-6 sm:mt-10 sm:pt-8">
+          <h2 className="mb-3 font-heading text-base font-bold tracking-tight sm:mb-4 sm:text-lg">More bundles you might like</h2>
+          <div className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
             {relatedGroups.map((related) => (
               <GroupCard key={related.id} group={related} />
             ))}
