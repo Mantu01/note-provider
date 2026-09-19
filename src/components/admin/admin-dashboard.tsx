@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { FilePlus2, FolderPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -11,6 +12,7 @@ import { RecentOrders } from "@/components/admin/dashboard/recent-orders";
 import { useDashboard } from "@/hooks/useAdmin";
 
 export function AdminDashboard() {
+  const [days, setDays] = useState<7 | 30>(30);
   const query = useDashboard();
 
   if (query.isPending) {
@@ -24,6 +26,8 @@ export function AdminDashboard() {
   }
 
   const data = query.data;
+  const filteredSeries = days === 7 ? data.revenueSeries.slice(-7) : data.revenueSeries;
+  const periodPaise = filteredSeries.reduce((acc, curr) => acc + curr.revenuePaise, 0);
 
   return (
     <div className="space-y-8">
@@ -46,8 +50,8 @@ export function AdminDashboard() {
         </div>
       </div>
 
-      <StatsGrid stats={data} />
-      <RevenueChart data={data.revenueSeries} />
+      <StatsGrid stats={data} periodDays={days} periodPaise={periodPaise} />
+      <RevenueChart data={filteredSeries} days={days} onDaysChange={setDays} />
       <RecentOrders orders={data.recentOrders} />
     </div>
   );

@@ -17,7 +17,6 @@ import type {
 import type { CreateCategoryInput, UpdateCategoryInput } from "@/schemas/category.schema";
 import type { CreateGroupInput, UpdateGroupInput } from "@/schemas/group.schema";
 import type { CreateNoteInput, UpdateNoteInput } from "@/schemas/note.schema";
-import type { UpdateOrderPayload } from "@/schemas/admin.schema";
 import { toast } from "sonner";
 
 export function useAdminProfile() {
@@ -35,7 +34,10 @@ export function useAdminLogout() {
 }
 
 export function useDashboard() {
-  return useQuery({ queryKey: queryKeys.admin.dashboard, queryFn: () => apiClient<DashboardStats>("/admin/dashboard") });
+  return useQuery({
+    queryKey: queryKeys.admin.dashboard,
+    queryFn: () => apiClient<DashboardStats>("/admin/dashboard"),
+  });
 }
 
 export function useAdminCategories() {
@@ -223,7 +225,6 @@ export function useAdminOrders(params: {
   limit?: number;
   q?: string;
   paymentStatus?: string;
-  fulfillmentStatus?: string;
   itemType?: string;
   from?: string;
   to?: string;
@@ -244,21 +245,6 @@ export function useAdminOrder(id: string) {
   });
 }
 
-export function useUpdateOrderFulfillment(id: string) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (data: UpdateOrderPayload) =>
-      apiClient<AdminOrder>(`/admin/orders/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
-    onSuccess: (order) => {
-      toast.success(`Updated order #${order.orderNumber}`);
-      qc.invalidateQueries({ queryKey: queryKeys.admin.orders.all });
-      qc.invalidateQueries({ queryKey: queryKeys.admin.orders.detail(id) });
-      qc.invalidateQueries({ queryKey: queryKeys.admin.dashboard });
-    },
-    onError: (error: Error) => toast.error(error.message || "Failed to update order"),
-  });
-}
-
 export function useFileUpload() {
   const qc = useQueryClient();
   return useMutation({
@@ -275,17 +261,3 @@ export function useFileUpload() {
   });
 }
 
-export function useDeleteUpload() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async ({ publicId, resourceType }: { publicId: string; resourceType: "raw" | "image" }) =>
-      apiClient<{ deleted: true }>("/admin/uploads", {
-        method: "DELETE",
-        body: JSON.stringify({ publicId, resourceType }),
-      }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: queryKeys.admin.notes.all });
-    },
-    onError: (error: Error) => toast.error(error.message || "Failed to remove file"),
-  });
-}

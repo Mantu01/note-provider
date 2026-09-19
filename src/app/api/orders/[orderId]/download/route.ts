@@ -22,14 +22,20 @@ export const GET = handler(async (ctx) => {
   if (!order) throw AppError.notFound("Order");
   if (order.itemType !== "note" || !order.noteId) throw AppError.notFound("Note not found for this order");
   if (order.paymentStatus !== "paid") throw AppError.forbidden("Payment not completed");
-  if (order.fulfillmentStatus !== "completed") throw AppError.forbidden("Order not yet fulfilled");
-  if (order.isDownloaded) throw AppError.forbidden("This order has already been downloaded");
+
+  const isFresh = order.paidAt && Date.now() - new Date(order.paidAt).getTime() < 15 * 60 * 1000;
+  if (!isFresh) {
+    if (order.isDownloaded) throw AppError.forbidden("This order has already been downloaded");
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { isDownloaded: true },
+    });
+  }
+
   if (!order.note?.fullFileUrl) throw AppError.internal("Note file not available");
 
-  await prisma.order.update({
-    where: { id: orderId },
-    data: { isDownloaded: true },
-  });
+  await prisma.note.update({ where: { id: order.noteId }, data: { downloadCount: { increment: 1 } } });
 
-  return ok({ url: order.note.fullFileUrl });
+  const slug = (order.itemSnapshot as any)?.slug ?? order.note.slug;
+  return ok({ url: order.note.fullFileUrl, filename: `${slug}.pdf` });
 });

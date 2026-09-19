@@ -67,7 +67,6 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
           <BookOpen aria-hidden="true" className="size-3 shrink-0" />
           <span className="truncate tabular-nums">
             {note.pageCount ? `${note.pageCount} pages` : "PDF notes"}
-            {note.fileSizeLabel ? ` · ${note.fileSizeLabel}` : ""}
           </span>
         </p>
 

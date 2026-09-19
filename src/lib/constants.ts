@@ -8,7 +8,6 @@ import {
 } from "lucide-react";
 import type {
   ErrorCode,
-  FulfillmentStatus,
   NoteLevel,
   NotePricingType,
   NoteSort,
@@ -52,7 +51,6 @@ export const SEO = {
 export const NOTE_VISIBILITIES = ["public", "private"] as const satisfies readonly NoteVisibility[];
 export const NOTE_LEVELS = ["basics", "intermediate", "advance"] as const satisfies readonly NoteLevel[];
 export const NOTE_PRICING_TYPES = ["free", "paid"] as const satisfies readonly NotePricingType[];
-export const FULFILLMENT_STATUSES = ["pending", "completed", "cancelled"] as const satisfies readonly FulfillmentStatus[];
 export const NOTE_SORTS = ["newest", "oldest", "price_asc", "price_desc", "popular", "title_asc"] as const satisfies readonly NoteSort[];
 export const ORDER_SORTS = ["newest", "oldest", "amount_desc", "amount_asc"] as const satisfies readonly OrderSort[];
 
@@ -61,11 +59,6 @@ export const STATUS_CONFIG: Record<StatusType, Record<string, { label: string; c
     paid: { label: "Paid", className: "border-success bg-success text-success-foreground" },
     created: { label: "Awaiting payment", className: "border-warning text-warning-foreground bg-warning/20" },
     failed: { label: "Failed", className: "border-destructive text-destructive bg-destructive/10" },
-  },
-  fulfillment: {
-    pending: { label: "Pending", className: "border-warning text-warning-foreground bg-warning/20" },
-    completed: { label: "Completed", className: "border-success bg-success text-success-foreground" },
-    cancelled: { label: "Cancelled", className: "border-border text-muted-foreground bg-transparent" },
   },
   pricing: {
     free: { label: "Free", className: "border-success text-success bg-success/15" },
@@ -76,7 +69,7 @@ export const STATUS_CONFIG: Record<StatusType, Record<string, { label: string; c
     intermediate: { label: "Intermediate", className: "border-warning text-warning-foreground bg-transparent" },
     advance: { label: "Advanced", className: "border-destructive text-destructive bg-transparent" },
   },
-};
+} as const;
 
 export const ABOUT_VALUES = [
   { title: "Focused learning", text: "We curate the developer notes that help you learn faster without wasting time on fluff." },
@@ -93,37 +86,34 @@ export const CONTACT_CHANNELS = [
 ] as const;
 
 export const TERMS_OF_SERVICE_SECTIONS = [
-  { id: "item-1", title: "1. Acceptance of Terms", content: `By creating an account or purchasing notes from ${BRAND.name}, you agree to be bound by these Terms. If you do not accept these terms, please do not use our services.` },
-  { id: "item-2", title: "2. No Restrictions on PDF Use", content: `<strong>All PDF notes are provided with no usage restrictions.</strong> After purchase, you are free to use, modify, annotate, print, or share the content however you wish. There are no licensing limitations — once bought, the note belongs to you.` },
-  { id: "item-3", title: "3. AI-Generated Content Disclaimer", content: `<strong>Notes Provider uses AI-assisted tools to generate and structure study material.</strong> While we strive for accuracy, technical content may contain errors, outdated information, or omissions. We recommend cross-referencing with official documentation, textbooks, or other trusted sources before relying on any material for exams, interviews, or production use.` },
-  { id: "item-4", title: "4. Personal Use License", content: `All purchased content is licensed for personal, non-commercial use only. You may not redistribute, resell, or publish the notes publicly without prior written permission from Notes Provider.` },
-  { id: "item-5", title: "5. Account Responsibility", content: `You are responsible for maintaining the confidentiality of your account credentials and for all activity under your account.` },
-  { id: "item-6", title: "6. Limitation of Liability", content: `Notes Provider is not liable for any indirect, incidental, or consequential damages arising from the use of our notes. Our total liability shall not exceed the amount paid for the specific order in question.` },
-  { id: "item-7", title: "7. Modifications to Terms", content: `We may update these Terms periodically. Continued use of the platform after changes constitutes acceptance of the revised terms.` },
-  { id: "item-8", title: "8. Governing Law", content: `These Terms are governed by the laws of India. Any disputes shall be resolved in the courts located in India.` },
+  { id: "item-1", title: "1. Acceptance of Terms", content: `By purchasing notes or accessing digital materials from ${BRAND.name}, you agree to be bound by these Terms. If you do not accept these terms, please do not use our services.` },
+  { id: "item-2", title: "2. Instant Digital Delivery & Access Policy", content: `Purchased study notes and bundles are delivered digitally and made available for instant download immediately upon successful payment. Unlimited downloads are provided during your initial 15-minute post-payment session on the order confirmation screen. Subsequent visits allow a single-use download via the order tracking page. We recommend saving and backing up your downloaded PDFs to your device promptly upon purchase.` },
+  { id: "item-3", title: "3. Personal Educational Use License", content: `All purchased content is licensed exclusively for personal, non-commercial educational use. You are welcome to view, annotate, and print notes for your own learning. You may not resell, redistribute, publicly re-host, or commercially exploit any material without prior written authorization from ${BRAND.name}.` },
+  { id: "item-4", title: "4. AI-Assisted Content Disclaimer", content: `<strong>Notes Provider utilizes modern AI-assisted tools to curate and structure study notes.</strong> While we prioritize technical rigor and clarity, material may occasionally contain inaccuracies or omissions. We advise cross-referencing with official documentation, course syllabi, and trusted textbooks.` },
+  { id: "item-5", title: "5. Buyer Responsibility", content: `You are responsible for providing an accurate name and contact details during checkout to ensure smooth order tracking and receipt generation.` },
+  { id: "item-6", title: "6. Limitation of Liability", content: `${BRAND.name} shall not be liable for any indirect, incidental, or consequential damages resulting from the use or inability to use our study materials. Total aggregate liability for any order shall not exceed the price paid for that order.` },
+  { id: "item-7", title: "7. Modifications to Terms", content: `We reserve the right to revise these Terms periodically. Continued use of our site following revisions signifies acceptance of the updated terms.` },
+  { id: "item-8", title: "8. Governing Law", content: `These Terms are governed by and construed in accordance with the laws of India. Any legal proceedings shall be subject to the exclusive jurisdiction of the competent courts in India.` },
 ] as const;
 
 export const PRIVACY_POLICY_SECTIONS = [
-  { id: "item-1", title: "1. Information We Collect", content: `<strong>Personal data collected:</strong> Full name, email address, payment details (processed securely by Razorpay — we never store card numbers), IP address, and browser user-agent string. <strong>Technical data:</strong> Order history, download activity, and session cookies for authentication.` },
-  { id: "item-2", title: "2. How We Use Your Data", content: `We use your information to process payments, deliver purchased notes, send order confirmations, improve our service, and respond to support requests. We do not sell, rent, or share your data with third parties except where required for payment processing (Razorpay) or legal compliance.` },
-  { id: "item-3", title: "3. Data Sharing & Third Parties", content: `Payments are processed by <strong>Razorpay</strong> (India's leading payment gateway). Their privacy policy governs how they handle your payment data. We do not share personal data with any other third parties.` },
-  { id: "item-4", title: "4. Cookies & Tracking", content: `We use essential cookies for authentication and session management. Analytics may be used to understand site usage patterns. You can disable cookies in your browser settings, though this may affect functionality.` },
-  { id: "item-5", title: "5. Data Retention", content: `Order data is retained for up to <strong>3 years</strong> for accounting and support purposes. You may request deletion of your personal data at any time by contacting us.` },
-  { id: "item-6", title: "6. Your Rights", content: `Under applicable data protection laws, you have the right to access, correct, delete, or port your personal data. Contact us using the details on our support page to exercise these rights.` },
-  { id: "item-7", title: "7. Security Measures", content: `We implement industry-standard security measures including HTTPS encryption, secure server infrastructure, and restricted admin access. However, no system is entirely immune to breaches — please report any suspected security issues immediately.` },
-  { id: "item-8", title: "8. Children's Privacy", content: `Our services are not directed at children under 13. We do not knowingly collect personal data from children. If you believe a child has provided data, contact us for immediate deletion.` },
-  { id: "item-9", title: "9. Changes to This Policy", content: `We may update this Privacy Policy. Significant changes will be notified via email or a prominent notice on our website.` },
-  { id: "item-10", title: "10. Contact Us", content: `For any privacy-related inquiries, reach out through our support channels.` },
+  { id: "item-1", title: "1. Information We Collect", content: `<strong>Personal Information:</strong> Buyer full name and email address provided during checkout. <strong>Payment Information:</strong> Handled entirely and securely by Razorpay. We do not store, process, or have access to your credit/debit card numbers, CVVs, netbanking credentials, or UPI PINs. <strong>Technical Data:</strong> IP address, user-agent details, and download timestamps to maintain download integrity and prevent unauthorized link sharing.` },
+  { id: "item-2", title: "2. How We Use Your Data", content: `We use your information exclusively to process orders, generate transaction receipts, deliver digital study files, facilitate order lookup, and provide customer support. We never sell, rent, or trade your personal information.` },
+  { id: "item-3", title: "3. Payment Gateway & Third Parties", content: `All payments are securely processed through <strong>Razorpay</strong> under strict PCI-DSS compliance. We share only transaction-necessary identifiers with Razorpay to verify payment status and prevent fraud.` },
+  { id: "item-4", title: "4. Cookies & Local Storage", content: `We use essential browser cookies and local storage exclusively for session state, theme preferences, and security. We do not use intrusive third-party cross-site trackers.` },
+  { id: "item-5", title: "5. Data Retention", content: `Order records and purchase verification data are retained for statutory accounting and customer support purposes. You may request deletion of non-essential records by contacting support.` },
+  { id: "item-6", title: "6. Your Rights", content: `You have the right to request access to your purchase history, correct any erroneous personal details, or ask questions regarding your stored order records.` },
+  { id: "item-7", title: "7. Data Security", content: `We enforce HTTPS SSL/TLS encryption across all endpoints, strict database access controls, and rate limiting to safeguard your data and maintain service availability.` },
+  { id: "item-8", title: "8. Contact Us", content: `For privacy-related inquiries, reach out to our team at <a href="mailto:${SEO.contactEmail}" style="color:var(--primary);text-decoration:underline">${SEO.contactEmail}</a>.` },
 ] as const;
 
 export const REFUND_POLICY_SECTIONS = [
-  { id: "item-1", title: "1. All Sales Are Final", content: `Due to the digital nature of our products, <strong>all purchases are final and non-refundable once the digital material has been delivered</strong>. Please review the preview and product description carefully before completing your payment.` },
-  { id: "item-2", title: "2. Pre-Purchase Verification", content: `<p>We strongly encourage reviewing the preview PDF available on every paid note page before purchasing. Free notes are available for immediate download so you can evaluate our quality and format risk-free.</p>` },
-  { id: "item-3", title: "3. Technical Errors — Exceptional Refunds", content: `<p>If you experience a genuine technical issue — such as successful payment deduction but failure to receive your notes within 6 hours, or a double charge for the same order — please contact our support team immediately with your order number and payment screenshot. As a solo founder, I personally review each case and will issue a refund or re-deliver your files manually.</p>` },
-  { id: "item-4", title: "4. Payment Failures", content: `If a payment fails during checkout, no money is deducted from your account. In rare cases where a bank reversal occurs, it may take 3–5 business days to reflect on your statement.` },
-  { id: "item-5", title: "5. Cancellation Requests", content: `You may cancel an order before it has been fulfilled by contacting support. Once fulfillment is complete, cancellation is no longer possible and standard refund policy applies.` },
-  { id: "item-6", title: "6. Intellectual Property", content: `All notes remain the intellectual property of Notes Provider. Purchasing grants you a personal license to use the content, not ownership of the copyright.` },
-  { id: "item-7", title: "7. How to Request Support", content: `For any payment or delivery issues, contact us at <a href="mailto:support@notesprovider.com" style="color:var(--primary);text-decoration:underline">support@notesprovider.com</a> with your order number and transaction proof. Response time is typically within 24 hours.` },
+  { id: "item-1", title: "1. Instant Digital Goods — All Sales Final", content: `Because study notes and bundles are digital goods available for immediate download upon payment confirmation, <strong>all purchases are final and non-refundable</strong>. Once an order is paid, download access is activated instantly, and cancellations cannot be processed.` },
+  { id: "item-2", title: "2. Free Sample Previews & Free Notes", content: `We encourage every learner to review the sample preview PDF and detailed table of contents available on each note page before making a purchase. In addition, our catalogue features free study notes for immediate download to evaluate our quality.` },
+  { id: "item-3", title: "3. Immediate Download Window & Single-Use Policy", content: `Immediately following payment completion, you are redirected to the order status screen with unlimited download access for 15 minutes. Subsequent access via our order lookup system provides a single-use download. Please ensure you download and securely save your files to your local device upon purchasing.` },
+  { id: "item-4", title: "4. Exceptional Circumstances & Duplicate Payments", content: `If you encounter a verified technical anomaly — such as a duplicate charge for the identical item within minutes or an unresolvable server failure that prevented file delivery — please contact support with your order number and transaction proof. Valid duplicate charges will be refunded to the original payment source within 5–7 business days.` },
+  { id: "item-5", title: "5. Payment Gateway Failures", content: `If a transaction fails or is declined by your bank during checkout, no funds are captured by ${BRAND.name}. In the rare event of an authorization hold by your bank, the funds will be automatically released back to your account as per standard banking processing windows.` },
+  { id: "item-6", title: "6. Support Inquiries", content: `For assistance with payment verification or order download access, contact us at <a href="mailto:${SEO.contactEmail}" style="color:var(--primary);text-decoration:underline">${SEO.contactEmail}</a> with your order number. Our team typically responds within 24 hours.` },
 ] as const;
 
 export const HOME_TRUST_ITEMS = [
@@ -195,7 +185,7 @@ export const MIN_PAID_PRICE_PAISE = 100;
 export const ORDER_CURRENCY = "INR" as const;
 export const SIGNED_URL_TTL_SECONDS = 60;
 export const UPLOAD_LIMITS: Record<UploadKind, { maxBytes: number; mimeTypes: readonly string[]; folder: string }> = {
-  note_full: { maxBytes: 50 * 1024 * 1024, mimeTypes: ["application/pdf"], folder: "notes-provider/notes/full" },
-  note_preview: { maxBytes: 20 * 1024 * 1024, mimeTypes: ["application/pdf"], folder: "notes-provider/notes/preview" },
+  note_full: { maxBytes: 10 * 1024 * 1024, mimeTypes: ["application/pdf"], folder: "notes-provider/notes/full" },
+  note_preview: { maxBytes: 10 * 1024 * 1024, mimeTypes: ["application/pdf"], folder: "notes-provider/notes/preview" },
   cover: { maxBytes: 5 * 1024 * 1024, mimeTypes: ["image/png", "image/jpeg", "image/webp"], folder: "notes-provider/covers" },
 };

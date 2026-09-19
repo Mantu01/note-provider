@@ -1,7 +1,6 @@
 import { ORDER_CURRENCY } from "@/lib/constants";
 import { formatPrice, toIsoString, toIsoStringRequired } from "@/lib/format";
 import type { AdminOrder, PublicOrder } from "@/lib/types";
-import { toAdminRef } from "./category.mapper";
 import { id, isPopulated, nullableStr, num, str, toIdList, bool } from "./primitives";
 
 function buyerOf(doc: Record<string, unknown>): Record<string, unknown> {
@@ -28,13 +27,11 @@ export function toPublicOrder(raw: unknown): PublicOrder {
     amountLabel: formatPrice(amount),
     currency: ORDER_CURRENCY,
     paymentStatus: str(doc.paymentStatus) as PublicOrder["paymentStatus"],
-    fulfillmentStatus: str(doc.fulfillmentStatus) as PublicOrder["fulfillmentStatus"],
     isDownloaded: bool(doc.isDownloaded),
-    coverImageUrl: nullableStr(doc.coverImageUrl),
+    coverImageUrl: nullableStr(snapshot.coverImageUrl),
     buyer: { fullName: str(buyer.fullName) },
     createdAt: toIsoStringRequired(doc.createdAt as Date),
     paidAt: toIsoString(doc.paidAt as Date | null),
-    completedAt: toIsoString(doc.completedAt as Date | null),
   };
 }
 
@@ -64,8 +61,6 @@ export function toAdminOrder(raw: unknown): AdminOrder {
       title: str(snapshot.title),
       noteIds: toIdList(snapshot.noteIds),
     },
-    adminNote: nullableStr(doc.adminNote),
-    completedBy: toAdminRef(doc.completedBy),
     updatedAt: toIsoStringRequired(doc.updatedAt as Date),
   };
 }

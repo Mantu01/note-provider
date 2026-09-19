@@ -249,8 +249,12 @@ export function CheckoutPage({
                     I agree to the{" "}
                     <Link href="/terms" className="text-primary underline">
                       Terms of Service
-                    </Link>{" "}
-                    and{" "}
+                    </Link>
+                    ,{" "}
+                    <Link href="/refund-policy" className="text-primary underline">
+                      Refund Policy
+                    </Link>
+                    , and{" "}
                     <Link href="/privacy" className="text-primary underline">
                       Privacy Policy
                     </Link>

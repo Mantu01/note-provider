@@ -22,7 +22,6 @@ export const ordersQuerySchema = z.object({
   limit: z.coerce.number().int().min(1).max(48).optional().default(DEFAULT_PAGE_LIMIT),
   q: z.string().trim().optional(),
   paymentStatus: z.enum(["created", "paid", "failed"]).optional(),
-  fulfillmentStatus: z.enum(["pending", "completed", "cancelled"]).optional(),
   itemType: z.enum(["note", "group"]).optional(),
   from: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/, "Invalid date format").optional(),
   to: z.string().regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}/, "Invalid date format").optional(),

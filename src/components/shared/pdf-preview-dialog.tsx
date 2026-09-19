@@ -11,15 +11,27 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { useDownloadFile } from "@/hooks/use-download-file";
+import { isGoogleDriveUrl, toGoogleDrivePreviewUrl, toGoogleDriveDownloadUrl } from "@/schemas/note.schema";
 
 export function PdfPreviewDialog({
-  url,
+  previewUrl,
   filename,
 }: {
-  url: string;
+  previewUrl: string;
   filename: string;
 }) {
   const { download, isDownloading } = useDownloadFile();
+
+  const iframeSrc = isGoogleDriveUrl(previewUrl)
+    ? toGoogleDrivePreviewUrl(previewUrl)
+    : previewUrl;
+
+  const handleDownload = () => {
+    const directUrl = isGoogleDriveUrl(previewUrl)
+      ? toGoogleDriveDownloadUrl(previewUrl)
+      : previewUrl;
+    download({ url: directUrl, filename });
+  };
 
   return (
     <Dialog>
@@ -39,17 +51,14 @@ export function PdfPreviewDialog({
         <div className="relative overflow-hidden rounded-xl border bg-muted/30">
           <iframe
             title="Note preview"
-            src={url}
+            src={iframeSrc}
             className="h-[60vh] w-full border-0"
-            sandbox=""
+            allow="fullscreen"
           />
         </div>
 
         <div className="flex justify-end pt-2">
-          <Button
-            onClick={() => download({ url, filename })}
-            disabled={isDownloading}
-          >
+          <Button onClick={handleDownload} disabled={isDownloading}>
             {isDownloading ? (
               "Preparing…"
             ) : (

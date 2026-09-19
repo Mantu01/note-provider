@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { MIN_PAID_PRICE_PAISE, NOTE_VISIBILITIES } from "@/lib/constants";
 import { rupeesToPaise } from "@/lib/format";
-import { objectIdSchema, uploadedImageSchema, priceRupeesSchema } from "./note.schema";
+import { objectIdSchema, imageUploadSchema, priceRupeesSchema } from "./note.schema";
 
 export const groupBaseSchema = z.object({
   name: z.string().trim().min(3, "Name must be at least 3 characters").max(160),
@@ -13,7 +13,7 @@ export const groupBaseSchema = z.object({
     .array(objectIdSchema)
     .min(1, "Select at least one note")
     .max(200, "A group can hold at most 200 notes"),
-  coverImage: uploadedImageSchema.nullable().default(null),
+  coverImage: imageUploadSchema.optional().nullable().default(null),
   visibility: z.enum(NOTE_VISIBILITIES).default("public"),
   isFeatured: z.boolean().default(false),
 });

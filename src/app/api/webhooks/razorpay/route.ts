@@ -39,11 +39,9 @@ export async function POST(req: Request) {
         where: { razorpayOrderId, paymentStatus: { not: "paid" } },
         data: {
           paymentStatus: "paid",
-          fulfillmentStatus: "completed",
           razorpayPaymentId: payment.id,
           paymentMethod: payment.method ?? "online",
           paidAt: new Date(),
-          completedAt: new Date(),
           ...(amount ? { amount } : {}),
         },
       });

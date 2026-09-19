@@ -3,7 +3,7 @@ import { fail, ok } from "@/helpers/api-response";
 import { AppError } from "@/helpers/errors";
 import { prisma } from "@/helpers/db";
 import { toAdminNote } from "@/helpers/mappers/note.mapper";
-import { createNoteSchema } from "@/schemas/note.schema";
+import { createNoteSchema, toGoogleDriveDownloadUrl } from "@/schemas/note.schema";
 import { rupeesToPaise } from "@/lib/format";
 import { uniqueSlug } from "@/helpers/slug";
 import { parsePagination, buildPagination } from "@/helpers/query";
@@ -25,14 +25,22 @@ export const GET = adminHandler(async (ctx) => {
 export const POST = adminHandler(async (ctx) => {
   const body = await ctx.req.json();
   const parsed = createNoteSchema.safeParse(body);
-  if (!parsed.success) return fail(AppError.validation());
+  if (!parsed.success) {
+    const fields: Record<string, string> = {};
+    for (const issue of parsed.error.issues) {
+      const path = issue.path.join(".");
+      if (!fields[path]) fields[path] = issue.message;
+    }
+    return fail(AppError.validation(fields));
+  }
 
   const { admin } = ctx;
   const input = parsed.data;
 
   const compareAtPricePaise = input.compareAtPrice ? rupeesToPaise(input.compareAtPrice) : null;
-
   const slug = await uniqueSlug("note", input.title);
+
+  const fullFileUrl = input.fullFile?.url ?? (input.fullFileUrl ? toGoogleDriveDownloadUrl(input.fullFileUrl) : "");
 
   const createdDoc = await prisma.note.create({
     data: {
@@ -47,16 +55,9 @@ export const POST = adminHandler(async (ctx) => {
       tags: input.tags,
       isFeatured: input.isFeatured,
       pageCount: input.pageCount,
-      fullFileUrl: input.fullFile.url,
-      fullFilePublicId: input.fullFile.source === "upload" ? input.fullFile.publicId : null,
-      fullFileBytes: input.fullFile.source === "upload" ? input.fullFile.bytes : 0,
-      pdfSource: input.fullFile.source,
-      drivePdfUrl: input.fullFile.source === "drive" ? input.fullFile.url : null,
+      fullFileUrl,
       previewFileUrl: input.previewFile?.url ?? null,
-      previewFilePublicId: input.previewFile && input.previewFile.source === "upload" ? input.previewFile.publicId : null,
-      previewFileBytes: input.previewFile && input.previewFile.source === "upload" ? input.previewFile.bytes : null,
       coverImageUrl: input.coverImage?.url ?? null,
-      coverImagePublicId: input.coverImage?.publicId ?? null,
       slug,
       createdBy: admin.id,
       updatedBy: admin.id,

@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { UploadCloud, FileText, ImageIcon, X, Loader2, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { useFileUpload, useDeleteUpload } from "@/hooks/useAdmin";
+import { useFileUpload } from "@/hooks/useAdmin";
 import type { UploadKind } from "@/lib/types";
 import { toast } from "sonner";
 
@@ -12,8 +12,8 @@ type FileUploadFieldProps = {
   label: string;
   accept?: string;
   maxSizeMB?: number;
-  value?: { url: string; publicId: string; bytes?: number } | null;
-  onChange: (value: { url: string; publicId: string; bytes: number } | null) => void;
+  value?: { url: string; publicId?: string; bytes?: number } | null;
+  onChange: (value: { url: string; publicId?: string; bytes?: number } | null) => void;
   disabled?: boolean;
 };
 
@@ -27,7 +27,6 @@ export function FileUploadField({
   disabled = false,
 }: FileUploadFieldProps) {
   const uploadMutation = useFileUpload();
-  const deleteMutation = useDeleteUpload();
 
   const isImage = kind === "cover";
 
@@ -48,16 +47,6 @@ export function FileUploadField({
         },
       }
     );
-  };
-
-  const handleRemove = () => {
-    if (!value || disabled) return;
-    const publicId = value.publicId;
-    onChange(null);
-    deleteMutation.mutate({
-      publicId,
-      resourceType: isImage ? "image" : "raw",
-    });
   };
 
   return (
@@ -90,13 +79,12 @@ export function FileUploadField({
             )}
             <div className="min-w-0">
               <p className="truncate text-sm font-medium text-foreground">
-                {value.publicId.split("/").pop() || "Uploaded File"}
+                {value.url.split("/").pop()?.split("?")[0] || "Uploaded File"}
               </p>
               <div className="flex items-center gap-2 text-xs text-muted-foreground">
                 <span className="inline-flex items-center gap-1 text-success font-medium">
                   <CheckCircle2 className="h-3 w-3" /> Ready
                 </span>
-                {value.bytes && <span>• {(value.bytes / (1024 * 1024)).toFixed(1)} MB</span>}
               </div>
             </div>
           </div>
@@ -104,8 +92,8 @@ export function FileUploadField({
             type="button"
             variant="ghost"
             size="icon"
-            onClick={handleRemove}
-            disabled={disabled || deleteMutation.isPending}
+            onClick={() => onChange(null)}
+            disabled={disabled || uploadMutation.isPending}
             className="text-muted-foreground"
             aria-label="Remove file"
           >
@@ -163,4 +151,3 @@ export function FileUploadField({
     </div>
   );
 }
-

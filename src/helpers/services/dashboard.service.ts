@@ -50,18 +50,18 @@ async function generateRevenueSeries(
   return series;
 }
 
-export async function getDashboardStats(): Promise<DashboardStats> {
+export async function getDashboardStats(days: 7 | 30 = 30): Promise<DashboardStats> {
   const now = new Date();
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const windowStart = new Date(today);
-  windowStart.setDate(windowStart.getDate() - (REVENUE_WINDOW_DAYS - 1));
+  windowStart.setDate(windowStart.getDate() - (days - 1));
 
   const [
     totalRevenue,
     todayRevenue,
+    periodRevenue,
     paidOrders,
     todayOrders,
-    pendingFulfillment,
     totalNotes,
     freeNotes,
     paidNotes,
@@ -74,9 +74,11 @@ export async function getDashboardStats(): Promise<DashboardStats> {
     prisma.order
       .aggregate({ where: { paymentStatus: "paid", createdAt: { gte: today } }, _sum: { amount: true } })
       .then((result) => result._sum.amount ?? 0),
+    prisma.order
+      .aggregate({ where: { paymentStatus: "paid", createdAt: { gte: windowStart } }, _sum: { amount: true } })
+      .then((result) => result._sum.amount ?? 0),
     prisma.order.count({ where: { paymentStatus: "paid" } }),
     prisma.order.count({ where: { paymentStatus: "paid", createdAt: { gte: today } } }),
-    prisma.order.count({ where: { paymentStatus: "paid", fulfillmentStatus: "pending" } }),
     prisma.note.count({ where: { visibility: "public" } }),
     prisma.note.count({ where: { visibility: "public", pricingType: "free" } }),
     prisma.note.count({ where: { visibility: "public", pricingType: "paid" } }),
@@ -94,8 +96,11 @@ export async function getDashboardStats(): Promise<DashboardStats> {
       totalLabel: formatPrice(totalRevenue),
       todayPaise: todayRevenue,
       todayLabel: formatPrice(todayRevenue),
+      periodPaise: periodRevenue,
+      periodLabel: formatPrice(periodRevenue),
+      periodDays: days,
     },
-    orders: { paid: paidOrders, today: todayOrders, pendingFulfillment },
+    orders: { paid: paidOrders, today: todayOrders },
     catalog: { totalNotes, freeNotes, paidNotes },
     revenueSeries,
     recentOrders: recentOrders.map(toAdminOrder),

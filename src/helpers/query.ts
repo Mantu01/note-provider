@@ -78,7 +78,6 @@ export function buildOrderFilter(query: Omit<OrdersQuerySchema, "page" | "limit"
   const where: Record<string, unknown> = {};
 
   if (query.paymentStatus) where.paymentStatus = query.paymentStatus;
-  if (query.fulfillmentStatus) where.fulfillmentStatus = query.fulfillmentStatus;
   if (query.itemType) where.itemType = query.itemType;
 
   const createdAt: Record<string, unknown> = {};

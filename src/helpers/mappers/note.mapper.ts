@@ -1,4 +1,4 @@
-import { formatFileSizeLabel, formatPriceLabel, toIsoStringRequired } from "@/lib/format";
+import { formatPriceLabel, toIsoStringRequired } from "@/lib/format";
 import type { AdminNote, PublicNote } from "@/lib/types";
 import { nullableNum, nullableStr, num, str } from "./primitives";
 
@@ -24,8 +24,8 @@ export function toPublicNote(raw: unknown): PublicNote {
     priceLabel: formatPriceLabel(price, pricingType),
     compareAtPrice: nullableNum(doc.compareAtPrice),
     coverImageUrl: nullableStr(doc.coverImageUrl),
+    previewFileUrl: nullableStr(doc.previewFileUrl),
     pageCount: nullableNum(doc.pageCount),
-    fileSizeLabel: formatFileSizeLabel(nullableNum(doc.fullFileBytes)),
     isLocked: pricingType === "paid",
     hasPreview: Boolean(nullableStr(doc.previewFileUrl)),
     tags: Array.isArray(doc.tags) ? doc.tags.flatMap((tag) => (typeof tag === "string" && tag.trim() ? [tag.trim()] : [])) : [],
@@ -43,14 +43,7 @@ export function toAdminNote(raw: unknown): AdminNote {
     ...toPublicNote(doc),
     visibility: str(doc.visibility) === "private" ? "private" : "public",
     fullFileUrl: nullableStr(doc.fullFileUrl),
-    fullFilePublicId: nullableStr(doc.fullFilePublicId),
-    fullFileBytes: num(doc.fullFileBytes),
-    pdfSource: str(doc.pdfSource) === "drive" ? "drive" : "upload",
-    drivePdfUrl: nullableStr(doc.drivePdfUrl),
     previewFileUrl: nullableStr(doc.previewFileUrl),
-    previewFilePublicId: nullableStr(doc.previewFilePublicId),
-    previewFileBytes: nullableNum(doc.previewFileBytes),
-    coverImagePublicId: nullableStr(doc.coverImagePublicId),
     createdBy: doc.createdBy ? { id: String(doc.createdBy), name: "" } : null,
     updatedBy: doc.updatedBy ? { id: String(doc.updatedBy), name: "" } : null,
   };

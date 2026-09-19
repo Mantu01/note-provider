@@ -1,6 +1,8 @@
 "use client";
 
-import { parseAsBoolean, parseAsStringLiteral, useQueryStates } from "nuqs";
+import { useEffect } from "react";
+import { parseAsBoolean, useQueryStates } from "nuqs";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,7 +10,7 @@ import { Loader2, Save, ArrowLeft, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CategoryDialog } from "@/components/admin/categories/category-dialog";
 import { useAdminCategories, useCreateNote, useUpdateNote } from "@/hooks/useAdmin";
-import { createNoteSchema, type CreateNoteInput, type CreateNotePayload } from "@/schemas/note.schema";
+import { createNoteSchema, type CreateNoteInput } from "@/schemas/note.schema";
 import type { AdminNote } from "@/lib/types";
 import {
   NoteDetailsSection,
@@ -16,12 +18,6 @@ import {
   PricingVisibilitySection,
   ServerErrorBanner,
 } from "./note-form-sections";
-
-type FileSource = "upload" | "drive";
-
-type FileFieldSource = CreateNotePayload["fullFile"] extends { source: FileSource }
-  ? CreateNotePayload["fullFile"]
-  : never;
 
 type NoteFormProps = {
   initialData?: AdminNote | null;
@@ -35,44 +31,29 @@ export function NoteForm({ initialData }: NoteFormProps) {
   const { data: categoriesData } = useAdminCategories();
   const categories = categoriesData?.items ?? [];
 
-  const initialPdfSource: FileSource = initialData?.pdfSource === "drive" ? "drive" : "upload";
-  const initialPreviewSource: FileSource =
-    initialData?.previewFileUrl && !initialData.previewFilePublicId ? "drive" : "upload";
-
-  const [{
-    categoryDialog: categoryDialogOpen,
-    fullFileSource,
-    previewFileSource,
-  }, setParams] = useQueryStates({
+  const [{ categoryDialog: categoryDialogOpen }, setParams] = useQueryStates({
     categoryDialog: parseAsBoolean.withDefault(false),
-    fullFileSource: parseAsStringLiteral(["upload", "drive"] as const).withDefault(
-      initialPdfSource,
-    ),
-    previewFileSource: parseAsStringLiteral(["upload", "drive"] as const).withDefault(
-      initialPreviewSource,
-    ),
   });
   const setCategoryDialogOpen = (open: boolean) => setParams({ categoryDialog: open });
-  const setFullFileSource = (value: "upload" | "drive") => setParams({ fullFileSource: value });
-  const setPreviewFileSource = (value: "upload" | "drive") => setParams({ previewFileSource: value });
 
-  const defaultFullFile: FileFieldSource | undefined = (() => {
-    if (initialData?.pdfSource === "drive" && initialData.drivePdfUrl) {
-      return { source: "drive" as const, url: initialData.drivePdfUrl };
-    }
-    if (initialData?.fullFileUrl && initialData.fullFilePublicId) {
-      return { source: "upload" as const, url: initialData.fullFileUrl, publicId: initialData.fullFilePublicId, bytes: initialData.fullFileBytes };
-    }
-    return undefined;
-  })();
+  const isInitialDrive = Boolean(
+    initialData?.fullFileUrl &&
+    (initialData.fullFileUrl.includes("drive.google.com") || initialData.fullFileUrl.includes("docs.google.com")),
+  );
 
-  const defaultPreviewFile: FileFieldSource | null = (() => {
-    if (!initialData?.previewFileUrl) return null;
-    if (initialData.previewFilePublicId) {
-      return { source: "upload" as const, url: initialData.previewFileUrl, publicId: initialData.previewFilePublicId, bytes: initialData.previewFileBytes ?? 0 };
-    }
-    return { source: "drive" as const, url: initialData.previewFileUrl };
-  })();
+  const defaultFullFile = initialData?.fullFileUrl && !isInitialDrive
+    ? { url: initialData.fullFileUrl, publicId: "existing", bytes: 0 }
+    : null;
+
+  const defaultFullFileUrl = isInitialDrive ? (initialData?.fullFileUrl ?? null) : null;
+
+  const defaultPreviewFile = initialData?.previewFileUrl
+    ? { url: initialData.previewFileUrl, publicId: "existing", bytes: 0 }
+    : null;
+
+  const defaultCoverImage = initialData?.coverImageUrl
+    ? { url: initialData.coverImageUrl, publicId: "existing" }
+    : null;
 
   const form = useForm<CreateNoteInput>({
     resolver: zodResolver(createNoteSchema),
@@ -87,11 +68,9 @@ export function NoteForm({ initialData }: NoteFormProps) {
       isFeatured: initialData?.isFeatured ?? false,
       pageCount: initialData?.pageCount ?? null,
       fullFile: defaultFullFile,
+      fullFileUrl: defaultFullFileUrl,
       previewFile: defaultPreviewFile,
-      coverImage: initialData?.coverImageUrl && initialData.coverImagePublicId ? {
-        url: initialData.coverImageUrl,
-        publicId: initialData.coverImagePublicId,
-      } : null,
+      coverImage: defaultCoverImage,
     },
   });
 
@@ -100,6 +79,16 @@ export function NoteForm({ initialData }: NoteFormProps) {
   const pricingType = form.watch("pricingType");
   const fullFile = form.watch("fullFile");
   const previewFile = form.watch("previewFile");
+  const coverImage = form.watch("coverImage");
+
+  useEffect(() => {
+    const err = createMutation.error || updateMutation.error;
+    if (err && typeof err === "object" && "fields" in err && (err as any).fields) {
+      for (const [key, msg] of Object.entries((err as any).fields as Record<string, string>)) {
+        form.setError(key as any, { message: msg });
+      }
+    }
+  }, [createMutation.error, updateMutation.error, form]);
 
   const onSubmit = (values: CreateNoteInput) => {
     if (isEditing) {
@@ -169,10 +158,12 @@ export function NoteForm({ initialData }: NoteFormProps) {
         <div className="rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-destructive flex items-start gap-3">
           <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
           <div>
-            <h4 className="font-semibold text-sm">Please fix the following issues before publishing:</h4>
+            <h4 className="font-semibold text-sm">Please fix the following issues:</h4>
             <ul className="mt-1 text-xs space-y-1 list-disc list-inside">
               {Object.entries(form.formState.errors).map(([key, err]) => (
-                <li key={key}>{err?.message?.toString() || `${key} is required`}</li>
+                <li key={key}>
+                  {typeof err?.message === "string" ? err.message : `${key} is invalid`}
+                </li>
               ))}
             </ul>
           </div>
@@ -194,11 +185,8 @@ export function NoteForm({ initialData }: NoteFormProps) {
             form={form}
             pricingType={pricingType}
             fullFile={fullFile}
-            previewFile={previewFile ?? null}
-            fullFileSource={fullFileSource}
-            setFullFileSource={setFullFileSource}
-            previewFileSource={previewFileSource}
-            setPreviewFileSource={setPreviewFileSource}
+            previewFile={previewFile}
+            coverImage={coverImage}
           />
         </div>
 

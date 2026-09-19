@@ -2,22 +2,17 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Download } from "lucide-react";
+import { ArrowLeft, ExternalLink } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusBadge } from "@/components/shared/status-badge";
 import { CopyButton } from "@/components/shared/copy-button";
 import { AdminOrderDetailSkeleton } from "@/components/shared/shimmer-loader";
-import { useAdminOrder, useUpdateOrderFulfillment } from "@/hooks/useAdmin";
+import { useAdminOrder } from "@/hooks/useAdmin";
 import { formatDateTime } from "@/lib/format";
-import { parseAsBoolean, useQueryStates } from "nuqs";
 
 export function OrderDetailView({ id }: { id: string }) {
   const { data: order, isLoading, isError } = useAdminOrder(id);
-  const [{ edit: fulfillmentOpen }, setParams] = useQueryStates({
-    edit: parseAsBoolean.withDefault(false),
-  });
-  const updateMutation = useUpdateOrderFulfillment(order?.id ?? "");
 
   if (isLoading) return <AdminOrderDetailSkeleton />;
   if (isError || !order) return (
@@ -26,6 +21,8 @@ export function OrderDetailView({ id }: { id: string }) {
       <Button render={<Link href="/admin/orders" />}>Back to Orders</Button>
     </div>
   );
+
+  const publicUrl = order.itemType === "group" ? `/groups/${order.itemSlug}` : `/notes/${order.itemSlug}`;
 
   return (
     <div className="space-y-6">
@@ -38,7 +35,6 @@ export function OrderDetailView({ id }: { id: string }) {
             <div className="flex items-center gap-2 flex-wrap">
               <h1 className="text-2xl font-bold tracking-tight">Order #{order.orderNumber}</h1>
               <StatusBadge status={order.paymentStatus} type="payment" />
-              <StatusBadge status={order.fulfillmentStatus} type="fulfillment" />
               {order.isDownloaded && (
                 <StatusBadge status="downloaded" className="border-accent bg-accent/10 text-accent-foreground" />
               )}
@@ -46,7 +42,13 @@ export function OrderDetailView({ id }: { id: string }) {
             <p className="text-sm text-muted-foreground mt-1">Placed on {formatDateTime(order.createdAt)}</p>
           </div>
         </div>
-        <Button onClick={() => setParams({ edit: true })}>Update Status</Button>
+        <Button
+          variant="outline"
+          render={<a href={publicUrl} target="_blank" rel="noopener noreferrer" />}
+        >
+          <ExternalLink className="mr-2 size-4" />
+          {order.itemType === "group" ? "Open Bundle" : "Open Note"}
+        </Button>
       </div>
 
       {order.coverImageUrl && (
@@ -124,7 +126,6 @@ export function OrderDetailView({ id }: { id: string }) {
                 {[
                   { label: "Created At", value: formatDateTime(order.createdAt) },
                   { label: "Paid At", value: order.paidAt ? formatDateTime(order.paidAt) : "—" },
-                  { label: "Completed At", value: order.completedAt ? formatDateTime(order.completedAt) : "—" },
                   { label: "Updated At", value: order.updatedAt },
                 ].map(({ label, value }) => (
                   <div key={label}>
@@ -133,27 +134,8 @@ export function OrderDetailView({ id }: { id: string }) {
                   </div>
                 ))}
               </dl>
-              {order.completedBy && (
-                <div className="pt-1">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase">Completed By</p>
-                  <p className="text-xs text-foreground mt-0.5">{order.completedBy.name}</p>
-                </div>
-              )}
             </CardContent>
           </Card>
-
-          {order.adminNote && (
-            <Card className="rounded-2xl border-border/80">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-base font-bold">Admin Note</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm leading-relaxed text-muted-foreground italic bg-muted/30 p-3 rounded-xl border border-border">
-                  {order.adminNote}
-                </p>
-              </CardContent>
-            </Card>
-          )}
         </div>
 
         <div className="space-y-6">

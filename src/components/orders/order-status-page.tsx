@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { CheckCircle2, CircleAlert, Download, Lock } from "lucide-react";
+import { CheckCircle2, CircleAlert, Download, FileText, Info, ShieldCheck, AlertTriangle } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CopyButton } from "@/components/shared/copy-button";
 import { ErrorState } from "@/components/shared/error-state";
 import { OrderStatusSkeleton } from "@/components/shared/shimmer-loader";
@@ -55,18 +55,22 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
     );
   }
 
-  const isCompleted = order.fulfillmentStatus === "completed";
+  const isFresh = Boolean(order.paidAt && Date.now() - new Date(order.paidAt).getTime() < 15 * 60 * 1000);
+  const notesList = order.notes && order.notes.length > 0
+    ? order.notes
+    : [{ id: order.id, title: order.itemTitle, slug: order.itemSlug, coverImageUrl: order.coverImageUrl }];
+
+  const canDownload = isFresh || !order.isDownloaded;
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6">
-
+    <div className="mx-auto max-w-3xl px-4 py-10 sm:px-6">
       <div className="text-center space-y-3">
         <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-success/10 border border-success/20">
           <CheckCircle2 aria-hidden="true" className="size-8 text-success" />
         </div>
         <div>
           <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-accent">
-            Payment received
+            Payment verified
           </p>
           <h1 className="mt-1 text-2xl font-black tracking-tight md:text-3xl">
             <span className="brand-gradient-text">Payment successful</span>
@@ -78,83 +82,138 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
         </div>
       </div>
 
-
-      {order.coverImageUrl && (
-        <div className="mt-6 overflow-hidden rounded-xl border border-border/50 bg-muted/20 shadow-sm">
-          <Image
-            src={order.coverImageUrl}
-            alt={`Cover for ${order.itemTitle}`}
-            width={600}
-            height={160}
-            className="h-44 w-full object-cover"
-          />
-        </div>
-      )}
-
-
-      <Card className="mt-6 rounded-xl border-accent/20 bg-accent/5 shadow-sm">
-        <CardContent className="p-4">
-          <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent/10 border border-accent/20">
-              {isCompleted ? (
-                <CheckCircle2 aria-hidden="true" className="size-5 text-success" />
-              ) : (
-                <Lock aria-hidden="true" className="size-5 text-warning-foreground" />
-              )}
-            </div>
-            <div>
-              <p className="text-sm font-bold">{isCompleted ? "Notes ready for download!" : "Order status: Pending Approval"}</p>
-              <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-                {isCompleted
-                  ? <>Your notes for <strong className="text-foreground">{order.itemTitle}</strong> are ready below.</>
-                  : <>We&apos;ll review and send <strong className="text-foreground">{order.itemTitle}</strong> shortly.</>}
-              </p>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-
-      {isCompleted && order.itemType === "note" && (
-        <Card className={`mt-4 rounded-xl shadow-sm ${order.isDownloaded ? "border-warning/20 bg-warning/5" : "border-success/20 bg-success/5"}`}>
+      {isFresh ? (
+        <Card className="mt-6 rounded-2xl border-success/30 bg-success/5 shadow-sm">
           <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className={`flex size-12 shrink-0 items-center justify-center rounded-xl border ${order.isDownloaded ? "border-warning bg-warning/10" : "border-success bg-success/10"}`}>
-                {order.isDownloaded ? (
-                  <CheckCircle2 aria-hidden="true" className="size-6 text-warning" />
-                ) : (
-                  <Download aria-hidden="true" className="size-6 text-success" />
-                )}
+            <div className="flex items-start gap-3">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-success/10 border border-success/20 text-success">
+                <ShieldCheck aria-hidden="true" className="size-5" />
               </div>
-              <div className="flex-1">
-                <p className="text-sm font-bold text-foreground">{order.isDownloaded ? "Notes already downloaded" : "Download your notes"}</p>
-                <p className="text-xs text-muted-foreground">
-                  {order.isDownloaded
-                    ? "Your notes have already been downloaded. This link can only be used once."
-                    : "Click below to get your PDF. This link can only be used once."}
+              <div className="text-xs space-y-1">
+                <p className="font-bold text-foreground">Immediate Download Session Active</p>
+                <p className="text-muted-foreground leading-relaxed">
+                  You can download your notes unlimited times right now during this session.
+                  If you leave or revisit this page later, note downloads will be restricted to a single download. Please save your files now.
                 </p>
               </div>
-              {!order.isDownloaded && (
-                <Button
-                  onClick={() => download({ url: `/api/orders/${orderId}/download`, filename: `${order.itemSlug}.pdf` })}
-                  disabled={isDownloading}
-                  size="sm"
-                  className="rounded-full"
-                >
-                  {isDownloading ? "Preparing…" : "Download PDF"}
-                </Button>
-              )}
+            </div>
+          </CardContent>
+        </Card>
+      ) : order.isDownloaded ? (
+        <Card className="mt-6 rounded-2xl border-destructive/30 bg-destructive/5 shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-destructive/10 border border-destructive/20 text-destructive">
+                <AlertTriangle aria-hidden="true" className="size-5" />
+              </div>
+              <div className="text-xs space-y-1">
+                <p className="font-bold text-foreground">Single-Use Download Used</p>
+                <p className="text-muted-foreground leading-relaxed">
+                  The notes for this order have already been downloaded. In accordance with our security policy, links can only be downloaded once after leaving the initial checkout session.
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      ) : (
+        <Card className="mt-6 rounded-2xl border-warning/40 bg-warning/5 shadow-sm">
+          <CardContent className="p-4">
+            <div className="flex items-start gap-3">
+              <div className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-warning/15 border border-warning/30 text-warning-foreground">
+                <Info aria-hidden="true" className="size-5" />
+              </div>
+              <div className="text-xs space-y-1">
+                <p className="font-bold text-foreground">Single-Use Download Notice</p>
+                <p className="text-muted-foreground leading-relaxed">
+                  Each note below is clickable only once. Once clicked, it will not be downloadable again. Please make sure you directly save the PDF file to your device.
+                </p>
+              </div>
             </div>
           </CardContent>
         </Card>
       )}
 
+      <div className="mt-6">
+        <Card className="rounded-2xl border border-border shadow-sm">
+          <CardHeader className="pb-3 border-b border-border/60">
+            <div className="flex items-center justify-between">
+              <div>
+                <CardTitle className="text-base font-bold">
+                  {order.itemType === "group" ? "Bundle Notes" : "Purchased Note"}
+                </CardTitle>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  {order.itemType === "group"
+                    ? `${notesList.length} note${notesList.length === 1 ? "" : "s"} included in this bundle`
+                    : "Your study material is ready for download"}
+                </p>
+              </div>
+              <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-primary/10 text-primary border border-primary/20">
+                {order.itemType === "group" ? "Bundle" : "Single Note"}
+              </span>
+            </div>
+          </CardHeader>
+          <CardContent className="p-0 divide-y divide-border/60">
+            {notesList.map((note) => (
+              <div
+                key={note.id || note.slug}
+                className="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-muted/20"
+              >
+                <div className="flex items-center gap-3.5 min-w-0">
+                  <div className="relative size-14 shrink-0 overflow-hidden rounded-xl border border-border/80 bg-muted/40">
+                    {note.coverImageUrl ? (
+                      <Image
+                        src={note.coverImageUrl}
+                        alt={note.title}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="flex size-full items-center justify-center text-muted-foreground">
+                        <FileText className="size-6" />
+                      </div>
+                    )}
+                  </div>
+                  <div className="min-w-0">
+                    <p className="text-sm font-semibold text-foreground truncate">{note.title}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">PDF Study Note</p>
+                  </div>
+                </div>
 
-      <div className="mt-6 grid gap-4 md:grid-cols-2">
+                <div className="shrink-0">
+                  <Button
+                    onClick={() =>
+                      download({
+                        url: `/api/notes/${note.slug}/download?orderId=${order.id}`,
+                        filename: `${note.slug}.pdf`,
+                      })
+                    }
+                    disabled={!canDownload || isDownloading}
+                    size="sm"
+                    className="rounded-full px-4"
+                    variant={canDownload ? "default" : "outline"}
+                  >
+                    {isDownloading ? (
+                      "Preparing…"
+                    ) : canDownload ? (
+                      <>
+                        <Download aria-hidden="true" className="mr-1.5 size-4" />
+                        Download PDF
+                      </>
+                    ) : (
+                      "Downloaded"
+                    )}
+                  </Button>
+                </div>
+              </div>
+            ))}
+          </CardContent>
+        </Card>
+      </div>
 
-        <Card className="rounded-xl border border-border">
+      <div className="mt-6">
+        <Card className="rounded-2xl border border-border">
           <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-bold">Order details</CardTitle>
+            <CardTitle className="text-sm font-bold">Order Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2.5 pt-0">
             <dl className="space-y-2 text-xs">
@@ -182,53 +241,13 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
                 <dd className="font-medium">{order.paidAt ? formatDateTime(order.paidAt) : "—"}</dd>
               </div>
               <div className="flex justify-between gap-3">
-                <dt className="text-muted-foreground">Downloaded</dt>
-                <dd className="font-medium">{order.isDownloaded ? "Yes" : "No"}</dd>
+                <dt className="text-muted-foreground">Download Status</dt>
+                <dd className="font-medium">{order.isDownloaded ? "Downloaded" : "Available"}</dd>
               </div>
             </dl>
           </CardContent>
         </Card>
-
-
-        <Card className="rounded-xl border border-border">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-bold">Delivery timeline</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <ol className="space-y-3 text-xs">
-              <li className="flex items-center justify-between">
-                <span className="font-medium">Payment received</span>
-                <CheckCircle2 aria-hidden="true" className="size-4 text-success shrink-0" />
-              </li>
-              {isCompleted ? (
-                <>
-                  <li className="flex items-center justify-between">
-                    <span className="font-medium">Notes delivered</span>
-                    <CheckCircle2 aria-hidden="true" className="size-4 text-success shrink-0" />
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span className="font-medium">{order.isDownloaded ? "Downloaded" : "Download now"}</span>
-                    {order.isDownloaded ? (
-                      <CheckCircle2 aria-hidden="true" className="size-4 text-warning shrink-0" />
-                    ) : (
-                      <Download aria-hidden="true" className="size-4 text-success shrink-0" />
-                    )}
-                  </li>
-                </>
-              ) : (
-                <li className="flex items-center justify-between">
-                  <span className="font-medium">Admin review & approval</span>
-                  <div className="flex items-center gap-1.5">
-                    <Lock aria-hidden="true" className="size-3 text-warning-foreground" />
-                    <span className="text-[9px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">Pending</span>
-                  </div>
-                </li>
-              )}
-            </ol>
-          </CardContent>
-        </Card>
       </div>
-
 
       <div className="mt-6 flex flex-wrap justify-center gap-2">
         <Button render={<Link href="/order/track" />} variant="outline" size="sm" className="rounded-full">

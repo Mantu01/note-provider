@@ -2,9 +2,8 @@ import { adminHandler } from "@/helpers/api-handler";
 import { fail, ok } from "@/helpers/api-response";
 import { AppError } from "@/helpers/errors";
 import { prisma } from "@/helpers/db";
-import { destroyAsset } from "@/helpers/cloudinary";
 import { toAdminNote } from "@/helpers/mappers/note.mapper";
-import { updateNoteSchema } from "@/schemas/note.schema";
+import { updateNoteSchema, toGoogleDriveDownloadUrl } from "@/schemas/note.schema";
 import { rupeesToPaise } from "@/lib/format";
 
 export const GET = adminHandler(async (ctx) => {
@@ -17,7 +16,14 @@ export const GET = adminHandler(async (ctx) => {
 export const PATCH = adminHandler(async (ctx) => {
   const [{ id }, body] = await Promise.all([ctx.params, ctx.req.json()]);
   const parsed = updateNoteSchema.safeParse(body);
-  if (!parsed.success) return fail(AppError.validation());
+  if (!parsed.success) {
+    const fields: Record<string, string> = {};
+    for (const issue of parsed.error.issues) {
+      const path = issue.path.join(".");
+      if (!fields[path]) fields[path] = issue.message;
+    }
+    return fail(AppError.validation(fields));
+  }
   const existing = await prisma.note.findUnique({ where: { id } });
   if (!existing) throw AppError.notFound("Note");
 
@@ -42,36 +48,14 @@ export const PATCH = adminHandler(async (ctx) => {
 
   if (input.fullFile !== undefined && input.fullFile) {
     updates.fullFileUrl = input.fullFile.url;
-    updates.pdfSource = input.fullFile.source;
-    if (input.fullFile.source === "upload") {
-      updates.fullFilePublicId = input.fullFile.publicId;
-      updates.fullFileBytes = input.fullFile.bytes;
-      updates.drivePdfUrl = null;
-    } else {
-      updates.fullFilePublicId = null;
-      updates.fullFileBytes = 0;
-      updates.drivePdfUrl = input.fullFile.url;
-    }
+  } else if (input.fullFileUrl !== undefined && input.fullFileUrl) {
+    updates.fullFileUrl = toGoogleDriveDownloadUrl(input.fullFileUrl);
   }
   if (input.previewFile !== undefined) {
-    if (input.previewFile) {
-      updates.previewFileUrl = input.previewFile.url;
-      if (input.previewFile.source === "upload") {
-        updates.previewFilePublicId = input.previewFile.publicId;
-        updates.previewFileBytes = input.previewFile.bytes;
-      } else {
-        updates.previewFilePublicId = null;
-        updates.previewFileBytes = null;
-      }
-    } else {
-      updates.previewFileUrl = null;
-      updates.previewFilePublicId = null;
-      updates.previewFileBytes = null;
-    }
+    updates.previewFileUrl = input.previewFile?.url ?? null;
   }
   if (input.coverImage !== undefined && input.coverImage) {
     updates.coverImageUrl = input.coverImage.url;
-    updates.coverImagePublicId = input.coverImage.publicId;
   }
 
   const oldPricingType = existing.pricingType;
@@ -80,25 +64,9 @@ export const PATCH = adminHandler(async (ctx) => {
   if (oldPricingType === "paid" && newPricingType === "free") {
     updates.price = 0;
     updates.compareAtPrice = null;
-    if (existing.previewFilePublicId) {
-      await destroyAsset(existing.previewFilePublicId, "raw", "upload");
-      updates.previewFileUrl = null;
-      updates.previewFilePublicId = null;
-      updates.previewFileBytes = null;
-    }
   }
 
   const updated = await prisma.note.update({ where: { id }, data: updates as any, include: { category: true } });
-
-  if (input.fullFile?.source === "upload" && input.fullFile.publicId && input.fullFile.publicId !== existing.fullFilePublicId) {
-    if (existing.fullFilePublicId) await destroyAsset(existing.fullFilePublicId, "raw", "authenticated");
-  }
-  if (input.previewFile?.source === "upload" && input.previewFile.publicId && input.previewFile.publicId !== existing.previewFilePublicId) {
-    if (existing.previewFilePublicId) await destroyAsset(String(existing.previewFilePublicId), "raw", "upload");
-  }
-  if (input.coverImage?.publicId && input.coverImage.publicId !== existing.coverImagePublicId) {
-    await destroyAsset(String(existing.coverImagePublicId), "image", "upload");
-  }
 
   return ok(toAdminNote(updated));
 });
@@ -124,10 +92,6 @@ export const DELETE = adminHandler(async (ctx) => {
       await prisma.noteGroup.createMany({ data: remainingNotes.map((n) => ({ groupId: group.id, noteId: n.id })) });
     }
   }));
-
-  if (note.fullFilePublicId) await destroyAsset(note.fullFilePublicId, "raw", "authenticated");
-  if (note.previewFilePublicId) await destroyAsset(note.previewFilePublicId, "raw", "upload");
-  if (note.coverImagePublicId) await destroyAsset(note.coverImagePublicId, "image", "upload");
 
   await prisma.note.delete({ where: { id } });
 

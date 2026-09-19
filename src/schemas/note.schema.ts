@@ -7,40 +7,16 @@ export const objectIdSchema = z
   .trim()
   .regex(/^[a-f\d]{24}$|^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, "Invalid identifier");
 
-export const uploadedFileSchema = z.object({
-  url: z.url("Invalid file URL"),
-  publicId: z.string().trim().min(1, "Missing file reference"),
-  bytes: z.number().int().positive("Invalid file size"),
-});
+export const fileUploadSchema = z.object({
+  url: z.string().url("Invalid file URL"),
+  publicId: z.string().trim().optional().default(""),
+  bytes: z.number().int().nonnegative().optional().default(0),
+}).nullable();
 
-export const googleDriveFileSchema = z.object({
-  source: z.literal("drive"),
-  url: z.url().refine(
-    (val) => {
-      try {
-        const url = new URL(val);
-        return url.hostname === "drive.google.com";
-      } catch {
-        return false;
-      }
-    },
-    { message: "Only Google Drive URLs are accepted" },
-  ),
-});
-
-export const cloudinaryFileSchema = z.object({
-  source: z.literal("upload"),
-  url: z.url("Invalid file URL"),
-  publicId: z.string().trim().min(1, "Missing file reference"),
-  bytes: z.number().int().positive("Invalid file size"),
-});
-
-export const noteFileSchema = z.discriminatedUnion("source", [cloudinaryFileSchema, googleDriveFileSchema]);
-
-export const uploadedImageSchema = z.object({
-  url: z.url("Invalid image URL"),
-  publicId: z.string().trim().min(1, "Missing image reference"),
-});
+export const imageUploadSchema = z.object({
+  url: z.string().url("Invalid image URL"),
+  publicId: z.string().trim().optional().default(""),
+}).nullable();
 
 const tagsSchema = z
   .array(z.string().trim().min(1).max(40))
@@ -51,6 +27,22 @@ export const priceRupeesSchema = z
   .number({ message: "Price is required" })
   .min(0, "Price cannot be negative")
   .max(1000000, "Price is too high");
+
+export function isGoogleDriveUrl(url: string): boolean {
+  return /^(https?:\/\/)?(drive\.google\.com|docs\.google\.com)\/(?:file\/d\/|open\?id=|uc\?id=)?[a-zA-Z0-9_-]+/.test(url);
+}
+
+export function toGoogleDriveDownloadUrl(url: string): string {
+  const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)|\/d\/([a-zA-Z0-9_-]+)|id=([a-zA-Z0-9_-]+)/);
+  const id = match ? (match[1] || match[2] || match[3]) : null;
+  return id ? `https://drive.google.com/uc?export=download&id=${id}` : url;
+}
+
+export function toGoogleDrivePreviewUrl(url: string): string {
+  const match = url.match(/\/file\/d\/([a-zA-Z0-9_-]+)|\/d\/([a-zA-Z0-9_-]+)|id=([a-zA-Z0-9_-]+)/);
+  const id = match ? (match[1] || match[2] || match[3]) : null;
+  return id ? `https://drive.google.com/file/d/${id}/preview` : url;
+}
 
 export const noteBaseSchema = z.object({
   title: z.string().trim().min(3, "Title must be at least 3 characters").max(160),
@@ -64,9 +56,10 @@ export const noteBaseSchema = z.object({
   tags: tagsSchema.default([]),
   isFeatured: z.boolean().default(false),
   pageCount: z.number().int().positive().max(20000).nullable().default(null),
-  fullFile: noteFileSchema,
-  previewFile: noteFileSchema.nullable().default(null),
-  coverImage: uploadedImageSchema.nullable().default(null),
+  fullFile: fileUploadSchema.optional().nullable(),
+  fullFileUrl: z.string().trim().url("Enter a valid URL").optional().nullable(),
+  previewFile: fileUploadSchema,
+  coverImage: imageUploadSchema,
 });
 
 function refineNote(
@@ -75,32 +68,54 @@ function refineNote(
     price?: number;
     compareAtPrice?: number | null;
     fullFile?: { url: string } | null;
+    fullFileUrl?: string | null;
     previewFile?: { url: string } | null;
+    coverImage?: { url: string } | null;
   },
   ctx: z.RefinementCtx,
 ) {
-  if (value.pricingType === "free") {
-    if (!value.fullFile) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["fullFile"],
-        message: "Please upload the full study note PDF document for free download",
-      });
-    }
-  } else if (value.pricingType === "paid") {
+  const hasUploadedFull = !!value.fullFile?.url;
+  const hasDriveUrl = !!value.fullFileUrl && value.fullFileUrl.trim().length > 0;
+
+  if (!hasUploadedFull && !hasDriveUrl) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["fullFile"],
+      message: "Please provide the full study note via file upload or Google Drive URL",
+    });
+  }
+
+  if (hasDriveUrl && !isGoogleDriveUrl(value.fullFileUrl!)) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["fullFileUrl"],
+      message: "Please enter a valid Google Drive file URL",
+    });
+  }
+
+  if (!value.previewFile) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["previewFile"],
+      message: "Please upload a sample preview PDF",
+    });
+  }
+
+  if (!value.coverImage) {
+    ctx.addIssue({
+      code: "custom",
+      path: ["coverImage"],
+      message: "Please upload a cover image",
+    });
+  }
+
+  if (value.pricingType === "paid") {
     const pricePaise = rupeesToPaise(value.price ?? 0);
     if (pricePaise < 100) {
       ctx.addIssue({
         code: "custom",
         path: ["price"],
         message: "Paid notes must cost at least ₹1",
-      });
-    }
-    if (!value.fullFile) {
-      ctx.addIssue({
-        code: "custom",
-        path: ["fullFile"],
-        message: "Please upload the full study note PDF that buyers receive after payment",
       });
     }
     if (
@@ -120,7 +135,9 @@ function refineNote(
 export const createNoteSchema = noteBaseSchema.superRefine(refineNote);
 
 export const updateNoteSchema = noteBaseSchema.partial().superRefine((value, ctx) => {
-  if (value.pricingType === "paid" || value.fullFile !== undefined) refineNote(value, ctx);
+  if (value.pricingType === "paid" || value.fullFile !== undefined || value.fullFileUrl !== undefined) {
+    refineNote(value, ctx);
+  }
   if (Object.keys(value).length === 0) {
     ctx.addIssue({ code: "custom", path: [], message: "Nothing to update" });
   }

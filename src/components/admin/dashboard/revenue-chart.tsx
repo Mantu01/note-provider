@@ -2,9 +2,18 @@
 
 import { Area, AreaChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import type { DashboardStats } from "@/lib/types";
 
-export function RevenueChart({ data }: { data: DashboardStats["revenueSeries"] }) {
+export function RevenueChart({
+  data,
+  days,
+  onDaysChange,
+}: {
+  data: DashboardStats["revenueSeries"];
+  days: 7 | 30;
+  onDaysChange: (days: 7 | 30) => void;
+}) {
   const points = data.map((item) => ({
     date: item.date.slice(5),
     revenue: item.revenuePaise / 100,
@@ -14,8 +23,26 @@ export function RevenueChart({ data }: { data: DashboardStats["revenueSeries"] }
 
   return (
     <Card className="rounded-2xl border border-border">
-      <CardHeader>
-        <CardTitle className="text-base font-bold">Revenue (last 30 days)</CardTitle>
+      <CardHeader className="flex flex-row items-center justify-between gap-4">
+        <CardTitle className="text-base font-bold">Revenue (last {days} days)</CardTitle>
+        <div className="inline-flex items-center rounded-lg border border-border/60 bg-muted/30 p-1">
+          <Button
+            size="sm"
+            variant={days === 7 ? "default" : "ghost"}
+            className="h-7 px-2.5 text-xs font-semibold rounded-md"
+            onClick={() => onDaysChange(7)}
+          >
+            7 Days
+          </Button>
+          <Button
+            size="sm"
+            variant={days === 30 ? "default" : "ghost"}
+            className="h-7 px-2.5 text-xs font-semibold rounded-md"
+            onClick={() => onDaysChange(30)}
+          >
+            30 Days
+          </Button>
+        </div>
       </CardHeader>
       <CardContent className="w-full">
         {hasRevenue ? (
@@ -73,7 +100,7 @@ export function RevenueChart({ data }: { data: DashboardStats["revenueSeries"] }
           </ResponsiveContainer>
         ) : (
           <div className="flex h-[280px] items-center justify-center rounded-xl border border-dashed border-border text-sm text-muted-foreground">
-            No paid orders in the last 30 days.
+            No paid orders in the last {days} days.
           </div>
         )}
       </CardContent>

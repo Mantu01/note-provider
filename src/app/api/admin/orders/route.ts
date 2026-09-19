@@ -9,7 +9,6 @@ export const GET = adminHandler(async (ctx) => {
   const query = {
     q: ctx.searchParams.get("q") || undefined,
     paymentStatus: (ctx.searchParams.get("paymentStatus") as "created" | "paid" | "failed") || undefined,
-    fulfillmentStatus: (ctx.searchParams.get("fulfillmentStatus") as "pending" | "completed" | "cancelled") || undefined,
     itemType: (ctx.searchParams.get("itemType") as "note" | "group") || undefined,
     from: ctx.searchParams.get("from") || undefined,
     to: ctx.searchParams.get("to") || undefined,

@@ -9,7 +9,10 @@ import { validateNoteIdsExist } from "@/helpers/note-validation";
 
 export const GET = adminHandler(async (ctx) => {
   const { id } = await ctx.params;
-  const group = await prisma.group.findUnique({ where: { id }, include: { category: true } as any });
+  const group = await prisma.group.findUnique({
+    where: { id },
+    include: { category: true, noteGroups: { include: { note: true } } } as any,
+  });
   if (!group) throw AppError.notFound("Group");
   return ok(toAdminGroup(group));
 });
@@ -17,7 +20,14 @@ export const GET = adminHandler(async (ctx) => {
 export const PATCH = adminHandler(async (ctx) => {
   const [{ id }, body] = await Promise.all([ctx.params, ctx.req.json()]);
   const parsed = updateGroupSchema.safeParse(body);
-  if (!parsed.success) return fail(AppError.validation());
+  if (!parsed.success) {
+    const fields: Record<string, string> = {};
+    for (const issue of parsed.error.issues) {
+      const path = issue.path.join(".");
+      if (!fields[path]) fields[path] = issue.message;
+    }
+    return fail(AppError.validation(fields));
+  }
 
   const { admin } = ctx;
   const existing = await prisma.group.findUnique({ where: { id } });
@@ -29,6 +39,13 @@ export const PATCH = adminHandler(async (ctx) => {
     const noteIds = input.noteIds.filter((n: string) => n.trim());
     const uniqueIds = Array.from(new Set(noteIds));
     await validateNoteIdsExist(uniqueIds);
+    await prisma.noteGroup.deleteMany({ where: { groupId: id } });
+    if (uniqueIds.length > 0) {
+      await prisma.noteGroup.createMany({
+        data: uniqueIds.map((noteId: string) => ({ groupId: id, noteId })),
+        skipDuplicates: true,
+      });
+    }
   }
 
   const updates: Record<string, unknown> = { updatedBy: admin.id };
@@ -37,21 +54,17 @@ export const PATCH = adminHandler(async (ctx) => {
   if (input.categoryId !== undefined) updates.categoryId = input.categoryId;
   if (input.price !== undefined) updates.price = rupeesToPaise(input.price);
   if (input.compareAtPrice !== undefined) updates.compareAtPrice = input.compareAtPrice ? rupeesToPaise(input.compareAtPrice) : null;
-  if (input.coverImage !== undefined && input.coverImage) {
-    updates.coverImageUrl = input.coverImage.url;
-    updates.coverImagePublicId = input.coverImage.publicId;
+  if (input.coverImage !== undefined) {
+    updates.coverImageUrl = input.coverImage?.url ?? null;
   }
   if (input.visibility !== undefined) updates.visibility = input.visibility;
   if (input.isFeatured !== undefined) updates.isFeatured = input.isFeatured;
 
-  if (input.noteIds !== undefined) {
-    const noteIds = input.noteIds.filter((n: string) => n.trim());
-    const uniqueIds = Array.from(new Set(noteIds));
-    await prisma.noteGroup.deleteMany({ where: { groupId: id } });
-    updates.noteGroups = { create: uniqueIds.map((noteId: string) => ({ noteId })) };
-  }
-
-  const updated = await prisma.group.update({ where: { id }, data: updates as any, include: { category: true } as any });
+  const updated = await prisma.group.update({
+    where: { id },
+    data: updates as any,
+    include: { category: true, noteGroups: { include: { note: true } } } as any,
+  });
   return ok(toAdminGroup(updated));
 });
 

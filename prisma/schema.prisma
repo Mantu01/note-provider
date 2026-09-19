@@ -25,7 +25,6 @@ model Admin {
   updatedNotes       Note[]      @relation("AdminUpdatedNotes")
   createdGroups      Group[]     @relation("AdminCreatedGroups")
   updatedGroups      Group[]     @relation("AdminUpdatedGroups")
-  completedOrders    Order[]     @relation("AdminCompletedOrders")
 
   @@index([email])
 }
@@ -54,36 +53,29 @@ model Category {
 }
 
 model Note {
-  id                 String          @id @default(uuid())
-  title              String
-  slug               String          @unique
-  description        String          @db.Text
-  categoryId         String
-  level              NoteLevel
-  visibility         NoteVisibility  @default(public)
-  pricingType        NotePricingType
-  price              Int
-  compareAtPrice     Int?
-  fullFileUrl        String
-  fullFilePublicId   String?
-  fullFileBytes      Int             @default(0)
-  pdfSource          PdfSource       @default(upload)
-  drivePdfUrl        String?
-  previewFileUrl     String?
-  previewFilePublicId String?
-  previewFileBytes   Int?
-  coverImageUrl      String?
-  coverImagePublicId String?
-  pageCount          Int?
-  tags               String[]        @default([])
-  isFeatured         Boolean         @default(false)
-  downloadCount      Int             @default(0)
-  purchaseCount      Int             @default(0)
-  revenuePaise       Int             @default(0)
-  createdBy          String?
-  updatedBy          String?
-  createdAt          DateTime        @default(now())
-  updatedAt          DateTime        @updatedAt
+  id               String       @id @default(uuid())
+  title            String
+  slug             String       @unique
+  description      String       @db.Text
+  categoryId       String
+  level            NoteLevel
+  visibility       NoteVisibility @default(public)
+  pricingType      NotePricingType
+  price            Int
+  compareAtPrice   Int?
+  fullFileUrl      String
+  previewFileUrl   String?
+  coverImageUrl    String?
+  pageCount        Int?
+  tags             String[]     @default([])
+  isFeatured       Boolean      @default(false)
+  downloadCount    Int          @default(0)
+  purchaseCount    Int          @default(0)
+  revenuePaise     Int          @default(0)
+  createdBy        String?
+  updatedBy        String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
 
   category   Category      @relation(fields: [categoryId], references: [id])
   noteGroups NoteGroup[]
@@ -106,7 +98,6 @@ model Group {
   price              Int
   compareAtPrice     Int?
   coverImageUrl      String?
-  coverImagePublicId String?
   visibility         NoteVisibility  @default(public)
   isFeatured         Boolean         @default(false)
   purchaseCount      Int             @default(0)
@@ -152,21 +143,16 @@ model Order {
   razorpaySignature String?
   paymentMethod     String?
   paymentStatus     PaymentStatus    @default(created)
-  fulfillmentStatus FulfillmentStatus @default(pending)
   isDownloaded      Boolean          @default(false)
   failureReason     String?
-  adminNote         String?          @db.VarChar(1000)
   paidAt            DateTime?
-  completedAt       DateTime?
-  completedBy       String?
   createdAt         DateTime         @default(now())
   updatedAt         DateTime         @updatedAt
 
   note            Note?  @relation("OrderNote", fields: [noteId], references: [id])
   group           Group? @relation("OrderGroup", fields: [groupId], references: [id])
-  completedByAdmin Admin? @relation("AdminCompletedOrders", fields: [completedBy], references: [id])
 
-  @@index([paymentStatus, fulfillmentStatus, createdAt])
+  @@index([paymentStatus, createdAt])
   @@index([createdAt])
   @@index([razorpayOrderId])
   @@index([orderNumber])
@@ -193,11 +179,6 @@ enum NotePricingType {
   paid
 }
 
-enum PdfSource {
-  upload
-  drive
-}
-
 enum PurchaseItemType {
   note
   group
@@ -207,10 +188,4 @@ enum PaymentStatus {
   created
   paid
   failed
-}
-
-enum FulfillmentStatus {
-  pending
-  completed
-  cancelled
 }

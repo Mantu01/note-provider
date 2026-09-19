@@ -23,8 +23,8 @@ export function toPublicGroup(doc: Record<string, unknown>): PublicGroup {
       priceLabel: "",
       compareAtPrice: null,
       coverImageUrl: null,
+      previewFileUrl: null,
       pageCount: null,
-      fileSizeLabel: null,
       isLocked: true,
       hasPreview: false,
       tags: [],
@@ -61,11 +61,14 @@ export function toPublicGroup(doc: Record<string, unknown>): PublicGroup {
 
 export function toAdminGroup(doc: Record<string, unknown>): AdminGroup {
   const base = toPublicGroup(doc);
+  const noteGroups = Array.isArray(doc.noteGroups) ? (doc.noteGroups as Array<Record<string, unknown>>) : [];
+  const noteIds = noteGroups
+    .map((ng) => String(ng.noteId ?? (ng.note && typeof ng.note === "object" ? (ng.note as Record<string, unknown>).id : "") ?? ""))
+    .filter(Boolean);
   return {
     ...base,
     visibility: (String(doc.visibility ?? "public") === "private" ? "private" : "public") as "public" | "private",
-    noteIds: [],
-    coverImagePublicId: doc.coverImagePublicId != null ? String(doc.coverImagePublicId) : null,
+    noteIds: noteIds.length > 0 ? noteIds : base.notes.map((n) => n.id).filter(Boolean),
     revenuePaise: Number(doc.revenuePaise ?? 0),
     purchaseCount: Number(doc.purchaseCount ?? 0),
     createdBy: doc.createdBy ? { id: String(doc.createdBy), name: "" } : null,

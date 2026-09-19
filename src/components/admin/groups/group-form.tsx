@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { parseAsBoolean, useQueryStates } from "nuqs";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -14,11 +15,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { FileUploadField } from "@/components/shared/file-upload-field";
 import { CategoryDialog } from "@/components/admin/categories/category-dialog";
-import { NoteMultiSelect } from "@/components/admin/groups/note-multi-select";
 import { useAdminCategories } from "@/hooks/useAdmin";
 import { useCreateGroup, useUpdateGroup } from "@/hooks/useAdmin";
 import { createGroupSchema, type CreateGroupInput } from "@/schemas/group.schema";
 import type { AdminGroup } from "@/lib/types";
+import { NoteMultiSelect } from "./note-multi-select";
 
 type GroupFormProps = {
   initialData?: AdminGroup | null;
@@ -45,15 +46,45 @@ export function GroupForm({ initialData }: GroupFormProps) {
       categoryId: initialData?.category?.id ?? "",
       price: initialData ? initialData.price / 100 : 999,
       compareAtPrice: initialData?.compareAtPrice ? initialData.compareAtPrice / 100 : null,
-      noteIds: initialData?.noteIds ?? initialData?.notes?.map((n) => n.id) ?? [],
+      noteIds: initialData?.noteIds?.length
+        ? initialData.noteIds
+        : (initialData?.notes?.map((n) => n.id).filter(Boolean) ?? []),
       visibility: initialData?.visibility ?? "public",
       isFeatured: initialData?.isFeatured ?? false,
-      coverImage: initialData?.coverImageUrl && initialData.coverImagePublicId ? {
-        url: initialData.coverImageUrl,
-        publicId: initialData.coverImagePublicId,
-      } : null,
+      coverImage: initialData?.coverImageUrl
+        ? { url: initialData.coverImageUrl, publicId: "existing" }
+        : null,
     },
   });
+
+  useEffect(() => {
+    if (initialData) {
+      form.reset({
+        name: initialData.name,
+        description: initialData.description,
+        categoryId: initialData.category?.id ?? "",
+        price: initialData.price / 100,
+        compareAtPrice: initialData.compareAtPrice ? initialData.compareAtPrice / 100 : null,
+        noteIds: initialData.noteIds?.length
+          ? initialData.noteIds
+          : (initialData.notes?.map((n) => n.id).filter(Boolean) ?? []),
+        visibility: initialData.visibility ?? "public",
+        isFeatured: initialData.isFeatured ?? false,
+        coverImage: initialData.coverImageUrl
+          ? { url: initialData.coverImageUrl, publicId: "existing" }
+          : null,
+      });
+    }
+  }, [initialData, form]);
+
+  useEffect(() => {
+    const err = createMutation.error || updateMutation.error;
+    if (err && typeof err === "object" && "fields" in err && (err as any).fields) {
+      for (const [key, msg] of Object.entries((err as any).fields as Record<string, string>)) {
+        form.setError(key as any, { message: msg });
+      }
+    }
+  }, [createMutation.error, updateMutation.error, form]);
 
   const onSubmit = (values: CreateGroupInput) => {
     if (isEditing) {
@@ -224,7 +255,9 @@ export function GroupForm({ initialData }: GroupFormProps) {
             <CardContent>
               <NoteMultiSelect
                 selectedIds={form.watch("noteIds") ?? []}
-                onChange={(ids) => form.setValue("noteIds", ids)}
+                onChange={(ids: string[]) =>
+                  form.setValue("noteIds", ids, { shouldValidate: true, shouldDirty: true })
+                }
               />
               {form.formState.errors.noteIds && (
                 <p className="mt-2 text-xs text-destructive">{form.formState.errors.noteIds.message}</p>

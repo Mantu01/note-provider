@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { HelpCircle, HardDrive, UploadCloud } from "lucide-react";
+import { HelpCircle, UploadCloud } from "lucide-react";
 import { type UseFormReturn } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,14 +10,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { FileUploadField } from "@/components/shared/file-upload-field";
-import { type CreateNoteInput, type CreateNotePayload } from "@/schemas/note.schema";
+import { type CreateNoteInput } from "@/schemas/note.schema";
 import { NOTE_LEVELS } from "@/lib/constants";
-
-type FileSource = "upload" | "drive";
-
-type FileFieldSource = CreateNotePayload["fullFile"] extends { source: FileSource }
-  ? CreateNotePayload["fullFile"]
-  : never;
 
 type NoteDetailsSectionProps = {
   form: UseFormReturn<CreateNoteInput>;
@@ -133,15 +127,15 @@ export function NoteDetailsSection({
   );
 }
 
+import { useState } from "react";
+import { isGoogleDriveUrl } from "@/schemas/note.schema";
+
 type FileAttachmentsSectionProps = {
   form: UseFormReturn<CreateNoteInput>;
   pricingType: "free" | "paid";
-  fullFile: FileFieldSource | undefined;
-  previewFile: FileFieldSource | null;
-  fullFileSource: FileSource;
-  setFullFileSource: (source: FileSource) => void;
-  previewFileSource: FileSource;
-  setPreviewFileSource: (source: FileSource) => void;
+  fullFile: { url: string; publicId?: string; bytes?: number } | null | undefined;
+  previewFile: { url: string; publicId?: string; bytes?: number } | null | undefined;
+  coverImage: { url: string; publicId?: string } | null | undefined;
 };
 
 export function FileAttachmentsSection({
@@ -149,180 +143,174 @@ export function FileAttachmentsSection({
   pricingType,
   fullFile,
   previewFile,
-  fullFileSource,
-  setFullFileSource,
-  previewFileSource,
-  setPreviewFileSource,
+  coverImage,
 }: FileAttachmentsSectionProps) {
+  const currentDriveUrl = form.watch("fullFileUrl") ?? "";
+  const [fullInputMode, setFullInputMode] = useState<"upload" | "drive">(
+    currentDriveUrl ? "drive" : "upload",
+  );
+
+  const driveValid = currentDriveUrl.trim().length > 0 ? isGoogleDriveUrl(currentDriveUrl) : null;
+
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-lg">File Attachments</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6">
-
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">
-              {pricingType === "free"
-                ? "Full Study Note PDF (Required for Free Download)"
-                : "Full Study Note PDF (Required — buyers receive this after payment)"}
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+            <span className="text-sm font-semibold text-foreground">
+              1. Full Study Note (Required)
             </span>
-            {fullFile && fullFile.source === "upload" && (
-              <span className="inline-flex items-center gap-1 text-[10px] text-success">
-                <UploadCloud className="h-3 w-3" /> Uploaded via Cloudinary
-              </span>
-            )}
-            {fullFile && fullFile.source === "drive" && (
-              <span className="inline-flex items-center gap-1 text-[10px] text-primary">
-                <HardDrive className="h-3 w-3" /> Google Drive link
-              </span>
-            )}
-          </div>
-
-          <div className="flex gap-2">
-            <Button
-              type="button"
-              variant={fullFileSource === "upload" ? "default" : "outline"}
-              size="sm"
-              className="h-7 text-xs"
-              onClick={() => setFullFileSource("upload")}
-            >
-              <UploadCloud className="mr-1.5 h-3 w-3" /> Upload File
-            </Button>
-            <Button
-              type="button"
-              variant={fullFileSource === "drive" ? "default" : "outline"}
-              size="sm"
-              className="h-7 text-xs"
-              onClick={() => {
-                setFullFileSource("drive");
-                form.setValue("fullFile", { source: "drive", url: "" } as CreateNoteInput["fullFile"]);
-              }}
-            >
-              <HardDrive className="mr-1.5 h-3 w-3" /> Google Drive URL
-            </Button>
-          </div>
-
-          {fullFileSource === "drive" ? (
-            <div className="space-y-2">
-              <Input
-                placeholder="https://drive.google.com/file/d/.../view"
-                value={fullFile?.source === "drive" ? fullFile.url : ""}
-                onChange={(e) => {
-                  form.setValue("fullFile", { source: "drive", url: e.target.value } as CreateNoteInput["fullFile"]);
+            <div className="inline-flex rounded-lg border border-border bg-muted/40 p-1">
+              <Button
+                type="button"
+                size="sm"
+                variant={fullInputMode === "upload" ? "default" : "ghost"}
+                className="h-7 px-2.5 text-xs font-medium rounded-md"
+                onClick={() => {
+                  setFullInputMode("upload");
+                  form.setValue("fullFileUrl", null);
                 }}
-              />
-              <p className="text-[10px] text-muted-foreground">
-                Paste the Google Drive share link directly. No file upload needed.
-              </p>
-              {form.formState.errors.fullFile && (
-                <p className="text-xs text-destructive font-medium">{form.formState.errors.fullFile.message}</p>
-              )}
+              >
+                Upload File
+              </Button>
+              <Button
+                type="button"
+                size="sm"
+                variant={fullInputMode === "drive" ? "default" : "ghost"}
+                className="h-7 px-2.5 text-xs font-medium rounded-md"
+                onClick={() => {
+                  setFullInputMode("drive");
+                  form.setValue("fullFile", null);
+                }}
+              >
+                Google Drive URL
+              </Button>
             </div>
-          ) : (
-            <>
+          </div>
+
+          <p className="text-xs text-muted-foreground">
+            {pricingType === "free"
+              ? "The complete study note that learners download immediately."
+              : "The complete study note that buyers receive after successful checkout."}
+          </p>
+
+          {fullInputMode === "upload" ? (
+            <div>
               <FileUploadField
                 kind="note_full"
                 label=""
                 accept=".pdf"
-                maxSizeMB={100}
-                value={fullFile?.source === "upload" ? fullFile : null}
+                maxSizeMB={10}
+                value={fullFile ?? null}
                 onChange={(val) => {
                   form.setValue(
                     "fullFile",
-                    val
-                      ? ({ ...val, source: "upload" as const } as CreateNoteInput["fullFile"])
-                      : (undefined as unknown as CreateNoteInput["fullFile"]),
+                    val ? ({ ...val } as { url: string; publicId?: string; bytes?: number }) : null,
                   );
+                  if (val) form.setValue("fullFileUrl", null);
                 }}
               />
               {form.formState.errors.fullFile && (
-                <p className="text-xs text-destructive font-medium">{form.formState.errors.fullFile.message}</p>
+                <p className="mt-1 text-xs text-destructive font-medium">
+                  {form.formState.errors.fullFile.message}
+                </p>
               )}
-            </>
+            </div>
+          ) : (
+            <div className="space-y-2">
+              <Input
+                placeholder="https://drive.google.com/file/d/..."
+                value={currentDriveUrl}
+                onChange={(event) => {
+                  const url = event.target.value;
+                  form.setValue("fullFileUrl", url);
+                  if (url.trim().length > 0) form.setValue("fullFile", null);
+                }}
+              />
+              {currentDriveUrl.trim().length > 0 && (
+                <p className={`text-xs ${driveValid ? "text-success" : "text-destructive"}`}>
+                  {driveValid
+                    ? "✓ Valid Google Drive link. It will automatically convert to a direct download link."
+                    : "✗ Please enter a valid Google Drive file URL."}
+                </p>
+              )}
+              {form.formState.errors.fullFileUrl && (
+                <p className="text-xs text-destructive font-medium">
+                  {form.formState.errors.fullFileUrl.message}
+                </p>
+              )}
+              {form.formState.errors.fullFile && !currentDriveUrl && (
+                <p className="text-xs text-destructive font-medium">
+                  {form.formState.errors.fullFile.message}
+                </p>
+              )}
+            </div>
           )}
         </div>
 
-
-        {pricingType === "paid" && (
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium">Sample Preview PDF (Optional)</span>
-            </div>
-
-            <div className="flex gap-2">
-              <Button
-                type="button"
-                variant={previewFileSource === "upload" ? "default" : "outline"}
-                size="sm"
-                className="h-7 text-xs"
-                onClick={() => setPreviewFileSource("upload")}
-              >
-                <UploadCloud className="mr-1.5 h-3 w-3" /> Upload File
-              </Button>
-              <Button
-                type="button"
-                variant={previewFileSource === "drive" ? "default" : "outline"}
-                size="sm"
-                className="h-7 text-xs"
-                onClick={() => {
-                  setPreviewFileSource("drive");
-                  form.setValue("previewFile", { source: "drive", url: "" } as CreateNoteInput["previewFile"]);
-                }}
-              >
-                <HardDrive className="mr-1.5 h-3 w-3" /> Google Drive URL
-              </Button>
-            </div>
-
-            {previewFileSource === "drive" ? (
-              <div className="space-y-2">
-                <Input
-                  placeholder="https://drive.google.com/file/d/.../view"
-                  value={previewFile?.source === "drive" ? previewFile.url : ""}
-                  onChange={(e) => {
-                    form.setValue("previewFile", { source: "drive", url: e.target.value } as CreateNoteInput["previewFile"]);
-                  }}
-                />
-                <p className="text-[10px] text-muted-foreground">
-                  Paste the Google Drive share link directly. No file upload needed.
-                </p>
-                {form.formState.errors.previewFile && (
-                  <p className="text-xs text-destructive font-medium">{form.formState.errors.previewFile.message}</p>
-                )}
-              </div>
-            ) : (
-              <>
-                <FileUploadField
-                  kind="note_preview"
-                  label=""
-                  accept=".pdf"
-                  maxSizeMB={50}
-                  value={previewFile?.source === "upload" ? previewFile : null}
-                  onChange={(val) => {
-                    if (val) {
-                      form.setValue("previewFile", { ...val, source: "upload" as const } as CreateNoteInput["previewFile"]);
-                    } else {
-                      form.setValue("previewFile", null);
-                    }
-                  }}
-                />
-                {form.formState.errors.previewFile && (
-                  <p className="text-xs text-destructive font-medium">{form.formState.errors.previewFile.message}</p>
-                )}
-              </>
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-semibold text-foreground">
+              2. Sample Preview PDF (Required)
+            </span>
+            {previewFile?.url && (
+              <span className="inline-flex items-center gap-1 text-[10px] text-success">
+                <UploadCloud className="h-3 w-3" /> Uploaded via Cloudinary
+              </span>
             )}
           </div>
-        )}
+          <p className="text-xs text-muted-foreground">
+            Sample preview pages (max 10MB) displayed in the preview dialog before purchase or download.
+          </p>
+          <FileUploadField
+            kind="note_preview"
+            label=""
+            accept=".pdf"
+            maxSizeMB={10}
+            value={previewFile ?? null}
+            onChange={(val) => {
+              form.setValue(
+                "previewFile",
+                val ? ({ ...val } as { url: string; publicId?: string; bytes?: number }) : null,
+              );
+            }}
+          />
+          {form.formState.errors.previewFile && (
+            <p className="text-xs text-destructive font-medium">
+              {form.formState.errors.previewFile.message}
+            </p>
+          )}
+        </div>
 
-        <FileUploadField
-          kind="cover"
-          label="Cover Image (Optional)"
-          accept="image/*"
-          maxSizeMB={10}
-          value={form.watch("coverImage")}
-          onChange={(val) => form.setValue("coverImage", val)}
-        />
+        <div className="space-y-3">
+          <span className="text-sm font-semibold text-foreground">
+            3. Cover Image (Required)
+          </span>
+          <p className="text-xs text-muted-foreground">
+            Thumbnail image (PNG, JPG, or WEBP up to 5MB) displayed on cards and order confirmation.
+          </p>
+          <FileUploadField
+            kind="cover"
+            label=""
+            accept="image/*"
+            maxSizeMB={5}
+            value={coverImage ?? null}
+            onChange={(val) => {
+              form.setValue(
+                "coverImage",
+                val ? ({ ...val } as { url: string; publicId?: string }) : null,
+              );
+            }}
+          />
+          {form.formState.errors.coverImage && (
+            <p className="text-xs text-destructive font-medium">
+              {form.formState.errors.coverImage.message}
+            </p>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

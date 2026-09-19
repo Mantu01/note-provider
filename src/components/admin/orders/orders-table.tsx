@@ -42,7 +42,6 @@ export function OrdersTable() {
               <TableHead>Item Title</TableHead>
               <TableHead>Amount</TableHead>
               <TableHead>Payment</TableHead>
-              <TableHead>Fulfillment</TableHead>
               <TableHead>Downloaded</TableHead>
             </TableRow>
           </TableHeader>
@@ -50,14 +49,14 @@ export function OrdersTable() {
             {isLoading ? (
               Array.from({ length: 5 }, (_, i) => (
                 <TableRow key={i}>
-                  <TableCell colSpan={7}>
+                  <TableCell colSpan={6}>
                     <div className="h-10 animate-pulse rounded bg-muted/50" />
                   </TableCell>
                 </TableRow>
               ))
             ) : orders.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={7} className="py-12 text-center">
+                <TableCell colSpan={6} className="py-12 text-center">
                   <p className="text-sm font-medium text-foreground">No orders found</p>
                   <p className="mt-1 text-xs text-muted-foreground">
                     Submitted checkout orders will appear here.
@@ -85,9 +84,6 @@ export function OrdersTable() {
                   </TableCell>
                   <TableCell>
                     <StatusBadge status={order.paymentStatus} type="payment" />
-                  </TableCell>
-                  <TableCell>
-                    <StatusBadge status={order.fulfillmentStatus} type="fulfillment" />
                   </TableCell>
                   <TableCell>
                     {order.isDownloaded ? (

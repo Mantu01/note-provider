@@ -83,21 +83,14 @@ export function NoteDetailPage({ slug }: { slug: string }) {
 
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
               {note.pageCount && (
-                <span className="inline-flex items-center gap-1">
-                  <BookOpen aria-hidden="true" className="size-3.5" />
-                  {note.pageCount} pages
-                </span>
+                <>
+                  <span className="inline-flex items-center gap-1">
+                    <BookOpen aria-hidden="true" className="size-3.5" />
+                    {note.pageCount} pages
+                  </span>
+                  <span aria-hidden="true" className="text-muted-foreground/40">·</span>
+                </>
               )}
-              {note.pageCount && note.fileSizeLabel && (
-                <span aria-hidden="true" className="text-muted-foreground/40">·</span>
-              )}
-              {note.fileSizeLabel && (
-                <span className="inline-flex items-center gap-1">
-                  <ShieldCheck aria-hidden="true" className="size-3.5" />
-                  {note.fileSizeLabel}
-                </span>
-              )}
-              <span aria-hidden="true" className="text-muted-foreground/40">·</span>
               <span className="inline-flex items-center gap-1">
                 <Clock aria-hidden="true" className="size-3.5" />
                 {note.downloadCount} downloads
@@ -131,10 +124,12 @@ export function NoteDetailPage({ slug }: { slug: string }) {
             <CardContent className="space-y-4">
               <PriceTag price={note.price} priceLabel={note.priceLabel} compareAtPrice={note.compareAtPrice} size="large" />
 
-              <PdfPreviewDialog
-                url={`/api/notes/${note.slug}/preview?mode=view`}
-                filename={`${note.slug}-preview.pdf`}
-              />
+              {note.previewFileUrl && (
+                <PdfPreviewDialog
+                  previewUrl={note.previewFileUrl}
+                  filename={`${note.slug}-preview.pdf`}
+                />
+              )}
 
               {note.pricingType === "free" ? (
                 <Button
