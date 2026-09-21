@@ -3,7 +3,9 @@ import { ok } from "@/helpers/api-response";
 import { prisma } from "@/helpers/db";
 import { toPublicNote } from "@/helpers/mappers/note.mapper";
 import { parsePagination, buildPagination, buildNoteFilter, buildNoteSort } from "@/helpers/query";
-import type { NoteSort } from "@/lib/types";
+import type { NoteLevel, NotePricingType, NoteSort } from "@/lib/types";
+
+const NOTE_LEVEL_SET = new Set<string>(["basics", "intermediate", "advance"]);
 
 function parseArrayParam(searchParams: URLSearchParams, key: string): string[] {
   return Array.from(new Set(
@@ -24,25 +26,30 @@ function parseNumberParam(searchParams: URLSearchParams, key: string): number | 
   return Number.isFinite(value) ? value : undefined;
 }
 
+const SORTS: NoteSort[] = ["newest", "oldest", "price_asc", "price_desc", "popular", "title_asc"];
 
 export const GET = handler(async (ctx) => {
   const { page, limit, skip } = parsePagination(ctx.searchParams);
   const sortParam = ctx.searchParams.get("sort");
-  const sort: NoteSort = (sortParam as NoteSort) || "newest";
+  const sort: NoteSort = SORTS.includes(sortParam as NoteSort) ? (sortParam as NoteSort) : "newest";
+
+  const levels = parseArrayParam(ctx.searchParams, "level").filter((l) => NOTE_LEVEL_SET.has(l)) as NoteLevel[];
+  const pricingRaw = ctx.searchParams.get("pricing");
+  const pricing = pricingRaw === "free" || pricingRaw === "paid" ? (pricingRaw as NotePricingType) : undefined;
 
   const query = {
-    q: ctx.searchParams.get("q") || undefined,
+    q: ctx.searchParams.get("q")?.trim() || undefined,
     category: parseArrayParam(ctx.searchParams, "category"),
-    level: parseArrayParam(ctx.searchParams, "level") as ("basics" | "intermediate" | "advance")[],
+    level: levels,
     tags: parseArrayParam(ctx.searchParams, "tags"),
-    pricing: (ctx.searchParams.get("pricing") as "free" | "paid") || undefined,
+    pricing,
     minPrice: parseNumberParam(ctx.searchParams, "minPrice"),
     maxPrice: parseNumberParam(ctx.searchParams, "maxPrice"),
     sort,
     featured: parseBooleanParam(ctx.searchParams, "featured"),
   };
 
-  const filter = buildNoteFilter(query, { publicOnly: true });
+  const filter = await buildNoteFilter(query, { publicOnly: true });
   const sortSpec = buildNoteSort(sort);
 
   const [items, total] = await Promise.all([

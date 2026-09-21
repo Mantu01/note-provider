@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import { verifyWebhookSignature } from "@/helpers/razorpay";
 import { prisma } from "@/helpers/db";
 
-
 export async function POST(req: Request) {
   const rawBody = await req.text();
   const signature = req.headers.get("x-razorpay-signature");
@@ -14,14 +13,14 @@ export async function POST(req: Request) {
     );
   }
 
-  if (!verifyWebhookSignature(rawBody, signature)) {
-    return NextResponse.json(
-      { success: false, error: { code: "VALIDATION_ERROR", message: "Invalid signature" } },
-      { status: 400 },
-    );
-  }
-
   try {
+    if (!verifyWebhookSignature(rawBody, signature)) {
+      return NextResponse.json(
+        { success: false, error: { code: "VALIDATION_ERROR", message: "Invalid signature" } },
+        { status: 400 },
+      );
+    }
+
     const payload = JSON.parse(rawBody) as {
       event: string;
       payload?: { payment?: { entity?: { id: string; order_id?: string; error_description?: string; method?: string; amount?: number } } };
@@ -63,6 +62,12 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, data: { received: true } });
   } catch (error) {
+    if (error instanceof Error && error.message === "Payments are not configured") {
+      return NextResponse.json(
+        { success: false, error: { code: "PAYMENT_ERROR", message: "Webhook secret is not configured" } },
+        { status: 503 },
+      );
+    }
     console.error("[webhook] error", error);
     return NextResponse.json(
       { success: false, error: { code: "INTERNAL_ERROR", message: "Webhook processing failed" } },

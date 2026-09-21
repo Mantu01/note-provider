@@ -36,6 +36,8 @@ export const GET = handler(async (ctx) => {
 
   await prisma.note.update({ where: { id: order.noteId }, data: { downloadCount: { increment: 1 } } });
 
-  const slug = (order.itemSnapshot as any)?.slug ?? order.note.slug;
+  const slug = typeof (order.itemSnapshot as Record<string, unknown> | null)?.slug === "string"
+    ? ((order.itemSnapshot as Record<string, unknown>).slug as string)
+    : order.note.slug;
   return ok({ url: order.note.fullFileUrl, filename: `${slug}.pdf` });
 });

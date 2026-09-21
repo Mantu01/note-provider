@@ -14,7 +14,7 @@ export const GET = handler<{ slug: string }>(async (ctx): Promise<NextResponse<u
   if (!note) throw AppError.notFound("Note");
 
   if (isPreview) {
-    const previewUrl = note.previewFileUrl ?? note.fullFileUrl;
+    const previewUrl = note.previewFileUrl;
     if (!previewUrl) throw AppError.notFound("Preview file not available");
     return NextResponse.json({ url: previewUrl, filename: `${note.slug}-preview.pdf` });
   }
@@ -26,8 +26,10 @@ export const GET = handler<{ slug: string }>(async (ctx): Promise<NextResponse<u
     if (!order) throw AppError.forbidden("No valid paid order found.");
 
     const snapshot = (order.itemSnapshot as Record<string, unknown>) ?? {};
-    const noteIds = Array.isArray(snapshot.noteIds) ? (snapshot.noteIds as string[]) : [];
-    const isNoteInOrder = order.noteId === note.id || snapshot.slug === slug || noteIds.includes(note.id);
+    const rawNoteIds = Array.isArray(snapshot.noteIds) ? snapshot.noteIds : [];
+    const noteIds = rawNoteIds.filter((v): v is string => typeof v === "string");
+    const snapshotSlug = typeof snapshot.slug === "string" ? snapshot.slug : "";
+    const isNoteInOrder = order.noteId === note.id || snapshotSlug === slug || noteIds.includes(note.id);
 
     if (!isNoteInOrder) {
       throw AppError.forbidden("This note is not part of this order.");

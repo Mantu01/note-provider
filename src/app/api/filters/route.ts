@@ -1,60 +1,70 @@
 import { handler } from "@/helpers/api-handler";
 import { ok } from "@/helpers/api-response";
 import { prisma } from "@/helpers/db";
-
+import { NOTE_LEVELS } from "@/lib/constants";
 
 export const GET = handler(async () => {
   const [categories, notes] = await Promise.all([
     prisma.category.findMany({ where: { isActive: true }, orderBy: { order: "asc" } }),
-    prisma.note.findMany({ where: { visibility: "public" } }),
+    prisma.note.findMany({ where: { visibility: "public" }, select: { categoryId: true, level: true, pricingType: true, price: true, tags: true } }),
   ]);
 
-  const counts = notes.reduce((acc, n) => {
-    acc[n.level as string] = (acc[n.level as string] || 0) + 1;
-    if (Array.isArray((n as any).subjects)) {
-      for (const s of (n as any).subjects as string[]) acc[s] = (acc[s] || 0) + 1;
+  const subjectCounts = new Map<string, number>();
+  const tagCounts = new Map<string, number>();
+  const levelCounts = new Map<string, number>();
+  const catCounts = new Map<string, number>();
+  const pricingCounts = new Map<string, number>();
+  const prices: number[] = [];
+
+  for (const note of notes) {
+    levelCounts.set(note.level, (levelCounts.get(note.level) ?? 0) + 1);
+    catCounts.set(note.categoryId, (catCounts.get(note.categoryId) ?? 0) + 1);
+    pricingCounts.set(note.pricingType, (pricingCounts.get(note.pricingType) ?? 0) + 1);
+    if (typeof note.price === "number") prices.push(note.price);
+    if (Array.isArray(note.tags)) {
+      for (const tag of note.tags as string[]) {
+        if (tag) tagCounts.set(tag, (tagCounts.get(tag) ?? 0) + 1);
+      }
     }
-    if (Array.isArray(n.tags)) {
-      for (const t of n.tags as string[]) acc[t] = (acc[t] || 0) + 1;
+  }
+
+  for (const category of categories) {
+    const rawSubjects = Array.isArray(category.subjects) ? category.subjects : [];
+    for (const subject of rawSubjects) {
+      if (subject && typeof subject === "object") {
+        const rec = subject as Record<string, unknown>;
+        const name = typeof rec.name === "string" ? rec.name : "";
+        if (name) subjectCounts.set(name, catCounts.get(category.id) ?? 0);
+      }
     }
-    acc[n.categoryId] = (acc[n.categoryId] || 0) + 1;
-    acc[`price_${n.pricingType}`] = (acc[`price_${n.pricingType}`] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+  }
 
-  const prices = notes.map((n) => n.price);
-  const minPrice = prices.length ? Math.min(...prices) : 0;
-  const maxPrice = prices.length ? Math.max(...prices) : 0;
+  const mapEntries = (map: Map<string, number>) =>
+    Array.from(map.entries()).map(([value, count]) => ({ value, count }));
 
-  const catCounts = notes.reduce((acc, n) => { acc[n.categoryId] = (acc[n.categoryId] || 0) + 1; return acc; }, {} as Record<string, number>);
+  const levels = NOTE_LEVELS.map((level) => ({
+    value: level,
+    label: level.charAt(0).toUpperCase() + level.slice(1),
+    count: levelCounts.get(level) ?? 0,
+  }));
 
-  const levels = (["basics", "intermediate", "advance"] as const).map((l) => ({ value: l, label: l.charAt(0).toUpperCase() + l.slice(1), count: counts[l] ?? 0 }));
-  const { subjects: subjectEntries, tags: tagEntries } = Object.entries(counts).reduce(
-    (acc, [key]) => {
-      const numeric = key !== "" && isFinite(Number(key));
-      (acc[numeric ? "subjects" : "tags"] as string[]).push(key);
-      return acc;
-    },
-    { subjects: [] as string[], tags: [] as string[] },
-  );
-  const subjects = subjectEntries
-    .filter((k) => !["basics", "intermediate", "advance"].includes(k) && !k.startsWith("price_"))
-    .map((value) => ({ value, count: counts[value] ?? 0 }))
-    .sort((a, b) => (counts[b.value] ?? 0) - (counts[a.value] ?? 0))
+  const subjects = mapEntries(subjectCounts)
+    .sort((a, b) => b.count - a.count)
     .slice(0, 20);
-  const tags = tagEntries
-    .filter((k) => !["basics", "intermediate", "advance"].includes(k) && !k.startsWith("price_"))
-    .map((value) => ({ value, count: counts[value] ?? 0 }))
-    .sort((a, b) => (counts[b.value] ?? 0) - (counts[a.value] ?? 0))
+  const tags = mapEntries(tagCounts)
+    .sort((a, b) => b.count - a.count)
     .slice(0, 20);
-  const priceRange = { minPaise: minPrice, maxPaise: maxPrice };
+  const priceRange = {
+    minPaise: prices.length ? Math.min(...prices) : 0,
+    maxPaise: prices.length ? Math.max(...prices) : 0,
+  };
   const pricing = [
-    { value: "free", count: counts["price_free"] ?? 0 },
-    { value: "paid", count: counts["price_paid"] ?? 0 },
+    { value: "free" as const, count: pricingCounts.get("free") ?? 0 },
+    { value: "paid" as const, count: pricingCounts.get("paid") ?? 0 },
   ];
 
   const res = ok({
-    categories: categories.map((cat) => ({ name: cat.name, slug: cat.slug, count: catCounts[cat.id] ?? 0 })),
+    categories: categories.map((cat) => ({ name: cat.name, slug: cat.slug, count: catCounts.get(cat.id) ?? 0 })),
     levels,
     subjects,
     tags,

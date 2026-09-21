@@ -6,7 +6,7 @@ import JsonLd, {
   webpageJsonLd,
   articleJsonLd,
 } from "@/components/seo/json-ld";
-import { APP_URL } from "@/lib/constants";
+import { APP_URL, SEO } from "@/lib/constants";
 import { GroupDetailPage } from "@/components/groups/group-detail";
 import { GroupDetailSkeleton } from "@/components/shared/shimmer-loader";
 import { prisma } from "@/helpers/db";
@@ -15,18 +15,37 @@ interface GroupRouteProps {
   params: Promise<{ slug: string }>;
 }
 
-type GroupWithRelations = {
-  id: string;
-  name: string;
-  slug: string;
-  description: string | null;
-  price: number;
-  coverImageUrl: string | null;
-  category: { id: string; name: string; slug: string } | null;
-  noteGroups: Array<{ id: string; noteId: string }>;
-  createdAt: Date;
-  updatedAt: Date;
-};
+export async function generateMetadata({ params }: GroupRouteProps): Promise<Metadata> {
+  const { slug } = await params;
+  const group = await prisma.group.findFirst({
+    where: { slug, visibility: "public" },
+    select: { name: true, description: true, coverImageUrl: true },
+  });
+
+  if (!group) return { title: "Bundle not found" };
+
+  const imageUrl = group.coverImageUrl ?? `${APP_URL}/og/group/${slug}`;
+  return {
+    title: group.name,
+    description: group.description.slice(0, 160),
+    alternates: { canonical: `${APP_URL}/groups/${slug}` },
+    openGraph: {
+      title: group.name,
+      description: group.description.slice(0, 160),
+      url: `${APP_URL}/groups/${slug}`,
+      siteName: SEO.siteName,
+      images: [{ url: imageUrl, width: SEO.ogImageWidth, height: SEO.ogImageHeight, alt: group.name }],
+      type: "website",
+      locale: SEO.locale,
+    },
+    twitter: {
+      card: SEO.twitterCard,
+      title: group.name,
+      description: group.description.slice(0, 160),
+      images: [imageUrl],
+    },
+  };
+}
 
 export default function GroupRoute({ params }: GroupRouteProps) {
   return (
@@ -41,14 +60,14 @@ async function GroupDetail({ params }: GroupRouteProps) {
 
   const groupDoc = await prisma.group.findFirst({
     where: { slug, visibility: "public" },
-    include: { category: true, noteGroups: true },
-  }) as GroupWithRelations | null;
+    include: { category: true, noteGroups: { where: { note: { visibility: "public" } }, include: { note: { select: { id: true } } } } },
+  });
 
   if (!groupDoc) {
     notFound();
   }
 
-  const noteCount = groupDoc.noteGroups?.length || 0;
+  const noteCount = groupDoc.noteGroups.length;
   const pageUrl = `${APP_URL}/groups/${groupDoc.slug}`;
   const imageUrl = groupDoc.coverImageUrl ?? `${APP_URL}/og/group/${groupDoc.slug}`;
 
@@ -56,13 +75,13 @@ async function GroupDetail({ params }: GroupRouteProps) {
     productJsonLd({
       title: groupDoc.name,
       description: groupDoc.description || "",
-      price: groupDoc.price,
-      priceLabel: `₹${groupDoc.price}`,
+      price: groupDoc.price / 100,
+      priceLabel: `₹${(groupDoc.price / 100).toFixed(0)}`,
       currency: "INR",
       imageUrl: groupDoc.coverImageUrl ?? null,
       category: { name: groupDoc.category?.name || "Study Bundles" },
       level: "bundle",
-      pageCount: noteCount ?? null,
+      pageCount: noteCount,
       url: `/groups/${groupDoc.slug}`,
     }),
     articleJsonLd({

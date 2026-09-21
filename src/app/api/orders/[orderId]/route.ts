@@ -13,7 +13,8 @@ export const GET = handler(async (ctx) => {
 
   let notes: Array<{ id: string; title: string; slug: string; coverImageUrl: string | null }> = [];
   const snapshot = (order.itemSnapshot as Record<string, unknown>) ?? {};
-  const noteIds = Array.isArray(snapshot.noteIds) ? (snapshot.noteIds as string[]) : [];
+  const rawNoteIds = Array.isArray(snapshot.noteIds) ? snapshot.noteIds : [];
+  const noteIds = rawNoteIds.filter((v): v is string => typeof v === "string");
 
   if (order.itemType === "group") {
     if (noteIds.length > 0) {

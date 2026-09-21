@@ -17,7 +17,12 @@ export const POST = handler(async (ctx) => {
 
   enforceRateLimit("createOrder", ctx.ip, { limit: 10, windowMs: 600000 });
 
-  const { itemType, itemSlug } = body as { itemType: "note" | "group"; itemSlug: string };
+  const itemType = body?.itemType === "group" ? "group" : body?.itemType === "note" ? "note" : null;
+  const itemSlug = typeof body?.itemSlug === "string" ? body.itemSlug.trim() : "";
+
+  if (!itemType || !itemSlug) {
+    return fail(AppError.validation({ itemSlug: "Invalid item" }, "Invalid item selection"));
+  }
 
   let itemTitle = "";
   let amount = 0;

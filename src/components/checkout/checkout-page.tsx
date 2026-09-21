@@ -154,7 +154,7 @@ export function CheckoutPage({
             description: order.itemTitle,
             order_id: order.razorpayOrderId,
             prefill: { name: order.buyer.fullName },
-            notes: order.orderNumber,
+            notes: JSON.stringify({ orderNumber: order.orderNumber }),
             theme: { color: themeColor },
             handler: () => {
               router.push(`/order/success/${order.orderId}`);

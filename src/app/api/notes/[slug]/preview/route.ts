@@ -2,7 +2,7 @@ import { handler } from "@/helpers/api-handler";
 import { NextResponse } from "next/server";
 import { AppError } from "@/helpers/errors";
 import { prisma } from "@/helpers/db";
-import { toGoogleDrivePreviewUrl, toGoogleDriveDownloadUrl } from "@/schemas/note.schema";
+import { toGoogleDrivePreviewUrl } from "@/schemas/note.schema";
 
 export const GET = handler<{ slug: string }>(async (ctx): Promise<NextResponse> => {
   const { slug } = ctx.params;
@@ -11,16 +11,16 @@ export const GET = handler<{ slug: string }>(async (ctx): Promise<NextResponse> 
   const note = await prisma.note.findFirst({ where: { slug, visibility: "public" } });
   if (!note) throw AppError.notFound("Preview not found for this note");
 
-  const pdfUrl = note.previewFileUrl ?? note.fullFileUrl;
-  if (!pdfUrl) throw AppError.notFound("Preview not available for this note");
+  const isDrive = (url: string) => url.includes("drive.google.com") || url.includes("docs.google.com");
 
-  const isDrive = pdfUrl.includes("drive.google.com") || pdfUrl.includes("docs.google.com");
-  const viewerUrl = isDrive ? toGoogleDrivePreviewUrl(pdfUrl) : pdfUrl;
-  const downloadUrl = isDrive ? toGoogleDriveDownloadUrl(pdfUrl) : pdfUrl;
-
-  if (format === "json") {
-    return NextResponse.json({ url: downloadUrl, previewUrl: viewerUrl, filename: `${note.slug}-preview.pdf` });
+  const previewUrl = note.previewFileUrl;
+  if (previewUrl) {
+    const viewerUrl = isDrive(previewUrl) ? toGoogleDrivePreviewUrl(previewUrl) : previewUrl;
+    if (format === "json") {
+      return NextResponse.json({ url: viewerUrl, previewUrl: viewerUrl, filename: `${note.slug}-preview.pdf` });
+    }
+    return NextResponse.redirect(viewerUrl, 307);
   }
 
-  return NextResponse.redirect(viewerUrl, 307);
+  throw AppError.notFound("Preview not available for this note");
 });

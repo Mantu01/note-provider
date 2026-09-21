@@ -4,12 +4,20 @@ import { prisma } from "@/helpers/db";
 import { toPublicGroup } from "@/helpers/mappers/group.mapper";
 import { parsePagination, buildPagination } from "@/helpers/query";
 
-
 export const GET = handler(async (ctx) => {
   const { page, limit, skip } = parsePagination(ctx.searchParams);
 
   const [items, total] = await Promise.all([
-    prisma.group.findMany({ where: { visibility: "public" }, include: { category: true }, orderBy: { createdAt: "desc" }, skip, take: limit }),
+    prisma.group.findMany({
+      where: { visibility: "public" },
+      include: {
+        category: true,
+        noteGroups: { where: { note: { visibility: "public" } }, include: { note: true } },
+      },
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: limit,
+    }),
     prisma.group.count({ where: { visibility: "public" } }),
   ]);
 

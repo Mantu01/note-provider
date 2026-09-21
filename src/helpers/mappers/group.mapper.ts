@@ -1,40 +1,12 @@
 import { formatPriceLabel } from "@/lib/format";
 import type { AdminGroup, PublicGroup, PublicNote } from "@/lib/types";
+import { toPublicNote } from "./note.mapper";
 
 type CategoryShape = { id: unknown; name: unknown; slug: unknown; icon: unknown };
-type NoteGroupShape = { note: PublicNote | { id: unknown; title: unknown } };
 
 export function toPublicGroup(doc: Record<string, unknown>): PublicGroup {
-  const noteGroups = Array.isArray(doc.noteGroups) ? doc.noteGroups as NoteGroupShape[] : [];
-  const notes = noteGroups.map((ng) => {
-    const note = ng.note;
-    if (note && typeof note === "object" && "description" in note) {
-      return note as PublicNote;
-    }
-    return {
-      id: String(note?.id ?? ""),
-      slug: "",
-      title: String(note?.title ?? ""),
-      description: "",
-      level: "basics" as const,
-      category: { id: "", name: "", slug: "", icon: null },
-      pricingType: "paid" as const,
-      price: 0,
-      priceLabel: "",
-      compareAtPrice: null,
-      coverImageUrl: null,
-      previewFileUrl: null,
-      pageCount: null,
-      isLocked: true,
-      hasPreview: false,
-      tags: [],
-      isFeatured: false,
-      downloadCount: 0,
-      purchaseCount: 0,
-      createdAt: "",
-      updatedAt: "",
-    };
-  });
+  const noteGroups = Array.isArray(doc.noteGroups) ? (doc.noteGroups as Array<Record<string, unknown>>) : [];
+  const notes = noteGroups.map((ng) => toPublicNote(ng.note));
   const category = doc.category && typeof doc.category === "object" ? doc.category as CategoryShape : null;
 
   const price = Number(doc.price ?? 0);

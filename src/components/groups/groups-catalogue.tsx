@@ -5,11 +5,14 @@ import { EmptyState } from "@/components/shared/empty-state";
 import { ErrorState } from "@/components/shared/error-state";
 import { GroupCard } from "@/components/shared/group-card";
 import { GroupsCatalogueSkeleton } from "@/components/shared/shimmer-loader";
+import { PaginationBar } from "@/components/shared/pagination-bar";
 import { useGroups } from "@/hooks/useGroups";
 import Link from "next/link";
 
 export function GroupsPage() {
   const query = useGroups({ limit: 12 });
+
+  const pagination = query.data?.pagination;
 
   return (
     <div className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-6 lg:px-8">
@@ -20,7 +23,7 @@ export function GroupsPage() {
         </h1>
         <p className="mt-0.5 text-[11px] text-muted-foreground sm:mt-1 sm:text-xs">
           {query.data
-            ? `${query.data.pagination.total} bundle${query.data.pagination.total !== 1 ? "s" : ""} available`
+            ? `${pagination?.total} bundle${pagination?.total !== 1 ? "s" : ""} available`
             : "Loading…"}
         </p>
       </div>
@@ -48,7 +51,16 @@ export function GroupsPage() {
               </div>
             )}
           </div>
-          {query.data && query.data.pagination.totalPages > 1 && (
+          {pagination && pagination.totalPages > 1 && (
+            <div className="mt-8">
+              <PaginationBar
+                page={pagination.page}
+                totalPages={pagination.totalPages}
+                onPageChange={(page) => query.refetch()}
+              />
+            </div>
+          )}
+          {pagination && pagination.total === 0 && (
             <div className="mt-8 flex justify-center">
               <Link
                 href="/notes"

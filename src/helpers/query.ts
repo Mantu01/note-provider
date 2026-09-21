@@ -1,3 +1,4 @@
+import { prisma } from "./db";
 import type { NotesQuerySchema, OrdersQuerySchema } from "@/schemas/query.schema";
 import type { Pagination } from "@/lib/types";
 import { DEFAULT_PAGE_LIMIT, MAX_PAGE_LIMIT } from "@/lib/constants";
@@ -35,10 +36,10 @@ export function escapeRegex(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
 
-export function buildNoteFilter(
+export async function buildNoteFilter(
   query: Omit<NotesQuerySchema, "page" | "limit"> & Partial<Pick<NotesQuerySchema, "page" | "limit">>,
   options: { publicOnly: boolean; categoryIds?: string[] },
-): { where: Record<string, unknown>; categories?: { in: string[] } } {
+): Promise<{ where: Record<string, unknown>; categories?: { in: string[] } }> {
   const where: Record<string, unknown> = {};
 
   if (options.publicOnly) {
@@ -49,10 +50,31 @@ export function buildNoteFilter(
     where.categoryId = { in: options.categoryIds };
   }
 
+  if (query.q && query.q.trim().length > 0) {
+    const search = escapeRegex(query.q.trim());
+    where.OR = [
+      { title: { contains: search, mode: "insensitive" } },
+      { description: { contains: search, mode: "insensitive" } },
+      { tags: { has: search.toLowerCase() } },
+    ];
+  }
+
   if (query.level && query.level.length > 0) where.level = { in: query.level };
-  if (query.tags && query.tags.length > 0) where.tags = { arrayContains: query.tags.map((tag: string) => tag.toLowerCase()) };
+  if (query.tags && query.tags.length > 0) where.tags = { hasSome: query.tags.map((tag: string) => tag.toLowerCase()) };
   if (query.pricing) where.pricingType = query.pricing;
   if (query.featured !== undefined) where.isFeatured = query.featured;
+
+  if (query.category && query.category.length > 0) {
+    if (options.publicOnly) {
+      const categories = await prisma.category.findMany({
+        where: { slug: { in: query.category } },
+        select: { id: true },
+      });
+      where.categoryId = categories.length > 0 ? { in: categories.map((c) => c.id) } : { in: [] };
+    } else {
+      where.categoryId = { in: query.category };
+    }
+  }
 
   const priceFilter: Record<string, number> = {};
   if (query.minPrice !== null && query.minPrice !== undefined) priceFilter.gte = rupeesToPaise(query.minPrice);
@@ -73,6 +95,10 @@ export function buildNoteSort(sort: NotesQuerySchema["sort"]): Record<string, "a
   };
   return sorts[sort ?? "newest"] ?? sorts.newest;
 }
+
+export type NoteQueryWithCategory = Omit<NotesQuerySchema, "page" | "limit"> & {
+  category?: string[] | { slug: string }[];
+};
 
 export function buildOrderFilter(query: Omit<OrdersQuerySchema, "page" | "limit"> & Partial<Pick<OrdersQuerySchema, "page" | "limit">>): Record<string, unknown> {
   const where: Record<string, unknown> = {};
