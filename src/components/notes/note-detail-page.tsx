@@ -1,11 +1,11 @@
 "use client";
 
-import { ArrowLeft, Clock, Download, FileText, Lock, ShieldCheck } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
+import { ArrowLeft, Clock, Download, FileText, Lock, ShieldCheck } from "lucide-react";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { ErrorState } from "@/components/shared/error-state";
 import { GroupCard } from "@/components/shared/group-card";
 import { NoteCard } from "@/components/shared/note-card";
@@ -91,7 +91,7 @@ function MobilePurchaseBar({
 }) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/50 bg-background/95 shadow-lg backdrop-blur-md lg:hidden">
-      <div className="mx-auto flex max-w-7xl items-center gap-2 px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:px-4">
+      <div className="mx-auto flex max-w-7xl items-center gap-2 px-3 py-2 pb-[max(0.625rem,env(safe-area-inset-bottom))] sm:px-4">
         <div className="min-w-0 flex-1">
           <PriceTag price={price} priceLabel={priceLabel} compareAtPrice={compareAtPrice} />
           <p className="text-[9px] font-medium text-muted-foreground">
@@ -130,14 +130,14 @@ export function NoteDetailPage({ slug }: { slug: string }) {
   const { note, groups, relatedNotes } = query.data;
 
   return (
-    <div className="mx-auto max-w-7xl px-3 pt-2 pb-20 sm:px-4 sm:pt-3 md:pb-10 lg:px-6" data-testid="note-content">
-      <div className="mb-2 flex items-center gap-2 sm:mb-3">
+    <div className="mx-auto max-w-7xl px-3 pt-3 pb-24 sm:px-4 sm:pt-4 sm:pb-10 lg:px-6" data-testid="note-content">
+      <div className="mb-2.5 flex items-center gap-2 sm:mb-3.5">
         <Button
           render={<Link href="/notes" />}
           variant="outline"
           size="icon-sm"
           aria-label="Back to notes"
-          className="size-8 shrink-0 rounded-lg md:hidden"
+          className="size-8 shrink-0 rounded-lg max-sm:hidden"
         >
           <ArrowLeft aria-hidden="true" className="size-4" />
         </Button>
@@ -158,9 +158,9 @@ export function NoteDetailPage({ slug }: { slug: string }) {
         </nav>
       </div>
 
-      <div className="grid gap-2 sm:gap-3 lg:grid-cols-[minmax(0,1fr)_18rem]">
-        <article className="min-w-0 space-y-2 sm:space-y-3">
-          <div className="relative overflow-hidden rounded-lg border border-border/50 bg-muted/20 shadow-sm">
+      <div className="grid gap-3 sm:gap-4 lg:grid-cols-[minmax(0,1fr)_18rem]">
+        <article className="min-w-0 space-y-3 sm:space-y-4">
+          <div className="relative overflow-hidden rounded-xl border border-border/50 bg-muted/20 shadow-sm">
             {note.coverImageUrl ? (
               <Image
                 src={note.coverImageUrl}
@@ -170,14 +170,14 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                 className="h-auto w-full object-cover"
               />
             ) : (
-              <div className="flex h-28 w-full flex-col items-center justify-center gap-1.5 bg-linear-to-br from-primary/5 to-transparent text-primary/20 sm:h-44 md:h-56">
+              <div className="flex h-32 w-full flex-col items-center justify-center gap-1.5 bg-linear-to-br from-primary/5 to-transparent text-primary/20 sm:h-44 md:h-56">
                 <FileText aria-hidden="true" className="size-8 sm:size-10" />
                 <span className="text-[10px] font-semibold uppercase tracking-widest">Study note document</span>
               </div>
             )}
           </div>
 
-          <div className="space-y-1.5">
+          <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-1.5">
               <Badge variant="secondary" className="rounded-full text-[10px] font-semibold">
                 {note.category.name}
@@ -222,9 +222,9 @@ export function NoteDetailPage({ slug }: { slug: string }) {
           </div>
         </article>
 
-        <aside className="space-y-2 sm:space-y-3 lg:sticky lg:top-14 lg:self-start">
+        <aside className="space-y-2.5 sm:space-y-3 lg:sticky lg:top-14 lg:self-start">
           <Card className="rounded-xl border border-border bg-card shadow-sm">
-            <CardHeader className="pb-1 sm:pb-1.5">
+            <CardHeader className="pb-2 sm:pb-2.5">
               <CardTitle className="text-xs font-bold sm:text-sm">Get this note</CardTitle>
               <CardDescription className="text-[10px] sm:text-xs">
                 {note.pricingType === "free"
@@ -232,7 +232,7 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                   : "Pay once, own it forever."}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2 sm:space-y-2.5">
+            <CardContent className="space-y-2.5 sm:space-y-3">
               <PriceTag
                 price={note.price}
                 priceLabel={note.priceLabel}
@@ -287,11 +287,11 @@ export function NoteDetailPage({ slug }: { slug: string }) {
       </div>
 
       {groups.length > 0 && (
-        <section className="mt-4 border-t border-border/40 pt-3 sm:mt-6 sm:pt-4">
-          <h2 className="mb-1.5 font-heading text-xs font-bold tracking-tight sm:mb-2 sm:text-sm">
+        <section className="mt-5 border-t border-border/40 pt-4 sm:mt-6 sm:pt-5">
+          <h2 className="mb-2 font-heading text-xs font-bold tracking-tight sm:mb-2.5 sm:text-sm">
             Also available in bundles
           </h2>
-          <div className="grid gap-1.5 sm:gap-2 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-2 sm:gap-2.5 md:grid-cols-2 lg:grid-cols-3">
             {groups.map((group) => (
               <GroupCard key={group.id} group={group} />
             ))}
@@ -300,11 +300,11 @@ export function NoteDetailPage({ slug }: { slug: string }) {
       )}
 
       {relatedNotes.length > 0 && (
-        <section className="mt-4 border-t border-border/40 pt-3 sm:mt-6 sm:pt-4">
-          <h2 className="mb-1.5 font-heading text-xs font-bold tracking-tight sm:mb-2 sm:text-sm">
+        <section className="mt-5 border-t border-border/40 pt-4 sm:mt-6 sm:pt-5">
+          <h2 className="mb-2 font-heading text-xs font-bold tracking-tight sm:mb-2.5 sm:text-sm">
             Related notes
           </h2>
-          <div className="grid gap-1.5 sm:gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-2 sm:gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
             {relatedNotes.map((related) => (
               <NoteCard key={related.id} note={related} />
             ))}

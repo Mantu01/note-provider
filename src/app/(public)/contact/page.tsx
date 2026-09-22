@@ -58,23 +58,23 @@ export default function ContactPage() {
         title="Contact Support"
         description="Need help with a note, preview, or download? We are here to assist."
       >
-        <div className="not-prose grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="not-prose mt-4 grid gap-3 sm:mt-5 sm:grid-cols-2 lg:grid-cols-3">
           {CONTACT_CHANNELS.map((channel: ContactChannel) => {
             const Icon = ICON_MAP[channel.icon];
             const external = channel.href.startsWith("http");
             return (
-              <Card key={channel.title} className="rounded-2xl border border-border/80 bg-card">
-                <CardContent className="flex flex-col gap-4 p-5">
-                  <span className="inline-flex size-11 items-center justify-center rounded-xl bg-accent/10 text-accent">
-                    <Icon aria-hidden="true" className="size-5" />
+              <Card key={channel.title} className="rounded-xl border border-border/80 bg-card">
+                <CardContent className="flex flex-col gap-3 p-4 sm:gap-4 sm:p-5">
+                  <span className="inline-flex size-10 items-center justify-center rounded-lg bg-accent/10 text-accent sm:size-11">
+                    <Icon aria-hidden="true" className="size-4 sm:size-5" />
                   </span>
                   <div>
-                    <h3 className="text-base font-semibold text-foreground">{channel.title}</h3>
-                    <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{channel.description}</p>
+                    <h3 className="text-sm font-semibold text-foreground sm:text-base">{channel.title}</h3>
+                    <p className="mt-1 text-xs leading-relaxed text-muted-foreground sm:text-sm">{channel.description}</p>
                   </div>
                   <Button
                     variant="outline"
-                    className="mt-auto w-full justify-center gap-2"
+                    className="mt-auto h-9 w-full justify-center gap-1.5 text-xs sm:h-10"
                     render={
                       <Link
                         href={channel.href}
@@ -84,7 +84,7 @@ export default function ContactPage() {
                     }
                   >
                     {channel.label}
-                    <ArrowUpRight aria-hidden="true" />
+                    <ArrowUpRight aria-hidden="true" className="size-3" />
                   </Button>
                 </CardContent>
               </Card>
@@ -92,30 +92,30 @@ export default function ContactPage() {
           })}
         </div>
 
-        <div className="mt-8 grid gap-4 sm:grid-cols-2">
-          <div className="flex items-start gap-4 rounded-2xl border border-border/60 bg-muted/20 p-5">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent">
-              <ShieldCheck aria-hidden="true" className="size-5" />
+        <div className="not-prose mt-4 grid gap-3 sm:mt-5 sm:grid-cols-2">
+          <div className="flex items-start gap-3.5 rounded-xl border border-border/60 bg-muted/20 p-4 sm:p-5">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent sm:size-10">
+              <ShieldCheck aria-hidden="true" className="size-4 sm:size-5" />
             </div>
             <div>
-              <h3 className="m-0 text-base font-semibold text-foreground">Instant note access</h3>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+              <h3 className="m-0 text-sm font-semibold text-foreground sm:text-base">Instant note access</h3>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground sm:text-sm">
                 Paid orders activate immediately after payment. Download your PDF directly from the order confirmation page.
               </p>
             </div>
           </div>
 
-          <div className="flex items-start gap-4 rounded-2xl border border-border/60 bg-muted/20 p-5">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent">
-              <HelpCircle aria-hidden="true" className="size-5" />
+          <div className="flex items-start gap-3.5 rounded-xl border border-border/60 bg-muted/20 p-4 sm:p-5">
+            <div className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-accent/10 text-accent sm:size-10">
+              <HelpCircle aria-hidden="true" className="size-4 sm:size-5" />
             </div>
             <div>
-              <h3 className="m-0 text-base font-semibold text-foreground">Preview before you buy</h3>
-              <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+              <h3 className="m-0 text-sm font-semibold text-foreground sm:text-base">Preview before you buy</h3>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground sm:text-sm">
                 Browse every note preview to check formatting and quality. Browse our FAQ for common questions first.
               </p>
-              <div className="mt-3">
-                <Button render={<Link href="/" />} variant="link" className="h-auto p-0 text-sm font-medium">
+              <div className="mt-2.5">
+                <Button render={<Link href="/" />} variant="link" className="h-auto p-0 text-xs font-medium sm:text-sm">
                   Visit home page
                 </Button>
               </div>

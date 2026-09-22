@@ -18,15 +18,15 @@ export function GroupsPage() {
   const pagination = query.data?.pagination;
 
   return (
-    <div className="mx-auto max-w-7xl px-3 py-3 sm:px-4 sm:py-4" data-testid="groups-page">
-      <div className="mb-3 sm:mb-4">
+    <div className="mx-auto max-w-7xl px-3 py-3.5 sm:px-4 sm:py-4.5" data-testid="groups-page">
+      <div className="mb-3.5 sm:mb-4.5">
         <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-accent">
           Curated collections
         </p>
-        <h1 className="font-heading text-base font-bold tracking-tight text-foreground sm:text-lg md:text-xl">
+        <h1 className="font-heading text-lg font-bold tracking-tight text-foreground sm:text-xl md:text-2xl">
           Bundles
         </h1>
-        <p className="mt-0.5 text-[10px] text-muted-foreground sm:text-xs">
+        <p className="mt-1 text-[11px] text-muted-foreground sm:text-xs">
           {pagination
             ? `${pagination.total} bundle${pagination.total !== 1 ? "s" : ""} available`
             : "Loading…"}
@@ -39,7 +39,7 @@ export function GroupsPage() {
         <GroupsCatalogueSkeleton />
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-2 sm:gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-2 sm:gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
             {query.data?.items.length ? (
               query.data.items.map((group) => <GroupCard key={group.id} group={group} />)
             ) : (
@@ -59,7 +59,7 @@ export function GroupsPage() {
           </div>
 
           {pagination && pagination.totalPages > 1 && (
-            <div className="mt-3 sm:mt-4">
+            <div className="mt-4 sm:mt-5">
               <PaginationBar
                 page={pagination.page}
                 totalPages={pagination.totalPages}

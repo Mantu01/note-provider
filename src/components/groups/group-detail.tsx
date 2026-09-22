@@ -15,7 +15,6 @@ import { PriceTag } from "@/components/shared/price-tag";
 import { useGroup } from "@/hooks/useGroups";
 import { formatPrice } from "@/lib/format";
 
-
 function MobilePurchaseBar({
   slug,
   price,
@@ -29,7 +28,7 @@ function MobilePurchaseBar({
 }) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/50 bg-background/95 shadow-lg backdrop-blur-md lg:hidden">
-      <div className="mx-auto flex max-w-7xl items-center gap-2 px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:px-4">
+      <div className="mx-auto flex max-w-7xl items-center gap-2 px-3 py-2 pb-[max(0.625rem,env(safe-area-inset-bottom))] sm:px-4">
         <div className="min-w-0 flex-1">
           <PriceTag price={price} priceLabel={priceLabel} compareAtPrice={compareAtPrice} />
           <p className="text-[9px] font-medium text-muted-foreground">Complete pack · instant download</p>
@@ -67,14 +66,14 @@ export function GroupDetailPage({ slug }: { slug: string }) {
   const savingsPercent = individualValue > 0 ? Math.round((savings / individualValue) * 100) : 0;
 
   return (
-    <div className="mx-auto max-w-7xl px-3 pt-2 pb-20 sm:px-4 sm:pt-3 md:pb-10 lg:px-6" data-testid="group-content">
-      <div className="mb-2 flex items-center gap-2 sm:mb-3">
+    <div className="mx-auto max-w-7xl px-3 pt-3 pb-24 sm:px-4 sm:pt-4 sm:pb-10 lg:px-6" data-testid="group-content">
+      <div className="mb-2.5 flex items-center gap-2 sm:mb-3.5">
         <Button
           render={<Link href="/groups" />}
           variant="outline"
           size="icon-sm"
           aria-label="Back to bundles"
-          className="size-8 shrink-0 rounded-lg md:hidden"
+          className="size-8 shrink-0 rounded-lg max-sm:hidden"
         >
           <ArrowLeft aria-hidden="true" className="size-4" />
         </Button>
@@ -95,9 +94,9 @@ export function GroupDetailPage({ slug }: { slug: string }) {
         </nav>
       </div>
 
-      <div className="grid gap-2 sm:gap-3 lg:grid-cols-[minmax(0,1fr)_16rem]">
-        <article className="min-w-0 space-y-2 sm:space-y-3">
-          <div className="relative overflow-hidden rounded-lg border border-border/50 bg-muted/20 shadow-sm">
+      <div className="grid gap-3 sm:gap-4 lg:grid-cols-[minmax(0,1fr)_16rem]">
+        <article className="min-w-0 space-y-3 sm:space-y-4">
+          <div className="relative overflow-hidden rounded-xl border border-border/50 bg-muted/20 shadow-sm">
             {group.coverImageUrl ? (
               <Image
                 src={group.coverImageUrl}
@@ -107,14 +106,14 @@ export function GroupDetailPage({ slug }: { slug: string }) {
                 className="h-auto w-full object-cover"
               />
             ) : (
-              <div className="flex h-28 w-full flex-col items-center justify-center gap-1.5 bg-linear-to-br from-primary/5 to-transparent text-primary/20 sm:h-40 md:h-48">
+              <div className="flex h-32 w-full flex-col items-center justify-center gap-1.5 bg-linear-to-br from-primary/5 to-transparent text-primary/20 sm:h-40 md:h-48">
                 <FileText aria-hidden="true" className="size-8 sm:size-10" />
                 <span className="text-[10px] font-semibold uppercase tracking-widest">Bundle cover</span>
               </div>
             )}
           </div>
 
-          <div className="space-y-1 sm:space-y-1.5">
+          <div className="space-y-1.5">
             <p className="text-[9px] font-bold tracking-[0.15em] text-accent uppercase sm:text-[10px]">
               {group.category.name} bundle
             </p>
@@ -129,8 +128,8 @@ export function GroupDetailPage({ slug }: { slug: string }) {
             ) : null}
           </div>
 
-          <div className="border-t border-border/40 pt-2.5 sm:pt-3">
-            <div className="mb-1.5 flex flex-wrap items-center justify-between gap-2 sm:mb-2">
+          <div className="border-t border-border/40 pt-3 sm:pt-4">
+            <div className="mb-2 flex flex-wrap items-center justify-between gap-2 sm:mb-2.5">
               <h2 className="font-heading text-xs font-bold tracking-tight sm:text-sm">
                 {group.noteCount} notes included
               </h2>
@@ -139,7 +138,7 @@ export function GroupDetailPage({ slug }: { slug: string }) {
                 Complete pack
               </Badge>
             </div>
-            <div className="grid gap-1.5 sm:gap-2">
+            <div className="grid gap-2 sm:gap-2.5">
               {group.notes.map((note) => (
                 <NoteCard key={note.id} note={note} variant="compact" />
               ))}
@@ -147,15 +146,15 @@ export function GroupDetailPage({ slug }: { slug: string }) {
           </div>
         </article>
 
-        <aside className="space-y-2 sm:space-y-3 lg:sticky lg:top-14 lg:self-start">
+        <aside className="space-y-2.5 sm:space-y-3 lg:sticky lg:top-14 lg:self-start">
           <Card className="rounded-xl border border-border bg-card shadow-sm">
-            <CardHeader className="pb-1 sm:pb-1.5">
+            <CardHeader className="pb-2 sm:pb-2.5">
               <CardTitle className="text-xs font-bold sm:text-sm">Get this bundle</CardTitle>
               <CardDescription className="text-[10px] sm:text-xs">
                 {group.noteCount} notes · {group.category.name}
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-2 sm:space-y-2.5">
+            <CardContent className="space-y-2.5 sm:space-y-3">
               <PriceTag
                 price={group.price}
                 priceLabel={group.priceLabel}
@@ -177,7 +176,7 @@ export function GroupDetailPage({ slug }: { slug: string }) {
               )}
 
               <Button
-                render={<Link href={`/checkout/${group.slug}?itemType=group}`} />}
+                render={<Link href={`/checkout/${group.slug}?itemType=group`} />}
                 className="h-11 w-full rounded-lg text-sm font-semibold bg-accent text-accent-foreground shadow-sm transition-colors hover:bg-accent/90"
                 size="lg"
               >
@@ -202,11 +201,11 @@ export function GroupDetailPage({ slug }: { slug: string }) {
       </div>
 
       {relatedGroups.length > 0 && (
-        <section className="mt-4 border-t border-border/40 pt-3 sm:mt-6 sm:pt-4">
-          <h2 className="mb-1.5 font-heading text-xs font-bold tracking-tight sm:mb-2 sm:text-sm">
+        <section className="mt-5 border-t border-border/40 pt-4 sm:mt-6 sm:pt-5">
+          <h2 className="mb-2 font-heading text-xs font-bold tracking-tight sm:mb-2.5 sm:text-sm">
             More bundles you might like
           </h2>
-          <div className="grid gap-1.5 sm:gap-2 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-2 sm:gap-2.5 md:grid-cols-2 lg:grid-cols-3">
             {relatedGroups.map((related) => (
               <GroupCard key={related.id} group={related} />
             ))}

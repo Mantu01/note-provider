@@ -44,7 +44,7 @@ export function NotesCatalogue() {
 
   return (
     <div className="mx-auto max-w-7xl px-3 py-3 sm:px-4 sm:py-4" data-testid="notes-catalogue">
-      <div className="mb-2 flex items-end justify-between gap-2 sm:mb-3">
+      <div className="mb-2.5 flex items-end justify-between gap-2 sm:mb-3.5">
         <div className="min-w-0 space-y-0.5">
           <h1 className="font-heading text-base font-bold tracking-tight text-foreground sm:text-lg md:text-xl">
             All Notes
@@ -78,7 +78,7 @@ export function NotesCatalogue() {
         </div>
       </div>
 
-      <div className="sticky top-14 z-30 -mx-3 mb-2 border-b border-border/50 bg-background/90 px-3 py-2 backdrop-blur-md sm:-mx-4 sm:px-4 sm:mb-3 sm:py-2 lg:hidden">
+      <div className="sticky top-14 z-30 -mx-3 mb-2.5 border-b border-border/50 bg-background/90 px-3 py-1.5 backdrop-blur-md sm:-mx-4 sm:px-4 sm:mb-3.5 sm:py-2 lg:hidden">
         <div className="flex items-center gap-2">
           <NoteSearchField className="h-9 flex-1" />
 
@@ -104,18 +104,18 @@ export function NotesCatalogue() {
             />
 
             <SheetContent side="bottom" className="h-[85dvh] gap-0 rounded-t-2xl p-0">
-              <SheetHeader className="border-b px-3 py-2 sm:px-4 sm:py-2.5">
+              <SheetHeader className="border-b px-3 py-2.5 sm:px-4 sm:py-3">
                 <SheetTitle className="text-sm font-semibold">Filters</SheetTitle>
               </SheetHeader>
 
-              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-2 sm:px-4 sm:py-3">
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-2.5 sm:px-4 sm:py-3">
                 <FilterPanel showSearch={false} />
               </div>
 
-              <div className="border-t bg-popover px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 sm:px-4 sm:pb-[max(0.625rem,env(safe-area-inset-bottom))] sm:pt-2.5">
+              <div className="border-t bg-popover px-3 pb-[max(0.625rem,env(safe-area-inset-bottom))] pt-2.5 sm:px-4 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pt-3">
                 <SheetClose
                   render={
-                    <Button size="lg" className="h-10 w-full rounded-lg text-sm font-semibold">
+                    <Button size="lg" className="h-11 w-full rounded-lg text-sm font-semibold">
                       Show {resultsLabel}
                     </Button>
                   }
@@ -129,7 +129,7 @@ export function NotesCatalogue() {
       </div>
 
       {isFiltered && (
-        <div className="mb-2 flex flex-wrap items-center gap-1.5 sm:mb-3">
+        <div className="mb-3 flex flex-wrap items-center gap-1.5 sm:mb-4">
           <ActiveFilterChips state={state} setFilter={setFilter} />
           <Button
             type="button"
@@ -144,7 +144,7 @@ export function NotesCatalogue() {
         </div>
       )}
 
-      <div className="grid gap-2 lg:grid-cols-[15rem_minmax(0,1fr)] sm:gap-3">
+      <div className="grid gap-3 lg:grid-cols-[15rem_minmax(0,1fr)]">
         <div className="hidden lg:block">
           <div className="sticky top-20 rounded-xl border border-border bg-card p-3 sm:p-4">
             <FilterPanel />
@@ -154,7 +154,7 @@ export function NotesCatalogue() {
         <div className="min-w-0">
           <div
             className={cn(
-              "grid gap-2 sm:gap-3",
+              "grid gap-2.5 sm:gap-3",
               state.view === "grid" ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3" : "grid-cols-1",
             )}
           >
@@ -191,7 +191,7 @@ export function NotesCatalogue() {
           </div>
 
           {notes.data && notes.data.pagination.totalPages > 1 && (
-            <div className="mt-3 sm:mt-4">
+            <div className="mt-4 sm:mt-5">
               <PaginationBar
                 page={notes.data.pagination.page}
                 totalPages={notes.data.pagination.totalPages}

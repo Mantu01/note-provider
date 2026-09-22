@@ -32,9 +32,9 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
 
   if (order.paymentStatus === "created") {
     return (
-      <div className="mx-auto max-w-xl px-4 py-20 text-center">
+      <div className="mx-auto max-w-xl px-4 py-16 text-center">
         <div className="mx-auto size-12 rounded-full border-2 border-accent border-t-transparent animate-spin" />
-        <h1 className="mt-5 text-xl font-bold tracking-tight">Confirming your payment…</h1>
+        <h1 className="mt-5 text-lg font-bold tracking-tight sm:text-xl">Confirming your payment…</h1>
         <p className="mt-2 text-sm text-muted-foreground">This usually takes a few seconds. Do not close this page.</p>
       </div>
     );
@@ -42,11 +42,11 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
 
   if (order.paymentStatus === "failed") {
     return (
-      <div className="mx-auto max-w-xl px-4 py-20 text-center">
+      <div className="mx-auto max-w-xl px-4 py-16 text-center">
         <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-destructive/10 border border-destructive/20">
           <CircleAlert aria-hidden="true" className="size-8 text-destructive" />
         </div>
-        <h1 className="mt-5 text-xl font-bold tracking-tight">Payment failed</h1>
+        <h1 className="mt-5 text-lg font-bold tracking-tight sm:text-xl">Payment failed</h1>
         <p className="mt-2 text-sm text-muted-foreground">No money was deducted, or your bank will process any reversal.</p>
         <Button render={<Link href={`/checkout/${order.itemSlug}${order.itemType === "group" ? "?itemType=group" : ""}`} />} className="mt-5 rounded-full">
           Try again
@@ -63,8 +63,8 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
   const canDownload = isFresh || !order.isDownloaded;
 
   return (
-    <div className="mx-auto max-w-3xl px-3 py-8 sm:px-6 sm:py-10">
-      <div className="text-center space-y-2.5">
+    <div className="mx-auto max-w-3xl px-3 py-6 sm:px-6 sm:py-8">
+      <div className="text-center space-y-2">
         <div className="mx-auto flex size-14 items-center justify-center rounded-xl bg-success/10 border border-success/20">
           <CheckCircle2 aria-hidden="true" className="size-7 text-success" />
         </div>
@@ -83,7 +83,7 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
       </div>
 
       {isFresh ? (
-        <Card className="mt-4 rounded-xl border-success/30 bg-success/5 shadow-sm sm:mt-6">
+        <Card className="mt-4 rounded-xl border-success/30 bg-success/5 shadow-sm sm:mt-5">
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-start gap-2.5">
               <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-success/10 border border-success/20 text-success">
@@ -100,7 +100,7 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
           </CardContent>
         </Card>
       ) : order.isDownloaded ? (
-        <Card className="mt-4 rounded-xl border-destructive/30 bg-destructive/5 shadow-sm sm:mt-6">
+        <Card className="mt-4 rounded-xl border-destructive/30 bg-destructive/5 shadow-sm sm:mt-5">
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-start gap-2.5">
               <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-destructive/10 border border-destructive/20 text-destructive">
@@ -116,7 +116,7 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
           </CardContent>
         </Card>
       ) : (
-        <Card className="mt-4 rounded-xl border-warning/40 bg-warning/5 shadow-sm sm:mt-6">
+        <Card className="mt-4 rounded-xl border-warning/40 bg-warning/5 shadow-sm sm:mt-5">
           <CardContent className="p-3 sm:p-4">
             <div className="flex items-start gap-2.5">
               <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-warning/15 border border-warning/30 text-warning-foreground">
@@ -133,7 +133,7 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
         </Card>
       )}
 
-      <div className="mt-4 sm:mt-6">
+      <div className="mt-4 sm:mt-5">
         <Card className="rounded-xl border border-border shadow-sm">
           <CardHeader className="border-b border-border/60 pb-2.5">
             <div className="flex flex-wrap items-center justify-between gap-2">
@@ -189,7 +189,7 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
                     }
                     disabled={!canDownload || isDownloading}
                     size="sm"
-                    className="h-10 w-full rounded-full px-3 text-xs sm:h-8 sm:w-auto"
+                    className="h-10 w-full rounded-lg px-3 text-xs sm:h-8 sm:w-auto"
                     variant={canDownload ? "default" : "outline"}
                   >
                     {isDownloading ? (
@@ -210,7 +210,7 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
         </Card>
       </div>
 
-      <div className="mt-4 sm:mt-6">
+      <div className="mt-4 sm:mt-5">
         <Card className="rounded-xl border border-border">
           <CardHeader className="pb-2.5">
             <CardTitle className="text-sm font-bold">Order Details</CardTitle>
@@ -249,7 +249,7 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
         </Card>
       </div>
 
-      <div className="mt-4 flex flex-wrap justify-center gap-2 sm:mt-6">
+      <div className="mt-4 flex flex-wrap justify-center gap-2 sm:mt-5">
         <Button render={<Link href="/order/track" />} variant="outline" size="sm" className="rounded-full text-xs">
           Track another
         </Button>
