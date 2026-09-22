@@ -63,7 +63,7 @@ function OrderSummaryCard({
   return (
     <aside className="order-first lg:order-last">
       <div className="rounded-xl border border-border bg-card shadow-lg lg:sticky lg:top-20">
-        <div className="relative aspect-[16/9] overflow-hidden rounded-t-xl bg-muted/20">
+        <div className="relative hidden aspect-[16/9] overflow-hidden rounded-t-xl bg-muted/20 sm:block">
           {coverImageUrl ? (
             <Image
               src={coverImageUrl}
@@ -74,18 +74,27 @@ function OrderSummaryCard({
               className="object-cover"
             />
           ) : (
-            <div className="flex h-full flex-col items-center justify-center gap-2 text-primary/30 bg-gradient-to-br from-primary/5 to-transparent">
-              <FileText className="size-10" />
+            <div className="flex h-full flex-col items-center justify-center gap-2 bg-gradient-to-br from-primary/5 to-transparent text-primary/30">
+              <FileText aria-hidden="true" className="size-10" />
               <span className="text-xs font-medium uppercase tracking-widest">PDF document</span>
             </div>
           )}
         </div>
 
-        <div className="p-4 space-y-3">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">Order summary</p>
-            <h2 className="mt-1 text-sm font-bold leading-snug line-clamp-1">{title}</h2>
-            <p className="mt-0.5 text-xs text-muted-foreground">{categoryName}</p>
+        <div className="space-y-3 p-4">
+          <div className="flex items-center gap-3">
+            {coverImageUrl && (
+              <div className="relative size-12 shrink-0 overflow-hidden rounded-lg border border-border/70 bg-muted/20 sm:hidden">
+                <Image src={coverImageUrl} alt="" fill sizes="48px" className="object-cover" />
+              </div>
+            )}
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground">
+                Order summary
+              </p>
+              <h2 className="mt-1 line-clamp-1 text-sm font-bold leading-snug">{title}</h2>
+              <p className="mt-0.5 truncate text-xs text-muted-foreground">{categoryName}</p>
+            </div>
           </div>
 
           <div className="rounded-xl border border-border/60 bg-muted/20 p-3">
@@ -197,7 +206,7 @@ export function CheckoutPage({
     <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6">
       <Link
         href={itemType === "group" ? `/groups/${slug}` : `/notes/${slug}`}
-        className="inline-flex items-center gap-1.5 text-xs text-muted-foreground mb-6"
+        className="mb-5 inline-flex min-h-9 items-center gap-1.5 text-xs text-muted-foreground transition-colors hover:text-foreground"
       >
         <ArrowLeft aria-hidden="true" className="size-3.5" />
         Back to {itemType === "group" ? "bundle" : "note"}
@@ -227,7 +236,7 @@ export function CheckoutPage({
                 placeholder="Enter your full name"
                 aria-invalid={Boolean(form.formState.errors.fullName)}
                 {...form.register("fullName")}
-                className="h-10 rounded-xl"
+                className="h-11 rounded-xl sm:h-10"
               />
               {form.formState.errors.fullName?.message && (
                 <p className="text-xs text-destructive">{form.formState.errors.fullName.message}</p>
@@ -270,7 +279,7 @@ export function CheckoutPage({
             <Button
               type="submit"
               size="lg"
-              className="w-full rounded-xl bg-accent font-semibold text-accent-foreground shadow-lg"
+              className="h-12 w-full rounded-xl bg-accent font-semibold text-accent-foreground shadow-lg"
               disabled={submitting || !form.formState.isValid}
             >
               {submitting ? (

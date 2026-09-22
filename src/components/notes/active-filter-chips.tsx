@@ -63,7 +63,7 @@ export function ActiveFilterChips({
           type="button"
           variant="secondary"
           size="sm"
-          className="h-8 rounded-full px-3 text-xs"
+          className="h-9 rounded-full px-3 text-xs sm:h-8"
           onClick={chip.clear}
         >
           {chip.label}

@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FileText, BookOpen, TrendingUp } from "lucide-react";
+import { FileText } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { PriceTag } from "./price-tag";
 import { LevelBadge, PricingBadge } from "./badges";
@@ -17,73 +17,68 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
   return (
     <article
       className={cn(
-        "group relative overflow-hidden rounded-xl border border-border bg-card transition-shadow hover:shadow-md",
-        compact ? "flex flex-row items-stretch" : "flex flex-col",
+        "group relative flex overflow-hidden rounded-xl border border-border bg-card transition-shadow hover:shadow-md",
+        compact ? "flex-row" : "flex-col max-sm:flex-row",
       )}
     >
       <Link
         href={`/notes/${note.slug}`}
+        tabIndex={-1}
+        aria-hidden="true"
         className={cn(
-          "relative block shrink-0 overflow-hidden",
-          compact ? "w-28" : "aspect-[16/9]",
+          "relative shrink-0 overflow-hidden bg-muted/20",
+          compact ? "w-32 sm:w-36" : "aspect-[16/9] w-full max-sm:aspect-auto max-sm:w-32",
         )}
-        aria-label={`View ${note.title}`}
       >
         {note.coverImageUrl ? (
           <Image
             src={note.coverImageUrl}
             alt=""
             fill
-            sizes={compact ? "112px" : "(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"}
-            className="object-cover transition-transform duration-200 group-hover:scale-[1.03]"
+            sizes="(max-width: 640px) 128px, (max-width: 1024px) 50vw, 25vw"
+            className="object-cover transition-transform duration-200 group-hover:scale-[1.04]"
           />
         ) : (
-          <div className="flex size-full flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-primary/5 to-transparent text-primary/30">
+          <div className="flex size-full flex-col items-center justify-center gap-1 bg-gradient-to-br from-primary/5 to-transparent text-primary/30">
             <FileText aria-hidden="true" className="size-7" />
-            <span className="text-[10px] font-semibold uppercase tracking-widest">PDF</span>
+            <span className="text-[9px] font-semibold tracking-widest uppercase">PDF</span>
           </div>
         )}
       </Link>
 
-      <div className={cn("flex min-w-0 flex-1 flex-col gap-2 p-3", compact && "pr-3.5")}>
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="inline-flex h-5 items-center rounded-full bg-muted px-2 text-[11px] font-medium text-muted-foreground">
-            {note.category.name}
+      <div className="flex min-w-0 flex-1 flex-col gap-1 p-3">
+        <div className="flex min-w-0 items-center gap-1.5">
+          <span className="inline-flex min-w-0 items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+            <span className="truncate">{note.category.name}</span>
           </span>
-          <LevelBadge level={note.level} />
+          <LevelBadge level={note.level} className="shrink-0" />
         </div>
 
         <Link
           href={`/notes/${note.slug}`}
           className={cn(
-            "font-heading font-semibold leading-snug text-foreground transition-colors group-hover:text-primary/80",
-            compact ? "text-[13px] line-clamp-2" : "text-sm line-clamp-2",
+            "font-heading font-semibold text-foreground transition-colors line-clamp-2 group-hover:text-primary",
+            compact ? "text-xs sm:text-sm" : "text-sm",
           )}
         >
           {note.title}
         </Link>
 
-        <p className="flex items-center gap-1.5 text-[11px] font-semibold text-muted-foreground">
-          <BookOpen aria-hidden="true" className="size-3 shrink-0" />
-          <span className="truncate tabular-nums">
-            {note.pageCount ? `${note.pageCount} pages` : "PDF notes"}
-          </span>
-        </p>
-
         {!compact && (
-          <p className="line-clamp-2 flex-1 text-xs leading-relaxed text-muted-foreground">
+          <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground max-sm:hidden">
             {note.description}
           </p>
         )}
 
-        <div
-          className={cn(
-            "mt-auto flex items-center justify-between gap-2 pt-1",
-            compact && "pt-0.5",
+        <div className="mt-auto flex items-center justify-between gap-2 pt-1">
+          <PriceTag
+            price={note.price}
+            priceLabel={note.priceLabel}
+            compareAtPrice={note.compareAtPrice}
+          />
+          {!compact && (
+            <PricingBadge pricingType={note.pricingType} className="shrink-0 max-sm:hidden" />
           )}
-        >
-          <PriceTag price={note.price} priceLabel={note.priceLabel} compareAtPrice={note.compareAtPrice} />
-          {!compact && <PricingBadge pricingType={note.pricingType} />}
         </div>
       </div>
     </article>

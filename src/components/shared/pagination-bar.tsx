@@ -25,19 +25,20 @@ export function PaginationBar({
   return (
     <nav
       aria-label="Pagination"
-      className="flex items-center justify-center gap-3"
+      className="flex items-center justify-between gap-2 sm:justify-center sm:gap-3"
       data-testid="pagination"
     >
       <Button
         type="button"
         variant="outline"
         size="sm"
-        className="h-9 rounded-xl"
+        className="h-10 rounded-xl px-3 sm:h-9"
         disabled={!hasPrev}
         onClick={() => change(page - 1)}
       >
-        <ChevronLeft aria-hidden="true" className="size-3.5" />
-        Previous
+        <ChevronLeft aria-hidden="true" className="size-4 sm:size-3.5" />
+        <span className="hidden sm:inline">Previous</span>
+        <span className="sr-only sm:hidden">Previous page</span>
       </Button>
 
       <p className="text-xs font-medium tabular-nums text-muted-foreground" aria-live="polite">
@@ -48,12 +49,13 @@ export function PaginationBar({
         type="button"
         variant="outline"
         size="sm"
-        className="h-9 rounded-xl"
+        className="h-10 rounded-xl px-3 sm:h-9"
         disabled={!hasNext}
         onClick={() => change(page + 1)}
       >
-        Next
-        <ChevronRight aria-hidden="true" className="size-3.5" />
+        <span className="hidden sm:inline">Next</span>
+        <span className="sr-only sm:hidden">Next page</span>
+        <ChevronRight aria-hidden="true" className="size-4 sm:size-3.5" />
       </Button>
     </nav>
   );

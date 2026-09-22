@@ -89,7 +89,7 @@ function HeroSection({
   isLoading: boolean;
 }) {
   return (
-    <section className="relative overflow-hidden pt-16 pb-14 md:pt-28 md:pb-24 lg:pt-36 lg:pb-32 paper-bg">
+    <section className="relative overflow-hidden pt-14 pb-12 md:pt-28 md:pb-24 lg:pt-36 lg:pb-32 paper-bg">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,var(--primary),transparent_55%)] opacity-[0.07]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,var(--accent),transparent_55%)] opacity-[0.06]" />
       <div className="pointer-events-none absolute inset-0 page-dot-pattern opacity-30" />
@@ -157,7 +157,7 @@ function HeroSection({
 
 function HomeSection({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
-    <section className={`py-14 md:py-24 ${className ?? ""}`}>
+    <section className={`py-10 sm:py-14 md:py-24 ${className ?? ""}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>
     </section>
   );
@@ -175,7 +175,7 @@ function SectionHead({
   center?: boolean;
 }) {
   return (
-    <div className={center ? "mb-10 text-center" : "mb-10 flex flex-col gap-2 md:flex-row md:items-end md:justify-between"}>
+    <div className={center ? "mb-8 text-center sm:mb-10" : "mb-8 flex items-end justify-between gap-3 sm:mb-10"}>
       <div className={center ? "mx-auto max-w-md space-y-1.5" : "max-w-md space-y-1.5"}>
         <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">{eyebrow}</p>
         <h2 className="font-heading text-2xl font-bold tracking-tight md:text-3xl">{title}</h2>
@@ -259,7 +259,7 @@ function GroupGrid({
   isLoading: boolean;
 }) {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {isLoading
         ? Array.from({ length: 3 }, (_, i) => <ShimmerGroupCard key={i} />)
         : groups.length
@@ -304,7 +304,7 @@ function StepsRow() {
 
 function TrustBar() {
   return (
-    <div className="flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+    <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-4 sm:gap-x-10">
       {HOME_TRUST_ITEMS.map(({ icon: Icon, label }) => (
         <div key={label} className="flex items-center gap-2.5">
           <Icon aria-hidden="true" className="size-4 shrink-0 text-primary" />
@@ -317,9 +317,9 @@ function TrustBar() {
 
 function CTABanner() {
   return (
-    <section className="py-16 md:py-28">
+    <section className="py-14 md:py-28">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-3xl border border-border/50 bg-linear-to-br from-primary/8 via-card to-accent/6 px-6 py-16 text-center shadow-sm md:px-16 md:py-24">
+        <div className="relative overflow-hidden rounded-3xl border border-border/50 bg-linear-to-br from-primary/8 via-card to-accent/6 px-5 py-14 text-center shadow-sm md:px-16 md:py-24">
           <div className="pointer-events-none absolute -top-40 -right-40 size-96 rounded-full bg-primary/8 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-40 -left-40 size-96 rounded-full bg-accent/8 blur-3xl" />
 
@@ -331,7 +331,7 @@ function CTABanner() {
             <p className="text-sm leading-relaxed text-muted-foreground">
               Join thousands of developers who accelerated their growth with curated notes.
             </p>
-            <div className="flex justify-center gap-3 pt-2">
+            <div className="flex flex-wrap justify-center gap-3 pt-2">
               <Button
                 render={<Link href="/notes" />}
                 size="lg"
@@ -361,10 +361,10 @@ function FAQAccordion() {
     <Accordion defaultValue={["faq-0"]} className="rounded-2xl border border-border bg-card">
       {HOME_FAQS.map(([q, a], i) => (
         <AccordionItem key={q} value={`faq-${i}`} className="border-b-0">
-          <AccordionTrigger className="text-sm font-semibold py-4 px-6">
+          <AccordionTrigger className="px-5 py-4 text-sm font-semibold sm:px-6">
             {q}
           </AccordionTrigger>
-          <AccordionContent className="text-sm text-muted-foreground leading-relaxed px-6 pb-4">
+          <AccordionContent className="px-5 pb-4 text-sm leading-relaxed text-muted-foreground sm:px-6">
             {a}
           </AccordionContent>
         </AccordionItem>

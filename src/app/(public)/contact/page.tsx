@@ -19,12 +19,12 @@ const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
 export const metadata: Metadata = {
   title: "Contact Support — Get Help with Developer Notes | Notes Provider",
   description:
-    "Need help with a note purchase, delivery, or preview? Contact the Notes Provider support team via GitHub, X, or email. Fast responses for all your developer note queries.",
+    "Need help with a note purchase, download, or preview? Contact the Notes Provider support team via GitHub, X, or email. Fast responses for all your developer note queries.",
   alternates: { canonical: `${APP_URL}/contact` },
   openGraph: {
     title: "Contact Support — Notes Provider",
     description:
-      "Get in touch with the Notes Provider support team for purchase or delivery help on developer notes and coding resources.",
+      "Get in touch with the Notes Provider support team for purchase or download help on developer notes and coding resources.",
     url: `${APP_URL}/contact`,
     siteName: SEO.siteName,
     images: [{ url: `${APP_URL}/og/home`, width: SEO.ogImageWidth, height: SEO.ogImageHeight, alt: "Contact Notes Provider" }],
@@ -48,7 +48,7 @@ export default function ContactPage() {
         scripts={[
           webpageJsonLd({
             title: "Contact Support — Notes Provider",
-            description: "Get in touch with the Notes Provider support team for purchase or delivery help on developer notes and coding resources.",
+            description: "Get in touch with the Notes Provider support team for purchase or download help on developer notes and coding resources.",
             url: `${APP_URL}/contact`,
             image: `${APP_URL}/og/home`,
           }),
@@ -56,9 +56,9 @@ export default function ContactPage() {
       />
       <StaticPage
         title="Contact Support"
-        description="Need help with a note, preview, or delivery? We are here to assist."
+        description="Need help with a note, preview, or download? We are here to assist."
       >
-        <div className="not-prose grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="not-prose grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {CONTACT_CHANNELS.map((channel: ContactChannel) => {
             const Icon = ICON_MAP[channel.icon];
             const external = channel.href.startsWith("http");
@@ -76,12 +76,15 @@ export default function ContactPage() {
                     variant="outline"
                     className="mt-auto w-full justify-center gap-2"
                     render={
-                      <Link href={channel.href} target={external ? "_blank" : undefined} rel={external ? "noreferrer" : undefined}>
-                        {channel.label} <ArrowUpRight aria-hidden="true" className="ml-1 size-3.5" />
-                      </Link>
+                      <Link
+                        href={channel.href}
+                        target={external ? "_blank" : undefined}
+                        rel={external ? "noreferrer" : undefined}
+                      />
                     }
                   >
-                    <span className="sr-only">{channel.label}</span>
+                    {channel.label}
+                    <ArrowUpRight aria-hidden="true" />
                   </Button>
                 </CardContent>
               </Card>
@@ -89,15 +92,15 @@ export default function ContactPage() {
           })}
         </div>
 
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
+        <div className="mt-8 grid gap-4 sm:grid-cols-2">
           <div className="flex items-start gap-4 rounded-2xl border border-border/60 bg-muted/20 p-5">
             <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent">
               <ShieldCheck aria-hidden="true" className="size-5" />
             </div>
             <div>
-              <h3 className="m-0 text-base font-semibold text-foreground">Instant note delivery</h3>
+              <h3 className="m-0 text-base font-semibold text-foreground">Instant note access</h3>
               <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                Paid orders are fulfilled automatically right after payment. Download your PDF directly from the order confirmation page.
+                Paid orders activate immediately after payment. Download your PDF directly from the order confirmation page.
               </p>
             </div>
           </div>

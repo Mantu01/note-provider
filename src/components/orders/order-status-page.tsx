@@ -135,8 +135,8 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
 
       <div className="mt-6">
         <Card className="rounded-2xl border border-border shadow-sm">
-          <CardHeader className="pb-3 border-b border-border/60">
-            <div className="flex items-center justify-between">
+          <CardHeader className="border-b border-border/60 pb-3">
+            <div className="flex flex-wrap items-center justify-between gap-2">
               <div>
                 <CardTitle className="text-base font-bold">
                   {order.itemType === "group" ? "Bundle Notes" : "Purchased Note"}
@@ -156,10 +156,10 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
             {notesList.map((note) => (
               <div
                 key={note.id || note.slug}
-                className="flex items-center justify-between gap-4 p-4 transition-colors hover:bg-muted/20"
+                className="flex flex-col gap-3 p-4 transition-colors hover:bg-muted/20 sm:flex-row sm:items-center sm:justify-between sm:gap-4"
               >
-                <div className="flex items-center gap-3.5 min-w-0">
-                  <div className="relative size-14 shrink-0 overflow-hidden rounded-xl border border-border/80 bg-muted/40">
+                <div className="flex min-w-0 items-center gap-3.5">
+                  <div className="relative size-12 shrink-0 overflow-hidden rounded-xl border border-border/80 bg-muted/40 sm:size-14">
                     {note.coverImageUrl ? (
                       <Image
                         src={note.coverImageUrl}
@@ -189,7 +189,7 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
                     }
                     disabled={!canDownload || isDownloading}
                     size="sm"
-                    className="rounded-full px-4"
+                    className="h-11 w-full rounded-full px-4 sm:h-7 sm:w-auto"
                     variant={canDownload ? "default" : "outline"}
                   >
                     {isDownloading ? (

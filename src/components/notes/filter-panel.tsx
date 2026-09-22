@@ -41,7 +41,7 @@ export function NoteSearchField({ className }: { className?: string } = {}) {
         onChange={(event) => setFilter({ q: event.target.value })}
         placeholder="Search notes or tags"
         aria-label="Search notes"
-        className="h-full rounded-xl pr-3 pl-9 text-base sm:text-sm"
+        className="h-full rounded-xl pr-3 pl-9"
       />
     </div>
   );
@@ -109,7 +109,7 @@ export function FilterPanel({
           variant="outline"
           size="sm"
           onClick={clearFilters}
-          className="h-10 w-full rounded-xl text-sm"
+          className="h-11 w-full rounded-xl text-sm sm:h-10"
         >
           <X aria-hidden="true" className="size-3.5" />
           Clear all filters
@@ -157,7 +157,7 @@ export function FilterPanel({
                   value={state.minPrice ?? ""}
                   onChange={(event) => setPrice("minPrice", event.target.value)}
                   placeholder="0"
-                  className="h-10 rounded-xl text-sm tabular-nums"
+                  className="h-11 rounded-xl tabular-nums sm:h-10"
                 />
               </div>
               <div className="space-y-1.5">
@@ -172,7 +172,7 @@ export function FilterPanel({
                   value={state.maxPrice ?? ""}
                   onChange={(event) => setPrice("maxPrice", event.target.value)}
                   placeholder="Any"
-                  className="h-10 rounded-xl text-sm tabular-nums"
+                  className="h-11 rounded-xl tabular-nums sm:h-10"
                 />
               </div>
             </div>

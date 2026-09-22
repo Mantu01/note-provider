@@ -35,36 +35,36 @@ export function PdfPreviewDialog({
 
   return (
     <Dialog>
-      <DialogTrigger render={<Button variant="outline" className="w-full" />}>
-        <FileText aria-hidden="true" className="mr-2 size-4" />
-        Preview PDF
-      </DialogTrigger>
+      <DialogTrigger render={<Button variant="outline" className="w-full"><FileText aria-hidden="true" className="mr-2 size-4" />Preview PDF</Button>} />
 
-      <DialogContent className="max-w-4xl p-6">
-        <DialogHeader>
-          <DialogTitle className="text-xl font-bold">Note Preview</DialogTitle>
-          <DialogDescription>
-            Review a sample before purchasing the full notes.
+      <DialogContent className="max-w-[90vw] sm:max-w-6xl gap-0 p-0">
+        <div className="flex flex-col px-4 pt-4 pb-2">
+          <DialogTitle className="text-base font-bold">Note Preview</DialogTitle>
+          <DialogDescription className="text-xs text-muted-foreground">
+            Review sample pages before purchasing.
           </DialogDescription>
-        </DialogHeader>
+        </div>
 
-        <div className="relative overflow-hidden rounded-xl border bg-muted/30">
+        <div className="relative mx-0 mb-0 overflow-hidden rounded-none border-x-0 border-b-0 bg-muted/10">
           <iframe
             title="Note preview"
             src={iframeSrc}
-            className="h-[60vh] w-full border-0"
+            className="h-[75vh] w-full border-0"
             allow="fullscreen"
           />
         </div>
 
-        <div className="flex justify-end pt-2">
+        <div className="flex items-center justify-between px-4 pb-4">
+          <p className="text-xs text-muted-foreground">
+            Preview limited to a few sample pages.
+          </p>
           <Button onClick={handleDownload} disabled={isDownloading}>
             {isDownloading ? (
-              "Preparing…"
+              "Preparing..."
             ) : (
               <>
                 <FileDown aria-hidden="true" className="mr-2 size-4" />
-                Download preview PDF
+                Download Preview
               </>
             )}
           </Button>

@@ -78,7 +78,7 @@ async function NoteDetail({ params }: NotePageProps) {
       price: noteDoc.pricingType === "free" ? 0 : noteDoc.price / 100,
       priceLabel: noteDoc.pricingType === "free" ? "Free" : `₹${(noteDoc.price / 100).toFixed(0)}`,
       currency: "INR",
-      imageUrl: noteDoc.coverImageUrl ?? null,
+      imageUrl,
       category: { name: noteDoc.category?.name || "Study Notes" },
       level: noteDoc.level,
       pageCount: noteDoc.pageCount ?? null,

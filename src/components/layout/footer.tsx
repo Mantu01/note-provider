@@ -43,10 +43,10 @@ type SocialLink = (typeof SOCIAL_LINKS)[number];
 
 export function Footer() {
   return (
-    <footer className="mt-8 border-t border-border/40 bg-card">
+    <footer className="mt-8 border-t border-border/40 bg-card pb-16 lg:pb-0">
       <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
-        <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-6">
-          <div className="space-y-4 sm:col-span-2">
+        <div className="grid grid-cols-2 gap-x-6 gap-y-8 sm:gap-8 lg:grid-cols-6">
+          <div className="col-span-2 space-y-4">
             <Logo size="sm" />
             <p className="max-w-xs text-xs leading-relaxed text-muted-foreground">
               {BRAND.tagline}
@@ -61,9 +61,9 @@ export function Footer() {
                     href={href}
                     target={external ? "_blank" : undefined}
                     rel={external ? "noreferrer" : undefined}
-                    className="inline-flex size-7 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground"
+                    className="inline-flex size-9 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition-colors hover:text-primary sm:size-8"
                   >
-                    <Icon aria-hidden="true" className="size-3" />
+                    <Icon aria-hidden="true" className="size-3.5" />
                   </a>
                 );
               })}
@@ -75,12 +75,12 @@ export function Footer() {
               <h2 className="mb-3 text-[10px] font-bold uppercase tracking-widest text-accent">
                 {column.title}
               </h2>
-              <ul className="space-y-2">
+              <ul>
                 {column.links.map((link) => (
                   <li key={link.href}>
                     <Link
                       href={link.href}
-                      className="text-xs text-muted-foreground"
+                      className="inline-flex min-h-9 items-center text-xs text-muted-foreground transition-colors hover:text-foreground"
                     >
                       {link.label}
                     </Link>
@@ -91,7 +91,7 @@ export function Footer() {
           ))}
         </div>
 
-        <div className="mt-8 border-t border-border/40 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="mt-8 flex flex-col items-center justify-between gap-3 border-t border-border/40 pt-6 sm:flex-row">
           <p className="text-center text-[10px] text-muted-foreground">
             &copy; {CURRENT_YEAR} {BRAND.name}. All rights reserved.
           </p>

@@ -12,7 +12,7 @@ export async function generateMetadata({ params }: OrderRouteProps): Promise<Met
   const { orderId } = await params;
   return {
     title: `Order Status — ${orderId} | Notes Provider`,
-    description: "Track your study note order and check delivery status.",
+    description: "View your order status and download your purchased study notes.",
     robots: { index: false, follow: false },
     alternates: { canonical: `${APP_URL}/order/${orderId}` },
   };

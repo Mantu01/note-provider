@@ -43,20 +43,20 @@ export function NotesCatalogue() {
   const isFiltered = activeFilterCount > 0 || hasQuery;
 
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-        <div className="space-y-1.5">
-          <h1 className="font-heading text-2xl font-bold tracking-tight text-foreground md:text-3xl">
+    <div className="mx-auto max-w-7xl px-3 py-4 sm:px-4 sm:py-6" data-testid="notes-catalogue">
+      <div className="mb-3 flex items-end justify-between gap-3 sm:mb-4">
+        <div className="min-w-0 space-y-0.5 sm:space-y-1">
+          <h1 className="font-heading text-xl font-bold tracking-tight text-foreground sm:text-2xl md:text-3xl">
             All Notes
           </h1>
-          <p className="text-sm text-muted-foreground">
+          <p className="truncate text-xs text-muted-foreground sm:text-sm">
             {total === undefined
               ? "Browse the full catalogue of study notes."
               : `${resultsLabel} available`}
           </p>
         </div>
 
-        <div className="flex items-center gap-1 rounded-xl border border-border bg-card p-1">
+        <div className="hidden shrink-0 items-center gap-1 rounded-xl border border-border bg-card p-1 sm:flex">
           <Button
             variant={state.view === "grid" ? "secondary" : "ghost"}
             size="icon-sm"
@@ -78,9 +78,9 @@ export function NotesCatalogue() {
         </div>
       </div>
 
-      <div className="sticky top-14 z-30 -mx-4 mb-5 border-b border-border/50 bg-background/85 px-4 py-2.5 backdrop-blur-md sm:-mx-6 sm:px-6 lg:hidden">
-        <div className="flex items-center gap-2">
-          <NoteSearchField className="h-10 flex-1" />
+      <div className="sticky top-14 z-30 -mx-3 mb-3 border-b border-border/50 bg-background/85 px-3 py-2 backdrop-blur-md sm:-mx-4 sm:px-4 lg:hidden">
+        <div className="flex items-center gap-2 sm:mx-auto sm:max-w-2xl">
+          <NoteSearchField className="h-11 flex-1" />
 
           <Sheet>
             <SheetTrigger
@@ -88,7 +88,7 @@ export function NotesCatalogue() {
                 <Button
                   variant="outline"
                   size="icon"
-                  className="relative size-10 shrink-0 rounded-xl"
+                  className="relative size-11 shrink-0 rounded-xl"
                   aria-label={
                     activeFilterCount > 0 ? `Filters, ${activeFilterCount} active` : "Filters"
                   }
@@ -104,15 +104,15 @@ export function NotesCatalogue() {
             </SheetTrigger>
 
             <SheetContent side="bottom" className="h-[85dvh] gap-0 rounded-t-2xl p-0">
-              <SheetHeader className="border-b px-5 py-4">
+              <SheetHeader className="border-b px-4 py-3 sm:px-5 sm:py-4">
                 <SheetTitle className="text-base font-semibold">Filters</SheetTitle>
               </SheetHeader>
 
-              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5">
+              <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 py-4 sm:px-5 sm:py-5">
                 <FilterPanel showSearch={false} />
               </div>
 
-              <div className="border-t bg-popover px-5 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+              <div className="border-t bg-popover px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:px-5 sm:pt-4">
                 <SheetClose
                   render={
                     <Button size="lg" className="h-12 w-full rounded-xl text-sm font-semibold" />
@@ -127,14 +127,14 @@ export function NotesCatalogue() {
       </div>
 
       {isFiltered && (
-        <div className="mb-4 flex flex-wrap items-center gap-2">
+        <div className="mb-3 flex flex-wrap items-center gap-2 sm:mb-4">
           <ActiveFilterChips state={state} setFilter={setFilter} />
           <Button
             type="button"
             variant="ghost"
             size="sm"
             onClick={clearFilters}
-            className="h-8 text-xs text-muted-foreground hover:text-foreground"
+            className="h-9 text-xs text-muted-foreground hover:text-foreground sm:h-8"
           >
             <X aria-hidden="true" className="size-3.5" />
             {activeFilterCount > 0 ? "Clear all" : "Clear search"}
@@ -142,17 +142,17 @@ export function NotesCatalogue() {
         </div>
       )}
 
-      <div className="grid gap-6 lg:grid-cols-[17rem_minmax(0,1fr)]">
+      <div className="grid gap-4 lg:grid-cols-[16rem_minmax(0,1fr)] sm:gap-5">
         <div className="hidden lg:block">
-          <div className="sticky top-20 rounded-2xl border border-border bg-card p-5">
+          <div className="sticky top-20 rounded-2xl border border-border bg-card p-4 sm:p-5">
             <FilterPanel />
           </div>
         </div>
 
-        <div id="results" className="min-w-0">
+        <div className="min-w-0">
           <div
             className={cn(
-              "grid gap-4",
+              "grid gap-3 sm:gap-4",
               state.view === "grid" ? "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3" : "grid-cols-1",
             )}
           >
@@ -189,7 +189,7 @@ export function NotesCatalogue() {
           </div>
 
           {notes.data && notes.data.pagination.totalPages > 1 && (
-            <div className="mt-8">
+            <div className="mt-6 sm:mt-8">
               <PaginationBar
                 page={notes.data.pagination.page}
                 totalPages={notes.data.pagination.totalPages}

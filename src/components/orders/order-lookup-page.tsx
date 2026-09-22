@@ -46,10 +46,10 @@ export function OrderLookupPage() {
   };
 
   return (
-    <div className="mx-auto max-w-xl px-4 py-12 sm:px-6">
-      <div className="text-center space-y-2.5">
+    <div className="mx-auto max-w-xl px-4 py-10 sm:px-6 sm:py-12">
+      <div className="space-y-2.5 text-center">
         <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
-          <PackageCheck className="size-6" />
+          <PackageCheck aria-hidden="true" className="size-6" />
         </div>
         <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">Order tracking</p>
         <h1 className="text-xl font-bold tracking-tight md:text-2xl">Track Your Order</h1>
@@ -73,11 +73,11 @@ export function OrderLookupPage() {
                 <Input
                   id="orderNumber"
                   placeholder="20260918-0001a3b2c4d5"
-                  className="font-mono uppercase"
+                  className="h-11 font-mono uppercase sm:h-9"
                   aria-invalid={Boolean(form.formState.errors.orderNumber)}
                   {...form.register("orderNumber")}
                 />
-                <Button type="submit" disabled={lookup.isPending} className="shrink-0">
+                <Button type="submit" disabled={lookup.isPending} className="h-11 shrink-0 sm:h-9">
                   {lookup.isPending ? (
                     <Loader2 aria-hidden="true" className="size-3.5 animate-spin" />
                   ) : (
@@ -99,7 +99,7 @@ export function OrderLookupPage() {
           <div className="mt-5 flex items-start gap-2.5 rounded-xl bg-muted/30 p-3 text-[10px] text-muted-foreground">
             <ShieldCheck aria-hidden="true" className="mt-0.5 size-3.5 shrink-0 text-primary" />
             <p>
-              Paid orders are fulfilled instantly. Your notes can be downloaded once per order.
+              Paid orders give you immediate download access. After the initial session, links work once per note to prevent unauthorized sharing.
             </p>
           </div>
         </CardContent>

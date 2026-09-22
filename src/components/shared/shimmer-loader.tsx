@@ -6,18 +6,18 @@ export function ShimmerLoader({ className }: { className?: string }) {
 
 export function ShimmerNoteCard() {
   return (
-    <div className="overflow-hidden rounded-xl border border-border/50 bg-card">
-      <ShimmerLoader className="aspect-[16/9] rounded-none" />
-      <div className="space-y-2 p-3">
-        <div className="flex items-center justify-between gap-2">
+    <div className="flex flex-col overflow-hidden rounded-xl border border-border/50 bg-card max-sm:flex-row">
+      <ShimmerLoader className="aspect-[16/9] w-full shrink-0 rounded-none max-sm:aspect-auto max-sm:w-24" />
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5 p-3">
+        <div className="flex min-w-0 items-center gap-1.5">
           <ShimmerLoader className="h-4 w-14 rounded-full" />
-          <ShimmerLoader className="h-3.5 w-10 rounded-full" />
+          <ShimmerLoader className="h-4 w-10 shrink-0 rounded-full" />
         </div>
         <ShimmerLoader className="h-4 w-4/5" />
-        <ShimmerLoader className="h-3 w-full" />
-        <div className="flex items-end justify-between pt-0.5">
+        <ShimmerLoader className="h-3 w-full max-sm:hidden" />
+        <div className="mt-auto flex items-center justify-between gap-2 pt-1">
           <ShimmerLoader className="h-4 w-16 rounded-md" />
-          <ShimmerLoader className="h-3 w-12 rounded-md" />
+          <ShimmerLoader className="h-4 w-12 rounded-md max-sm:hidden" />
         </div>
       </div>
     </div>
@@ -26,12 +26,12 @@ export function ShimmerNoteCard() {
 
 export function ShimmerGroupCard() {
   return (
-    <div className="overflow-hidden rounded-xl border border-border/50 bg-card">
-      <ShimmerLoader className="aspect-[16/9] rounded-none" />
-      <div className="space-y-2 p-3">
-        <div className="flex items-center justify-between">
+    <div className="flex flex-col overflow-hidden rounded-xl border border-border/50 bg-card max-sm:flex-row">
+      <ShimmerLoader className="aspect-[16/9] w-full shrink-0 rounded-none max-sm:aspect-auto max-sm:w-28" />
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5 p-3">
+        <div className="flex min-w-0 items-center justify-between gap-2">
           <ShimmerLoader className="h-4 w-16 rounded-full" />
-          <ShimmerLoader className="h-4 w-14 rounded-md" />
+          <ShimmerLoader className="h-4 w-14 shrink-0 rounded-md" />
         </div>
         <ShimmerLoader className="h-4 w-3/4" />
         <ShimmerLoader className="h-3 w-full" />
@@ -51,9 +51,9 @@ export function ShimmerStatCard() {
 
 export function NoteDetailSkeleton() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_22rem]">
-        <article className="space-y-6">
+    <div className="mx-auto max-w-7xl px-3 pt-3 pb-24 sm:px-4 sm:pt-6 lg:pb-10">
+      <div className="grid gap-5 sm:gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <article className="space-y-4 sm:space-y-5">
           <ShimmerLoader className="aspect-[16/9] w-full rounded-xl" />
           <div className="space-y-3">
             <div className="flex gap-2">
@@ -70,7 +70,7 @@ export function NoteDetailSkeleton() {
           </div>
         </article>
         <aside className="space-y-4">
-          <div className="rounded-xl border border-border bg-card p-5 shadow-lg">
+          <div className="rounded-2xl border border-border bg-card p-4 shadow-lg sm:p-5">
             <ShimmerLoader className="h-5 w-32 rounded" />
             <ShimmerLoader className="mt-2 h-3 w-40 rounded" />
             <ShimmerLoader className="mt-4 h-8 w-24 rounded" />
@@ -85,9 +85,9 @@ export function NoteDetailSkeleton() {
 
 export function GroupDetailSkeleton() {
   return (
-    <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-      <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_20rem]">
-        <article className="space-y-5">
+    <div className="mx-auto max-w-7xl px-3 pt-4 pb-28 sm:px-4 sm:pt-6 lg:px-6 lg:pb-10">
+      <div className="grid gap-4 sm:gap-5 lg:grid-cols-[minmax(0,1fr)_18rem]">
+        <article className="space-y-4 sm:space-y-5">
           <ShimmerLoader className="aspect-[16/9] w-full rounded-xl" />
           <div className="space-y-2">
             <ShimmerLoader className="h-3 w-28 rounded" />
@@ -107,7 +107,7 @@ export function GroupDetailSkeleton() {
           </div>
         </article>
         <aside className="space-y-4">
-          <div className="rounded-xl border border-border bg-card p-5 shadow-lg">
+          <div className="rounded-2xl border border-border bg-card p-4 shadow-lg sm:p-5">
             <ShimmerLoader className="h-5 w-32 rounded" />
             <ShimmerLoader className="mt-2 h-3 w-36 rounded" />
             <ShimmerLoader className="mt-4 h-8 w-24 rounded" />
@@ -270,7 +270,7 @@ export function AdminOrderDetailSkeleton() {
 
 export function NotesCatalogueSkeleton() {
   return (
-    <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 xl:grid-cols-3">
       {Array.from({ length: 6 }, (_, index) => (
         <ShimmerNoteCard key={index} />
       ))}
@@ -280,7 +280,7 @@ export function NotesCatalogueSkeleton() {
 
 export function GroupsCatalogueSkeleton() {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
       {Array.from({ length: 6 }, (_, index) => (
         <ShimmerGroupCard key={index} />
       ))}

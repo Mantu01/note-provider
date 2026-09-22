@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { HelpCircle, UploadCloud } from "lucide-react";
 import { type UseFormReturn } from "react-hook-form";
@@ -12,6 +13,7 @@ import { Switch } from "@/components/ui/switch";
 import { FileUploadField } from "@/components/shared/file-upload-field";
 import { type CreateNoteInput } from "@/schemas/note.schema";
 import { NOTE_LEVELS } from "@/lib/constants";
+import { isGoogleDriveUrl } from "@/schemas/note.schema";
 
 type NoteDetailsSectionProps = {
   form: UseFormReturn<CreateNoteInput>;
@@ -126,9 +128,6 @@ export function NoteDetailsSection({
     </Card>
   );
 }
-
-import { useState } from "react";
-import { isGoogleDriveUrl } from "@/schemas/note.schema";
 
 type FileAttachmentsSectionProps = {
   form: UseFormReturn<CreateNoteInput>;

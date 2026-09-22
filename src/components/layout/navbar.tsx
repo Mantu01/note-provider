@@ -87,7 +87,7 @@ function SearchDialog({
             <Link
               key={link.href}
               href={link.href}
-              className="flex items-center gap-3 rounded-xl px-3 py-2.5 text-foreground transition-colors hover:bg-accent/30"
+              className="flex min-h-11 items-center gap-3 rounded-xl px-3 py-2 text-foreground transition-colors hover:bg-accent/30"
             >
               <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
                 <Search aria-hidden="true" className="size-4" />
@@ -188,7 +188,7 @@ export function Navbar() {
                     key={link.href}
                     href={link.href}
                     className={cn(
-                      "rounded-lg px-3 py-2.5 text-sm font-medium",
+                      "flex min-h-11 items-center rounded-lg px-3 text-sm font-medium",
                       isActive(pathname, link)
                         ? "bg-primary/10 text-primary"
                         : "text-muted-foreground hover:bg-accent/30",
@@ -198,10 +198,10 @@ export function Navbar() {
                   </Link>
                 ))}
               </nav>
-              <div className="border-t p-2.5">
+              <div className="border-t p-2.5 pb-[max(0.625rem,env(safe-area-inset-bottom))]">
                 <Link
                   href="/notes"
-                  className="block rounded-xl bg-primary px-4 py-2.5 text-center text-xs font-semibold text-primary-foreground"
+                  className="flex h-11 items-center justify-center rounded-xl bg-primary px-4 text-center text-xs font-semibold text-primary-foreground"
                 >
                   Browse notes
                 </Link>
