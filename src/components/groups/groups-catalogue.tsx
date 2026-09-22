@@ -26,7 +26,7 @@ export function GroupsPage() {
         <h1 className="font-heading text-base font-bold tracking-tight text-foreground sm:text-lg md:text-xl">
           Bundles
         </h1>
-        <p className="mt-0.5 text-[11px] text-muted-foreground sm:text-xs">
+        <p className="mt-0.5 text-[10px] text-muted-foreground sm:text-xs">
           {pagination
             ? `${pagination.total} bundle${pagination.total !== 1 ? "s" : ""} available`
             : "Loading…"}

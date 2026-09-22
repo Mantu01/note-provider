@@ -39,14 +39,14 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
             className="object-cover transition-transform duration-200 group-hover:scale-[1.04]"
           />
         ) : (
-          <div className="flex size-full flex-col items-center justify-center gap-1 bg-gradient-to-br from-primary/5 to-transparent text-primary/30">
+          <div className="flex size-full flex-col items-center justify-center gap-1 bg-linear-to-br from-primary/5 to-transparent text-primary/30">
             <FileText aria-hidden="true" className="size-6" />
             <span className="text-[8px] font-semibold tracking-widest uppercase">PDF</span>
           </div>
         )}
       </Link>
 
-      <div className="flex min-w-0 flex-1 flex-col gap-1 p-2.5">
+      <div className="flex min-w-0 flex-1 flex-col gap-1 p-2">
         <div className="flex min-w-0 items-center gap-1.5">
           <span className="inline-flex min-w-0 items-center rounded-full bg-muted px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">
             <span className="truncate">{note.category.name}</span>
@@ -70,7 +70,7 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
           </p>
         )}
 
-        <div className="mt-auto flex items-center justify-between gap-1.5 pt-1">
+        <div className="mt-auto flex items-center justify-between gap-1.5 pt-0.5">
           <PriceTag
             price={note.price}
             priceLabel={note.priceLabel}

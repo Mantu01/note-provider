@@ -46,10 +46,10 @@ export function NotesCatalogue() {
     <div className="mx-auto max-w-7xl px-3 py-3 sm:px-4 sm:py-4" data-testid="notes-catalogue">
       <div className="mb-2 flex items-end justify-between gap-2 sm:mb-3">
         <div className="min-w-0 space-y-0.5">
-          <h1 className="font-heading text-lg font-bold tracking-tight text-foreground sm:text-xl md:text-2xl">
+          <h1 className="font-heading text-base font-bold tracking-tight text-foreground sm:text-lg md:text-xl">
             All Notes
           </h1>
-          <p className="truncate text-[11px] text-muted-foreground sm:text-xs">
+          <p className="truncate text-[10px] text-muted-foreground sm:text-xs">
             {total === undefined
               ? "Browse the full catalogue."
               : `${resultsLabel} available`}

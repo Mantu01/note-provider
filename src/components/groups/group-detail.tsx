@@ -14,7 +14,7 @@ import { MarkdownPreview } from "@/components/shared/md-preview";
 import { PriceTag } from "@/components/shared/price-tag";
 import { useGroup } from "@/hooks/useGroups";
 import { formatPrice } from "@/lib/format";
-import { cn } from "@/lib/utils";
+
 
 function MobilePurchaseBar({
   slug,
@@ -67,21 +67,21 @@ export function GroupDetailPage({ slug }: { slug: string }) {
   const savingsPercent = individualValue > 0 ? Math.round((savings / individualValue) * 100) : 0;
 
   return (
-    <div className="mx-auto max-w-7xl px-3 pt-2 pb-20 sm:px-4 sm:pt-3 lg:px-6 lg:pb-8" data-testid="group-content">
+    <div className="mx-auto max-w-7xl px-3 pt-2 pb-20 sm:px-4 sm:pt-3 md:pb-10 lg:px-6" data-testid="group-content">
       <div className="mb-2 flex items-center gap-2 sm:mb-3">
         <Button
           render={<Link href="/groups" />}
           variant="outline"
           size="icon-sm"
           aria-label="Back to bundles"
-          className="size-7 shrink-0 rounded-md md:hidden"
+          className="size-8 shrink-0 rounded-lg md:hidden"
         >
-          <ArrowLeft aria-hidden="true" className="size-3.5" />
+          <ArrowLeft aria-hidden="true" className="size-4" />
         </Button>
 
         <nav
           aria-label="Breadcrumb"
-          className="flex min-w-0 items-center gap-1 text-[11px] text-muted-foreground sm:text-sm"
+          className="flex min-w-0 items-center gap-1 text-[10px] text-muted-foreground sm:text-xs"
         >
           <Link href="/" className="shrink-0 hover:text-foreground">
             Home
@@ -107,7 +107,7 @@ export function GroupDetailPage({ slug }: { slug: string }) {
                 className="h-auto w-full object-cover"
               />
             ) : (
-              <div className="flex h-28 w-full flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-primary/5 to-transparent text-primary/20 sm:h-44 md:h-56">
+              <div className="flex h-28 w-full flex-col items-center justify-center gap-1.5 bg-linear-to-br from-primary/5 to-transparent text-primary/20 sm:h-40 md:h-48">
                 <FileText aria-hidden="true" className="size-8 sm:size-10" />
                 <span className="text-[10px] font-semibold uppercase tracking-widest">Bundle cover</span>
               </div>
@@ -178,7 +178,7 @@ export function GroupDetailPage({ slug }: { slug: string }) {
 
               <Button
                 render={<Link href={`/checkout/${group.slug}?itemType=group}`} />}
-                className="h-10 w-full rounded-lg bg-accent font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90"
+                className="h-11 w-full rounded-lg text-sm font-semibold bg-accent text-accent-foreground shadow-sm transition-colors hover:bg-accent/90"
                 size="lg"
               >
                 Buy this bundle

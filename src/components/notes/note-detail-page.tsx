@@ -37,7 +37,7 @@ function PurchaseActions({
         render={<Link href={`/checkout/${slug}`} />}
         size="lg"
         className={cn(
-          "h-10 w-full rounded-lg bg-accent font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90",
+          "h-11 w-full rounded-lg bg-accent text-sm font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90",
           className,
         )}
       >
@@ -51,7 +51,7 @@ function PurchaseActions({
       size="lg"
       disabled={isDownloading}
       className={cn(
-        "h-10 w-full rounded-lg font-semibold shadow-sm transition-shadow hover:shadow-md",
+        "h-11 w-full rounded-lg text-sm font-semibold shadow-sm transition-shadow hover:shadow-md",
         className,
       )}
       onClick={() =>
@@ -130,21 +130,21 @@ export function NoteDetailPage({ slug }: { slug: string }) {
   const { note, groups, relatedNotes } = query.data;
 
   return (
-    <div className="mx-auto max-w-7xl px-3 pt-2 pb-20 sm:px-4 sm:pt-3 lg:px-6 lg:pb-8" data-testid="note-content">
+    <div className="mx-auto max-w-7xl px-3 pt-2 pb-20 sm:px-4 sm:pt-3 md:pb-10 lg:px-6" data-testid="note-content">
       <div className="mb-2 flex items-center gap-2 sm:mb-3">
         <Button
           render={<Link href="/notes" />}
           variant="outline"
           size="icon-sm"
           aria-label="Back to notes"
-          className="size-7 shrink-0 rounded-md md:hidden"
+          className="size-8 shrink-0 rounded-lg md:hidden"
         >
-          <ArrowLeft aria-hidden="true" className="size-3.5" />
+          <ArrowLeft aria-hidden="true" className="size-4" />
         </Button>
 
         <nav
           aria-label="Breadcrumb"
-          className="flex min-w-0 items-center gap-1 text-[11px] text-muted-foreground sm:text-sm"
+          className="flex min-w-0 items-center gap-1 text-[10px] text-muted-foreground sm:text-xs"
         >
           <Link href="/" className="shrink-0 hover:text-foreground">
             Home
@@ -170,7 +170,7 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                 className="h-auto w-full object-cover"
               />
             ) : (
-              <div className="flex h-32 w-full flex-col items-center justify-center gap-1.5 bg-gradient-to-br from-primary/5 to-transparent text-primary/20 sm:h-48 md:h-64">
+              <div className="flex h-28 w-full flex-col items-center justify-center gap-1.5 bg-linear-to-br from-primary/5 to-transparent text-primary/20 sm:h-44 md:h-56">
                 <FileText aria-hidden="true" className="size-8 sm:size-10" />
                 <span className="text-[10px] font-semibold uppercase tracking-widest">Study note document</span>
               </div>
@@ -251,7 +251,7 @@ export function NoteDetailPage({ slug }: { slug: string }) {
                 <PurchaseActions slug={note.slug} pricingType="free" priceLabel={note.priceLabel} />
               ) : (
                 <>
-                  <div className="rounded-lg border border-accent/20 bg-accent/5 p-2.5 sm:p-3">
+                  <div className="rounded-lg border border-accent/20 bg-accent/5 p-3">
                     <Lock aria-hidden="true" className="mb-1.5 size-3.5 text-accent" />
                     <p className="text-[11px] font-bold text-foreground">Full notes locked</p>
                     <p className="mt-0.5 text-[10px] leading-relaxed text-muted-foreground">

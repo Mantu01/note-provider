@@ -279,7 +279,7 @@ export function CheckoutPage({
             <Button
               type="submit"
               size="lg"
-              className="h-12 w-full rounded-xl bg-accent font-semibold text-accent-foreground shadow-lg"
+              className="h-12 w-full rounded-xl text-sm font-semibold bg-accent text-accent-foreground shadow-lg"
               disabled={submitting || !form.formState.isValid}
             >
               {submitting ? (

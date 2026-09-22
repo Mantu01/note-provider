@@ -22,7 +22,7 @@ export function GroupCard({ group }: { group: PublicGroup }) {
             className="object-cover transition-transform duration-200 group-hover:scale-[1.04]"
           />
         ) : (
-          <div className="flex size-full flex-col items-center justify-center gap-1 bg-gradient-to-br from-primary/5 to-transparent text-primary/20">
+          <div className="flex size-full flex-col items-center justify-center gap-1 bg-linear-to-br from-primary/5 to-transparent text-primary/20">
             <Layers3 aria-hidden="true" className="size-6 sm:size-8" />
             <span className="text-[8px] font-semibold tracking-widest uppercase">Bundle</span>
           </div>
@@ -34,7 +34,7 @@ export function GroupCard({ group }: { group: PublicGroup }) {
         </span>
       </Link>
 
-      <div className="flex min-w-0 flex-1 flex-col gap-1 p-2.5">
+      <div className="flex min-w-0 flex-1 flex-col gap-1 p-2">
         <div className="flex min-w-0 items-center justify-between gap-1.5">
           <span className="inline-flex min-w-0 items-center rounded-full bg-muted px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">
             <span className="truncate">{group.category.name}</span>
