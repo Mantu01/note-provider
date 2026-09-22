@@ -17,7 +17,7 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
   return (
     <article
       className={cn(
-        "group relative flex overflow-hidden rounded-xl border border-border bg-card transition-shadow hover:shadow-md",
+        "group relative flex overflow-hidden rounded-lg border border-border bg-card transition-shadow hover:shadow-md",
         compact ? "flex-row" : "flex-col max-sm:flex-row",
       )}
     >
@@ -27,7 +27,7 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
         aria-hidden="true"
         className={cn(
           "relative shrink-0 overflow-hidden bg-muted/20",
-          compact ? "w-32 sm:w-36" : "aspect-[16/9] w-full max-sm:aspect-auto max-sm:w-32",
+          compact ? "w-24 sm:w-28" : "aspect-[16/9] w-full max-sm:aspect-auto max-sm:w-24",
         )}
       >
         {note.coverImageUrl ? (
@@ -35,20 +35,20 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
             src={note.coverImageUrl}
             alt=""
             fill
-            sizes="(max-width: 640px) 128px, (max-width: 1024px) 50vw, 25vw"
+            sizes="(max-width: 640px) 96px, (max-width: 1024px) 50vw, 25vw"
             className="object-cover transition-transform duration-200 group-hover:scale-[1.04]"
           />
         ) : (
           <div className="flex size-full flex-col items-center justify-center gap-1 bg-gradient-to-br from-primary/5 to-transparent text-primary/30">
-            <FileText aria-hidden="true" className="size-7" />
-            <span className="text-[9px] font-semibold tracking-widest uppercase">PDF</span>
+            <FileText aria-hidden="true" className="size-6" />
+            <span className="text-[8px] font-semibold tracking-widest uppercase">PDF</span>
           </div>
         )}
       </Link>
 
-      <div className="flex min-w-0 flex-1 flex-col gap-1 p-3">
+      <div className="flex min-w-0 flex-1 flex-col gap-1 p-2.5">
         <div className="flex min-w-0 items-center gap-1.5">
-          <span className="inline-flex min-w-0 items-center rounded-full bg-muted px-2 py-0.5 text-[10px] font-medium text-muted-foreground">
+          <span className="inline-flex min-w-0 items-center rounded-full bg-muted px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">
             <span className="truncate">{note.category.name}</span>
           </span>
           <LevelBadge level={note.level} className="shrink-0" />
@@ -58,19 +58,19 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
           href={`/notes/${note.slug}`}
           className={cn(
             "font-heading font-semibold text-foreground transition-colors line-clamp-2 group-hover:text-primary",
-            compact ? "text-xs sm:text-sm" : "text-sm",
+            compact ? "text-[11px] sm:text-xs" : "text-xs sm:text-sm",
           )}
         >
           {note.title}
         </Link>
 
         {!compact && (
-          <p className="line-clamp-2 text-xs leading-relaxed text-muted-foreground max-sm:hidden">
+          <p className="line-clamp-2 text-[11px] leading-relaxed text-muted-foreground max-sm:hidden">
             {note.description}
           </p>
         )}
 
-        <div className="mt-auto flex items-center justify-between gap-2 pt-1">
+        <div className="mt-auto flex items-center justify-between gap-1.5 pt-1">
           <PriceTag
             price={note.price}
             priceLabel={note.priceLabel}
