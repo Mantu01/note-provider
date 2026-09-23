@@ -97,7 +97,23 @@ export function NoteForm({ initialData }: NoteFormProps) {
       });
     } else {
       createMutation.mutate(values, {
-        onSuccess: () => router.push("/admin/notes"),
+        onSuccess: () => {
+          form.reset({
+            categoryId: "",
+            level: "basics",
+            visibility: "public",
+            pricingType: "free",
+            price: 0,
+            compareAtPrice: null,
+            tags: [],
+            isFeatured: false,
+            pageCount: null,
+            fullFile: null,
+            fullFileUrl: null,
+            previewFile: null,
+            coverImage: null,
+          });
+        },
       });
     }
   };

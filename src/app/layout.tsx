@@ -9,7 +9,7 @@ import JsonLd, {
   organizationJsonLd,
   websiteJsonLd,
 } from "@/components/seo/json-ld";
-import { GoogleAnalytics } from '@next/third-parties/google';
+import { Analytics } from "@vercel/analytics/next"
 import { ShimmerLoader } from "@/components/shared/shimmer-loader";
 
 const inter = Inter({
@@ -24,7 +24,6 @@ const outfit = Outfit({
 });
 
 const safeMetadataBase = URL.canParse(APP_URL) ? new URL(APP_URL) : undefined;
-const measurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
 export const viewport: Viewport = {
   width: "device-width",
@@ -125,21 +124,15 @@ export default function RootLayout({
         <meta name="mobile-web-app-capable" content="yes" />
         <link rel="manifest" href="/manifest.json" />
         <JsonLd scripts={[...organizationJsonLd(), ...websiteJsonLd()]} />
-        {measurementId ? (
-          <>
-            <Script src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`} strategy="afterInteractive" />
-            <Script id="google-analytics" strategy="afterInteractive">{`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${measurementId}');`}</Script>
-          </>
-        ) : null}
       </head>
       <body suppressHydrationWarning className="font-sans antialiased">
         <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:rounded-md focus:bg-primary focus:text-primary-foreground focus:p-3">
           Skip to main content
         </a>
-        {measurementId && <GoogleAnalytics gaId={measurementId} />}
         <AppProviders>
           <Suspense fallback={<ShimmerLoader className="h-14 w-full" />}>
             {children}
+            <Analytics/>
           </Suspense>
         </AppProviders>
       </body>
