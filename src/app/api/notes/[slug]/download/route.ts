@@ -4,6 +4,28 @@ import { AppError } from "@/helpers/errors";
 import { prisma } from "@/helpers/db";
 import { enforceRateLimit } from "@/helpers/rate-limit";
 
+const DOWNLOAD_WINDOW_MS = 15 * 60 * 1000;
+
+type OrderLike = {
+  id: string;
+  paidAt: Date | null;
+  isDownloaded: boolean;
+  itemSnapshot: unknown;
+};
+
+async function claimDownloadAccess(order: OrderLike): Promise<void> {
+  const isFresh = Boolean(order.paidAt && Date.now() - new Date(order.paidAt).getTime() < DOWNLOAD_WINDOW_MS);
+
+  const claim = await prisma.order.updateMany({
+    where: { id: order.id, isDownloaded: false },
+    data: { isDownloaded: true },
+  });
+
+  if (claim.count === 0 && !isFresh) {
+    throw AppError.forbidden("This order has already been downloaded. Contact support if you need the file again.");
+  }
+}
+
 export const GET = handler<{ slug: string }>(async (ctx): Promise<NextResponse<unknown>> => {
   const { slug } = ctx.params;
   const orderId = ctx.searchParams.get("orderId");
@@ -31,17 +53,9 @@ export const GET = handler<{ slug: string }>(async (ctx): Promise<NextResponse<u
     const snapshotSlug = typeof snapshot.slug === "string" ? snapshot.slug : "";
     const isNoteInOrder = order.noteId === note.id || snapshotSlug === slug || noteIds.includes(note.id);
 
-    if (!isNoteInOrder) {
-      throw AppError.forbidden("This note is not part of this order.");
-    }
+    if (!isNoteInOrder) throw AppError.forbidden("This note is not part of this order.");
 
-    const isFresh = order.paidAt && Date.now() - new Date(order.paidAt).getTime() < 15 * 60 * 1000;
-    if (!isFresh) {
-      if (order.isDownloaded) {
-        throw AppError.forbidden("This order has already been downloaded.");
-      }
-      await prisma.order.update({ where: { id: order.id }, data: { isDownloaded: true } });
-    }
+    await claimDownloadAccess(order);
   }
 
   if (!note.fullFileUrl) throw AppError.notFound("Note file not available");

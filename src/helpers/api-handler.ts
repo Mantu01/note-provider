@@ -24,7 +24,6 @@ export function getClientIp(req: NextRequest): string | null {
   return req.headers.get("x-real-ip");
 }
 
-/** Parses a ZodError into a flat { field: message } map, deduplicating on first occurrence. */
 export function parseZodError(err: ZodError): Record<string, string> {
   const fields: Record<string, string> = {};
   for (const issue of err.issues) {

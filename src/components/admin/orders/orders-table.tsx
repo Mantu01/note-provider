@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { PaginationBar } from "@/components/shared/pagination-bar";
 import { StatusBadge } from "@/components/shared/status-badge";
+import { Badge } from "@/components/ui/badge";
 import { useAdminOrders } from "@/hooks/useAdmin";
 import { useAdminListState } from "@/hooks/use-admin-table-state";
 import { useRouter } from "next/navigation";
@@ -23,7 +24,7 @@ export function OrdersTable() {
     <div className="space-y-6">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="relative w-full max-w-sm">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Search aria-hidden="true" className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             placeholder="Search order # or buyer name..."
             value={search}
@@ -33,13 +34,13 @@ export function OrdersTable() {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-border bg-card shadow-sm overflow-hidden">
+      <div className="overflow-hidden rounded-2xl border border-border bg-card shadow-sm">
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead>Order Number</TableHead>
+              <TableHead>Order</TableHead>
               <TableHead>Buyer</TableHead>
-              <TableHead>Item Title</TableHead>
+              <TableHead>Item</TableHead>
               <TableHead>Amount</TableHead>
               <TableHead>Payment</TableHead>
               <TableHead>Downloaded</TableHead>
@@ -70,26 +71,35 @@ export function OrdersTable() {
                   className="cursor-pointer"
                   onClick={() => router.push(`/admin/orders/${order.id}`)}
                 >
-                  <TableCell className="font-mono text-sm font-semibold">
+                  <TableCell className="font-mono text-xs font-semibold">
                     {order.orderNumber}
                   </TableCell>
                   <TableCell>
-                    <div className="font-medium text-foreground">{order.buyerFull?.fullName || order.buyer?.fullName}</div>
+                    <div className="flex items-center gap-2">
+                      {order.coverImageUrl && (
+                        <div className="relative size-8 shrink-0 overflow-hidden rounded-md border border-border/60">
+                          <Image src={order.coverImageUrl} alt="" fill sizes="32px" className="object-cover" />
+                        </div>
+                      )}
+                      <span className="font-medium text-foreground">
+                        {order.buyerFull?.fullName || order.buyer?.fullName}
+                      </span>
+                    </div>
                   </TableCell>
-                  <TableCell className="max-w-xs truncate text-sm font-medium">
+                  <TableCell className="max-w-[12rem] truncate text-sm font-medium">
                     {order.itemTitle}
                   </TableCell>
-                  <TableCell className="font-semibold">
-                    {order.amountLabel}
-                  </TableCell>
+                  <TableCell className="font-semibold tabular-nums">{order.amountLabel}</TableCell>
                   <TableCell>
                     <StatusBadge status={order.paymentStatus} type="payment" />
                   </TableCell>
                   <TableCell>
                     {order.isDownloaded ? (
-                      <span className="text-xs font-medium text-success">Yes</span>
+                      <Badge variant="secondary" className="text-[11px] font-medium text-success">
+                        Downloaded
+                      </Badge>
                     ) : (
-                      <span className="text-xs text-muted-foreground">No</span>
+                      <span className="text-xs text-muted-foreground">Pending</span>
                     )}
                   </TableCell>
                 </TableRow>
@@ -100,11 +110,7 @@ export function OrdersTable() {
       </div>
 
       {pagination && pagination.totalPages > 1 && (
-        <PaginationBar
-          page={page}
-          totalPages={pagination.totalPages}
-          onPageChange={setPage}
-        />
+        <PaginationBar page={page} totalPages={pagination.totalPages} onPageChange={setPage} />
       )}
     </div>
   );

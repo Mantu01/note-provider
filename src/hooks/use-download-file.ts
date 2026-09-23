@@ -51,9 +51,12 @@ async function downloadFile({ url, filename }: { url: string; filename: string }
   try {
     const directRes = await fetch(fileUrl);
     if (directRes.ok) {
-      const blob = await directRes.blob();
-      triggerBlobDownload(blob, finalFilename);
-      return;
+      const contentTypeDirect = directRes.headers.get("content-type") || "";
+      if (contentTypeDirect.includes("application/pdf") || contentTypeDirect.includes("octet-stream")) {
+        const blob = await directRes.blob();
+        triggerBlobDownload(blob, finalFilename);
+        return;
+      }
     }
   } catch {
   }
@@ -71,9 +74,14 @@ async function downloadFile({ url, filename }: { url: string; filename: string }
 export function useDownloadFile() {
   const mutation = useMutation({
     mutationFn: downloadFile,
-    onMutate: () => toast.loading("Preparing your download…", { id: "download" }),
-    onSuccess: () => toast.success("Download started", { id: "download" }),
-    onError: (error: Error) => toast.error(error.message || "Unable to prepare your download. Please try again.", { id: "download" }),
+    onMutate: (vars) => toast.loading("Preparing your download…", { id: "download", description: vars.filename }),
+    onSuccess: () => toast.success("Download started. Save the PDF to your device.", { id: "download" }),
+    onError: (error: Error) =>
+      toast.error(error.message || "Unable to prepare your download. Please try again.", { id: "download" }),
   });
-  return { download: mutation.mutate, isDownloading: mutation.isPending };
+  return {
+    download: mutation.mutate,
+    isDownloading: mutation.isPending,
+    variables: mutation.variables as { url: string; filename: string } | undefined,
+  };
 }
