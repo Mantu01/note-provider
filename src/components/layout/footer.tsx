@@ -61,7 +61,7 @@ export function Footer() {
                     href={href}
                     target={external ? "_blank" : undefined}
                     rel={external ? "noreferrer" : undefined}
-                    className="inline-flex size-9 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition-colors hover:text-primary sm:size-8"
+                    className="inline-flex size-11 items-center justify-center rounded-lg border border-border bg-background text-muted-foreground transition-colors hover:text-primary sm:size-10"
                   >
                     <Icon aria-hidden="true" className="size-3.5" />
                   </a>

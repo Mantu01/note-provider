@@ -51,8 +51,12 @@ export function OrderLookupPage() {
         <div className="mx-auto flex size-12 items-center justify-center rounded-xl bg-primary/10 text-primary">
           <PackageCheck aria-hidden="true" className="size-6" />
         </div>
-        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">Order tracking</p>
-        <h1 className="text-base font-bold tracking-tight sm:text-lg md:text-xl">Track Your Order</h1>
+        <p className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">
+          Order tracking
+        </p>
+        <h1 className="text-base font-bold tracking-tight sm:text-lg md:text-xl">
+          Track Your Order
+        </h1>
         <p className="text-sm text-muted-foreground text-balance">
           Enter your order number to view your order status and download your notes.
         </p>
@@ -68,7 +72,9 @@ export function OrderLookupPage() {
         <CardContent>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-3">
             <div className="space-y-1.5">
-              <Label htmlFor="orderNumber" className="text-xs font-medium">Order Number</Label>
+              <Label htmlFor="orderNumber" className="text-xs font-medium">
+                Order Number
+              </Label>
               <div className="flex gap-2">
                 <Input
                   id="orderNumber"

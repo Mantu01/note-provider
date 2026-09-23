@@ -78,8 +78,6 @@ export const metadata: Metadata = {
     title: SEO.defaultTitle,
     description: SEO.defaultDescription,
     images: [`${APP_URL}/og/home`],
-    creator: "@notesprovider",
-    site: "@notesprovider",
   },
   robots: {
     index: true,
@@ -135,6 +133,9 @@ export default function RootLayout({
         ) : null}
       </head>
       <body suppressHydrationWarning className="font-sans antialiased">
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:rounded-md focus:bg-primary focus:text-primary-foreground focus:p-3">
+          Skip to main content
+        </a>
         {measurementId && <GoogleAnalytics gaId={measurementId} />}
         <AppProviders>
           <Suspense fallback={<ShimmerLoader className="h-14 w-full" />}>

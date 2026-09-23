@@ -18,8 +18,8 @@ export function GroupsPage() {
   const pagination = query.data?.pagination;
 
   return (
-    <div className="mx-auto max-w-7xl px-3 py-3.5 sm:px-4 sm:py-4.5" data-testid="groups-page">
-      <div className="mb-3.5 sm:mb-4.5">
+    <div className="mx-auto max-w-7xl px-3 py-3.5 sm:px-4 sm:py-4" data-testid="groups-page">
+      <div className="mb-3">
         <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-accent">
           Curated collections
         </p>
@@ -39,7 +39,7 @@ export function GroupsPage() {
         <GroupsCatalogueSkeleton />
       ) : (
         <>
-          <div className="grid grid-cols-1 gap-2 sm:gap-2.5 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-2.5 sm:gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {query.data?.items.length ? (
               query.data.items.map((group) => <GroupCard key={group.id} group={group} />)
             ) : (

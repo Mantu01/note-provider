@@ -28,7 +28,7 @@ function MobilePurchaseBar({
 }) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/50 bg-background/95 shadow-lg backdrop-blur-md lg:hidden">
-      <div className="mx-auto flex max-w-7xl items-center gap-2 px-3 py-2 pb-[max(0.625rem,env(safe-area-inset-bottom))] sm:px-4">
+      <div className="mx-auto flex max-w-7xl items-center gap-2 px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:px-4">
         <div className="min-w-0 flex-1">
           <PriceTag price={price} priceLabel={priceLabel} compareAtPrice={compareAtPrice} />
           <p className="text-[9px] font-medium text-muted-foreground">Complete pack · instant download</p>
@@ -67,13 +67,13 @@ export function GroupDetailPage({ slug }: { slug: string }) {
 
   return (
     <div className="mx-auto max-w-7xl px-3 pt-3 pb-24 sm:px-4 sm:pt-4 sm:pb-10 lg:px-6" data-testid="group-content">
-      <div className="mb-2.5 flex items-center gap-2 sm:mb-3.5">
+      <div className="mb-2 flex items-center gap-2 sm:mb-3">
         <Button
           render={<Link href="/groups" />}
           variant="outline"
           size="icon-sm"
           aria-label="Back to bundles"
-          className="size-8 shrink-0 rounded-lg max-sm:hidden"
+          className="size-11 shrink-0 rounded-lg max-sm:hidden"
         >
           <ArrowLeft aria-hidden="true" className="size-4" />
         </Button>
@@ -100,14 +100,14 @@ export function GroupDetailPage({ slug }: { slug: string }) {
             {group.coverImageUrl ? (
               <Image
                 src={group.coverImageUrl}
-                alt=""
+                alt={group.name}
                 width={800}
                 height={500}
                 className="h-auto w-full object-cover"
               />
             ) : (
-              <div className="flex h-32 w-full flex-col items-center justify-center gap-1.5 bg-linear-to-br from-primary/5 to-transparent text-primary/20 sm:h-40 md:h-48">
-                <FileText aria-hidden="true" className="size-8 sm:size-10" />
+              <div className="flex h-28 w-full flex-col items-center justify-center gap-1.5 bg-linear-to-br from-primary/5 to-transparent text-primary/20 sm:h-40 md:h-48">
+                <FileText aria-hidden="true" className="size-7 sm:size-10" />
                 <span className="text-[10px] font-semibold uppercase tracking-widest">Bundle cover</span>
               </div>
             )}
@@ -135,7 +135,7 @@ export function GroupDetailPage({ slug }: { slug: string }) {
               </h2>
               <Badge variant="secondary" className="shrink-0 gap-1 rounded-full text-[10px] font-semibold">
                 <Layers aria-hidden="true" className="size-2.5" />
-                Complete pack
+                Complete
               </Badge>
             </div>
             <div className="grid gap-2 sm:gap-2.5">
@@ -177,7 +177,7 @@ export function GroupDetailPage({ slug }: { slug: string }) {
 
               <Button
                 render={<Link href={`/checkout/${group.slug}?itemType=group`} />}
-                className="h-11 w-full rounded-lg text-sm font-semibold bg-accent text-accent-foreground shadow-sm transition-colors hover:bg-accent/90"
+                className="h-10 w-full rounded-lg text-sm font-semibold bg-accent text-accent-foreground shadow-sm transition-colors hover:bg-accent/90"
                 size="lg"
               >
                 Buy this bundle

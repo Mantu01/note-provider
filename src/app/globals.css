@@ -123,6 +123,7 @@
     @apply font-sans scroll-smooth;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    scroll-padding-top: 56px;
   }
 
   body {

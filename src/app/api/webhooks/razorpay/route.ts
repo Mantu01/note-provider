@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { verifyWebhookSignature } from "@/helpers/razorpay";
 import { prisma } from "@/helpers/db";
+import { AppError } from "@/helpers/errors";
 
 export async function POST(req: Request) {
   const rawBody = await req.text();
@@ -62,7 +63,10 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, data: { received: true } });
   } catch (error) {
-    if (error instanceof Error && error.message === "Payments are not configured") {
+    const isConfigError =
+      (error instanceof Error && error.message === "Payments are not configured") ||
+      (error instanceof AppError && error.code === "INTERNAL_ERROR" && !process.env.RAZORPAY_WEBHOOK_SECRET);
+    if (isConfigError) {
       return NextResponse.json(
         { success: false, error: { code: "PAYMENT_ERROR", message: "Webhook secret is not configured" } },
         { status: 503 },

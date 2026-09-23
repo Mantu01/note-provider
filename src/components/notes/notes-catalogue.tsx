@@ -44,7 +44,7 @@ export function NotesCatalogue() {
 
   return (
     <div className="mx-auto max-w-7xl px-3 py-3 sm:px-4 sm:py-4" data-testid="notes-catalogue">
-      <div className="mb-2.5 flex items-end justify-between gap-2 sm:mb-3.5">
+      <div className="mb-2 flex items-end justify-between gap-2 sm:mb-3">
         <div className="min-w-0 space-y-0.5">
           <h1 className="font-heading text-base font-bold tracking-tight text-foreground sm:text-lg md:text-xl">
             All Notes
@@ -78,7 +78,7 @@ export function NotesCatalogue() {
         </div>
       </div>
 
-      <div className="sticky top-14 z-30 -mx-3 mb-2.5 border-b border-border/50 bg-background/90 px-3 py-1.5 backdrop-blur-md sm:-mx-4 sm:px-4 sm:mb-3.5 sm:py-2 lg:hidden">
+      <div className="sticky top-14 z-30 -mx-3 mb-2 border-b border-border/50 bg-background/90 px-3 py-1.5 backdrop-blur-md sm:-mx-4 sm:px-4 sm:mb-3 sm:py-2 lg:hidden">
         <div className="flex items-center gap-2">
           <NoteSearchField className="h-9 flex-1" />
 
@@ -112,7 +112,7 @@ export function NotesCatalogue() {
                 <FilterPanel showSearch={false} />
               </div>
 
-              <div className="border-t bg-popover px-3 pb-[max(0.625rem,env(safe-area-inset-bottom))] pt-2.5 sm:px-4 sm:pb-[max(0.75rem,env(safe-area-inset-bottom))] sm:pt-3">
+              <div className="border-t bg-popover px-3 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2.5 sm:px-4 sm:pb-[max(0.625rem,env(safe-area-inset-bottom))] sm:pt-3">
                 <SheetClose
                   render={
                     <Button size="lg" className="h-11 w-full rounded-lg text-sm font-semibold">
@@ -129,7 +129,7 @@ export function NotesCatalogue() {
       </div>
 
       {isFiltered && (
-        <div className="mb-3 flex flex-wrap items-center gap-1.5 sm:mb-4">
+        <div className="mb-2.5 flex flex-wrap items-center gap-1.5 sm:mb-3">
           <ActiveFilterChips state={state} setFilter={setFilter} />
           <Button
             type="button"

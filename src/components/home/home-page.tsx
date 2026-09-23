@@ -89,13 +89,13 @@ function HeroSection({
   isLoading: boolean;
 }) {
   return (
-    <section className="relative overflow-hidden pt-8 pb-8 md:pt-16 md:pb-12 lg:pt-24 lg:pb-16 paper-bg">
+    <section className="relative overflow-hidden pt-8 pb-8 md:pt-12 md:pb-10 lg:pt-20 lg:pb-14 paper-bg">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,var(--primary),transparent_55%)] opacity-[0.07]" />
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom_left,var(--accent),transparent_55%)] opacity-[0.06]" />
       <div className="pointer-events-none absolute inset-0 page-dot-pattern opacity-30" />
 
       <div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="max-w-2xl space-y-6">
+        <div className="max-w-2xl space-y-5">
           <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/5 px-3 py-1 text-xs font-semibold tracking-wide text-primary uppercase backdrop-blur-md shadow-sm animate-fade-in-up">
             <Sparkles aria-hidden="true" className="size-3.5" />
             Developer notes that scale
@@ -132,7 +132,7 @@ function HeroSection({
           </div>
         </div>
 
-        <div className="mt-10 grid grid-cols-2 gap-2.5 md:mt-14 md:grid-cols-4 animate-fade-in-up stagger-4">
+        <div className="mt-10 grid grid-cols-2 gap-2.5 md:mt-12 md:grid-cols-4 animate-fade-in-up stagger-4">
           {isLoading
             ? Array.from({ length: 4 }, (_, i) => <ShimmerStatCard key={i} />)
             : HOME_STATS_CONFIG.map((s, i) => (
@@ -157,7 +157,7 @@ function HeroSection({
 
 function HomeSection({ className, children }: { className?: string; children: React.ReactNode }) {
   return (
-    <section className={`py-8 sm:py-12 md:py-16 ${className ?? ""}`}>
+    <section className={`py-8 sm:py-10 md:py-14 ${className ?? ""}`}>
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>
     </section>
   );
@@ -175,9 +175,11 @@ function SectionHead({
   center?: boolean;
 }) {
   return (
-    <div className={center ? "mb-6 text-center sm:mb-8" : "mb-6 flex items-end justify-between gap-3 sm:mb-8"}>
+    <div className={center ? "mb-5 text-center sm:mb-7" : "mb-5 flex items-end justify-between gap-3 sm:mb-7"}>
       <div className={center ? "mx-auto max-w-md space-y-1" : "max-w-md space-y-1"}>
-        <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-primary">{eyebrow}</p>
+        <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-primary">
+          {eyebrow}
+        </p>
         <h2 className="font-heading text-xl font-bold tracking-tight md:text-2xl">{title}</h2>
       </div>
       {action}
@@ -290,7 +292,9 @@ function StepsRow() {
             </span>
 
             <h3 className="mt-1 text-sm font-bold tracking-tight">{title}</h3>
-            <p className="mt-1 max-w-[200px] text-[11px] leading-relaxed text-muted-foreground">{desc}</p>
+            <p className="mt-1 max-w-[200px] text-[11px] leading-relaxed text-muted-foreground">
+              {desc}
+            </p>
 
             {index < HOME_STEPS.length - 1 && (
               <ArrowRight aria-hidden="true" className="absolute right-0 top-7 hidden size-4 -translate-y-1/2 translate-x-1/2 rotate-0 text-muted-foreground/40 lg:block" />
@@ -317,14 +321,16 @@ function TrustBar() {
 
 function CTABanner() {
   return (
-    <section className="py-12 md:py-20 lg:py-24">
+    <section className="py-10 md:py-16 lg:py-20">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-linear-to-br from-primary/8 via-card to-accent/6 px-4 py-10 text-center shadow-sm md:px-12 md:py-16 lg:px-16">
+        <div className="relative overflow-hidden rounded-2xl border border-border/50 bg-linear-to-br from-primary/8 via-card to-accent/6 px-4 py-8 text-center shadow-sm md:px-12 md:py-12 lg:px-16">
           <div className="pointer-events-none absolute -top-32 -right-32 size-80 rounded-full bg-primary/8 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-32 -left-32 size-80 rounded-full bg-accent/8 blur-3xl" />
 
-          <div className="relative z-10 mx-auto max-w-lg space-y-5">
-            <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-primary">Ready?</p>
+          <div className="relative z-10 mx-auto max-w-lg space-y-4">
+            <p className="text-[9px] font-bold tracking-[0.2em] uppercase text-primary">
+              Ready?
+            </p>
             <h2 className="font-heading text-2xl font-black tracking-tight md:text-3xl lg:text-4xl">
               Start learning smarter today.
             </h2>

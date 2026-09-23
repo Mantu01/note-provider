@@ -6,7 +6,7 @@ import type { PublicGroup } from "@/lib/types";
 
 export function GroupCard({ group }: { group: PublicGroup }) {
   return (
-    <article className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card transition-shadow hover:shadow-md max-sm:flex-row">
+    <article className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm hover:shadow-md max-sm:flex-row">
       <Link
         href={`/groups/${group.slug}`}
         tabIndex={-1}
@@ -16,7 +16,7 @@ export function GroupCard({ group }: { group: PublicGroup }) {
         {group.coverImageUrl ? (
           <Image
             src={group.coverImageUrl}
-            alt=""
+            alt={group.name}
             fill
             sizes="(max-width: 640px) 80px, (max-width: 768px) 100vw, 33vw"
             className="object-cover transition-transform duration-200 group-hover:scale-[1.04]"

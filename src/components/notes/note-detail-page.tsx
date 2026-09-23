@@ -37,7 +37,7 @@ function PurchaseActions({
         render={<Link href={`/checkout/${slug}`} />}
         size="lg"
         className={cn(
-          "h-11 w-full rounded-lg bg-accent text-sm font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90",
+          "h-10 w-full rounded-lg bg-accent text-sm font-semibold text-accent-foreground shadow-sm transition-colors hover:bg-accent/90",
           className,
         )}
       >
@@ -51,7 +51,7 @@ function PurchaseActions({
       size="lg"
       disabled={isDownloading}
       className={cn(
-        "h-11 w-full rounded-lg text-sm font-semibold shadow-sm transition-shadow hover:shadow-md",
+        "h-10 w-full rounded-lg text-sm font-semibold shadow-sm transition-shadow hover:shadow-md",
         className,
       )}
       onClick={() =>
@@ -91,7 +91,7 @@ function MobilePurchaseBar({
 }) {
   return (
     <div className="fixed inset-x-0 bottom-0 z-40 border-t border-border/50 bg-background/95 shadow-lg backdrop-blur-md lg:hidden">
-      <div className="mx-auto flex max-w-7xl items-center gap-2 px-3 py-2 pb-[max(0.625rem,env(safe-area-inset-bottom))] sm:px-4">
+      <div className="mx-auto flex max-w-7xl items-center gap-2 px-3 py-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:px-4">
         <div className="min-w-0 flex-1">
           <PriceTag price={price} priceLabel={priceLabel} compareAtPrice={compareAtPrice} />
           <p className="text-[9px] font-medium text-muted-foreground">
@@ -131,13 +131,13 @@ export function NoteDetailPage({ slug }: { slug: string }) {
 
   return (
     <div className="mx-auto max-w-7xl px-3 pt-3 pb-24 sm:px-4 sm:pt-4 sm:pb-10 lg:px-6" data-testid="note-content">
-      <div className="mb-2.5 flex items-center gap-2 sm:mb-3.5">
+      <div className="mb-2 flex items-center gap-2 sm:mb-3">
         <Button
           render={<Link href="/notes" />}
           variant="outline"
           size="icon-sm"
           aria-label="Back to notes"
-          className="size-8 shrink-0 rounded-lg max-sm:hidden"
+          className="size-11 shrink-0 rounded-lg max-sm:hidden"
         >
           <ArrowLeft aria-hidden="true" className="size-4" />
         </Button>
@@ -164,14 +164,14 @@ export function NoteDetailPage({ slug }: { slug: string }) {
             {note.coverImageUrl ? (
               <Image
                 src={note.coverImageUrl}
-                alt=""
+                alt={note.title}
                 width={800}
                 height={500}
                 className="h-auto w-full object-cover"
               />
             ) : (
-              <div className="flex h-32 w-full flex-col items-center justify-center gap-1.5 bg-linear-to-br from-primary/5 to-transparent text-primary/20 sm:h-44 md:h-56">
-                <FileText aria-hidden="true" className="size-8 sm:size-10" />
+              <div className="flex h-28 w-full flex-col items-center justify-center gap-1.5 bg-linear-to-br from-primary/5 to-transparent text-primary/20 sm:h-40 md:h-52">
+                <FileText aria-hidden="true" className="size-7 sm:size-10" />
                 <span className="text-[10px] font-semibold uppercase tracking-widest">Study note document</span>
               </div>
             )}

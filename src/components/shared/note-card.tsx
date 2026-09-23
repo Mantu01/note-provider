@@ -33,7 +33,7 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
         {note.coverImageUrl ? (
           <Image
             src={note.coverImageUrl}
-            alt=""
+            alt={note.title}
             fill
             sizes="(max-width: 640px) 80px, (max-width: 1024px) 50vw, 25vw"
             className="object-cover transition-transform duration-200 group-hover:scale-[1.04]"
@@ -41,7 +41,7 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
         ) : (
           <div className="flex size-full flex-col items-center justify-center gap-1 bg-linear-to-br from-primary/5 to-transparent text-primary/30">
             <FileText aria-hidden="true" className="size-5" />
-            <span className="text-[7px] font-semibold tracking-widest uppercase">PDF</span>
+            <span className="text-[7px] font-semibold tracking-widest uppercase">Study note</span>
           </div>
         )}
       </Link>
@@ -60,7 +60,7 @@ export function NoteCard({ note, variant = "default" }: NoteCardProps) {
         <Link
           href={`/notes/${note.slug}`}
           className={cn(
-            "font-heading font-semibold text-foreground transition-colors line-clamp-2 group-hover:text-primary",
+            "font-heading font-semibold text-foreground line-clamp-2 group-hover:text-primary",
             compact ? "text-[11px] sm:text-xs" : "text-xs sm:text-sm",
           )}
         >

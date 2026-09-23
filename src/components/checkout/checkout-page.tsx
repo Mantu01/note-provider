@@ -85,7 +85,7 @@ function OrderSummaryCard({
           <div className="flex items-center gap-2.5 sm:gap-3">
             {coverImageUrl && (
               <div className="relative size-10 shrink-0 overflow-hidden rounded-lg border border-border/70 bg-muted/20 sm:size-12">
-                <Image src={coverImageUrl} alt="" fill sizes="48px" className="object-cover" />
+                <Image src={coverImageUrl} alt={title} fill sizes="48px" className="object-cover" />
               </div>
             )}
             <div className="min-w-0">
@@ -113,6 +113,54 @@ function OrderSummaryCard({
         </div>
       </div>
     </aside>
+  );
+}
+
+function MobileOrderSummary({
+  title,
+  categoryName,
+  price,
+  priceLabel,
+  compareAtPrice,
+  coverImageUrl,
+}: {
+  title: string;
+  categoryName: string;
+  price: number;
+  priceLabel: string;
+  compareAtPrice: number | null;
+  coverImageUrl?: string | null;
+}) {
+  return (
+    <div className="mb-4 rounded-xl border border-border bg-card p-3 shadow-sm sm:hidden">
+      <div className="flex gap-3">
+        <div className="relative size-14 shrink-0 overflow-hidden rounded-lg border border-border/70 bg-muted/20">
+          {coverImageUrl ? (
+            <Image src={coverImageUrl} alt={title} fill sizes="56px" className="object-cover" />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-primary/5 to-transparent text-primary/20">
+              <FileText aria-hidden="true" className="size-6" />
+            </div>
+          )}
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-[9px] font-semibold uppercase tracking-widest text-muted-foreground">Order summary</p>
+          <h2 className="mt-0.5 line-clamp-1 text-sm font-bold leading-snug">{title}</h2>
+          <p className="truncate text-xs text-muted-foreground">{categoryName}</p>
+          <div className="mt-1.5">
+            <PriceTag price={price} priceLabel={priceLabel} compareAtPrice={compareAtPrice} size="default" />
+          </div>
+        </div>
+        <div className="flex shrink-0 flex-col items-end justify-between py-0.5">
+          <p className="text-[9px] text-muted-foreground">Total</p>
+          <p className="text-lg font-bold leading-none">{priceLabel}</p>
+        </div>
+      </div>
+      <p className="mt-2.5 text-xs leading-relaxed text-muted-foreground flex items-center gap-1.5">
+        <ShieldCheck aria-hidden="true" className="size-3.5 shrink-0 text-success" />
+        Instant download after payment.
+      </p>
+    </div>
   );
 }
 
@@ -202,6 +250,8 @@ export function CheckoutPage({
     return <FreeNoteGuard slug={slug} />;
   }
 
+  const itemTitle = "name" in item ? item.name : item.title;
+
   return (
     <div className="mx-auto max-w-5xl px-3 py-5 sm:px-4 sm:py-7">
       <Link
@@ -211,6 +261,15 @@ export function CheckoutPage({
         <ArrowLeft aria-hidden="true" className="size-3.5" />
         Back to {itemType === "group" ? "bundle" : "note"}
       </Link>
+
+      <MobileOrderSummary
+        title={itemTitle}
+        categoryName={item.category.name}
+        price={item.price}
+        priceLabel={item.priceLabel}
+        compareAtPrice={item.compareAtPrice}
+        coverImageUrl={item.coverImageUrl}
+      />
 
       <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_22rem]">
         <form onSubmit={form.handleSubmit(submit)} className="space-y-4">
@@ -299,7 +358,7 @@ export function CheckoutPage({
         </form>
 
         <OrderSummaryCard
-          title={"name" in item ? item.name : item.title}
+          title={itemTitle}
           categoryName={item.category.name}
           price={item.price}
           priceLabel={item.priceLabel}

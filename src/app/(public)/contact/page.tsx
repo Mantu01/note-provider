@@ -114,11 +114,6 @@ export default function ContactPage() {
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground sm:text-sm">
                 Browse every note preview to check formatting and quality. Browse our FAQ for common questions first.
               </p>
-              <div className="mt-2.5">
-                <Button render={<Link href="/" />} variant="link" className="h-auto p-0 text-xs font-medium sm:text-sm">
-                  Visit home page
-                </Button>
-              </div>
             </div>
           </div>
         </div>

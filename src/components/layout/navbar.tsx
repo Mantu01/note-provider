@@ -153,7 +153,7 @@ export function Navbar() {
             aria-label="Search notes"
             aria-expanded={searchOpen}
             className={cn(
-              "size-8 rounded-full text-muted-foreground transition-colors",
+              "size-11 rounded-full text-muted-foreground transition-colors",
               searchOpen && "bg-primary/10 text-primary",
             )}
             onClick={openSearch}

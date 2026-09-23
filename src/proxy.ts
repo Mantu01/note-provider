@@ -5,6 +5,7 @@ import { ADMIN_SESSION_COOKIE } from "@/lib/constants";
 const PUBLIC_ADMIN_PATHS = [
   "/api/admin/auth/login",
   "/api/admin/auth/register",
+  "/api/webhooks/razorpay"
 ];
 
 function unauthorizedJson(): NextResponse {

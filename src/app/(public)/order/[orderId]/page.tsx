@@ -11,7 +11,7 @@ interface OrderRouteProps {
 export async function generateMetadata({ params }: OrderRouteProps): Promise<Metadata> {
   const { orderId } = await params;
   return {
-    title: `Order Status — ${orderId} | Notes Provider`,
+    title: `Order Status — Notes Provider`,
     description: "View your order status and download your purchased study notes.",
     robots: { index: false, follow: false },
     alternates: { canonical: `${APP_URL}/order/${orderId}` },
