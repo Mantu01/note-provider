@@ -1,56 +1,63 @@
-import { handler } from "@/server/lib/api-handler";
-import { ok } from "@/server/lib/api-response";
-import { Note } from "@/server/db/models/note.model";
-import { Category } from "@/server/db/models/category.model";
-import { toPublicNote } from "@/server/mappers/note.mapper";
-import {
-  parsePagination,
-  buildPagination,
-  buildNoteFilter,
-  buildNoteSort,
-  parseArrayParam,
-  parseBooleanParam,
-  parseNumberParam,
-  resolveCategoryIds,
-} from "@/server/lib/query";
-import type { NoteSort } from "@/lib/types";
+import { handler } from "@/helpers/api-handler";
+import { ok } from "@/helpers/api-response";
+import { prisma } from "@/helpers/db";
+import { toPublicNote } from "@/helpers/mappers/note.mapper";
+import { parsePagination, buildPagination, buildNoteFilter, buildNoteSort } from "@/helpers/query";
+import type { NoteLevel, NotePricingType, NoteSort } from "@/lib/types";
 
-export const revalidate = 300;
-export const dynamic = "force-dynamic";
+const NOTE_LEVEL_SET = new Set<string>(["basics", "intermediate", "advance"]);
+
+function parseArrayParam(searchParams: URLSearchParams, key: string): string[] {
+  return Array.from(new Set(
+    searchParams.getAll(key).flatMap((v) => v.split(",").map((s) => s.trim()).filter(Boolean)),
+  ));
+}
+
+function parseBooleanParam(searchParams: URLSearchParams, key: string): boolean | undefined {
+  const value = searchParams.get(key);
+  if (value === null) return undefined;
+  return value === "true" || value === "1";
+}
+
+function parseNumberParam(searchParams: URLSearchParams, key: string): number | undefined {
+  const raw = searchParams.get(key);
+  if (raw === null || raw.trim() === "") return undefined;
+  const value = Number(raw);
+  return Number.isFinite(value) ? value : undefined;
+}
+
+const SORTS: NoteSort[] = ["newest", "oldest", "price_asc", "price_desc", "popular", "title_asc"];
 
 export const GET = handler(async (ctx) => {
   const { page, limit, skip } = parsePagination(ctx.searchParams);
   const sortParam = ctx.searchParams.get("sort");
-  const sort: NoteSort = (sortParam as NoteSort) || "newest";
+  const sort: NoteSort = SORTS.includes(sortParam as NoteSort) ? (sortParam as NoteSort) : "newest";
+
+  const levels = parseArrayParam(ctx.searchParams, "level").filter((l) => NOTE_LEVEL_SET.has(l)) as NoteLevel[];
+  const pricingRaw = ctx.searchParams.get("pricing");
+  const pricing = pricingRaw === "free" || pricingRaw === "paid" ? (pricingRaw as NotePricingType) : undefined;
 
   const query = {
-    q: ctx.searchParams.get("q") || undefined,
+    q: ctx.searchParams.get("q")?.trim() || undefined,
     category: parseArrayParam(ctx.searchParams, "category"),
-    level: parseArrayParam(ctx.searchParams, "level") as ("basics" | "intermediate" | "advance")[],
+    level: levels,
     tags: parseArrayParam(ctx.searchParams, "tags"),
-    pricing: (ctx.searchParams.get("pricing") as "free" | "paid") || undefined,
+    pricing,
     minPrice: parseNumberParam(ctx.searchParams, "minPrice"),
     maxPrice: parseNumberParam(ctx.searchParams, "maxPrice"),
     sort,
     featured: parseBooleanParam(ctx.searchParams, "featured"),
   };
 
-  const categoryIds = query.category.length > 0
-    ? await resolveCategoryIds(Category as unknown as import("mongoose").Model<Record<string, unknown>>, query.category)
-    : undefined;
-
-  const filter = buildNoteFilter(query, { publicOnly: true, categoryIds });
+  const filter = await buildNoteFilter(query, { publicOnly: true });
   const sortSpec = buildNoteSort(sort);
 
   const [items, total] = await Promise.all([
-    Note.find(filter).populate("category").sort(sortSpec).skip(skip).limit(limit).lean().exec(),
-    Note.countDocuments(filter).exec(),
+    prisma.note.findMany({ where: filter.where as any, include: { category: true }, orderBy: sortSpec as any, skip, take: limit }),
+    prisma.note.count({ where: filter.where as any }),
   ]);
 
-  const res = ok({
-    items: items.map(toPublicNote),
-    pagination: buildPagination(total, page, limit),
-  });
+  const res = ok({ items: items.map(toPublicNote), pagination: buildPagination(total, page, limit) });
   res.headers.set("Cache-Control", "public, max-age=300, s-maxage=300");
   return res;
 });

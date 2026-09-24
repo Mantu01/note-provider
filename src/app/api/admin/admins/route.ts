@@ -1,11 +1,9 @@
-import { adminHandler } from "@/server/lib/api-handler";
-import { ok } from "@/server/lib/api-response";
-import { Admin } from "@/server/db/models/admin.model";
-import { toAdminProfile } from "@/server/mappers/admin.mapper";
-
-export const runtime = "nodejs";
+import { adminHandler } from "@/helpers/api-handler";
+import { ok } from "@/helpers/api-response";
+import { AppError } from "@/helpers/errors";
+import { prisma } from "@/helpers/db";
 
 export const GET = adminHandler(async () => {
-  const admins = await Admin.find({}, { passwordHash: 0 }).sort({ createdAt: 1 }).lean().exec();
-  return ok(admins.map(toAdminProfile));
+  const admins = await prisma.admin.findMany({ select: { id: true, name: true, email: true, isHead: true, lastLoginAt: true, createdAt: true }, orderBy: { createdAt: "asc" } });
+  return ok(admins.map((a) => ({ id: a.id, name: a.name, email: a.email, isHead: a.isHead, lastLoginAt: a.lastLoginAt?.toISOString() ?? null, createdAt: a.createdAt.toISOString() })));
 });

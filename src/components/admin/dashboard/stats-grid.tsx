@@ -1,79 +1,75 @@
 "use client";
 
-import { DollarSign, ShoppingBag, FileText, Users } from "lucide-react";
+import { FileText, IndianRupee, ShoppingBag, TrendingUp } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import { formatCompactNumber, formatPrice } from "@/lib/format";
 import type { DashboardStats } from "@/lib/types";
 
-type StatsGridProps = {
+export function StatsGrid({
+  stats,
+  periodDays = 30,
+  periodPaise,
+}: {
   stats: DashboardStats;
-};
+  periodDays?: 7 | 30;
+  periodPaise?: number;
+}) {
+  const activePeriodPaise = periodPaise ?? stats.revenue.periodPaise;
+  const activePeriodLabel = formatPrice(activePeriodPaise);
 
-const STAT_CARDS = [
-  {
-    title: "Total Revenue",
-    valueKey: "revenue",
-    subtextKey: "revenue" as const,
-    icon: DollarSign,
-    ringClass: "ring-brand-emerald/20",
-    iconBgClass: "bg-brand-emerald-soft text-brand-emerald-foreground",
-    getValue: (s: DashboardStats) => s.revenue.totalLabel,
-    getSub: (s: DashboardStats) => `Today: ${s.revenue.todayLabel}`,
-  },
-  {
-    title: "Paid Orders",
-    valueKey: "orders",
-    subtextKey: "orders" as const,
-    icon: ShoppingBag,
-    ringClass: "ring-brand-blue/20",
-    iconBgClass: "bg-brand-blue-soft text-brand-blue-foreground",
-    getValue: (s: DashboardStats) => String(s.orders.paid),
-    getSub: (s: DashboardStats) => `${s.orders.pendingFulfillment} pending fulfillment`,
-  },
-  {
-    title: "Catalogue Notes",
-    valueKey: "catalog",
-    subtextKey: "catalog" as const,
-    icon: FileText,
-    ringClass: "ring-brand-orange/20",
-    iconBgClass: "bg-brand-orange-soft text-brand-orange-foreground",
-    getValue: (s: DashboardStats) => String(s.catalog.totalNotes),
-    getSub: (s: DashboardStats) => `${s.catalog.paidNotes} paid · ${s.catalog.freeNotes} free`,
-  },
-  {
-    title: "Leads Captured",
-    valueKey: "leads",
-    subtextKey: "leads" as const,
-    icon: Users,
-    ringClass: "ring-brand-amber/20",
-    iconBgClass: "bg-brand-amber-soft text-brand-amber-foreground",
-    getValue: (s: DashboardStats) => String(s.leads.total),
-    getSub: (s: DashboardStats) => `Today: ${s.leads.today} submissions`,
-  },
-] as const;
-
-export function StatsGrid({ stats }: StatsGridProps) {
+  const statCards = [
+    {
+      title: "Total Revenue",
+      icon: IndianRupee,
+      iconClass: "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300",
+      value: stats.revenue.totalLabel,
+      sub: `Today ${stats.revenue.todayLabel}`,
+    },
+    {
+      title: "Paid Orders",
+      icon: ShoppingBag,
+      iconClass: "bg-sky-50 text-sky-700 dark:bg-sky-950/40 dark:text-sky-300",
+      value: formatCompactNumber(stats.orders.paid),
+      sub: `${formatCompactNumber(stats.orders.today)} today`,
+    },
+    {
+      title: periodDays === 7 ? "7-Day Revenue" : "30-Day Revenue",
+      icon: TrendingUp,
+      iconClass: "bg-amber-50 text-amber-700 dark:bg-amber-950/40 dark:text-amber-300",
+      value: activePeriodLabel,
+      sub: `Last ${periodDays} days`,
+    },
+    {
+      title: "Catalogue Notes",
+      icon: FileText,
+      iconClass: "bg-orange-50 text-orange-700 dark:bg-orange-950/40 dark:text-orange-300",
+      value: formatCompactNumber(stats.catalog.totalNotes),
+      sub: `${stats.catalog.paidNotes} paid · ${stats.catalog.freeNotes} free`,
+    },
+  ];
   return (
     <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-      {STAT_CARDS.map((item) => {
-        const Icon = item.icon;
+      {statCards.map((card) => {
+        const Icon = card.icon;
         return (
-          <Card
-            key={item.title}
-            className="group overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm transition-shadow hover:shadow-md"
-          >
-            {/* colored top accent bar */}
-            <div className={`h-1 w-full bg-gradient-to-r ${item.ringClass.replace("ring-", "from-").replace("/20", "")}-500 to-transparent`} />
-            <CardContent className="flex items-center justify-between p-5">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                  {item.title}
+          <Card key={card.title} className="rounded-2xl border border-border/60 bg-card">
+            <CardContent className="flex items-center justify-between gap-4 p-5">
+              <div className="min-w-0">
+                <p className="text-[11px] font-semibold tracking-widest text-muted-foreground uppercase">
+                  {card.title}
                 </p>
-                <p className="mt-1.5 text-2xl font-bold tracking-tight text-foreground">
-                  {item.getValue(stats)}
+                <p className="mt-1.5 text-2xl font-bold tabular-nums tracking-tight text-foreground">
+                  {card.value}
                 </p>
-                <p className="mt-0.5 text-xs text-muted-foreground">{item.getSub(stats)}</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{card.sub}</p>
               </div>
-              <div className={`flex size-11 shrink-0 items-center justify-center rounded-xl ${item.iconBgClass} ring-1 ring-inset ring-current/10`}>
+              <div
+                className={cn(
+                  "flex size-11 shrink-0 items-center justify-center rounded-xl",
+                  card.iconClass,
+                )}
+              >
                 <Icon aria-hidden="true" className="size-5" />
               </div>
             </CardContent>

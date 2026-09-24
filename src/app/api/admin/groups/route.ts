@@ -1,38 +1,30 @@
-import { adminHandler } from "@/server/lib/api-handler";
-import { fail, ok } from "@/server/lib/api-response";
-import { Types } from "mongoose";
-import { Group } from "@/server/db/models/group.model";
-import { Note } from "@/server/db/models/note.model";
-import { toAdminGroup } from "@/server/mappers/group.mapper";
-import { createGroupSchema } from "@/lib/schemas/group.schema";
-import { uniqueSlug } from "@/server/lib/slug";
-import { AppError } from "@/server/lib/errors";
+import { adminHandler } from "@/helpers/api-handler";
+import { fail, ok } from "@/helpers/api-response";
+import { AppError } from "@/helpers/errors";
+import { prisma } from "@/helpers/db";
+import { toAdminGroup } from "@/helpers/mappers/group.mapper";
+import { parsePagination, buildPagination } from "@/helpers/query";
+import { createGroupSchema } from "@/schemas/group.schema";
 import { rupeesToPaise } from "@/lib/format";
-import { validateNoteIdsExist } from "@/server/lib/note-validation";
-
-export const runtime = "nodejs";
+import { uniqueSlug } from "@/helpers/slug";
+import { validateNoteIdsExist } from "@/helpers/note-validation";
 
 export const GET = adminHandler(async (ctx) => {
-  const page = Number(ctx.searchParams.get("page")) || 1;
-  const limit = Number(ctx.searchParams.get("limit")) || 20;
-  const skip = (page - 1) * limit;
+  const { page, limit, skip } = parsePagination(ctx.searchParams, 20);
 
   const [items, total] = await Promise.all([
-    Group.find({})
-      .sort({ createdAt: -1 })
-      .skip(skip)
-      .limit(limit)
-      .populate("category")
-      .populate("createdBy", "_id name")
-      .populate("notes", "_id title price subject category")
-      .lean()
-      .exec(),
-    Group.countDocuments().exec(),
+    prisma.group.findMany({
+      include: { category: true, noteGroups: { include: { note: true } } } as any,
+      orderBy: { createdAt: "desc" },
+      skip,
+      take: limit,
+    }),
+    prisma.group.count(),
   ]);
 
   return ok({
-    items: items.map((item) => toAdminGroup(item as unknown as Record<string, unknown>)),
-    pagination: { page, limit, total, totalPages: Math.ceil(total / limit), hasNext: page < Math.ceil(total / limit), hasPrev: page > 1 },
+    items: items.map(toAdminGroup),
+    pagination: buildPagination(total, page, limit),
   });
 });
 
@@ -42,45 +34,49 @@ export const POST = adminHandler(async (ctx) => {
   if (!parsed.success) {
     const fields: Record<string, string> = {};
     for (const issue of parsed.error.issues) {
-      const key = issue.path.join(".") || "form";
-      if (!fields[key]) fields[key] = issue.message;
+      const path = issue.path.join(".");
+      if (!fields[path]) fields[path] = issue.message;
     }
-    return fail(AppError.validation(fields, parsed.error.issues[0]?.message ?? "Invalid input"));
+    return fail(AppError.validation(fields));
   }
 
   const { admin } = ctx;
   const input = parsed.data;
 
-  const noteIds = input.noteIds.filter((id) => id.trim());
+  const noteIds = input.noteIds.filter((n: string) => n.trim());
   const uniqueIds = Array.from(new Set(noteIds));
-
   await validateNoteIdsExist(uniqueIds);
 
-  const baseSlug = uniqueSlug(Group, input.name);
-  const slug = await baseSlug;
+  const compareAtPricePaise = input.compareAtPrice ? rupeesToPaise(input.compareAtPrice) : null;
+  const slug = await uniqueSlug("group", input.name);
 
-  const createdDoc = await Group.create({
-    name: input.name,
-    description: input.description,
-    category: input.categoryId,
-    price: rupeesToPaise(input.price),
-    compareAtPrice: input.compareAtPrice ? rupeesToPaise(input.compareAtPrice) : null,
-    notes: uniqueIds,
-    coverImageUrl: input.coverImage?.url ?? null,
-    coverImagePublicId: input.coverImage?.publicId ?? null,
-    visibility: input.visibility,
-    isFeatured: input.isFeatured,
-    slug,
-    createdBy: admin.id,
-    updatedBy: admin.id,
+  const createdDoc = await prisma.group.create({
+    data: {
+      name: input.name,
+      description: input.description,
+      categoryId: input.categoryId,
+      price: rupeesToPaise(input.price),
+      compareAtPrice: compareAtPricePaise,
+      coverImageUrl: input.coverImage?.url ?? null,
+      visibility: input.visibility,
+      isFeatured: input.isFeatured,
+      slug,
+      createdBy: admin.id,
+      updatedBy: admin.id,
+    },
   });
 
-  const doc = await Group.findById(createdDoc._id)
-    .populate("category")
-    .populate("createdBy", "_id name")
-    .populate({ path: "notes", populate: { path: "category" } })
-    .lean()
-    .exec();
+  if (uniqueIds.length > 0) {
+    await prisma.noteGroup.createMany({
+      data: uniqueIds.map((noteId) => ({ groupId: createdDoc.id, noteId })),
+      skipDuplicates: true,
+    });
+  }
 
-  return ok(toAdminGroup(doc ?? createdDoc.toJSON()));
+  const fullDoc = await prisma.group.findUnique({
+    where: { id: createdDoc.id },
+    include: { category: true, noteGroups: { include: { note: true } } } as any,
+  });
+
+  return ok(toAdminGroup(fullDoc!));
 });

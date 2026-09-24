@@ -1,15 +1,19 @@
 name: notes-provider
 
 services:
-  mongodb:
-    image: mongo:7.0
-    container_name: notes-provider-mongodb
+  postgres:
+    image: postgres:16
+    container_name: notes-provider-postgres
     restart: unless-stopped
     ports:
-      - "27017:27017"
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: notes_provider
     volumes:
-      - mongodb_data:/data/db
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  mongodb_data:
+  postgres_data:
     driver: local

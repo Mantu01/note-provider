@@ -1,32 +1,24 @@
-import { z } from "zod";
-import { handler, adminHandler } from "@/server/lib/api-handler";
-import { connectDB } from "@/server/db/connect";
-import { fail, ok } from "@/server/lib/api-response";
-import { AppError } from "@/server/lib/errors";
-import { Note } from "@/server/db/models/note.model";
-import { Category } from "@/server/db/models/category.model";
-import { destroyAsset } from "@/server/lib/cloudinary";
-import { toPublicNote, toAdminNote } from "@/server/mappers/note.mapper";
-import { createNoteSchema, updateNoteSchema } from "@/lib/schemas/note.schema";
+import { adminHandler } from "@/helpers/api-handler";
+import { fail, ok } from "@/helpers/api-response";
+import { AppError } from "@/helpers/errors";
+import { prisma } from "@/helpers/db";
+import { toAdminNote } from "@/helpers/mappers/note.mapper";
+import { createNoteSchema, toGoogleDriveDownloadUrl } from "@/schemas/note.schema";
 import { rupeesToPaise } from "@/lib/format";
-import { uniqueSlug } from "@/server/lib/slug";
-import { MIN_PAID_PRICE_PAISE } from "@/lib/constants";
-
-export const runtime = "nodejs";
+import { uniqueSlug } from "@/helpers/slug";
+import { parsePagination, buildPagination } from "@/helpers/query";
 
 export const GET = adminHandler(async (ctx) => {
-  const page = Number(ctx.searchParams.get("page")) || 1;
-  const limit = Number(ctx.searchParams.get("limit")) || 20;
-  const skip = (page - 1) * limit;
+  const { page, limit, skip } = parsePagination(ctx.searchParams, 20);
 
   const [items, total] = await Promise.all([
-    Note.find({}).sort({ createdAt: -1 }).skip(skip).limit(limit).populate("category").populate("createdBy", "_id name").lean().exec(),
-    Note.countDocuments().exec(),
+    prisma.note.findMany({ include: { category: true }, orderBy: { createdAt: "desc" }, skip, take: limit }),
+    prisma.note.count(),
   ]);
 
   return ok({
     items: items.map(toAdminNote),
-    pagination: { page, limit, total, totalPages: Math.ceil(total / limit), hasNext: page < Math.ceil(total / limit), hasPrev: page > 1 },
+    pagination: buildPagination(total, page, limit),
   });
 });
 
@@ -36,56 +28,42 @@ export const POST = adminHandler(async (ctx) => {
   if (!parsed.success) {
     const fields: Record<string, string> = {};
     for (const issue of parsed.error.issues) {
-      const key = issue.path.join(".") || "form";
-      if (!fields[key]) fields[key] = issue.message;
+      const path = issue.path.join(".");
+      if (!fields[path]) fields[path] = issue.message;
     }
-    return fail(AppError.validation(fields, parsed.error.issues[0]?.message ?? "Invalid input"));
+    return fail(AppError.validation(fields));
   }
 
   const { admin } = ctx;
   const input = parsed.data;
 
-  const pricePaise = rupeesToPaise(input.price);
   const compareAtPricePaise = input.compareAtPrice ? rupeesToPaise(input.compareAtPrice) : null;
+  const slug = await uniqueSlug("note", input.title);
 
-  if (input.pricingType === "paid" && pricePaise < MIN_PAID_PRICE_PAISE) {
-    throw AppError.validation({ price: "Paid notes must cost at least ₹1" });
-  }
+  const fullFileUrl = input.fullFile?.url ?? (input.fullFileUrl ? toGoogleDriveDownloadUrl(input.fullFileUrl) : "");
 
-  const categoryDoc = await Category.findById(input.categoryId).lean().exec();
-  if (!categoryDoc) throw AppError.notFound("Category");
-
-  const baseSlug = uniqueSlug(Note, input.title);
-  const slug = await baseSlug;
-
-  const createdDoc = await Note.create({
-    title: input.title,
-    description: input.description,
-    category: input.categoryId,
-    level: input.level,
-    visibility: input.visibility,
-    pricingType: input.pricingType,
-    price: pricePaise,
-    compareAtPrice: compareAtPricePaise,
-    tags: input.tags,
-    isFeatured: input.isFeatured,
-    pageCount: input.pageCount,
-    fullFileUrl: input.fullFile.url,
-    fullFilePublicId: input.fullFile.source === "upload" ? input.fullFile.publicId : null,
-    fullFileBytes: input.fullFile.source === "upload" ? input.fullFile.bytes : 0,
-    pdfSource: input.fullFile.source,
-    drivePdfUrl: input.fullFile.source === "drive" ? input.fullFile.url : null,
-    previewFileUrl: input.previewFile?.url ?? null,
-    previewFilePublicId: input.previewFile && input.previewFile.source === "upload" ? input.previewFile.publicId : null,
-    previewFileBytes: input.previewFile && input.previewFile.source === "upload" ? input.previewFile.bytes : null,
-    coverImageUrl: input.coverImage?.url ?? null,
-    coverImagePublicId: input.coverImage?.publicId ?? null,
-    slug,
-    createdBy: admin.id,
-    updatedBy: admin.id,
+  const createdDoc = await prisma.note.create({
+    data: {
+      title: input.title,
+      description: input.description,
+      categoryId: input.categoryId,
+      level: input.level,
+      visibility: input.visibility,
+      pricingType: input.pricingType,
+      price: rupeesToPaise(input.price),
+      compareAtPrice: compareAtPricePaise,
+      tags: input.tags,
+      isFeatured: input.isFeatured,
+      pageCount: input.pageCount,
+      fullFileUrl,
+      previewFileUrl: input.previewFile?.url ?? null,
+      coverImageUrl: input.coverImage?.url ?? null,
+      slug,
+      createdBy: admin.id,
+      updatedBy: admin.id,
+    },
+    include: { category: true },
   });
 
-  const doc = await Note.findById(createdDoc._id).populate("category").populate("createdBy", "_id name").lean().exec();
-
-  return ok(toAdminNote(doc ?? createdDoc.toJSON()));
+  return ok(toAdminNote(createdDoc));
 });

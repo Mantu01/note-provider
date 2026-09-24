@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import JsonLd, {faqJsonLd,webpageJsonLd,websiteJsonLd,organizationJsonLd,howToJsonLd} from "@/components/seo/json-ld";
+import JsonLd, { webpageJsonLd, organizationJsonLd } from "@/components/seo/json-ld";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { HomePage } from "@/components/home/home-page";
@@ -16,7 +16,7 @@ export const metadata: Metadata = {
     siteName: SEO.siteName,
     images: [
       {
-        url: `${APP_URL}/og/home.png`,
+        url: `${APP_URL}/og/home`,
         width: SEO.ogImageWidth,
         height: SEO.ogImageHeight,
         alt: SEO.ogImageAlt,
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     card: SEO.twitterCard,
     title: SEO.defaultTitle,
     description: SEO.defaultDescription,
-    images: [`${APP_URL}/og/home.png`],
+    images: [`${APP_URL}/og/home`],
   },
 };
 
@@ -39,26 +39,18 @@ export default function HomePageRoute() {
     <>
       <JsonLd
         scripts={[
-          ...websiteJsonLd(),
           ...organizationJsonLd(),
-          ...faqJsonLd(SEO.faqs),
-          howToJsonLd([
-            { name: "Browse notes", text: "Explore our collection of free and premium PDF study notes for every exam." },
-            { name: "Preview & select", text: "Preview any note for free and choose the ones that match your needs." },
-            { name: "Secure checkout", text: "Pay securely via Razorpay using UPI, cards, or net banking." },
-            { name: "Instant delivery", text: "Your PDF notes are available for immediate download after payment." },
-          ]),
-          webpageJsonLd({
+          ...webpageJsonLd({
             title: SEO.defaultTitle,
             description: SEO.defaultDescription,
             url: APP_URL,
-            image: `${APP_URL}/og/home.png`,
+            image: `${APP_URL}/og/home`,
           }),
         ]}
       />
       <div className="flex min-h-screen flex-col">
         <Navbar />
-        <main className="flex-1">
+        <main id="main-content" className="flex-1">
           <HomePage />
         </main>
         <Footer />

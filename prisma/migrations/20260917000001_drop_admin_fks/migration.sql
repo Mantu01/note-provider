@@ -1,0 +1,2 @@
+-- Drop foreign keys from admin fields that are no longer required
+-- This migration is intentionally empty as ON DELETE SET NULL is the default

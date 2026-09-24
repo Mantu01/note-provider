@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import JsonLd, { webpageJsonLd, collectionPageJsonLd } from "@/components/seo/json-ld";
+import JsonLd, { webpageJsonLd } from "@/components/seo/json-ld";
 import { StaticPage } from "@/components/layout/static-page";
 import { Card, CardContent } from "@/components/ui/card";
 import { APP_URL, BRAND, SEO, ABOUT_VALUES } from "@/lib/constants";
@@ -8,13 +8,6 @@ export const metadata: Metadata = {
   title: "About Us — Notes Provider | Mission & Values",
   description:
     "Learn about Notes Provider — our mission to help developers discover clear, practical notes on frontend, backend, DSA, DBMS, and system design.",
-  keywords: [
-    "about notes provider",
-    "developer notes company",
-    "coding notes platform",
-    "web dev notes",
-    "programming resources",
-  ],
   alternates: { canonical: `${APP_URL}/about` },
   openGraph: {
     title: "About Us — Notes Provider",
@@ -22,7 +15,7 @@ export const metadata: Metadata = {
       "Learn about Notes Provider — our mission to make developer-focused learning resources easier to discover and use.",
     url: `${APP_URL}/about`,
     siteName: SEO.siteName,
-    images: [{ url: `${APP_URL}/og/home.png`, width: SEO.ogImageWidth, height: SEO.ogImageHeight, alt: "About Notes Provider" }],
+    images: [{ url: `${APP_URL}/og/home`, width: SEO.ogImageWidth, height: SEO.ogImageHeight, alt: "About Notes Provider" }],
     type: "website",
     locale: SEO.locale,
   },
@@ -30,7 +23,7 @@ export const metadata: Metadata = {
     card: SEO.twitterCard,
     title: "About Us — Notes Provider",
     description: "Learn about Notes Provider — our mission and values.",
-    images: [`${APP_URL}/og/home.png`],
+    images: [`${APP_URL}/og/home`],
   },
 };
 
@@ -43,7 +36,7 @@ export default function AboutPage() {
             title: "About Us — Notes Provider",
             description: "Learn about Notes Provider — our mission to make developer-focused learning resources easier to discover.",
             url: `${APP_URL}/about`,
-            image: `${APP_URL}/og/home.png`,
+            image: `${APP_URL}/og/home`,
           }),
         ]}
       />
@@ -52,13 +45,13 @@ export default function AboutPage() {
         <p>We believe serious learners and engineers need resources that cut through noise and help them understand what matters most. That is why every note and bundle is selected to be practical, readable, and relevant to real-world software work.</p>
         <h2>Built for better learning</h2>
         <p>From first-time revision to interview prep and system design practice, our approach stays simple: less clutter, better structure, and a clearer path to growth.</p>
-        <div className="not-prose grid gap-4 md:grid-cols-3">
+        <div className="not-prose mt-4 grid gap-3 sm:mt-5 sm:grid-cols-2 lg:grid-cols-3">
           {ABOUT_VALUES.map((value) => (
-            <Card key={value.title} className="rounded-2xl border border-border/80 bg-card">
-              <CardContent className="flex flex-col gap-4 p-5">
+            <Card key={value.title} className="rounded-xl border border-border/80 bg-card">
+              <CardContent className="flex flex-col gap-3 p-4 sm:p-5">
                 <div>
-                  <h3 className="text-base font-semibold text-foreground">{value.title}</h3>
-                  <p className="mt-1 text-sm leading-relaxed text-muted-foreground">{value.text}</p>
+                  <h3 className="text-sm font-semibold text-foreground sm:text-base">{value.title}</h3>
+                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground sm:text-sm">{value.text}</p>
                 </div>
               </CardContent>
             </Card>

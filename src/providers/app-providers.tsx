@@ -16,7 +16,7 @@ export function QueryProvider({ children }: { children: ReactNode }) {
     const queryCache = new QueryCache({
       onError: (error) => {
         if (error instanceof ApiError && error.code === "UNAUTHORIZED") {
-          toast.error("Your admin session has expired. Please sign in again via the admin login API.");
+          toast.error("Your admin session has expired. Please refresh the page.");
           queryCache.clear();
           if (typeof window !== "undefined" && window.location.pathname !== "/") {
             window.location.assign("/");

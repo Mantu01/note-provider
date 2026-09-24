@@ -1,38 +1,25 @@
-import { handler } from "@/server/lib/api-handler";
-import { ok } from "@/server/lib/api-response";
-import { AppError } from "@/server/lib/errors";
-import { Note } from "@/server/db/models/note.model";
-import { Group } from "@/server/db/models/group.model";
-import { toPublicNote } from "@/server/mappers/note.mapper";
-import { toPublicGroup } from "@/server/mappers/group.mapper";
-import { Types } from "mongoose";
+import { handler } from "@/helpers/api-handler";
+import { ok } from "@/helpers/api-response";
+import { AppError } from "@/helpers/errors";
+import { prisma } from "@/helpers/db";
+import { toPublicNote } from "@/helpers/mappers/note.mapper";
+import { toPublicGroup } from "@/helpers/mappers/group.mapper";
 
-export const runtime = "nodejs";
-export const revalidate = 600;
 
 export const GET = handler(async (ctx) => {
   const { slug } = await ctx.params;
 
-  const note = await Note.findOne({ slug, visibility: "public" }).populate("category").lean().exec();
+  const note = await prisma.note.findFirst({ where: { slug, visibility: "public" }, include: { category: true } });
   if (!note) throw AppError.notFound("Note");
 
-  const categoryId = String((note.category as { _id?: string | Types.ObjectId } | null | undefined)?._id ?? "");
-
-  const noteId = String(note._id);
-
   const [relatedNotes, groups] = await Promise.all([
-    Note.find({ _id: { $ne: noteId }, category: categoryId, visibility: "public" })
-      .populate("category")
-      .sort({ createdAt: -1 })
-      .limit(4)
-      .lean()
-      .exec(),
-    Group.find({ notes: { $in: [noteId] }, visibility: "public" }).populate("category").lean().exec(),
+    prisma.note.findMany({ where: { id: { not: note.id }, categoryId: note.categoryId, visibility: "public" }, include: { category: true }, orderBy: { createdAt: "desc" }, take: 4 }),
+    prisma.group.findMany({ where: { noteGroups: { some: { noteId: note.id } }, visibility: "public" }, include: { category: true } }),
   ]);
 
   return ok({
     note: toPublicNote(note),
     relatedNotes: relatedNotes.map(toPublicNote),
-    groups: groups.map((g: Record<string, unknown>) => toPublicGroup(g)),
+    groups: groups.map(toPublicGroup),
   });
 });

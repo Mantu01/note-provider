@@ -1,6 +1,5 @@
 "use client";
 
-import { parseAsInteger, parseAsString, useQueryStates } from "nuqs";
 import Link from "next/link";
 import { Search, Edit3, Trash2, ShieldAlert, FolderPlus, Layers } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -9,31 +8,21 @@ import { Badge } from "@/components/ui/badge";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { PaginationBar } from "@/components/shared/pagination-bar";
-import { EmptyState } from "@/components/shared/empty-state";
-import { useAdminGroups, useDeleteGroup } from "@/hooks/useAdmin";
-import { useAdminProfile } from "@/hooks/useAdmin";
+import { useAdminGroups, useAdminProfile, useDeleteGroup } from "@/hooks/useAdmin";
+import { useAdminListState } from "@/hooks/use-admin-table-state";
 import type { AdminGroup } from "@/lib/types";
 
 export function GroupsTable() {
-  const [{ page, search, deleteId }, setParams] = useQueryStates({
-    page: parseAsInteger.withDefault(1),
-    search: parseAsString.withDefault(""),
-    deleteId: parseAsString,
-  });
-
+  const { page, search, deleteId, setPage, setSearch, setDeleteId } = useAdminListState();
   const { data: profile } = useAdminProfile();
   const { data, isLoading } = useAdminGroups({ page, limit: 12, q: search });
   const deleteMutation = useDeleteGroup();
 
   const groups = data?.items ?? [];
+  const pagination = data?.pagination;
   const deletingGroup = groups.find((g) => g.id === deleteId) ?? null;
 
-  const setPage = (p: number) => setParams({ page: p });
-  const setSearch = (q: string) => setParams({ search: q, page: 1 });
-  const setDeletingGroup = (g: AdminGroup | null) => setParams({ deleteId: g?.id ?? null });
-
-  const pagination = data?.pagination;
-  const isHeadAdmin = Boolean(profile?.isHead);
+  const setDeletingGroup = (group: AdminGroup | null) => setDeleteId(group?.id ?? null);
 
   const canDeleteGroup = (group: AdminGroup | null) => {
     if (!group || !profile) return false;
@@ -55,12 +44,9 @@ export function GroupsTable() {
         <div className="relative w-full max-w-sm">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
-            placeholder="Search note bundles..."
+            placeholder="Search bundles..."
             value={search}
-            onChange={(e) => {
-              setSearch(e.target.value);
-              setPage(1);
-            }}
+            onChange={(event) => setSearch(event.target.value)}
             className="pl-9"
           />
         </div>
@@ -93,16 +79,14 @@ export function GroupsTable() {
               ))
             ) : groups.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6}>
-                  <EmptyState
-                    title="No bundles created yet"
-                    description="Group multiple uploaded notes together into a discounted study bundle."
-                    action={
-                      <Button render={<Link href="/admin/groups/new" />}>
-                        Create Bundle
-                      </Button>
-                    }
-                  />
+                <TableCell colSpan={6} className="py-12 text-center">
+                  <p className="text-sm font-medium text-foreground">No bundles created yet</p>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Group notes into a discounted study bundle.
+                  </p>
+                  <Button className="mt-4" render={<Link href="/admin/groups/new" />}>
+                    Create Bundle
+                  </Button>
                 </TableCell>
               </TableRow>
             ) : (

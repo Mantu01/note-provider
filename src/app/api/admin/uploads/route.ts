@@ -1,11 +1,10 @@
-import { adminHandler } from "@/server/lib/api-handler";
-import { ok } from "@/server/lib/api-response";
-import { AppError } from "@/server/lib/errors";
-import { uploadFile, deleteUpload } from "@/server/services/upload.service";
+import { adminHandler } from "@/helpers/api-handler";
+import { ok } from "@/helpers/api-response";
+import { prisma } from "@/helpers/db";
+import { uploadFile, deleteUpload } from "@/helpers/services/upload.service";
 import { UPLOAD_LIMITS } from "@/lib/constants";
 import type { UploadKind } from "@/lib/types";
-
-export const runtime = "nodejs";
+import { AppError } from "@/helpers/errors";
 
 export const POST = adminHandler(async (ctx) => {
   const formData = await ctx.req.formData();
@@ -27,9 +26,7 @@ export const POST = adminHandler(async (ctx) => {
 });
 
 export const DELETE = adminHandler(async (ctx) => {
-  if (!ctx.admin.isHead) {
-    throw AppError.forbidden("Only head admin can perform delete operations");
-  }
+  if (!ctx.admin.isHead) throw AppError.forbidden("Only head admin can perform delete operations");
 
   const body = await ctx.req.json();
   const { publicId, resourceType } = body;

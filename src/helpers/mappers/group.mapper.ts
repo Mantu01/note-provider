@@ -1,0 +1,50 @@
+import { formatPriceLabel } from "@/lib/format";
+import type { AdminGroup, PublicGroup, PublicNote } from "@/lib/types";
+import { toPublicNote } from "./note.mapper";
+
+type CategoryShape = { id: unknown; name: unknown; slug: unknown; icon: unknown };
+
+export function toPublicGroup(doc: Record<string, unknown>): PublicGroup {
+  const noteGroups = Array.isArray(doc.noteGroups) ? (doc.noteGroups as Array<Record<string, unknown>>) : [];
+  const notes = noteGroups.map((ng) => toPublicNote(ng.note));
+  const category = doc.category && typeof doc.category === "object" ? doc.category as CategoryShape : null;
+
+  const price = Number(doc.price ?? 0);
+  const pricingType = (String(doc.pricingType ?? "paid") === "free" ? "free" : "paid") as "free" | "paid";
+
+  return {
+    id: String(doc.id ?? ""),
+    slug: String(doc.slug ?? ""),
+    name: String(doc.name ?? ""),
+    description: String(doc.description ?? ""),
+    category: category
+      ? { id: String(category.id), name: String(category.name), slug: String(category.slug), icon: category.icon != null ? String(category.icon) : null }
+      : { id: "", name: "", slug: "", icon: null },
+    price,
+    priceLabel: formatPriceLabel(price, pricingType),
+    compareAtPrice: doc.compareAtPrice != null ? Number(doc.compareAtPrice) : null,
+    coverImageUrl: doc.coverImageUrl != null ? String(doc.coverImageUrl) : null,
+    noteCount: notes.length,
+    notes,
+    isFeatured: Boolean(doc.isFeatured),
+    createdAt: doc.createdAt ? new Date(doc.createdAt as Date | string).toISOString() : "",
+  };
+}
+
+export function toAdminGroup(doc: Record<string, unknown>): AdminGroup {
+  const base = toPublicGroup(doc);
+  const noteGroups = Array.isArray(doc.noteGroups) ? (doc.noteGroups as Array<Record<string, unknown>>) : [];
+  const noteIds = noteGroups
+    .map((ng) => String(ng.noteId ?? (ng.note && typeof ng.note === "object" ? (ng.note as Record<string, unknown>).id : "") ?? ""))
+    .filter(Boolean);
+  return {
+    ...base,
+    visibility: (String(doc.visibility ?? "public") === "private" ? "private" : "public") as "public" | "private",
+    noteIds: noteIds.length > 0 ? noteIds : base.notes.map((n) => n.id).filter(Boolean),
+    revenuePaise: Number(doc.revenuePaise ?? 0),
+    purchaseCount: Number(doc.purchaseCount ?? 0),
+    createdBy: doc.createdBy ? { id: String(doc.createdBy), name: "" } : null,
+    updatedBy: doc.updatedBy ? { id: String(doc.updatedBy), name: "" } : null,
+    updatedAt: doc.updatedAt ? new Date(doc.updatedAt as Date | string).toISOString() : "",
+  };
+}

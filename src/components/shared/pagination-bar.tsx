@@ -1,74 +1,62 @@
 "use client";
 
-import {
-  Pagination,
-  PaginationContent,
-  PaginationItem,
-  PaginationNext,
-  PaginationPrevious,
-} from "@/components/ui/pagination";
-import type { Pagination as PaginationData } from "@/lib/types";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-type PaginationBarProps =
-  | {
-      pagination: PaginationData;
-      onPageChange: (page: number) => void;
-      page?: never;
-      totalPages?: never;
-    }
-  | {
-      pagination?: never;
-      onPageChange: (page: number) => void;
-      page: number;
-      totalPages: number;
-    };
-
-export function PaginationBar(props: PaginationBarProps) {
-  const currentPage = props.pagination ? props.pagination.page : (props.page ?? 1);
-  const totalPages = props.pagination ? props.pagination.totalPages : (props.totalPages ?? 1);
-  const hasPrev = props.pagination ? props.pagination.hasPrev : currentPage > 1;
-  const hasNext = props.pagination ? props.pagination.hasNext : currentPage < totalPages;
-
+export function PaginationBar({
+  page,
+  totalPages,
+  onPageChange,
+}: {
+  page: number;
+  totalPages: number;
+  onPageChange: (page: number) => void;
+}) {
   if (totalPages <= 1) return null;
 
-  const change = (page: number) => {
-    props.onPageChange(page);
+  const hasPrev = page > 1;
+  const hasNext = page < totalPages;
+
+  const change = (next: number) => {
+    onPageChange(next);
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
   return (
-    <Pagination>
-      <PaginationContent>
-        <PaginationItem>
-          <PaginationPrevious
-            href="#results"
-            aria-disabled={!hasPrev}
-            className={!hasPrev ? "pointer-events-none opacity-50 cursor-not-allowed" : "cursor-pointer"}
-            onClick={(event) => {
-              event.preventDefault();
-              if (hasPrev) change(currentPage - 1);
-            }}
-          />
-        </PaginationItem>
+    <nav
+      aria-label="Pagination"
+      className="flex items-center justify-between gap-2 sm:justify-center"
+      data-testid="pagination"
+    >
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="h-9 rounded-lg px-2.5 text-xs sm:h-8"
+        disabled={!hasPrev}
+        onClick={() => change(page - 1)}
+      >
+        <ChevronLeft aria-hidden="true" className="size-3.5 sm:size-3" />
+        <span className="hidden sm:inline">Previous</span>
+        <span className="sr-only sm:hidden">Previous page</span>
+      </Button>
 
-        <PaginationItem>
-          <span className="px-4 text-sm font-medium text-muted-foreground">
-            Page {currentPage} of {totalPages}
-          </span>
-        </PaginationItem>
+      <p className="text-[11px] font-medium tabular-nums text-muted-foreground" aria-live="polite">
+        Page {page} of {totalPages}
+      </p>
 
-        <PaginationItem>
-          <PaginationNext
-            href="#results"
-            aria-disabled={!hasNext}
-            className={!hasNext ? "pointer-events-none opacity-50 cursor-not-allowed" : "cursor-pointer"}
-            onClick={(event) => {
-              event.preventDefault();
-              if (hasNext) change(currentPage + 1);
-            }}
-          />
-        </PaginationItem>
-      </PaginationContent>
-    </Pagination>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        className="h-9 rounded-lg px-2.5 text-xs sm:h-8"
+        disabled={!hasNext}
+        onClick={() => change(page + 1)}
+      >
+        <span className="hidden sm:inline">Next</span>
+        <span className="sr-only sm:hidden">Next page</span>
+        <ChevronRight aria-hidden="true" className="size-3.5 sm:size-3" />
+      </Button>
+    </nav>
   );
 }

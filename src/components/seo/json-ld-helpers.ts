@@ -260,8 +260,6 @@ export function webpageJsonLd(params: {
     primaryImageOfPage: params.image
       ? { "@type": "ImageObject", url: params.image }
       : undefined,
-    datePublished: new Date().toISOString(),
-    dateModified: new Date().toISOString(),
     isPartOf: {
       "@type": "WebSite",
       name: "Notes Provider",

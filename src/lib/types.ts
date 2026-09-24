@@ -3,7 +3,6 @@ export type NoteLevel = "basics" | "intermediate" | "advance";
 export type NotePricingType = "free" | "paid";
 export type PurchaseItemType = "note" | "group";
 export type PaymentStatus = "created" | "paid" | "failed";
-export type FulfillmentStatus = "pending" | "completed" | "cancelled";
 
 export type NoteSort =
   | "newest"
@@ -29,7 +28,7 @@ export type ErrorCode =
 
 export type UploadKind = "note_full" | "note_preview" | "cover";
 
-export type StatusType = "payment" | "fulfillment" | "pricing" | "level";
+export type StatusType = "payment" | "pricing" | "level";
 
 export type NotesQuery = {
   page?: number;
@@ -92,8 +91,8 @@ export type PublicNote = {
   priceLabel: string;
   compareAtPrice: number | null;
   coverImageUrl: string | null;
+  previewFileUrl: string | null;
   pageCount: number | null;
-  fileSizeLabel: string | null;
   isLocked: boolean;
   hasPreview: boolean;
   tags: string[];
@@ -140,12 +139,12 @@ export type PublicOrder = {
   amountLabel: string;
   currency: "INR";
   paymentStatus: PaymentStatus;
-  fulfillmentStatus: FulfillmentStatus;
-  buyer: { fullName: string };
+  isDownloaded: boolean;
   coverImageUrl: string | null;
+  buyer: { fullName: string };
   createdAt: string;
   paidAt: string | null;
-  completedAt: string | null;
+  notes?: Array<{ id: string; title: string; slug: string; coverImageUrl: string | null }>;
 };
 
 export type CheckoutOrderResponse = {
@@ -162,14 +161,7 @@ export type CheckoutOrderResponse = {
 export type AdminNote = PublicNote & {
   visibility: NoteVisibility;
   fullFileUrl: string | null;
-  fullFilePublicId: string | null;
-  fullFileBytes: number;
-  pdfSource: "upload" | "drive";
-  drivePdfUrl: string | null;
   previewFileUrl: string | null;
-  previewFilePublicId: string | null;
-  previewFileBytes: number | null;
-  coverImagePublicId: string | null;
   createdBy: AdminRef | null;
   updatedBy: AdminRef | null;
 };
@@ -177,7 +169,6 @@ export type AdminNote = PublicNote & {
 export type AdminGroup = PublicGroup & {
   visibility: NoteVisibility;
   noteIds: string[];
-  coverImagePublicId: string | null;
   revenuePaise: number;
   purchaseCount: number;
   createdBy: AdminRef | null;
@@ -196,12 +187,12 @@ export type AdminCategory = PublicCategory & {
 export type AdminOrder = PublicOrder & {
   razorpayOrderId: string;
   razorpayPaymentId: string | null;
-  razorpaySignature: string | null;
+
   paymentMethod: string | null;
   failureReason: string | null;
   buyerFull: {
     fullName: string;
-    consentAccepted: true;
+    consentAccepted: boolean;
     ipAddress: string | null;
     userAgent: string | null;
   };
@@ -212,22 +203,7 @@ export type AdminOrder = PublicOrder & {
     title: string;
     noteIds: string[];
   };
-  adminNote: string | null;
-  completedBy: AdminRef | null;
   updatedAt: string;
-};
-
-export type AdminLead = {
-  id: string;
-  orderId: string;
-  orderNumber: string;
-  fullName: string;
-  itemTitle: string;
-  amount: number;
-  amountLabel: string;
-  paymentStatus: PaymentStatus;
-  fulfillmentStatus: FulfillmentStatus;
-  createdAt: string;
 };
 
 export type AdminProfile = {
@@ -244,7 +220,6 @@ export type AdminAuthResponse = { admin: AdminProfile; token: string };
 export type OrderSummary = {
   totalRevenuePaise: number;
   paidCount: number;
-  pendingFulfillmentCount: number;
   failedCount: number;
 };
 
@@ -254,35 +229,20 @@ export type DashboardStats = {
     totalLabel: string;
     todayPaise: number;
     todayLabel: string;
-    last30DaysPaise: number;
-    last30DaysLabel: string;
+    periodPaise: number;
+    periodLabel: string;
+    periodDays: 7 | 30;
   };
   orders: {
-    total: number;
     paid: number;
-    failed: number;
-    pendingFulfillment: number;
-    completed: number;
     today: number;
   };
   catalog: {
     totalNotes: number;
     freeNotes: number;
     paidNotes: number;
-    totalGroups: number;
-    totalCategories: number;
   };
-  leads: { total: number; today: number };
   revenueSeries: { date: string; revenuePaise: number; orders: number }[];
-  topNotes: {
-    id: string;
-    title: string;
-    slug: string;
-    purchaseCount: number;
-    revenuePaise: number;
-    revenueLabel: string;
-  }[];
-  categoryBreakdown: { name: string; noteCount: number; revenuePaise: number }[];
   recentOrders: AdminOrder[];
 };
 

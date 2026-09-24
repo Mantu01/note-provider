@@ -2,41 +2,23 @@
 
 import { Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 
 export function ThemeToggle() {
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const { resolvedTheme, setTheme } = useTheme();
 
-  useEffect(() => setMounted(true), []);
-
-  if (!mounted) {
-    return (
-      <Button
-        variant="ghost"
-        size="icon"
-        aria-label="Switch theme"
-        disabled
-        className="border border-border/80 bg-card/80"
-      >
-        <Sun aria-hidden="true" className="size-4" />
-      </Button>
-    );
-  }
-
-  const isDark = theme === "dark";
+  const isDark = resolvedTheme === "dark";
 
   return (
     <Button
       variant="ghost"
       size="icon"
-      aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
+      aria-label="Switch theme"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="border border-border/80 bg-card/80"
+      className="size-9 rounded-xl border border-border/80 bg-card/80"
     >
-      <Sun aria-hidden="true" className={isDark ? "block size-4" : "hidden size-4"} />
-      <Moon aria-hidden="true" className={isDark ? "hidden size-4" : "block size-4"} />
+      <Sun aria-hidden="true" className="size-4.5 scale-100 rotate-0 transition-transform duration-300 dark:scale-0 dark:-rotate-90" />
+      <Moon aria-hidden="true" className="absolute size-4.5 scale-0 rotate-90 transition-transform duration-300 dark:scale-100 dark:rotate-0" />
     </Button>
   );
 }

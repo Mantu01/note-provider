@@ -6,7 +6,6 @@ import { APP_URL, SEO } from "@/lib/constants";
 export const metadata: Metadata = {
   title: `Developer Bundles — Web Dev, DSA & System Design | ${SEO.siteName}`,
   description: "Get curated developer bundles covering web development, DSA, frontend, backend, DBMS, and system design. Save more with complete topic packs.",
-  keywords: ["web dev bundles", "DSA bundle", "backend bundle", "frontend bundle", "system design bundle", "coding bundle"],
   alternates: { canonical: `${APP_URL}/groups` },
   openGraph: {
     title: "Developer Bundles — Web Dev, DSA & System Design",
@@ -15,7 +14,7 @@ export const metadata: Metadata = {
     siteName: SEO.siteName,
     images: [
       {
-        url: `${APP_URL}/og/home.png`,
+        url: `${APP_URL}/og/home`,
         width: SEO.ogImageWidth,
         height: SEO.ogImageHeight,
         alt: "Developer bundles at Notes Provider",
@@ -28,7 +27,7 @@ export const metadata: Metadata = {
     card: SEO.twitterCard,
     title: "Developer Bundles — Web Dev, DSA & System Design",
     description: "Get curated developer bundles covering the core topics you need to ship and interview better.",
-    images: [`${APP_URL}/og/home.png`],
+    images: [`${APP_URL}/og/home`],
   },
 };
 
@@ -42,7 +41,7 @@ export default function GroupsPageRoute() {
             description:
               "Get curated developer bundles covering web development, DSA, frontend, backend, DBMS, and system design.",
             url: `${APP_URL}/groups`,
-            image: `${APP_URL}/og/home.png`,
+            image: `${APP_URL}/og/home`,
             itemCount: 0,
           }),
         ]}

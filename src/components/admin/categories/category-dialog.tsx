@@ -2,23 +2,15 @@
 
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import {
-  Loader2,
-  BookOpen, Code2, FlaskConical, Calculator, Briefcase, Palette, Scale,
-  Globe, Trophy, Cpu, Stethoscope, FileText, Activity,
-  Battery, Bell, Bookmark, Calendar, Camera,
-  Cloud, Compass, CreditCard, Database, Feather, Flag,
-  Gift, Headphones, Heart, Key, Map, MessageCircle, Monitor,
-  Music, PenTool, Printer, Settings,
-  Star, Terminal, Zap
-} from "lucide-react";
+import { Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { CATEGORY_ICON_OPTIONS, CategoryIcon } from "@/components/shared/category-icon";
 import { useCreateCategory, useUpdateCategory } from "@/hooks/useAdmin";
-import { createCategorySchema, type CreateCategoryInput } from "@/lib/schemas/category.schema";
+import { createCategorySchema, type CreateCategoryInput } from "@/schemas/category.schema";
 import type { AdminCategory } from "@/lib/types";
 
 type CategoryDialogProps = {
@@ -27,45 +19,6 @@ type CategoryDialogProps = {
   category?: AdminCategory | null;
 };
 
-const CATEGORY_ICON_PRESETS = [
-  { name: "BookOpen", label: "Study", icon: BookOpen },
-  { name: "Code2", label: "Programming", icon: Code2 },
-  { name: "FlaskConical", label: "Science", icon: FlaskConical },
-  { name: "Calculator", label: "Math", icon: Calculator },
-  { name: "Briefcase", label: "Business", icon: Briefcase },
-  { name: "Palette", label: "Arts", icon: Palette },
-  { name: "Scale", label: "Law", icon: Scale },
-  { name: "Globe", label: "Languages", icon: Globe },
-  { name: "Trophy", label: "Exams", icon: Trophy },
-  { name: "Cpu", label: "Engineering", icon: Cpu },
-  { name: "Stethoscope", label: "Medical", icon: Stethoscope },
-  { name: "FileText", label: "General", icon: FileText },
-  { name: "Activity", label: "Activity", icon: Activity },
-  { name: "Battery", label: "Battery", icon: Battery },
-  { name: "Bell", label: "Notifications", icon: Bell },
-  { name: "Bookmark", label: "Bookmark", icon: Bookmark },
-  { name: "Calendar", label: "Events", icon: Calendar },
-  { name: "Camera", label: "Photography", icon: Camera },
-  { name: "Cloud", label: "Cloud", icon: Cloud },
-  { name: "Compass", label: "Navigation", icon: Compass },
-  { name: "CreditCard", label: "Finance", icon: CreditCard },
-  { name: "Database", label: "Data", icon: Database },
-  { name: "Feather", label: "Design", icon: Feather },
-  { name: "Flag", label: "Milestones", icon: Flag },
-  { name: "Gift", label: "Rewards", icon: Gift },
-  { name: "Headphones", label: "Audio", icon: Headphones },
-  { name: "Heart", label: "Health", icon: Heart },
-  { name: "Key", label: "Security", icon: Key },
-  { name: "Map", label: "Geography", icon: Map },
-  { name: "MessageCircle", label: "Chat", icon: MessageCircle },
-  { name: "Monitor", label: "Desktop", icon: Monitor },
-  { name: "Music", label: "Music", icon: Music },
-  { name: "PenTool", label: "Writing", icon: PenTool },
-  { name: "Settings", label: "Configuration", icon: Settings },
-  { name: "Star", label: "Favorites", icon: Star },
-  { name: "Terminal", label: "Console", icon: Terminal },
-  { name: "Zap", label: "Quick", icon: Zap },
-];
 
 export function CategoryDialog({ open, onOpenChange, category }: CategoryDialogProps) {
   const isEditing = Boolean(category?.id);
@@ -128,31 +81,24 @@ export function CategoryDialog({ open, onOpenChange, category }: CategoryDialogP
               <Select id="category-icon" value={selectedIcon} onValueChange={(val) => form.setValue("icon", val)}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Select an icon">
-                    {(() => {
-                      const active = CATEGORY_ICON_PRESETS.find(p => p.name === selectedIcon);
-                      if (!active) return "Select an icon";
-                      const ActiveIcon = active.icon;
-                      return (
-                        <div className="flex items-center gap-2">
-                          <ActiveIcon className="h-4 w-4" />
-                          <span>{active.label}</span>
-                        </div>
-                      );
-                    })()}
+                    <span className="flex items-center gap-2">
+                      <CategoryIcon name={selectedIcon} className="size-4" />
+                      <span>
+                        {CATEGORY_ICON_OPTIONS.find((preset) => preset.name === selectedIcon)?.label ??
+                          "Select an icon"}
+                      </span>
+                    </span>
                   </SelectValue>
                 </SelectTrigger>
                 <SelectContent className="max-h-60">
-                  {CATEGORY_ICON_PRESETS.map((preset) => {
-                    const Icon = preset.icon;
-                    return (
-                      <SelectItem key={preset.name} value={preset.name}>
-                        <div className="flex items-center gap-2">
-                          <Icon className="h-4 w-4 text-muted-foreground" />
-                          <span>{preset.label}</span>
-                        </div>
-                      </SelectItem>
-                    );
-                  })}
+                  {CATEGORY_ICON_OPTIONS.map((preset) => (
+                    <SelectItem key={preset.name} value={preset.name}>
+                      <span className="flex items-center gap-2">
+                        <CategoryIcon name={preset.name} className="size-4 text-muted-foreground" />
+                        <span>{preset.label}</span>
+                      </span>
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>

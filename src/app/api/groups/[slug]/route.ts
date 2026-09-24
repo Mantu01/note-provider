@@ -1,39 +1,30 @@
-import { handler } from "@/server/lib/api-handler";
-import { ok } from "@/server/lib/api-response";
-import { AppError } from "@/server/lib/errors";
-import { Group } from "@/server/db/models/group.model";
-import { Note } from "@/server/db/models/note.model";
-import { toPublicGroup } from "@/server/mappers/group.mapper";
-import { toPublicNote } from "@/server/mappers/note.mapper";
-import { Types } from "mongoose";
-
-export const runtime = "nodejs";
-export const revalidate = 600;
+import { handler } from "@/helpers/api-handler";
+import { ok } from "@/helpers/api-response";
+import { AppError } from "@/helpers/errors";
+import { prisma } from "@/helpers/db";
+import { toPublicGroup } from "@/helpers/mappers/group.mapper";
 
 export const GET = handler(async (ctx) => {
   const { slug } = await ctx.params;
 
-  const group = await Group.findOne({ slug, visibility: "public" }).lean().exec();
+  const group = await prisma.group.findFirst({
+    where: { slug, visibility: "public" },
+    include: {
+      category: true,
+      noteGroups: { where: { note: { visibility: "public" } }, include: { note: true } },
+    },
+  });
   if (!group) throw AppError.notFound("Group");
 
-  const categoryId = String((group.category as { _id?: string | Types.ObjectId } | null | undefined)?._id ?? group.category ?? "");
-
-  const groupId = group._id.toString();
-
-  const [notes, relatedGroups] = await Promise.all([
-    Note.find({ _id: { $in: group.notes.map((n: { toString: () => string }) => n.toString()) }, visibility: "public" })
-      .populate("category")
-      .lean()
-      .exec(),
-    Group.find({ _id: { $ne: groupId }, category: categoryId, visibility: "public" })
-      .sort({ createdAt: -1 })
-      .limit(3)
-      .lean()
-      .exec(),
-  ]);
-
-  return ok({
-    group: toPublicGroup(group as unknown as Record<string, unknown>, notes.map(toPublicNote)),
-    relatedGroups: relatedGroups.map((g: Record<string, unknown>) => toPublicGroup(g)),
+  const relatedGroups = await prisma.group.findMany({
+    where: { id: { not: group.id }, categoryId: group.categoryId, visibility: "public" },
+    include: {
+      category: true,
+      noteGroups: { where: { note: { visibility: "public" } }, include: { note: true } },
+    },
+    orderBy: { createdAt: "desc" },
+    take: 4,
   });
+
+  return ok({ group: toPublicGroup(group), relatedGroups: relatedGroups.map(toPublicGroup) });
 });

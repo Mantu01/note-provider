@@ -38,7 +38,12 @@ yarn-error.log*
 
 # typescript
 *.tsbuildinfo
+
+# prisma generated client
+/generated/prisma
 next-env.d.ts
 .claude
 prompts
 .vscode
+tests
+graphify-out

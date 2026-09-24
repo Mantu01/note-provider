@@ -1,56 +1,44 @@
-import { adminHandler } from "@/server/lib/api-handler";
-import { fail, ok } from "@/server/lib/api-response";
-import { Category } from "@/server/db/models/category.model";
-import { Note } from "@/server/db/models/note.model";
-import { Group } from "@/server/db/models/group.model";
-import { toAdminCategory } from "@/server/mappers/category.mapper";
-import { createCategorySchema } from "@/lib/schemas/category.schema";
-import { uniqueSlug } from "@/server/lib/slug";
-import { AppError } from "@/server/lib/errors";
+import { adminHandler } from "@/helpers/api-handler";
+import { fail, ok } from "@/helpers/api-response";
+import { AppError } from "@/helpers/errors";
+import { prisma } from "@/helpers/db";
+import { createCategorySchema } from "@/schemas/category.schema";
+import { uniqueSlug } from "@/helpers/slug";
 
-export const runtime = "nodejs";
+export const GET = adminHandler(async () => {
+  const items = await prisma.category.findMany({ orderBy: [{ order: "asc" }, { name: "asc" }] });
 
-export const GET = adminHandler(async (ctx) => {
-  const [items, total] = await Promise.all([
-    Category.find({}).sort({ order: 1, name: 1 }).lean().exec(),
-    Category.countDocuments().exec(),
+  const [noteCounts, groupCounts] = await Promise.all([
+    prisma.note.groupBy({ by: ["categoryId"], where: {}, _count: true }),
+    prisma.group.groupBy({ by: ["categoryId"], where: {}, _count: true }),
   ]);
+  const noteMap = new Map(noteCounts.map((c) => [c.categoryId, c._count]));
+  const groupMap = new Map(groupCounts.map((c) => [c.categoryId, c._count]));
 
-  const categoriesWithCounts = await Promise.all(
-    items.map(async (cat) => {
-      const [noteCount, groupCount] = await Promise.all([
-        Note.countDocuments({ category: cat._id.toString() }).exec(),
-        Group.countDocuments({ category: cat._id.toString() }).exec(),
-      ]);
-      return toAdminCategory({ ...cat, noteCount, groupCount }, noteCount, groupCount);
-    }),
-  );
-
-  const res = ok({
-    items: categoriesWithCounts,
-  });
-  res.headers.set("Cache-Control", "public, max-age=60, s-maxage=60");
-  return res;
+  return ok({ items: items.map((cat) => ({
+    id: cat.id, name: cat.name, slug: cat.slug, description: cat.description, icon: cat.icon,
+    subjects: Array.isArray(cat.subjects) ? cat.subjects : [],
+    noteCount: noteMap.get(cat.id) ?? 0, groupCount: groupMap.get(cat.id) ?? 0,
+    order: cat.order, isActive: cat.isActive,
+    createdAt: cat.createdAt.toISOString(), updatedAt: cat.updatedAt.toISOString(),
+  })) });
 });
 
 export const POST = adminHandler(async (ctx) => {
   const body = await ctx.req.json();
   const parsed = createCategorySchema.safeParse(body);
-  if (!parsed.success) {
-    return fail(AppError.validation(parsed.error.flatten().fieldErrors as Record<string, string>, parsed.error.issues[0]?.message ?? "Invalid input"));
-  }
+  if (!parsed.success) return fail(AppError.validation());
 
-  const { admin } = ctx;
-  const input = parsed.data;
+  const slug = await uniqueSlug("category", parsed.data.name);
 
-  const slug = await uniqueSlug(Category, input.name);
-
-  const doc = await Category.create({
-    ...input,
-    slug,
-    createdBy: admin.id,
-    updatedBy: admin.id,
+  const doc = await prisma.category.create({
+    data: {
+      ...parsed.data,
+      slug,
+      createdBy: ctx.admin.id,
+      updatedBy: ctx.admin.id,
+    },
   });
 
-  return ok(toAdminCategory(doc.toJSON(), 0, 0));
+  return ok({ id: doc.id, name: doc.name, slug: doc.slug, description: doc.description, icon: doc.icon, subjects: [], noteCount: 0, groupCount: 0, order: doc.order, isActive: doc.isActive, createdAt: doc.createdAt.toISOString(), updatedAt: doc.updatedAt.toISOString() });
 });

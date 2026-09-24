@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import CheckoutContent from "@/components/checkout/checkout-content";
+import { CheckoutSkeleton } from "@/components/shared/shimmer-loader";
 import { APP_URL, SEO } from "@/lib/constants";
 
 export const metadata: Metadata = {
@@ -23,13 +24,7 @@ export const metadata: Metadata = {
 
 export default function CheckoutRoute() {
   return (
-    <Suspense
-      fallback={
-        <div className="mx-auto max-w-5xl px-4 py-10">
-          <div className="h-96 animate-pulse rounded-3xl bg-muted" />
-        </div>
-      }
-    >
+    <Suspense fallback={<CheckoutSkeleton />}>
       <CheckoutContent />
     </Suspense>
   );

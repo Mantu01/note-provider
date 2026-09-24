@@ -1,12 +1,11 @@
-import { adminHandler } from "@/server/lib/api-handler";
-import { ok } from "@/server/lib/api-response";
-import { getDashboardStats } from "@/server/services/dashboard.service";
+import { adminHandler } from "@/helpers/api-handler";
+import { getDashboardStats } from "@/helpers/services/dashboard.service";
+import { ok } from "@/helpers/api-response";
 
-export const runtime = "nodejs";
 
 export const GET = adminHandler(async () => {
   const stats = await getDashboardStats();
   const res = ok(stats);
-  res.headers.set("Cache-Control", "public, max-age=30, s-maxage=30");
+  res.headers.set("Cache-Control", "private, no-store");
   return res;
 });

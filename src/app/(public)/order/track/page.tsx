@@ -1,16 +1,18 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { OrderLookupPage } from "@/components/orders/order-lookup-page";
 import { APP_URL, SEO } from "@/lib/constants";
+import { OrderLookupSkeleton } from "@/components/shared/shimmer-loader";
 
 export const metadata: Metadata = {
-  title: "Track Your Order — Check Note Delivery Status | Notes Provider",
+  title: "Track Your Order — Notes Provider",
   description:
-    "Track your study note order and check delivery status. Enter your order ID to see when your PDF notes are ready.",
+    "View your order status and download your study notes after purchase.",
   robots: { index: false, follow: false },
   alternates: { canonical: `${APP_URL}/order/track` },
   openGraph: {
     title: "Track Your Order — Notes Provider",
-    description: "Track your study note order and check delivery status.",
+    description: "View your order status and download your study notes.",
     url: `${APP_URL}/order/track`,
     siteName: SEO.siteName,
     type: "website",
@@ -18,10 +20,14 @@ export const metadata: Metadata = {
   twitter: {
     card: SEO.twitterCard,
     title: "Track Your Order — Notes Provider",
-    description: "Track your study note order and check delivery status.",
+    description: "View your order status and download your study notes.",
   },
 };
 
 export default function TrackOrderRoute() {
-  return <OrderLookupPage />;
+  return (
+    <Suspense fallback={<OrderLookupSkeleton />}>
+      <OrderLookupPage />
+    </Suspense>
+  );
 }

@@ -1,0 +1,2 @@
+-- Drop Counter table and add new sequence columns as needed
+-- This migration is intentionally empty as the schema changes are handled in other migrations

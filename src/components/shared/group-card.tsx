@@ -1,72 +1,54 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Layers3, BookOpen, TrendingUp } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Layers3, BookOpen } from "lucide-react";
 import { PriceTag } from "./price-tag";
 import type { PublicGroup } from "@/lib/types";
 
-interface GroupCardProps {
-  group: PublicGroup;
-  variant?: "default" | "featured";
-}
-
-export function GroupCard({ group, variant = "default" }: GroupCardProps) {
-  const featured = variant === "featured";
-
+export function GroupCard({ group }: { group: PublicGroup }) {
   return (
-    <article
-      className={cn(
-        "group relative overflow-hidden rounded-xl border bg-card torn-paper paper-card transition-shadow hover:shadow-md",
-        featured && "ring-1 ring-brand-orange/30 shadow-sm"
-      )}
-    >
+    <article className="group relative flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm hover:shadow-md max-sm:flex-row">
       <Link
         href={`/groups/${group.slug}`}
-        className={cn(
-          "relative block overflow-hidden",
-          featured ? "aspect-[16/8]" : "aspect-[16/9]"
-        )}
-        aria-label={`View ${group.name}`}
+        tabIndex={-1}
+        aria-hidden="true"
+        className="relative aspect-[16/9] w-full shrink-0 overflow-hidden bg-muted/20 max-sm:aspect-[4/3] max-sm:w-20"
       >
         {group.coverImageUrl ? (
           <Image
             src={group.coverImageUrl}
-            alt=""
+            alt={group.name}
             fill
-            sizes="(max-width: 768px) 100vw, 33vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            sizes="(max-width: 640px) 80px, (max-width: 768px) 100vw, 33vw"
+            className="object-cover transition-transform duration-200 group-hover:scale-[1.04]"
           />
         ) : (
-          <div className="flex size-full flex-col items-center justify-center gap-1.5 text-primary/20 bg-gradient-to-br from-primary/5 to-transparent">
-            <Layers3 aria-hidden="true" className="size-10" />
-            <span className="text-[8px] font-semibold uppercase tracking-widest">Bundle</span>
+          <div className="flex size-full flex-col items-center justify-center gap-1 bg-linear-to-br from-primary/5 to-transparent text-primary/20">
+            <Layers3 aria-hidden="true" className="size-5 sm:size-7" />
+            <span className="text-[7px] font-semibold tracking-widest uppercase">Bundle</span>
           </div>
         )}
 
-        <span className="absolute bottom-2 right-2 inline-flex items-center gap-1.5 rounded-full bg-card/90 px-2 py-0.5 text-[9px] font-bold text-foreground backdrop-blur-md shadow-sm border border-white/20 dark:border-black/10">
-          <BookOpen aria-hidden="true" className="size-2.5 text-primary" />
+        <span className="absolute right-1 bottom-1 inline-flex items-center gap-1 rounded-full bg-card/95 px-1.5 py-0.5 text-[8px] font-semibold text-foreground shadow-sm">
+          <BookOpen aria-hidden="true" className="size-2 text-primary" />
           {group.noteCount} notes
         </span>
-
-        {featured && (
-          <span className="absolute top-2 left-2 inline-flex items-center gap-1 rounded-full bg-brand-orange/95 px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-white shadow-md">
-            <TrendingUp aria-hidden="true" className="size-2.5" />
-            Featured
-          </span>
-        )}
       </Link>
 
-      <div className="p-3 space-y-2">
-        <div className="flex items-center justify-between gap-2">
-          <span className="inline-flex h-5 items-center rounded-full bg-secondary px-2 text-[10px] font-semibold text-secondary-foreground border border-border/50">
-            {group.category.name}
+      <div className="flex min-w-0 flex-1 flex-col gap-1 p-2 max-sm:p-1.5">
+        <div className="flex min-w-0 items-center justify-between gap-1">
+          <span className="inline-flex min-w-0 items-center rounded-full bg-muted px-1.5 py-0.5 text-[9px] font-medium text-muted-foreground">
+            <span className="truncate">{group.category.name}</span>
           </span>
-          <PriceTag price={group.price} priceLabel={group.priceLabel} compareAtPrice={group.compareAtPrice} />
+          <PriceTag
+            price={group.price}
+            priceLabel={group.priceLabel}
+            compareAtPrice={group.compareAtPrice}
+          />
         </div>
 
         <Link
           href={`/groups/${group.slug}`}
-          className="block font-heading text-sm font-bold leading-snug text-foreground line-clamp-1 transition-colors group-hover:text-primary/80"
+          className="font-heading text-[11px] font-semibold text-foreground transition-colors line-clamp-2 group-hover:text-primary sm:text-sm"
         >
           {group.name}
         </Link>

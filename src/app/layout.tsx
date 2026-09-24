@@ -1,6 +1,7 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Inter, Outfit, Caveat, Instrument_Sans } from "next/font/google";
+import { Inter, Outfit } from "next/font/google";
+import { Suspense } from "react";
 import "./globals.css";
 import { APP_URL, BRAND, SEO } from "@/lib/constants";
 import { AppProviders } from "@/providers/app-providers";
@@ -8,7 +9,8 @@ import JsonLd, {
   organizationJsonLd,
   websiteJsonLd,
 } from "@/components/seo/json-ld";
-import { GoogleAnalytics } from '@next/third-parties/google';
+import { Analytics } from "@vercel/analytics/next"
+import { ShimmerLoader } from "@/components/shared/shimmer-loader";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -20,21 +22,19 @@ const outfit = Outfit({
   variable: "--font-outfit",
   display: "swap",
 });
-const caveat = Caveat({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-caveat",
-  display: "swap",
-});
-const instrumentSans = Instrument_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-instrument",
-  display: "swap",
-});
 
 const safeMetadataBase = URL.canParse(APP_URL) ? new URL(APP_URL) : undefined;
-const measurementId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  userScalable: true,
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#0f172a" },
+  ],
+};
 
 export const metadata: Metadata = {
   metadataBase: safeMetadataBase,
@@ -43,23 +43,6 @@ export const metadata: Metadata = {
     template: `%s | ${BRAND.name}`,
   },
   description: SEO.defaultDescription,
-  keywords: [
-    "coding notes",
-    "web development notes",
-    "frontend notes",
-    "backend notes",
-    "DSA notes",
-    "DBMS notes",
-    "system design notes",
-    "interview preparation notes",
-    "developer resources",
-    "coding PDFs",
-    "notes bundle",
-    "notes provider",
-    "web dev notes",
-    "software engineering notes",
-    "programming notes",
-  ],
   authors: [{ name: BRAND.name }],
   creator: BRAND.name,
   publisher: BRAND.name,
@@ -79,7 +62,7 @@ export const metadata: Metadata = {
     url: APP_URL,
     images: [
       {
-        url: `${APP_URL}/og/home.png`,
+        url: `${APP_URL}/og/home`,
         width: SEO.ogImageWidth,
         height: SEO.ogImageHeight,
         alt: SEO.ogImageAlt,
@@ -93,9 +76,7 @@ export const metadata: Metadata = {
     card: SEO.twitterCard,
     title: SEO.defaultTitle,
     description: SEO.defaultDescription,
-    images: [`${APP_URL}/og/home.png`],
-    creator: "@notesprovider",
-    site: "@notesprovider",
+    images: [`${APP_URL}/og/home`],
   },
   robots: {
     index: true,
@@ -108,8 +89,12 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  verification: {
-    google: "google-site-verification-code",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", type: "image/x-icon" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
   },
 };
 
@@ -121,7 +106,7 @@ export default function RootLayout({
       lang="en"
       dir="ltr"
       suppressHydrationWarning
-      className={`${inter.variable} ${outfit.variable} ${caveat.variable} ${instrumentSans.variable}`}
+      className={`${inter.variable} ${outfit.variable}`}
       data-scroll-behavior="smooth"
     >
       <head>
@@ -133,42 +118,23 @@ export default function RootLayout({
         <link rel="dns-prefetch" href="//cloudinary.com" />
         <meta name="theme-color" content="#0f172a" />
         <meta name="msapplication-TileColor" content="#0f172a" />
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content={BRAND.name} />
         <meta name="mobile-web-app-capable" content="yes" />
         <link rel="manifest" href="/manifest.json" />
-        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        <meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
-        <meta name="bingbot" content="index, follow" />
-        <meta name="revisit-after" content="1 days" />
-        <meta name="language" content="English" />
-        <meta name="content-language" content="en" />
-        <meta name="document-state" content="Dynamic" />
-        <meta name="distribution" content="global" />
-        <meta name="rating" content="general" />
-        <meta name="referrer" content="strict-origin-when-cross-origin" />
-        <meta name="geo.region" content="IN" />
-        <meta name="geo.country" content="India" />
-        <meta name="ICBM" content="20.5937, 78.9629" />
-        <meta name="classification" content="Education, E-commerce, Developer Resources, Programming Notes" />
-        <meta name="subject" content="Coding Notes, Web Development, DSA, DBMS, Backend, Frontend, System Design" />
-        <meta name="abstract" content="Curated coding notes, developer resources, and interview-prep bundles for web dev and software engineering learners." />
         <JsonLd scripts={[...organizationJsonLd(), ...websiteJsonLd()]} />
-        {measurementId ? (
-          <>
-            <Script src={`https://www.googletagmanager.com/gtag/js?id=${measurementId}`} strategy="afterInteractive" />
-            <Script id="google-analytics" strategy="afterInteractive">{`window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}gtag('js',new Date());gtag('config','${measurementId}');`}</Script>
-          </>
-        ) : null}
       </head>
       <body suppressHydrationWarning className="font-sans antialiased">
-        {measurementId && <GoogleAnalytics gaId={measurementId} />}
-        <AppProviders>{children}</AppProviders>
+        <a href="#main-content" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:rounded-md focus:bg-primary focus:text-primary-foreground focus:p-3">
+          Skip to main content
+        </a>
+        <AppProviders>
+          <Suspense fallback={<ShimmerLoader className="h-14 w-full" />}>
+            {children}
+            <Analytics/>
+          </Suspense>
+        </AppProviders>
       </body>
     </html>
   );

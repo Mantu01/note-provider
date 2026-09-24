@@ -1,13 +1,11 @@
 "use client";
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiClient, buildQueryString } from "@/lib/api-client";
 import { queryKeys } from "@/lib/query-keys";
 import type {
-  AdminAuthResponse,
   AdminCategory,
   AdminGroup,
-  AdminLead,
   AdminNote,
   AdminOrder,
   AdminProfile,
@@ -16,28 +14,13 @@ import type {
   UploadKind,
   UploadResponse,
 } from "@/lib/types";
-import type { CreateCategoryInput, UpdateCategoryInput } from "@/lib/schemas/category.schema";
-import type { CreateGroupInput, UpdateGroupInput } from "@/lib/schemas/group.schema";
-import type { CreateNoteInput, UpdateNoteInput } from "@/lib/schemas/note.schema";
-import type { UpdateOrderPayload } from "@/lib/schemas/admin.schema";
+import type { CreateCategoryInput, UpdateCategoryInput } from "@/schemas/category.schema";
+import type { CreateGroupInput, UpdateGroupInput } from "@/schemas/group.schema";
+import type { CreateNoteInput, UpdateNoteInput } from "@/schemas/note.schema";
 import { toast } from "sonner";
-
-// ─── auth ─────────────────────────────────────────────────────────────────────
 
 export function useAdminProfile() {
   return useQuery({ queryKey: queryKeys.admin.me, queryFn: () => apiClient<AdminProfile>("/admin/auth/me") });
-}
-
-export function useAdminLogin() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: ({ email, password }: { email: string; password: string }) =>
-      apiClient<AdminAuthResponse>("/admin/auth/login", { method: "POST", body: JSON.stringify({ email, password }) }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: queryKeys.admin.me });
-      qc.invalidateQueries({ queryKey: queryKeys.admin.dashboard });
-    },
-  });
 }
 
 export function useAdminLogout() {
@@ -50,13 +33,12 @@ export function useAdminLogout() {
   });
 }
 
-// ─── dashboard ────────────────────────────────────────────────────────────────
-
 export function useDashboard() {
-  return useQuery({ queryKey: queryKeys.admin.dashboard, queryFn: () => apiClient<DashboardStats>("/admin/dashboard") });
+  return useQuery({
+    queryKey: queryKeys.admin.dashboard,
+    queryFn: () => apiClient<DashboardStats>("/admin/dashboard"),
+  });
 }
-
-// ─── categories ───────────────────────────────────────────────────────────────
 
 export function useAdminCategories() {
   return useQuery({
@@ -89,7 +71,7 @@ export function useUpdateCategory(id: string) {
       qc.invalidateQueries({ queryKey: queryKeys.admin.categories });
       qc.invalidateQueries({ queryKey: queryKeys.categories });
     },
-    onError: (error: Error) => toast.error(error.message || "Failed to update category"),
+    onError: (error: Error) => toast.error(error.message || "Failed to create category"),
   });
 }
 
@@ -113,12 +95,11 @@ export function useDeleteCategory() {
   });
 }
 
-// ─── groups ───────────────────────────────────────────────────────────────────
-
 export function useAdminGroups(params: { page?: number; limit?: number; q?: string } = {}) {
   return useQuery({
     queryKey: queryKeys.admin.groups.list(params),
     queryFn: () => apiClient<PaginatedData<AdminGroup>>(`/admin/groups${buildQueryString(params)}`),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -176,12 +157,11 @@ export function useDeleteGroup() {
   });
 }
 
-// ─── notes ────────────────────────────────────────────────────────────────────
-
 export function useAdminNotes(params: { page?: number; limit?: number; q?: string } = {}) {
   return useQuery({
     queryKey: queryKeys.admin.notes.list(params),
     queryFn: () => apiClient<PaginatedData<AdminNote>>(`/admin/notes${buildQueryString(params)}`),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -240,14 +220,11 @@ export function useDeleteNote() {
   });
 }
 
-// ─── orders ───────────────────────────────────────────────────────────────────
-
 export function useAdminOrders(params: {
   page?: number;
   limit?: number;
   q?: string;
   paymentStatus?: string;
-  fulfillmentStatus?: string;
   itemType?: string;
   from?: string;
   to?: string;
@@ -256,6 +233,7 @@ export function useAdminOrders(params: {
   return useQuery({
     queryKey: queryKeys.admin.orders.list(params),
     queryFn: () => apiClient<PaginatedData<AdminOrder>>(`/admin/orders${buildQueryString(params)}`),
+    placeholderData: keepPreviousData,
   });
 }
 
@@ -266,41 +244,6 @@ export function useAdminOrder(id: string) {
     enabled: Boolean(id),
   });
 }
-
-export function useUpdateOrderFulfillment(id: string) {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: (data: UpdateOrderPayload) =>
-      apiClient<AdminOrder>(`/admin/orders/${id}`, { method: "PATCH", body: JSON.stringify(data) }),
-    onSuccess: (order) => {
-      toast.success(`Updated order #${order.orderNumber}`);
-      qc.invalidateQueries({ queryKey: queryKeys.admin.orders.all });
-      qc.invalidateQueries({ queryKey: queryKeys.admin.orders.detail(id) });
-      qc.invalidateQueries({ queryKey: queryKeys.admin.dashboard });
-    },
-    onError: (error: Error) => toast.error(error.message || "Failed to update order"),
-  });
-}
-
-// ─── leads ────────────────────────────────────────────────────────────────────
-
-export function useAdminLeads(params: {
-  page?: number;
-  limit?: number;
-  q?: string;
-  paymentStatus?: string;
-  fulfillmentStatus?: string;
-  from?: string;
-  to?: string;
-} = {}) {
-  return useQuery({
-    queryKey: queryKeys.admin.leads(params),
-    queryFn: () => apiClient<PaginatedData<AdminLead>>(`/admin/leads${buildQueryString(params)}`),
-    staleTime: 1000 * 60 * 2,
-  });
-}
-
-// ─── uploads ──────────────────────────────────────────────────────────────────
 
 export function useFileUpload() {
   const qc = useQueryClient();
@@ -318,17 +261,3 @@ export function useFileUpload() {
   });
 }
 
-export function useDeleteUpload() {
-  const qc = useQueryClient();
-  return useMutation({
-    mutationFn: async ({ publicId, resourceType }: { publicId: string; resourceType: "raw" | "image" }) =>
-      apiClient<{ deleted: true }>("/admin/uploads", {
-        method: "DELETE",
-        body: JSON.stringify({ publicId, resourceType }),
-      }),
-    onSuccess: () => {
-      qc.invalidateQueries({ queryKey: queryKeys.admin.notes.all });
-    },
-    onError: (error: Error) => toast.error(error.message || "Failed to remove file"),
-  });
-}

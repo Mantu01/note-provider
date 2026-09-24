@@ -1,16 +1,10 @@
-import { adminHandler } from "@/server/lib/api-handler";
-import { ok } from "@/server/lib/api-response";
-import { AppError } from "@/server/lib/errors";
-import { toAdminProfile } from "@/server/mappers/admin.mapper";
-import { Admin } from "@/server/db/models/admin.model";
-
-export const runtime = "nodejs";
+import { adminHandler } from "@/helpers/api-handler";
+import { ok } from "@/helpers/api-response";
+import { AppError } from "@/helpers/errors";
+import { prisma } from "@/helpers/db";
 
 export const GET = adminHandler(async (ctx) => {
-  const admin = await Admin.findById(ctx.admin.id).select("-passwordHash").lean().exec();
+  const admin = await prisma.admin.findUnique({ where: { id: ctx.admin.id }, select: { id: true, name: true, email: true, isActive: true, isHead: true } });
   if (!admin) throw AppError.unauthorized();
-  const res = ok(toAdminProfile(admin));
-  res.headers.set("Cache-Control", "no-store, max-age=0");
-  return res;
+  return ok({ id: admin.id, name: admin.name, email: admin.email, isHead: Boolean(admin.isHead), lastLoginAt: null, createdAt: "" });
 });
-

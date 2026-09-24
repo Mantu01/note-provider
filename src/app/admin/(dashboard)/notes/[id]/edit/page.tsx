@@ -1,22 +1,37 @@
 "use client";
 
-
-import { Suspense } from "react";
-import { use } from "react";
-import { useAdminNote } from "@/hooks/useAdmin";
+import { Suspense, use } from "react";
+import { Loader2 } from "lucide-react";
 import { NoteForm } from "@/components/admin/notes/note-form";
 import { ErrorState } from "@/components/shared/error-state";
-import { Loader2 } from "lucide-react";
+import { useAdminNote } from "@/hooks/useAdmin";
 
 function NoteFormContent({ id }: { id: string }) {
-  const { data: note, isLoading } = useAdminNote(id);
-  if (isLoading) return <div className="flex justify-center py-12"><Loader2 className="h-8 w-8 animate-spin text-muted-foreground" /></div>;
-  if (!note) return <ErrorState message="Note not found" onRetry={() => window.location.reload()} />;
-  return <NoteForm initialData={note} />;
+  const query = useAdminNote(id);
+
+  if (query.isPending) {
+    return (
+      <div className="flex justify-center py-16">
+        <Loader2 aria-hidden="true" className="size-6 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
+  if (query.isError || !query.data) {
+    return (
+      <ErrorState
+        message="This note could not be loaded."
+        onRetry={() => query.refetch()}
+      />
+    );
+  }
+
+  return <NoteForm initialData={query.data} />;
 }
 
 export default function EditNotePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params);
+
   return (
     <Suspense fallback={null}>
       <NoteFormContent id={id} />

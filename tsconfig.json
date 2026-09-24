@@ -1,12 +1,14 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
-    "noEmit": true,
-    "types": ["vitest/globals"],
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
@@ -20,8 +22,20 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
-    }
+      "@/*": [
+        "./src/*"
+      ],
+      "@/helpers": [
+        "./src/helpers"
+      ],
+      "@/helpers/*": [
+        "./src/helpers/*"
+      ],
+      "@prisma/client": [
+        "./generated/prisma/client"
+      ]
+    },
+    "noEmit": true
   },
   "include": [
     "next-env.d.ts",
@@ -31,5 +45,7 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts"
   ],
-  "exclude": ["node_modules"]
+  "exclude": [
+    "node_modules"
+  ]
 }

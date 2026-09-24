@@ -1,0 +1,191 @@
+generator client {
+  provider     = "prisma-client"
+  output       = "../generated/prisma"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Admin {
+  id           String   @id @default(uuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  lastLoginAt  DateTime?
+  isActive     Boolean  @default(true)
+  isHead       Boolean  @default(false)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  createdCategories  Category[]  @relation("AdminCreatedCategories")
+  updatedCategories  Category[]  @relation("AdminUpdatedCategories")
+  createdNotes       Note[]      @relation("AdminCreatedNotes")
+  updatedNotes       Note[]      @relation("AdminUpdatedNotes")
+  createdGroups      Group[]     @relation("AdminCreatedGroups")
+  updatedGroups      Group[]     @relation("AdminUpdatedGroups")
+
+  @@index([email])
+}
+
+model Category {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  slug        String   @unique
+  description String?  @db.Text
+  icon        String?
+  order       Int      @default(0)
+  isActive    Boolean  @default(true)
+  subjects    Json?
+  createdBy   String?
+  updatedBy   String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  notes        Note[]
+  groups       Group[]
+  createdAdmin Admin?  @relation("AdminCreatedCategories", fields: [createdBy], references: [id])
+  updatedAdmin Admin?  @relation("AdminUpdatedCategories", fields: [updatedBy], references: [id])
+
+  @@index([order, name])
+  @@index([slug])
+}
+
+model Note {
+  id               String       @id @default(uuid())
+  title            String
+  slug             String       @unique
+  description      String       @db.Text
+  categoryId       String
+  level            NoteLevel
+  visibility       NoteVisibility @default(public)
+  pricingType      NotePricingType
+  price            Int
+  compareAtPrice   Int?
+  fullFileUrl      String
+  previewFileUrl   String?
+  coverImageUrl    String?
+  pageCount        Int?
+  tags             String[]     @default([])
+  isFeatured       Boolean      @default(false)
+  downloadCount    Int          @default(0)
+  purchaseCount    Int          @default(0)
+  revenuePaise     Int          @default(0)
+  createdBy        String?
+  updatedBy        String?
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  category   Category      @relation(fields: [categoryId], references: [id])
+  noteGroups NoteGroup[]
+  ordersAsNote Order[]    @relation("OrderNote")
+  createdAdmin Admin?       @relation("AdminCreatedNotes", fields: [createdBy], references: [id])
+  updatedAdmin Admin?       @relation("AdminUpdatedNotes", fields: [updatedBy], references: [id])
+
+  @@index([visibility, createdAt])
+  @@index([categoryId, level, pricingType])
+  @@index([price])
+  @@index([isFeatured, createdAt])
+}
+
+model Group {
+  id                 String          @id @default(uuid())
+  name               String
+  slug               String          @unique
+  description        String          @db.Text
+  categoryId         String
+  price              Int
+  compareAtPrice     Int?
+  coverImageUrl      String?
+  visibility         NoteVisibility  @default(public)
+  isFeatured         Boolean         @default(false)
+  purchaseCount      Int             @default(0)
+  revenuePaise       Int             @default(0)
+  createdBy          String?
+  updatedBy          String?
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  category      Category     @relation(fields: [categoryId], references: [id])
+  noteGroups    NoteGroup[]
+  ordersAsGroup Order[]      @relation("OrderGroup")
+  createdAdmin  Admin?         @relation("AdminCreatedGroups", fields: [createdBy], references: [id])
+  updatedAdmin  Admin?         @relation("AdminUpdatedGroups", fields: [updatedBy], references: [id])
+
+  @@index([visibility, createdAt])
+  @@index([categoryId, visibility])
+  @@index([isFeatured, createdAt])
+}
+
+model NoteGroup {
+  groupId String
+  noteId  String
+
+  group  Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  note   Note   @relation(fields: [noteId], references: [id], onDelete: Cascade)
+
+  @@id([groupId, noteId])
+}
+
+model Order {
+  id                String           @id @default(uuid())
+  orderNumber       String           @unique
+  itemType          PurchaseItemType
+  noteId            String?
+  groupId           String?
+  itemSnapshot      Json
+  amount            Int
+  currency          String           @default("INR")
+  buyer             Json
+  razorpayOrderId   String?          @unique
+  razorpayPaymentId String?
+  razorpaySignature String?
+  paymentMethod     String?
+  paymentStatus     PaymentStatus    @default(created)
+  isDownloaded      Boolean          @default(false)
+  failureReason     String?
+  paidAt            DateTime?
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  note            Note?  @relation("OrderNote", fields: [noteId], references: [id])
+  group           Group? @relation("OrderGroup", fields: [groupId], references: [id])
+
+  @@index([paymentStatus, createdAt])
+  @@index([createdAt])
+  @@index([razorpayOrderId])
+  @@index([orderNumber])
+}
+
+model Counter {
+  key  String @unique
+  seq  Int    @default(0)
+}
+
+enum NoteLevel {
+  basics
+  intermediate
+  advance
+}
+
+enum NoteVisibility {
+  public
+  private
+}
+
+enum NotePricingType {
+  free
+  paid
+}
+
+enum PurchaseItemType {
+  note
+  group
+}
+
+enum PaymentStatus {
+  created
+  paid
+  failed
+}

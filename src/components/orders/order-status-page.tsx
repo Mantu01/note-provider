@@ -2,29 +2,192 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { CheckCircle2, CircleAlert, Download, Lock } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  CheckCircle2,
+  CircleAlert,
+  Download,
+  FileCheck2,
+  FileText,
+  Info,
+  Loader2,
+  ShieldCheck,
+  TriangleAlert,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CopyButton } from "@/components/shared/copy-button";
 import { ErrorState } from "@/components/shared/error-state";
+import { OrderStatusSkeleton } from "@/components/shared/shimmer-loader";
 import { useOrder } from "@/hooks/useOrders";
 import { useDownloadFile } from "@/hooks/use-download-file";
 import { formatDateTime } from "@/lib/format";
+import { queryKeys } from "@/lib/query-keys";
+import { cn } from "@/lib/utils";
+
+const DOWNLOAD_WINDOW_MS = 15 * 60 * 1000;
+
+type OrderNote = { id: string; title: string; slug: string; coverImageUrl: string | null };
+
+function CountdownTimer({ paidAt }: { paidAt: Date }) {
+  const [display, setDisplay] = useState(() => formatMs(paidAt));
+
+  useEffect(() => {
+    const tick = () => setDisplay(formatMs(paidAt));
+    tick();
+    const interval = setInterval(tick, 1000);
+    return () => clearInterval(interval);
+  }, [paidAt]);
+
+  function formatMs(date: Date): string {
+    const msLeft = Math.max(0, DOWNLOAD_WINDOW_MS - (Date.now() - date.getTime()));
+    const totalSec = Math.floor(msLeft / 1000);
+    const min = Math.floor(totalSec / 60);
+    const sec = totalSec % 60;
+    return `${min}:${sec.toString().padStart(2, "0")}`;
+  }
+
+  return (
+    <span className="font-mono text-xs font-semibold tabular-nums" aria-live="polite">
+      {display}
+    </span>
+  );
+}
+
+function StatusBanner({ isFresh, remainingMs, isDownloaded, paidAt }: { isFresh: boolean; remainingMs: number; isDownloaded: boolean; paidAt: Date | null }) {
+  if (isFresh && remainingMs > 0 && paidAt) {
+    return (
+      <Card className="mt-5 rounded-xl border-success/30 bg-success/5 shadow-sm">
+        <CardContent className="flex items-start gap-3 p-4 sm:p-5">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-success/20 bg-success/10 text-success">
+            <ShieldCheck aria-hidden="true" className="size-4" />
+          </div>
+          <div className="flex-1 space-y-1">
+            <p className="font-bold text-foreground">Download session active</p>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              You can download now. Your link expires in{" "}
+              <CountdownTimer paidAt={paidAt} />.
+            </p>
+            <p className="text-xs leading-relaxed text-muted-foreground">
+              After this session, each download link works once to prevent unauthorized sharing.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (isDownloaded) {
+    return (
+      <Card className="mt-5 rounded-xl border-destructive/30 bg-destructive/5 shadow-sm">
+        <CardContent className="flex items-start gap-3 p-4 sm:p-5">
+          <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-destructive/20 bg-destructive/10 text-destructive">
+            <TriangleAlert aria-hidden="true" className="size-4" />
+          </div>
+          <div className="flex-1 space-y-1">
+            <p className="font-bold text-foreground">Download already used</p>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              The notes for this order were downloaded. For security, the download link works once after the initial session. Contact support if you lost the file.
+            </p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card className="mt-5 rounded-xl border-warning/40 bg-warning/5 shadow-sm">
+      <CardContent className="flex items-start gap-3 p-4 sm:p-5">
+        <div className="flex size-9 shrink-0 items-center justify-center rounded-lg border border-warning/30 bg-warning/15 text-warning-foreground">
+          <Info aria-hidden="true" className="size-4" />
+        </div>
+        <div className="flex-1 space-y-1">
+          <p className="font-bold text-foreground">Single-use download notice</p>
+          <p className="text-sm leading-relaxed text-muted-foreground">
+            Each download works once. Click a download button, save the PDF to your device, and keep it safe for future revision.
+          </p>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function NoteRow({
+  note,
+  canDownload,
+  isDownloading,
+  onDownload,
+}: {
+  note: OrderNote;
+  canDownload: boolean;
+  isDownloading: boolean;
+  onDownload: () => void;
+}) {
+  return (
+    <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+      <div className="flex min-w-0 items-center gap-3">
+        <div className="relative size-12 shrink-0 overflow-hidden rounded-lg border border-border/80 bg-muted/40 sm:size-14">
+          {note.coverImageUrl ? (
+            <Image src={note.coverImageUrl} alt={note.title} fill sizes="56px" className="object-cover" />
+          ) : (
+            <div className="flex size-full items-center justify-center bg-linear-to-br from-primary/8 to-transparent text-primary/25">
+              <FileText aria-hidden="true" className="size-6" />
+            </div>
+          )}
+        </div>
+        <div className="min-w-0">
+          <p className="truncate text-sm font-semibold text-foreground">{note.title}</p>
+          <p className="mt-0.5 text-xs text-muted-foreground">PDF study note</p>
+        </div>
+      </div>
+
+      <Button
+        onClick={onDownload}
+        disabled={!canDownload || isDownloading}
+        size="sm"
+        className={cn(
+          "h-11 w-full rounded-lg px-4 text-xs font-semibold sm:h-10 sm:w-auto",
+          canDownload && "bg-accent text-accent-foreground hover:bg-accent/90",
+        )}
+        variant={canDownload ? "default" : "outline"}
+      >
+        {isDownloading ? (
+          <>
+            <Loader2 aria-hidden="true" className="mr-1.5 size-3.5 animate-spin" />
+            Preparing…
+          </>
+        ) : canDownload ? (
+          <>
+            <Download aria-hidden="true" className="mr-1.5 size-3.5" />
+            Download
+          </>
+        ) : (
+          <>
+            <FileCheck2 aria-hidden="true" className="mr-1.5 size-3.5" />
+            Downloaded
+          </>
+        )}
+      </Button>
+    </div>
+  );
+}
+
+function DetailRow({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex justify-between gap-3">
+      <dt className="shrink-0 text-muted-foreground">{label}</dt>
+      <dd className="min-w-0 text-right font-medium text-foreground">{children}</dd>
+    </div>
+  );
+}
 
 export function OrderStatusPage({ orderId }: { orderId: string }) {
   const query = useOrder(orderId);
-  const { download, isDownloading } = useDownloadFile();
+  const queryClient = useQueryClient();
+  const { download, isDownloading, variables: activeNoteSlug } = useDownloadFile();
 
-  if (query.isPending) {
-    return (
-      <div className="grid min-h-[60vh] place-items-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="size-10 rounded-full border-2 border-brand-orange border-t-transparent animate-spin" />
-          <p className="text-xs text-muted-foreground">Loading order…</p>
-        </div>
-      </div>
-    );
-  }
+  if (query.isPending) return <OrderStatusSkeleton />;
 
   if (query.isError || !query.data) {
     return (
@@ -38,9 +201,9 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
 
   if (order.paymentStatus === "created") {
     return (
-      <div className="mx-auto max-w-xl px-4 py-20 text-center">
-        <div className="mx-auto size-12 rounded-full border-2 border-brand-orange border-t-transparent animate-spin" />
-        <h1 className="mt-5 text-xl font-bold tracking-tight">Confirming your payment…</h1>
+      <div className="mx-auto max-w-xl px-4 py-16 text-center">
+        <Loader2 aria-hidden="true" className="mx-auto size-10 animate-spin text-accent" />
+        <h1 className="mt-5 text-lg font-bold tracking-tight sm:text-xl">Confirming your payment…</h1>
         <p className="mt-2 text-sm text-muted-foreground">This usually takes a few seconds. Do not close this page.</p>
       </div>
     );
@@ -48,190 +211,140 @@ export function OrderStatusPage({ orderId }: { orderId: string }) {
 
   if (order.paymentStatus === "failed") {
     return (
-      <div className="mx-auto max-w-xl px-4 py-20 text-center">
-        <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-destructive/10 border border-destructive/20">
+      <div className="mx-auto max-w-xl px-4 py-16 text-center">
+        <div className="mx-auto flex size-16 items-center justify-center rounded-2xl border border-destructive/20 bg-destructive/10">
           <CircleAlert aria-hidden="true" className="size-8 text-destructive" />
         </div>
-        <h1 className="mt-5 text-xl font-bold tracking-tight">Payment failed</h1>
-        <p className="mt-2 text-sm text-muted-foreground">No money was deducted, or your bank will process any reversal.</p>
-        <Button render={<Link href={`/checkout/${order.itemSlug}${order.itemType === "group" ? "?itemType=group" : ""}`} />} className="mt-5 rounded-full">
+        <h1 className="mt-5 text-lg font-bold tracking-tight sm:text-xl">Payment failed</h1>
+        <p className="mt-2 text-sm text-muted-foreground">No money was deducted, or your bank will reverse the hold automatically.</p>
+        <Button
+          render={
+            <Link href={`/checkout/${order.itemSlug}${order.itemType === "group" ? "?itemType=group" : ""}`} />
+          }
+          className="mt-5 rounded-full bg-accent text-accent-foreground"
+        >
           Try again
         </Button>
       </div>
     );
   }
 
-  const isCompleted = order.fulfillmentStatus === "completed";
+  const isFresh = Boolean(order.paidAt && Date.now() - new Date(order.paidAt).getTime() < DOWNLOAD_WINDOW_MS);
+  const paidAtDate = order.paidAt ? new Date(order.paidAt) : null;
+  const remainingMs = (isFresh && paidAtDate) ? DOWNLOAD_WINDOW_MS - (Date.now() - paidAtDate.getTime()) : 0;
+  const canDownload = !order.isDownloaded;
+  const notesList: OrderNote[] =
+    order.notes && order.notes.length > 0
+      ? order.notes
+      : [{ id: order.id, title: order.itemTitle, slug: order.itemSlug, coverImageUrl: order.coverImageUrl }];
+
+  const handleDownload = (note: OrderNote) => {
+    download(
+      {
+        url: `/api/notes/${note.slug}/download?orderId=${order.id}`,
+        filename: `${note.slug}.pdf`,
+      },
+      {
+        onSuccess: () => {
+          queryClient.invalidateQueries({ queryKey: queryKeys.order(order.id) });
+        },
+      },
+    );
+  };
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-10 sm:px-6 paper-bg">
-      {/* Success header */}
-      <div className="text-center space-y-3">
-        <div className="mx-auto flex size-16 items-center justify-center rounded-2xl bg-success/10 border border-success/20">
+    <div className="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12">
+      <div className="space-y-2 text-center">
+        <div className="mx-auto flex size-16 items-center justify-center rounded-2xl border border-success/20 bg-success/10">
           <CheckCircle2 aria-hidden="true" className="size-8 text-success" />
         </div>
         <div>
-          <p className="text-[10px] font-bold tracking-[0.15em] uppercase text-brand-orange">
-            Payment received
-          </p>
-          <h1 className="mt-1 text-2xl font-black tracking-tight md:text-3xl">
+          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-accent">Payment verified</p>
+          <h1 className="mt-1 font-heading text-2xl font-black tracking-tight text-foreground sm:text-3xl">
             <span className="brand-gradient-text">Payment successful</span>
           </h1>
         </div>
-        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3.5 py-1 text-xs font-mono font-semibold shadow-sm paper-card">
+        <div className="inline-flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5 font-mono text-xs font-semibold shadow-sm">
           <span>Order #{order.orderNumber}</span>
           <CopyButton value={order.orderNumber} label="Copy order number" />
         </div>
       </div>
 
-      {/* Cover image */}
-      {order.coverImageUrl && (
-        <div className="mt-6 overflow-hidden rounded-xl border border-border/50 bg-muted/20 shadow-md torn-paper">
-          <Image
-            src={order.coverImageUrl}
-            alt={`Cover for ${order.itemTitle}`}
-            width={600}
-            height={160}
-            className="h-44 w-full object-cover"
-          />
-        </div>
-      )}
+      <StatusBanner isFresh={isFresh} remainingMs={remainingMs} isDownloaded={order.isDownloaded} paidAt={paidAtDate} />
 
-      {/* Status card */}
-      <Card className="mt-6 rounded-xl border-brand-orange/20 bg-brand-orange/5 shadow-sm paper-card-orange">
-        <CardContent className="p-4">
-          <div className="flex items-start gap-3">
-            <div className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-brand-orange/10 border border-brand-orange/20">
-              {isCompleted ? (
-                <CheckCircle2 aria-hidden="true" className="size-5 text-brand-green" />
-              ) : (
-                <Lock aria-hidden="true" className="size-5 text-warning-foreground" />
-              )}
-            </div>
+      <Card className="mt-5 rounded-xl border-border shadow-sm">
+        <CardHeader className="border-b border-border/60 pb-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <div>
-              <p className="text-sm font-bold">{isCompleted ? "Notes ready for download!" : "Order status: Pending Approval"}</p>
-              <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">
-                {isCompleted
-                  ? <>Your notes for <strong className="text-foreground">{order.itemTitle}</strong> are ready below.</>
-                  : <>We&apos;ll review and send <strong className="text-foreground">{order.itemTitle}</strong> shortly.</>}
+              <CardTitle className="text-sm font-bold">
+                {order.itemType === "group" ? "Bundle contents" : "Your note"}
+              </CardTitle>
+              <p className="mt-0.5 text-xs text-muted-foreground">
+                {order.itemType === "group"
+                  ? `${notesList.length} note${notesList.length === 1 ? "" : "s"} included in this bundle`
+                  : "Ready to download and save"}
               </p>
             </div>
+            <span className="rounded-full border border-primary/20 bg-primary/10 px-3 py-0.5 text-xs font-semibold text-primary">
+              {order.itemType === "group" ? "Bundle" : "Single note"}
+            </span>
           </div>
+        </CardHeader>
+        <CardContent className="divide-y divide-border/60 p-0">
+          {notesList.map((note) => (
+            <NoteRow
+              key={note.id || note.slug}
+              note={note}
+              canDownload={canDownload}
+              isDownloading={isDownloading && activeNoteSlug?.url === `/api/notes/${note.slug}/download?orderId=${order.id}`}
+              onDownload={() => handleDownload(note)}
+            />
+          ))}
         </CardContent>
       </Card>
 
-      {/* Download section */}
-      {isCompleted && (
-        <Card className="mt-4 rounded-xl border-success/20 bg-success/5 shadow-sm paper-card-green">
-          <CardContent className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-success/10 border border-success/20">
-                <Download aria-hidden="true" className="size-6 text-success" />
-              </div>
-              <div className="flex-1">
-                <p className="text-sm font-bold text-foreground">Download your notes</p>
-                <p className="text-xs text-muted-foreground">Click below to get your PDF</p>
-              </div>
-              {order.itemType === "note" && (
-                <Button
-                  onClick={() => download({ url: `/api/notes/${order.itemSlug}/download?orderId=${order.id}`, filename: `${order.itemSlug}.pdf` })}
-                  disabled={isDownloading}
-                  size="sm"
-                  className="rounded-full"
-                >
-                  {isDownloading ? "Preparing…" : "Download PDF"}
-                </Button>
-              )}
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      <Card className="mt-5 rounded-xl border-border shadow-sm">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-sm font-bold">Order details</CardTitle>
+        </CardHeader>
+        <CardContent className="pt-0">
+          <dl className="space-y-2 text-xs">
+            <DetailRow label="Order number">
+              <span className="inline-flex items-center gap-1.5 font-mono font-semibold">
+                {order.orderNumber}
+                <CopyButton value={order.orderNumber} />
+              </span>
+            </DetailRow>
+            <DetailRow label="Item">
+              <span className="line-clamp-1 font-semibold">{order.itemTitle}</span>
+            </DetailRow>
+            <DetailRow label="Amount paid">
+              <span className="font-bold">{order.amountLabel}</span>
+            </DetailRow>
+            <DetailRow label="Placed">
+              <span>{formatDateTime(order.createdAt)}</span>
+            </DetailRow>
+            <DetailRow label="Paid">
+              <span>{order.paidAt ? formatDateTime(order.paidAt) : "—"}</span>
+            </DetailRow>
+            <DetailRow label="Download status">
+              <span className={cn("font-semibold", order.isDownloaded ? "text-success" : "text-foreground")}>
+                {order.isDownloaded ? "Downloaded" : "Available"}
+              </span>
+            </DetailRow>
+          </dl>
+        </CardContent>
+      </Card>
 
-      {/* Details grid */}
-      <div className="mt-6 grid gap-4 md:grid-cols-2">
-        {/* Order details */}
-        <Card className="rounded-xl paper-card">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-bold">Order details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-2.5 pt-0">
-            <dl className="space-y-2 text-xs">
-              <div className="flex justify-between gap-3">
-                <dt className="text-muted-foreground">Order ID</dt>
-                <dd className="font-mono font-semibold flex items-center gap-1.5">
-                  <span>{order.orderNumber}</span>
-                  <CopyButton value={order.orderNumber} />
-                </dd>
-              </div>
-              <div className="flex justify-between gap-3">
-                <dt className="text-muted-foreground">Item</dt>
-                <dd className="font-semibold text-right max-w-[60%] truncate">{order.itemTitle}</dd>
-              </div>
-              <div className="flex justify-between gap-3">
-                <dt className="text-muted-foreground">Amount</dt>
-                <dd className="font-bold">{order.amountLabel}</dd>
-              </div>
-              <div className="flex justify-between gap-3">
-                <dt className="text-muted-foreground">Placed</dt>
-                <dd className="font-medium">{formatDateTime(order.createdAt)}</dd>
-              </div>
-              <div className="flex justify-between gap-3">
-                <dt className="text-muted-foreground">Paid</dt>
-                <dd className="font-medium">{order.paidAt ? formatDateTime(order.paidAt) : "—"}</dd>
-              </div>
-            </dl>
-          </CardContent>
-        </Card>
-
-        {/* Delivery timeline */}
-        <Card className="rounded-xl paper-card">
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-bold">Delivery timeline</CardTitle>
-          </CardHeader>
-          <CardContent className="pt-0">
-            <ol className="space-y-3 text-xs">
-              <li className="flex items-center justify-between">
-                <span className="font-medium">Payment received</span>
-                <CheckCircle2 aria-hidden="true" className="size-4 text-success shrink-0" />
-              </li>
-              {isCompleted ? (
-                <>
-                  <li className="flex items-center justify-between">
-                    <span className="font-medium">Notes delivered</span>
-                    <CheckCircle2 aria-hidden="true" className="size-4 text-success shrink-0" />
-                  </li>
-                  <li className="flex items-center justify-between">
-                    <span className="font-medium">Download now</span>
-                    <Download aria-hidden="true" className="size-4 text-brand-green shrink-0" />
-                  </li>
-                </>
-              ) : (
-                <li className="flex items-center justify-between">
-                  <span className="font-medium">Admin review & approval</span>
-                  <div className="flex items-center gap-1.5">
-                    <Lock aria-hidden="true" className="size-3 text-warning-foreground" />
-                    <span className="text-[9px] font-medium text-muted-foreground bg-muted px-2 py-0.5 rounded-full">Pending</span>
-                  </div>
-                </li>
-              )}
-            </ol>
-          </CardContent>
-        </Card>
-      </div>
-
-      {/* Action buttons */}
       <div className="mt-6 flex flex-wrap justify-center gap-2">
-        <Button render={<Link href="/order/track" />} variant="outline" size="sm" className="rounded-full paper-card">
-          Track another
+        <Button render={<Link href="/order/track" />} variant="outline" size="sm" className="rounded-full text-xs">
+          Track another order
         </Button>
-        <Button render={<Link href="/notes" />} size="sm" className="rounded-full bg-brand-orange text-white">
+        <Button render={<Link href="/notes" />} size="sm" className="rounded-full bg-accent text-xs text-accent-foreground">
           Browse notes
         </Button>
-        <Button render={<Link href="/contact" />} variant="outline" size="sm" className="rounded-full paper-card">
-          Support
-        </Button>
-        <Button type="button" variant="ghost" size="sm" onClick={() => query.refetch()} className="rounded-full">
-          Refresh
+        <Button render={<Link href="/contact" />} variant="outline" size="sm" className="rounded-full text-xs">
+          Need help
         </Button>
       </div>
     </div>

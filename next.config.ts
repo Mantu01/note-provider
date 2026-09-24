@@ -13,12 +13,15 @@ const nextConfig: NextConfig = {
   },
   poweredByHeader: false,
   compress: true,
+  cacheComponents: true,
   experimental: {
     serverActions: {
       bodySizeLimit: "2mb",
     },
+    exposeTestingApiInProductionBuild:
+      process.env.EXPOSE_TESTING_API === "1",
   },
-  allowedDevOrigins: ["10.103.214.91"],
+  allowedDevOrigins: ["192.168.29.251"],
 };
 
 export default nextConfig;

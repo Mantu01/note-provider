@@ -1,91 +1,66 @@
-import { handler } from "@/server/lib/api-handler";
+import { handler } from "@/helpers/api-handler";
 import { NextResponse } from "next/server";
-import { AppError } from "@/server/lib/errors";
-import { Note } from "@/server/db/models/note.model";
-import { Order } from "@/server/db/models/order.model";
-import { buildSignedUrl } from "@/server/lib/cloudinary";
-import { enforceRateLimit } from "@/server/lib/rate-limit";
-import { incrementDownloadCount } from "@/server/services/note.service";
-import { driveToDownloadUrl } from "@/server/lib/drive-utils";
-import fs from "fs";
-import path from "path";
+import { AppError } from "@/helpers/errors";
+import { prisma } from "@/helpers/db";
+import { enforceRateLimit } from "@/helpers/rate-limit";
 
-export const runtime = "nodejs";
+const DOWNLOAD_WINDOW_MS = 15 * 60 * 1000;
+
+type OrderLike = {
+  id: string;
+  paidAt: Date | null;
+  isDownloaded: boolean;
+  itemSnapshot: unknown;
+};
+
+async function claimDownloadAccess(order: OrderLike): Promise<void> {
+  const isFresh = Boolean(order.paidAt && Date.now() - new Date(order.paidAt).getTime() < DOWNLOAD_WINDOW_MS);
+
+  const claim = await prisma.order.updateMany({
+    where: { id: order.id, isDownloaded: false },
+    data: { isDownloaded: true },
+  });
+
+  if (claim.count === 0 && !isFresh) {
+    throw AppError.forbidden("This order has already been downloaded. Contact support if you need the file again.");
+  }
+}
 
 export const GET = handler<{ slug: string }>(async (ctx): Promise<NextResponse<unknown>> => {
   const { slug } = ctx.params;
   const orderId = ctx.searchParams.get("orderId");
+  const isPreview = ctx.searchParams.get("preview") === "true";
   enforceRateLimit("noteDownload", ctx.ip, { limit: 30, windowMs: 600000 });
 
-  const note = await Note.findOne({ slug, visibility: "public" }).lean().exec();
+  const note = await prisma.note.findFirst({ where: { slug, visibility: "public" } });
   if (!note) throw AppError.notFound("Note");
 
+  if (isPreview) {
+    const previewUrl = note.previewFileUrl;
+    if (!previewUrl) throw AppError.notFound("Preview file not available");
+    return NextResponse.json({ url: previewUrl, filename: `${note.slug}-preview.pdf` });
+  }
+
   if (note.pricingType === "paid") {
-    if (!orderId) {
-      throw AppError.forbidden("This note is locked. Purchase it to receive the full PDF.");
-    }
+    if (!orderId) throw AppError.forbidden("This note is locked. Purchase it to receive the full PDF.");
 
-    const order = await Order.findById(orderId).lean().exec();
+    const order = await prisma.order.findFirst({ where: { id: orderId, paymentStatus: "paid" } });
+    if (!order) throw AppError.forbidden("No valid paid order found.");
 
-    if (
-      !order ||
-      order.paymentStatus !== "paid" ||
-      order.itemSnapshot?.slug !== slug
-    ) {
-      throw AppError.forbidden("No valid paid order found for this note.");
-    }
+    const snapshot = (order.itemSnapshot as Record<string, unknown>) ?? {};
+    const rawNoteIds = Array.isArray(snapshot.noteIds) ? snapshot.noteIds : [];
+    const noteIds = rawNoteIds.filter((v): v is string => typeof v === "string");
+    const snapshotSlug = typeof snapshot.slug === "string" ? snapshot.slug : "";
+    const isNoteInOrder = order.noteId === note.id || snapshotSlug === slug || noteIds.includes(note.id);
+
+    if (!isNoteInOrder) throw AppError.forbidden("This note is not part of this order.");
+
+    await claimDownloadAccess(order);
   }
 
-  let buffer: ArrayBuffer | Buffer | null = null;
+  if (!note.fullFileUrl) throw AppError.notFound("Note file not available");
 
-  if (note.fullFilePublicId) {
-    try {
-      const signedUrl = buildSignedUrl(note.fullFilePublicId, "raw", "authenticated");
-      const res = await fetch(signedUrl);
-      if (res.ok) {
-        buffer = await res.arrayBuffer();
-      }
-    } catch {
-      buffer = null;
-    }
-  }
+  await prisma.note.update({ where: { id: note.id }, data: { downloadCount: { increment: 1 } } });
 
-  if (!buffer && note.fullFileUrl) {
-    try {
-      if (note.fullFileUrl.startsWith("http://") || note.fullFileUrl.startsWith("https://")) {
-        const url = driveToDownloadUrl(note.fullFileUrl);
-        const res = await fetch(url);
-        if (res.ok) {
-          buffer = await res.arrayBuffer();
-        }
-      }
-    } catch {
-      buffer = null;
-    }
-  }
-
-  if (!buffer) {
-    const samplePath = path.join(process.cwd(), "public", "sample.pdf");
-    if (fs.existsSync(samplePath)) {
-      buffer = fs.readFileSync(samplePath);
-    }
-  }
-
-  if (!buffer) throw AppError.notFound("Note file content");
-
-  await incrementDownloadCount(note._id.toString());
-
-  const fileName = `${note.slug}.pdf`;
-
-  const bytes = buffer instanceof Buffer ? buffer : Buffer.from(buffer as ArrayBuffer);
-
-  return new NextResponse(bytes as unknown as ArrayBuffer, {
-    headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": `attachment; filename="${fileName}"`,
-      "Content-Length": String(bytes.byteLength),
-      "Cache-Control": "private, no-store",
-      "X-Content-Type-Options": "nosniff",
-    },
-  });
+  return NextResponse.json({ url: note.fullFileUrl, filename: `${note.slug}.pdf` });
 });

@@ -1,14 +1,9 @@
-import { handler } from "@/server/lib/api-handler";
-import { ok } from "@/server/lib/api-response";
-import { clearAdminSessionCookie } from "@/server/lib/auth-guard";
-import { Admin } from "@/server/db/models/admin.model";
-import { getOptionalAdmin } from "@/server/lib/auth-guard";
+import { handler } from "@/helpers/api-handler";
+import { ok } from "@/helpers/api-response";
+import { clearAdminSessionCookie } from "@/helpers/auth-guard";
 
-export const runtime = "nodejs";
 
-export const POST = handler(async (ctx) => {
-  const admin = await getOptionalAdmin();
+export const POST = handler(async (_ctx) => {
   await clearAdminSessionCookie();
-
   return ok({ ok: true });
 });

@@ -1,22 +1,16 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import JsonLd, {
   productJsonLd,
   courseJsonLd,
-  breadcrumbJsonLd,
   webpageJsonLd,
   articleJsonLd,
 } from "@/components/seo/json-ld";
-import { APP_URL } from "@/lib/constants";
+import { APP_URL, SEO } from "@/lib/constants";
 import { NoteDetailPage } from "@/components/notes/note-detail-page";
-import { Note } from "@/server/db/models/note.model";
-import type { NoteDoc } from "@/server/db/models/note.model";
-import "@/server/db/models/category.model";
-
-interface PopulatedNote extends Omit<NoteDoc, "category"> {
-  category?: { _id: import("mongoose").Types.ObjectId; name: string };
-  priceLabel?: string;
-}
+import { NoteDetailSkeleton } from "@/components/shared/shimmer-loader";
+import { prisma } from "@/helpers/db";
 
 interface NotePageProps {
   params: Promise<{ slug: string }>;
@@ -24,124 +18,94 @@ interface NotePageProps {
 
 export async function generateMetadata({ params }: NotePageProps): Promise<Metadata> {
   const { slug } = await params;
+  const note = await prisma.note.findFirst({
+    where: { slug, visibility: "public" },
+    select: { title: true, description: true, coverImageUrl: true, updatedAt: true },
+  });
 
-  const noteDoc = await Note.findOne({ slug, visibility: "public" })
-    .populate<PopulatedNote>("category")
-    .lean()
-    .exec();
+  if (!note) return { title: "Note not found" };
 
-  if (!noteDoc) {
-    return {
-      title: "Note Not Found — Notes Provider",
-      description: "This study note could not be found or may have been removed.",
-      openGraph: { url: `${APP_URL}/notes/${slug}`, type: "website" },
-    };
-  }
-
-  const note = noteDoc as unknown as PopulatedNote;
-  const title = `${note.title} — ${note.level.charAt(0).toUpperCase() + note.level.slice(1)} Notes | ${note.category?.name || "Coding Notes"}`;
-  const desc = note.description?.slice(0, 160) || `Download ${note.title} — ${note.level} developer notes for ${note.category?.name || "coding"}. ${note.pricingType === "free" ? "Completely free." : `Priced at ${note.priceLabel || "affordable rate"}.`}`;
-  const imageUrl = note.coverImageUrl ?? `${APP_URL}/og/note/${slug}.png`;
-  const pageUrl = `${APP_URL}/notes/${slug}`;
-
+  const imageUrl = note.coverImageUrl ?? `${APP_URL}/og/note/${slug}`;
   return {
-    title,
-    description: desc,
-    keywords: [
-      note.title.toLowerCase(),
-      `${note.level} notes`,
-      `${note.category?.name} notes`,
-      "coding notes",
-      "developer notes",
-      "web dev notes",
-      ...(note.tags || []),
-      "programming notes",
-      "download notes",
-    ],
-    alternates: { canonical: pageUrl },
+    title: note.title,
+    description: note.description.slice(0, 160),
+    alternates: { canonical: `${APP_URL}/notes/${slug}` },
     openGraph: {
-      title,
-      description: desc,
-      url: pageUrl,
-      siteName: "Notes Provider",
-      images: [{ url: imageUrl, width: 1200, height: 630, alt: note.title, type: "image/png" }],
+      title: note.title,
+      description: note.description.slice(0, 160),
+      url: `${APP_URL}/notes/${slug}`,
+      siteName: SEO.siteName,
+      images: [{ url: imageUrl, width: SEO.ogImageWidth, height: SEO.ogImageHeight, alt: note.title }],
       type: "article",
-      publishedTime: note.createdAt.toISOString(),
-      modifiedTime: note.updatedAt.toISOString(),
-      authors: ["Notes Provider"],
-      section: note.category?.name || "Study Notes",
-      tags: note.tags || [],
+      locale: SEO.locale,
     },
     twitter: {
-      card: "summary_large_image",
-      title,
-      description: desc,
+      card: SEO.twitterCard,
+      title: note.title,
+      description: note.description.slice(0, 160),
       images: [imageUrl],
-    },
-    other: {
-      "article:published_time": note.createdAt.toISOString(),
-      "article:modified_time": note.updatedAt.toISOString(),
-      "article:section": note.category?.name || "Study Notes",
     },
   };
 }
 
-export default async function NoteRoute({ params }: NotePageProps) {
+export default function NoteRoute({ params }: NotePageProps) {
+  return (
+    <Suspense fallback={<NoteDetailSkeleton />}>
+      <NoteDetail params={params} />
+    </Suspense>
+  );
+}
+
+async function NoteDetail({ params }: NotePageProps) {
   const { slug } = await params;
 
-  const noteDoc = await Note.findOne({ slug, visibility: "public" })
-    .populate<PopulatedNote>("category")
-    .lean()
-    .exec();
+  const noteDoc = await prisma.note.findFirst({
+    where: { slug, visibility: "public" },
+    include: { category: true },
+  });
 
   if (!noteDoc) {
     notFound();
   }
 
-  const note = noteDoc as unknown as PopulatedNote;
-  const pageUrl = `${APP_URL}/notes/${note.slug}`;
-  const imageUrl = note.coverImageUrl ?? `${APP_URL}/og/note/${note.slug}.png`;
+  const pageUrl = `${APP_URL}/notes/${noteDoc.slug}`;
+  const imageUrl = noteDoc.coverImageUrl ?? `${APP_URL}/og/note/${noteDoc.slug}`;
 
   const jsonLd = [
     productJsonLd({
-      title: note.title,
-      description: note.description || "",
-      price: note.price,
-      priceLabel: note.pricingType === "free" ? "Free" : `₹${note.price}`,
+      title: noteDoc.title,
+      description: noteDoc.description || "",
+      price: noteDoc.pricingType === "free" ? 0 : noteDoc.price / 100,
+      priceLabel: noteDoc.pricingType === "free" ? "Free" : `₹${(noteDoc.price / 100).toFixed(0)}`,
       currency: "INR",
-      imageUrl: note.coverImageUrl ?? null,
-      category: { name: note.category?.name || "Study Notes" },
-      level: note.level,
-      pageCount: note.pageCount ?? null,
-      url: `/notes/${note.slug}`,
+      imageUrl,
+      category: { name: noteDoc.category?.name || "Study Notes" },
+      level: noteDoc.level,
+      pageCount: noteDoc.pageCount ?? null,
+      url: `/notes/${noteDoc.slug}`,
     }),
     courseJsonLd({
-      title: note.title,
-      description: note.description || "",
-      url: `/notes/${note.slug}`,
-      category: { name: note.category?.name || "Study Notes" },
-      level: note.level,
-      imageUrl: note.coverImageUrl ?? null,
+      title: noteDoc.title,
+      description: noteDoc.description || "",
+      url: `/notes/${noteDoc.slug}`,
+      category: { name: noteDoc.category?.name || "Study Notes" },
+      level: noteDoc.level,
+      imageUrl: noteDoc.coverImageUrl ?? null,
     }),
     articleJsonLd({
-      title: note.title,
-      description: note.description || "",
-      url: `/notes/${note.slug}`,
-      imageUrl: note.coverImageUrl ?? null,
-      category: { name: note.category?.name || "Study Notes" },
-      level: note.level,
-      createdAt: note.createdAt.toISOString(),
-      updatedAt: note.updatedAt.toISOString(),
-      tags: note.tags,
+      title: noteDoc.title,
+      description: noteDoc.description || "",
+      url: `/notes/${noteDoc.slug}`,
+      imageUrl: noteDoc.coverImageUrl ?? null,
+      category: { name: noteDoc.category?.name || "Study Notes" },
+      level: noteDoc.level,
+      createdAt: noteDoc.createdAt.toISOString(),
+      updatedAt: noteDoc.updatedAt.toISOString(),
+      tags: noteDoc.tags as string[] | undefined,
     }),
-    breadcrumbJsonLd([
-      { name: "Home", url: APP_URL },
-      { name: "Notes", url: `${APP_URL}/notes` },
-      { name: note.title, url: pageUrl },
-    ]),
     webpageJsonLd({
-      title: note.title,
-      description: note.description?.slice(0, 160) || "",
+      title: noteDoc.title,
+      description: noteDoc.description?.slice(0, 160) || "",
       url: pageUrl,
       image: imageUrl,
     }),
